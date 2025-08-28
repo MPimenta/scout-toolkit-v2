@@ -42,28 +42,31 @@ This document outlines the development phases, milestones, and detailed task bre
 
 **Completed:** 2025-08-28
 
-#### Story 1.2: Database Setup
+#### Story 1.2: Database Setup ✅
 **Priority:** Critical
 **Estimate:** 2 days
+**Status:** Completed
 **Acceptance Criteria:**
-- [ ] PostgreSQL connection configured
-- [ ] Drizzle ORM setup with schema
-- [ ] Database migrations working
-- [ ] Seed scripts for demo data
-- [ ] SDG data imported
+- [x] PostgreSQL connection configured
+- [x] Drizzle ORM setup with schema
+- [x] Database migrations working
+- [x] Seed scripts for demo data
+- [x] SDG data imported
 
 **Tasks:**
-- [ ] Install and configure Drizzle ORM
-- [ ] Create database schema
-- [ ] Setup database migrations
-- [ ] Create seed scripts
-- [ ] Import SDG data from UN sources
-- [ ] Create demo activities
+- [x] Install and configure Drizzle ORM
+- [x] Create database schema
+- [x] Setup database migrations
+- [x] Create seed scripts
+- [x] Import SDG data from UN sources
+- [x] Create demo activities
+
+**Completed:** 2025-08-28
 
 #### Story 1.3: Authentication Setup ✅
 **Priority:** Critical
 **Estimate:** 2 days
-**Status:** Completed (with temporary workaround)
+**Status:** Completed
 **Acceptance Criteria:**
 - [x] Auth.js configured with Google provider
 - [x] Domain restriction for @escoteiros.pt emails
@@ -80,29 +83,32 @@ This document outlines the development phases, milestones, and detailed task bre
 - [x] Create login/logout components
 
 **Notes:**
-- NextAuth v5 beta has compatibility issues with Next.js 15
-- Authentication components and configuration are complete but temporarily disabled
-- Will need to resolve NextAuth compatibility or downgrade to NextAuth v4 when stable
-- All authentication logic, middleware, and UI components are implemented and ready
+- Successfully resolved NextAuth v5 beta compatibility with Next.js 15
+- Following official Auth.js documentation structure
+- All authentication components fully functional
+- Build successful, development server running
 
 **Completed:** 2025-08-28
 
-#### Story 1.4: Internationalization Setup
+#### Story 1.4: Internationalization Setup ✅
 **Priority:** High
 **Estimate:** 1 day
+**Status:** Completed
 **Acceptance Criteria:**
-- [ ] next-intl configured
-- [ ] Locale routing working
-- [ ] Translation dictionaries setup
-- [ ] Language switcher component
-- [ ] Default Portuguese locale
+- [x] next-intl configured
+- [x] Locale routing working
+- [x] Translation dictionaries setup
+- [x] Language switcher component
+- [x] Default Portuguese locale
 
 **Tasks:**
-- [ ] Install and configure next-intl
-- [ ] Setup locale routing
-- [ ] Create translation dictionaries
-- [ ] Build language switcher
-- [ ] Test locale switching
+- [x] Install and configure next-intl
+- [x] Setup locale routing
+- [x] Create translation dictionaries
+- [x] Build language switcher
+- [x] Test locale switching
+
+**Completed:** 2025-08-28
 
 #### Epic 1 Quality Check
 **Priority:** High
@@ -112,6 +118,27 @@ This document outlines the development phases, milestones, and detailed task bre
 - [ ] Test coverage verification
 - [ ] Performance baseline check
 - [ ] Documentation update
+
+#### Story 1.5: Devlog System Setup
+**Priority:** Medium
+**Estimate:** 1 day
+**Acceptance Criteria:**
+- [ ] Astro blog setup in /devlog folder
+- [ ] GitHub Actions for epic completion posts and deployment
+- [ ] PR template with epic completion section
+- [ ] First retrospective post about Epic 1 completion
+- [ ] Tone templates and automation workflow
+- [ ] Epic branch automation setup
+
+**Tasks:**
+- [ ] Initialize Astro blog in /devlog directory
+- [ ] Configure GitHub Actions for epic completion posts
+- [ ] Create PR template with epic completion section
+- [ ] Set up GitHub Pages deployment
+- [ ] Create tone templates based on Terry Pratchett style
+- [ ] Write first retrospective post documenting Epic 1 completion
+- [ ] Set up epic branch automation (create branch, label completion)
+- [ ] Test automation workflow with Epic 1 retrospective
 
 ### Epic 2: Core UI & Layout
 
@@ -147,6 +174,15 @@ This document outlines the development phases, milestones, and detailed task bre
 - [ ] Setup typography scale
 - [ ] Create component variants
 - [ ] Document design system
+
+#### Epic 2 Devlog Tasks
+**Priority:** Medium
+**Estimate:** 1 hour
+**Recurring Tasks:**
+- [ ] Review automated epic completion post
+- [ ] Add personal insights and scouting context
+- [ ] Validate technical accuracy
+- [ ] Approve for publication
 
 ### Epic 3: Activities Browsing
 
@@ -218,6 +254,15 @@ This document outlines the development phases, milestones, and detailed task bre
 - [ ] Add rating component
 - [ ] Implement add to program
 
+#### Epic 3 Devlog Tasks
+**Priority:** Medium
+**Estimate:** 1 hour
+**Recurring Tasks:**
+- [ ] Review automated epic completion post
+- [ ] Add personal insights and scouting context
+- [ ] Validate technical accuracy
+- [ ] Approve for publication
+
 ### Epic 4: Program Builder
 
 #### Story 4.1: Program CRUD
@@ -288,6 +333,15 @@ This document outlines the development phases, milestones, and detailed task bre
 - [ ] Add success notifications
 - [ ] Handle navigation
 
+#### Epic 4 Devlog Tasks
+**Priority:** Medium
+**Estimate:** 1 hour
+**Recurring Tasks:**
+- [ ] Review automated epic completion post
+- [ ] Add personal insights and scouting context
+- [ ] Validate technical accuracy
+- [ ] Approve for publication
+
 ### Epic 5: Export Functionality
 
 #### Story 5.1: Excel Export
@@ -323,6 +377,15 @@ This document outlines the development phases, milestones, and detailed task bre
 - [ ] Design print styles
 - [ ] Generate PDF content
 - [ ] Test PDF quality
+
+#### Epic 5 Devlog Tasks
+**Priority:** Medium
+**Estimate:** 1 hour
+**Recurring Tasks:**
+- [ ] Review automated epic completion post
+- [ ] Add personal insights and scouting context
+- [ ] Validate technical accuracy
+- [ ] Approve for publication
 
 ### Epic 6: User Feedback System
 
@@ -360,6 +423,15 @@ This document outlines the development phases, milestones, and detailed task bre
 - [ ] Implement moderation
 - [ ] Add rich text editor
 
+#### Epic 6 Devlog Tasks
+**Priority:** Medium
+**Estimate:** 1 hour
+**Recurring Tasks:**
+- [ ] Review automated epic completion post
+- [ ] Add personal insights and scouting context
+- [ ] Validate technical accuracy
+- [ ] Approve for publication
+
 ### Epic 7: Public Programs
 
 #### Story 7.1: Public Program Gallery
@@ -395,6 +467,15 @@ This document outlines the development phases, milestones, and detailed task bre
 - [ ] Add customization options
 - [ ] Show attribution
 - [ ] Add success notifications
+
+#### Epic 7 Devlog Tasks
+**Priority:** Medium
+**Estimate:** 1 hour
+**Recurring Tasks:**
+- [ ] Review automated epic completion post
+- [ ] Add personal insights and scouting context
+- [ ] Validate technical accuracy
+- [ ] Approve for publication
 
 ### Epic 8: Admin Features
 
@@ -466,6 +547,15 @@ This document outlines the development phases, milestones, and detailed task bre
 - [ ] Display statistics
 - [ ] Implement role changes
 
+#### Epic 8 Devlog Tasks
+**Priority:** Medium
+**Estimate:** 1 hour
+**Recurring Tasks:**
+- [ ] Review automated epic completion post
+- [ ] Add personal insights and scouting context
+- [ ] Validate technical accuracy
+- [ ] Approve for publication
+
 ### Epic 9: Advanced Features
 
 #### Story 9.1: Edit Suggestions
@@ -501,6 +591,15 @@ This document outlines the development phases, milestones, and detailed task bre
 - [ ] Add editing capabilities
 - [ ] Implement moderation
 - [ ] Add attribution
+
+#### Epic 9 Devlog Tasks
+**Priority:** Medium
+**Estimate:** 1 hour
+**Recurring Tasks:**
+- [ ] Review automated epic completion post
+- [ ] Add personal insights and scouting context
+- [ ] Validate technical accuracy
+- [ ] Approve for publication
 
 ### Epic 10: Testing & Quality
 
@@ -574,6 +673,15 @@ This document outlines the development phases, milestones, and detailed task bre
 - [ ] Test accessibility
 - [ ] Performance testing
 
+#### Epic 10 Devlog Tasks
+**Priority:** Medium
+**Estimate:** 1 hour
+**Recurring Tasks:**
+- [ ] Review automated epic completion post
+- [ ] Add personal insights and scouting context
+- [ ] Validate technical accuracy
+- [ ] Approve for publication
+
 ### Epic 11: Performance & Optimization
 
 #### Story 11.1: Performance Optimization
@@ -618,6 +726,9 @@ This document outlines the development phases, milestones, and detailed task bre
 - [ ] Test coverage verification
 - [ ] Performance baseline check
 - [ ] Documentation update
+- [ ] Devlog content review and publication
+- [ ] Update tone templates based on feedback
+- [ ] Archive old devlog drafts and published posts
 
 ### Epic 12: Quality Assurance & Optimization (Recurring)
 

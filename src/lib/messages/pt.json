@@ -1,0 +1,174 @@
+{
+  "common": {
+    "loading": "A carregar...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "create": "Criar",
+    "search": "Pesquisar",
+    "filter": "Filtrar",
+    "clear": "Limpar",
+    "back": "Voltar",
+    "next": "Seguinte",
+    "previous": "Anterior",
+    "close": "Fechar",
+    "open": "Abrir",
+    "yes": "Sim",
+    "no": "Não",
+    "confirm": "Confirmar",
+    "actions": "Ações"
+  },
+  "navigation": {
+    "home": "Início",
+    "activities": "Atividades",
+    "programs": "Programas",
+    "admin": "Administração",
+    "profile": "Perfil",
+    "settings": "Definições"
+  },
+  "auth": {
+    "signIn": "Iniciar Sessão",
+    "signOut": "Terminar Sessão",
+    "signInWithGoogle": "Iniciar Sessão com Google",
+    "signInTitle": "Iniciar Sessão",
+    "signInDescription": "Aceda à plataforma de atividades escutistas",
+    "domainRestriction": "Apenas utilizadores com email @escoteiros.pt podem aceder",
+    "loading": "A carregar...",
+    "error": "Erro de Autenticação",
+    "accessDenied": "Acesso negado. Apenas utilizadores com email @escoteiros.pt podem aceder.",
+    "configurationError": "Erro de configuração do servidor. Contacte o administrador.",
+    "verificationError": "Erro de verificação. Tente novamente.",
+    "unexpectedError": "Ocorreu um erro durante a autenticação. Tente novamente.",
+    "tryAgain": "Tentar Novamente",
+    "backToHome": "Voltar ao Início",
+    "contactAdmin": "Se acredita que deveria ter acesso, contacte o administrador em",
+    "adminEmail": "admin@escoteiros.pt"
+  },
+  "home": {
+    "title": "Scout Toolkit",
+    "subtitle": "Plataforma de Atividades Escutistas",
+    "description": "Explore atividades, crie programas e gere o seu grupo escutista de forma eficiente. Apenas para utilizadores com email @escoteiros.pt.",
+    "features": {
+      "explore": {
+        "title": "Explorar Atividades",
+        "description": "Descubra centenas de atividades organizadas por categoria, duração e objetivos educativos."
+      },
+      "create": {
+        "title": "Criar Programas",
+        "description": "Construa programas personalizados com atividades e blocos personalizados."
+      },
+      "export": {
+        "title": "Exportar e Partilhar",
+        "description": "Exporte programas em Excel ou PDF e partilhe com outros líderes."
+      }
+    }
+  },
+  "activities": {
+    "title": "Atividades",
+    "searchPlaceholder": "Pesquisar atividades...",
+    "filters": {
+      "title": "Filtros",
+      "duration": "Duração",
+      "groupSize": "Tamanho do Grupo",
+      "effortLevel": "Nível de Esforço",
+      "location": "Localização",
+      "ageGroup": "Faixa Etária",
+      "activityType": "Tipo de Atividade",
+      "educationalGoals": "Objetivos Educativos",
+      "sdgs": "Objetivos de Desenvolvimento Sustentável",
+      "clearAll": "Limpar Todos os Filtros"
+    },
+    "view": {
+      "tiles": "Vista em Mosaico",
+      "table": "Vista em Tabela"
+    },
+    "attributes": {
+      "duration": "Duração",
+      "groupSize": "Tamanho do Grupo",
+      "effortLevel": "Esforço",
+      "location": "Localização",
+      "ageGroup": "Faixa Etária",
+      "materials": "Materiais",
+      "educationalGoals": "Objetivos Educativos",
+      "sdgs": "ODS"
+    },
+    "groupSizes": {
+      "small": "Pequeno (2-6)",
+      "medium": "Médio (7-15)",
+      "large": "Grande (16+)"
+    },
+    "effortLevels": {
+      "low": "Baixo",
+      "medium": "Médio",
+      "high": "Alto"
+    },
+    "locations": {
+      "inside": "Interior",
+      "outside": "Exterior"
+    },
+    "ageGroups": {
+      "cub_scouts": "Lobitos",
+      "scouts": "Exploradores",
+      "adventurers": "Pioneiros",
+      "rovers": "Caminheiros",
+      "leaders": "Dirigentes"
+    }
+  },
+  "programs": {
+    "title": "Programas",
+    "myPrograms": "Os Meus Programas",
+    "createNew": "Criar Novo Programa",
+    "edit": "Editar Programa",
+    "delete": "Eliminar Programa",
+    "export": "Exportar",
+    "share": "Partilhar",
+    "useAsTemplate": "Usar como Modelo",
+    "form": {
+      "name": "Nome do Programa",
+      "date": "Data",
+      "startTime": "Hora de Início",
+      "isPublic": "Programa Público",
+      "description": "Descrição"
+    },
+    "builder": {
+      "title": "Construtor de Programas",
+      "addActivity": "Adicionar Atividade",
+      "addCustomBlock": "Adicionar Bloco Personalizado",
+      "reorder": "Reordenar",
+      "schedule": "Horário",
+      "summary": "Resumo"
+    },
+    "entries": {
+      "activity": "Atividade",
+      "custom": "Personalizado",
+      "title": "Título",
+      "duration": "Duração",
+      "startTime": "Hora de Início",
+      "endTime": "Hora de Fim"
+    }
+  },
+  "admin": {
+    "title": "Administração",
+    "dashboard": "Painel de Administração",
+    "users": "Utilizadores",
+    "activities": "Gestão de Atividades",
+    "taxonomies": "Taxonomias",
+    "statistics": "Estatísticas",
+    "userManagement": "Gestão de Utilizadores",
+    "activityManagement": "Gestão de Atividades",
+    "taxonomyManagement": "Gestão de Taxonomias"
+  },
+  "language": {
+    "portuguese": "Português",
+    "english": "English",
+    "switchLanguage": "Mudar Idioma"
+  },
+  "legal": {
+    "termsOfService": "Termos de Serviço",
+    "privacyPolicy": "Política de Privacidade",
+    "agreeToTerms": "Ao iniciar sessão, concorda com os nossos Termos de Serviço e Política de Privacidade"
+  }
+}

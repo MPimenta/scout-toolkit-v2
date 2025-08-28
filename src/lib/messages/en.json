@@ -1,0 +1,174 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "create": "Create",
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "open": "Open",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "actions": "Actions"
+  },
+  "navigation": {
+    "home": "Home",
+    "activities": "Activities",
+    "programs": "Programs",
+    "admin": "Administration",
+    "profile": "Profile",
+    "settings": "Settings"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "signInWithGoogle": "Sign in with Google",
+    "signInTitle": "Sign In",
+    "signInDescription": "Access the scout activities platform",
+    "domainRestriction": "Only users with @escoteiros.pt email can access",
+    "loading": "Loading...",
+    "error": "Authentication Error",
+    "accessDenied": "Access denied. Only users with @escoteiros.pt email can access.",
+    "configurationError": "Server configuration error. Contact the administrator.",
+    "verificationError": "Verification error. Please try again.",
+    "unexpectedError": "An unexpected error occurred during authentication. Please try again.",
+    "tryAgain": "Try Again",
+    "backToHome": "Back to Home",
+    "contactAdmin": "If you believe you should have access, contact the administrator at",
+    "adminEmail": "admin@escoteiros.pt"
+  },
+  "home": {
+    "title": "Scout Toolkit",
+    "subtitle": "Scout Activities Platform",
+    "description": "Explore activities, create programs and manage your scout group efficiently. Only for users with @escoteiros.pt email.",
+    "features": {
+      "explore": {
+        "title": "Explore Activities",
+        "description": "Discover hundreds of activities organized by category, duration and educational objectives."
+      },
+      "create": {
+        "title": "Create Programs",
+        "description": "Build personalized programs with activities and custom blocks."
+      },
+      "export": {
+        "title": "Export and Share",
+        "description": "Export programs to Excel or PDF and share with other leaders."
+      }
+    }
+  },
+  "activities": {
+    "title": "Activities",
+    "searchPlaceholder": "Search activities...",
+    "filters": {
+      "title": "Filters",
+      "duration": "Duration",
+      "groupSize": "Group Size",
+      "effortLevel": "Effort Level",
+      "location": "Location",
+      "ageGroup": "Age Group",
+      "activityType": "Activity Type",
+      "educationalGoals": "Educational Goals",
+      "sdgs": "Sustainable Development Goals",
+      "clearAll": "Clear All Filters"
+    },
+    "view": {
+      "tiles": "Tile View",
+      "table": "Table View"
+    },
+    "attributes": {
+      "duration": "Duration",
+      "groupSize": "Group Size",
+      "effortLevel": "Effort",
+      "location": "Location",
+      "ageGroup": "Age Group",
+      "materials": "Materials",
+      "educationalGoals": "Educational Goals",
+      "sdgs": "SDGs"
+    },
+    "groupSizes": {
+      "small": "Small (2-6)",
+      "medium": "Medium (7-15)",
+      "large": "Large (16+)"
+    },
+    "effortLevels": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "locations": {
+      "inside": "Indoor",
+      "outside": "Outdoor"
+    },
+    "ageGroups": {
+      "cub_scouts": "Cub Scouts",
+      "scouts": "Scouts",
+      "adventurers": "Adventurers",
+      "rovers": "Rovers",
+      "leaders": "Leaders"
+    }
+  },
+  "programs": {
+    "title": "Programs",
+    "myPrograms": "My Programs",
+    "createNew": "Create New Program",
+    "edit": "Edit Program",
+    "delete": "Delete Program",
+    "export": "Export",
+    "share": "Share",
+    "useAsTemplate": "Use as Template",
+    "form": {
+      "name": "Program Name",
+      "date": "Date",
+      "startTime": "Start Time",
+      "isPublic": "Public Program",
+      "description": "Description"
+    },
+    "builder": {
+      "title": "Program Builder",
+      "addActivity": "Add Activity",
+      "addCustomBlock": "Add Custom Block",
+      "reorder": "Reorder",
+      "schedule": "Schedule",
+      "summary": "Summary"
+    },
+    "entries": {
+      "activity": "Activity",
+      "custom": "Custom",
+      "title": "Title",
+      "duration": "Duration",
+      "startTime": "Start Time",
+      "endTime": "End Time"
+    }
+  },
+  "admin": {
+    "title": "Administration",
+    "dashboard": "Admin Dashboard",
+    "users": "Users",
+    "activities": "Activity Management",
+    "taxonomies": "Taxonomies",
+    "statistics": "Statistics",
+    "userManagement": "User Management",
+    "activityManagement": "Activity Management",
+    "taxonomyManagement": "Taxonomy Management"
+  },
+  "language": {
+    "portuguese": "Português",
+    "english": "English",
+    "switchLanguage": "Switch Language"
+  },
+  "legal": {
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy",
+    "agreeToTerms": "By signing in, you agree to our Terms of Service and Privacy Policy"
+  }
+}

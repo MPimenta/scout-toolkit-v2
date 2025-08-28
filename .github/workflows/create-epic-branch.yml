@@ -1,0 +1,79 @@
+name: Create Epic Branch
+on:
+  workflow_dispatch:
+    inputs:
+      epic_number:
+        description: 'Epic number'
+        required: true
+        type: string
+      epic_name:
+        description: 'Epic name (kebab-case)'
+        required: true
+        type: string
+      epic_title:
+        description: 'Epic title for planning.md'
+        required: true
+        type: string
+
+jobs:
+  create-epic-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Create epic branch
+        run: |
+          # Create branch name
+          BRANCH_NAME="epic-${{ inputs.epic_number }}-${{ inputs.epic_name }}"
+          
+          # Create and switch to new branch
+          git checkout -b $BRANCH_NAME
+          
+          # Update planning.md to mark epic as started
+          sed -i "s/### Epic ${{ inputs.epic_number }}: .*/### Epic ${{ inputs.epic_number }}: ${{ inputs.epic_title }}/" docs/planning.md
+          
+          # Add epic start marker
+          echo "" >> docs/planning.md
+          echo "**Epic Started:** $(date +%Y-%m-%d)" >> docs/planning.md
+          
+          # Commit changes
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/planning.md
+          git commit -m "feat: start Epic ${{ inputs.epic_number }} - ${{ inputs.epic_title }}"
+          
+          # Push branch
+          git push -u origin $BRANCH_NAME
+          
+          echo "Epic branch created: $BRANCH_NAME"
+      
+      - name: Create epic start issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Epic ${{ inputs.epic_number }}: ${{ inputs.epic_title }}`,
+              body: `## Epic ${{ inputs.epic_number }} Started
+              
+              **Branch:** \`epic-${{ inputs.epic_number }}-${{ inputs.epic_name }}\`
+              **Started:** ${new Date().toISOString().split('T')[0]}
+              
+              ### Next Steps
+              1. Work on epic tasks
+              2. Commit with descriptive messages
+              3. Use "Epic ${{ inputs.epic_number }} Complete" commit message when done
+              
+              ### Epic Completion
+              When all tasks are complete, the final commit should include:
+              - Message: "Epic ${{ inputs.epic_number }} Complete"
+              - Label: "epic-complete"
+              
+              This will automatically trigger the devlog post generation.`,
+              labels: ['epic', 'in-progress']
+            });
+            
+            console.log(`Epic start issue created: ${issue.data.html_url}`);

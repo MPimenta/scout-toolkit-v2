@@ -1,6 +1,8 @@
 'use client';
 
 import { signIn, signOut, useSession } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { User, LogOut } from 'lucide-react';
 import {
@@ -15,12 +17,13 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export function SignInButton() {
   const { data: session, status } = useSession();
+  const t = useTranslations('auth');
 
   if (status === 'loading') {
     return (
       <Button variant="outline" disabled>
         <User className="h-4 w-4 mr-2" />
-        Carregando...
+        {t('loading')}
       </Button>
     );
   }
@@ -54,16 +57,16 @@ export function SignInButton() {
           <DropdownMenuSeparator />
           {session.user.role === 'admin' && (
             <DropdownMenuItem asChild>
-              <a href="/admin">Painel de Administração</a>
+              <Link href="/admin">Painel de Administração</Link>
             </DropdownMenuItem>
           )}
           <DropdownMenuItem asChild>
-            <a href="/programs">Os Meus Programas</a>
+            <Link href="/programs">Os Meus Programas</Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => signOut()}>
             <LogOut className="h-4 w-4 mr-2" />
-            Terminar Sessão
+            {t('signOut')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -73,7 +76,7 @@ export function SignInButton() {
   return (
     <Button onClick={() => signIn('google')}>
       <User className="h-4 w-4 mr-2" />
-      Iniciar Sessão
+      {t('signIn')}
     </Button>
   );
 }
