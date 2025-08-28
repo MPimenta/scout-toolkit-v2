@@ -1,6 +1,15 @@
+import { auth } from '../../../../auth';
+import { redirect } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { SignInButton } from '@/components/auth/SignInButton';
 
-export default function SignInPage() {
+export default async function SignInPage() {
+  const session = await auth();
+
+  if (session) {
+    redirect('/');
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <Card className="w-full max-w-md">
@@ -15,9 +24,7 @@ export default function SignInPage() {
             <p className="text-sm text-gray-600 mb-4">
               Apenas utilizadores com email @escoteiros.pt podem aceder
             </p>
-            <div className="bg-blue-600 text-white px-6 py-3 rounded-lg">
-              Autenticação Temporariamente Indisponível
-            </div>
+            <SignInButton />
           </div>
           
           <div className="text-center text-xs text-gray-500">

@@ -1,3 +1,5 @@
+import { SignInButton } from '@/components/auth/SignInButton';
+
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -15,9 +17,7 @@ export default function HomePage() {
           </p>
           
           <div className="flex justify-center">
-            <div className="bg-blue-600 text-white px-6 py-3 rounded-lg">
-              Autenticação Temporariamente Indisponível
-            </div>
+            <SignInButton />
           </div>
           
           <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">

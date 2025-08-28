@@ -1,9 +1,9 @@
-import type { NextAuthConfig } from 'next-auth';
+import NextAuth from "next-auth"
 import GoogleProvider from 'next-auth/providers/google';
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import { db } from '@/lib/db';
 
-export const authOptions = {
+export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: DrizzleAdapter(db),
   providers: [
     GoogleProvider({
@@ -52,7 +52,7 @@ export const authOptions = {
     strategy: 'jwt',
   },
   secret: process.env.NEXTAUTH_SECRET,
-} satisfies NextAuthConfig;
+})
 
 // Extend NextAuth types
 declare module 'next-auth' {
