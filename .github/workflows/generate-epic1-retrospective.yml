@@ -69,9 +69,16 @@ jobs:
               );
             });
             
+            // Debug: log available context
+            console.log('Available context:', Object.keys(github.event));
+            console.log('Event type:', github.eventName);
+            
             // Get workflow inputs
-            const epicTitle = github.event.inputs.epic_title;
-            const publishDate = github.event.inputs.publish_date;
+            const epicTitle = github.event.inputs?.epic_title || 'The Foundation Laid';
+            const publishDate = github.event.inputs?.publish_date || '2024-01-28';
+            
+            console.log('Epic title:', epicTitle);
+            console.log('Publish date:', publishDate);
             
             // Generate post content
             const postContent = '---\n' +
