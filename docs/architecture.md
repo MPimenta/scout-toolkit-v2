@@ -47,6 +47,82 @@ This document outlines the technical architecture, stack choices, and key design
 - **Drizzle Kit** - Database migrations and seeding
 - **OpenAPI/Swagger** - API documentation and interactive testing
 
+## Project Structure
+
+### Directory Layout
+```
+scout-toolkit-v2/
+├── docs/
+│   ├── architecture.md
+│   ├── planning.md
+│   ├── deployment.md
+│   └── api.md
+├── src/
+│   ├── app/
+│   │   ├── [locale]/
+│   │   │   ├── activities/
+│   │   │   ├── programs/
+│   │   │   ├── admin/
+│   │   │   └── api/
+│   │   ├── globals.css
+│   │   └── layout.tsx
+│   ├── components/
+│   │   ├── ui/ (shadcn components)
+│   │   ├── features/
+│   │   │   ├── activities/
+│   │   │   ├── programs/
+│   │   │   └── admin/
+│   │   └── layout/
+│   ├── lib/
+│   │   ├── db/
+│   │   ├── auth/
+│   │   ├── i18n/
+│   │   └── utils/
+│   ├── types/
+│   └── hooks/
+├── drizzle/
+│   ├── schema/
+│   ├── migrations/
+│   └── seeds/
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   └── e2e/
+└── public/
+    ├── images/
+    └── sdg-icons/
+```
+
+### Key Directories Explained
+
+#### `src/app/[locale]/`
+- **Internationalized routes** with locale-based routing
+- **Activities pages** for browsing and viewing activities
+- **Programs pages** for program builder and management
+- **Admin pages** for content management (admin only)
+- **API routes** for backend functionality
+
+#### `src/components/`
+- **`ui/`** - shadcn/ui components and design system
+- **`features/`** - Feature-specific components organized by domain
+- **`layout/`** - Layout components (header, footer, navigation)
+
+#### `src/lib/`
+- **`db/`** - Database configuration, schema, and utilities
+- **`auth/`** - Authentication configuration and utilities
+- **`i18n/`** - Internationalization configuration
+- **`utils/`** - Shared utility functions
+
+#### `drizzle/`
+- **`schema/`** - Database schema definitions
+- **`migrations/`** - Database migration files
+- **`seeds/`** - Seed data for development and testing
+
+#### `tests/`
+- **`unit/`** - Unit tests for components and utilities
+- **`integration/`** - Integration tests for API endpoints
+- **`e2e/`** - End-to-end tests for user flows
+
 ## Data Model
 
 ### Core Entities

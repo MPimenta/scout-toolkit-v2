@@ -20,6 +20,31 @@
 - Keep components small and focused
 - Use index files for clean imports
 
+## Project Structure
+```
+scout-toolkit-v2/
+├── src/
+│   ├── app/[locale]/          # Internationalized routes
+│   │   ├── activities/        # Activity browsing pages
+│   │   ├── programs/          # Program builder pages
+│   │   ├── admin/             # Admin panel pages
+│   │   └── api/               # API routes
+│   ├── components/
+│   │   ├── ui/                # shadcn/ui components
+│   │   ├── features/          # Feature-specific components
+│   │   └── layout/            # Layout components
+│   ├── lib/
+│   │   ├── db/                # Database utilities
+│   │   ├── auth/              # Authentication
+│   │   ├── i18n/              # Internationalization
+│   │   └── utils/             # Shared utilities
+│   ├── types/                 # TypeScript types
+│   └── hooks/                 # Custom React hooks
+├── drizzle/                   # Database schema & migrations
+├── tests/                     # Test files
+└── public/                    # Static assets
+```
+
 ## Naming Conventions
 - Components: PascalCase (e.g., `ActivityCard`)
 - Files: kebab-case (e.g., `activity-card.tsx`)
