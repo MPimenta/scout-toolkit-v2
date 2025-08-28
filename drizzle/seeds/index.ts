@@ -1,4 +1,4 @@
-// import { db } from '@/lib/db';
+import { db } from '@/lib/db';
 import { seedSDGs } from './sdgs.js';
 import { seedActivityTypes } from './activity-types.js';
 import { seedEducationalAreas } from './educational-areas.js';
@@ -19,7 +19,8 @@ async function main() {
     console.error('❌ Database seeding failed:', error);
     process.exit(1);
   } finally {
-    // await db.disconnect();
+    // Note: Drizzle with postgres-js doesn't have a disconnect method
+    // The connection is managed by the postgres client
   }
 }
 

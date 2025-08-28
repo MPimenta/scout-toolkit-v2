@@ -1,12 +1,29 @@
 // Database schema exports
-// This file will export all schema definitions once they are created
+export * from './users';
+export * from './taxonomies';
+export * from './activities';
+export * from './programs';
+export * from './feedback';
 
-// TODO: Add schema exports here when database schema is implemented
-// Example:
-// export * from './users';
-// export * from './activities';
-// export * from './programs';
-// export * from './taxonomies';
+// Export all tables for Drizzle
+import { users, userRoles } from './users';
+import { activityTypes, educationalAreas, educationalGoals, sdgs } from './taxonomies';
+import { activities, activityEducationalGoals, activitySdgs } from './activities';
+import { programs, programEntries } from './programs';
+import { reviews, editSuggestions } from './feedback';
 
-// Temporary empty export to satisfy TypeScript
-export const schema = {};
+export const schema = {
+  users,
+  userRoles,
+  activityTypes,
+  educationalAreas,
+  educationalGoals,
+  sdgs,
+  activities,
+  activityEducationalGoals,
+  activitySdgs,
+  programs,
+  programEntries,
+  reviews,
+  editSuggestions,
+};
