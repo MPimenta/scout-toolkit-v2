@@ -70,12 +70,13 @@ jobs:
             });
             
             // Debug: log available context
-            console.log('Available context:', Object.keys(github.event));
+            console.log('GitHub object keys:', Object.keys(github));
+            console.log('Event object:', github.event);
             console.log('Event type:', github.eventName);
             
-            // Get workflow inputs
-            const epicTitle = github.event.inputs?.epic_title || 'The Foundation Laid';
-            const publishDate = github.event.inputs?.publish_date || '2024-01-28';
+            // Get workflow inputs with proper null checks
+            const epicTitle = (github.event && github.event.inputs && github.event.inputs.epic_title) || 'The Foundation Laid';
+            const publishDate = (github.event && github.event.inputs && github.event.inputs.publish_date) || '2024-01-28';
             
             console.log('Epic title:', epicTitle);
             console.log('Publish date:', publishDate);
