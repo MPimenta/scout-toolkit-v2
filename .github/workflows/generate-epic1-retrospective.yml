@@ -70,76 +70,58 @@ jobs:
             });
             
             // Generate post content
-            const postContent = `---
-title: "Epic 1 Complete — ${inputs.epic_title}"
-description: "Authentication, database setup, and the art of making computers understand scout leaders"
-publishDate: ${inputs.publish_date}
-tags: [devlog, epic-complete, authentication, database, internationalization]
-scoutingContext: "How this foundation helps leaders manage their groups more effectively"
----
-
-## The Journey Begins
-
-In the world of scouting, where every leader juggles the impossible task of keeping 20 kids engaged while secretly hoping they learn something useful, we've just laid the foundation for something remarkable. Epic 1 is complete, and like a well-organized patrol kit, everything has its place.
-
-## What We Built
-
-### Repository Scaffold
-We started with the basics—Next.js 15, TypeScript, and a folder structure that would make even the most organized scout leader proud. The project scaffold is like setting up camp: you need a solid foundation before you can start the real work.
-
-### Database Setup
-PostgreSQL and Drizzle ORM now handle our data like a well-trained patrol leader handles their scouts—with precision, care, and the ability to adapt when things get chaotic. The database schema is our map, and the migrations are our compass.
-
-### Authentication Setup
-Google sign-in now checks for @escoteiros.pt, like a nightclub bouncer who's read the guest list and your aura. Turn up with a different domain and it smiles kindly, the way innkeepers do when you ask for dragons on a Tuesday: 'Lovely boots; wrong tavern.'
-
-### Internationalization Setup
-We invited the UN's SDGs in; they arrived with icons and the air of honored relatives. Portuguese speaks first (as is only polite), English follows when the moon is right. Translations are mostly tamed, although one errant string keeps hiding under the sofa. We are negotiating with biscuits.
-
-## The Human Touch
-
-The journey wasn't without its challenges. NextAuth v5 beta compatibility with Next.js 15 was like trying to teach a very enthusiastic puppy to sit still during a scout ceremony. But persistence, official documentation, and a healthy dose of trial and error prevailed.
-
-The internationalization setup taught us that sometimes the best solutions come from asking 'what would a scout leader actually need?' rather than 'what's the most elegant code?' The result is a system that speaks the language of scout leaders, literally and figuratively.
-
-## Technical Highlights
-
-- **Next.js 15** with App Router for modern React development
-- **Auth.js v5 beta** with Google OAuth and domain restriction
-- **Drizzle ORM** for type-safe database operations
-- **next-intl** for seamless Portuguese/English support
-- **Tailwind CSS + shadcn/ui** for beautiful, accessible components
-
-## What's Next
-
-With the foundation solid, we're ready to build the walls and roof. Epic 2 brings the Core UI & Layout—the visual structure that will make scout leaders feel at home. Navigation, design systems, and responsive layouts await, like a well-planned camping trip where every piece of equipment has its purpose.
-
-The adventure continues, and like any good scout expedition, we're prepared for the unexpected while staying true to our mission: making scout leaders' lives slightly less chaotic, one feature at a time.
-
----
-
-*Generated from git history analysis on ${new Date().toISOString().split('T')[0]}*
-*Epic 1 Stories: ${epic1Stories.map(s => s.name).join(', ')}*
-*Total commits analyzed: ${commits.length}*
-`;
+            const postContent = '---\n' +
+              'title: "Epic 1 Complete — ' + inputs.epic_title + '"\n' +
+              'description: "Authentication, database setup, and the art of making computers understand scout leaders"\n' +
+              'publishDate: ' + inputs.publish_date + '\n' +
+              'tags: [devlog, epic-complete, authentication, database, internationalization]\n' +
+              'scoutingContext: "How this foundation helps leaders manage their groups more effectively"\n' +
+              '---\n\n' +
+              '## The Journey Begins\n\n' +
+              'In the world of scouting, where every leader juggles the impossible task of keeping 20 kids engaged while secretly hoping they learn something useful, we\'ve just laid the foundation for something remarkable. Epic 1 is complete, and like a well-organized patrol kit, everything has its place.\n\n' +
+              '## What We Built\n\n' +
+              '### Repository Scaffold\n' +
+              'We started with the basics—Next.js 15, TypeScript, and a folder structure that would make even the most organized scout leader proud. The project scaffold is like setting up camp: you need a solid foundation before you can start the real work.\n\n' +
+              '### Database Setup\n' +
+              'PostgreSQL and Drizzle ORM now handle our data like a well-trained patrol leader handles their scouts—with precision, care, and the ability to adapt when things get chaotic. The database schema is our map, and the migrations are our compass.\n\n' +
+              '### Authentication Setup\n' +
+              'Google sign-in now checks for @escoteiros.pt, like a nightclub bouncer who\'s read the guest list and your aura. Turn up with a different domain and it smiles kindly, the way innkeepers do when you ask for dragons on a Tuesday: \'Lovely boots; wrong tavern.\'\n\n' +
+              '### Internationalization Setup\n' +
+              'We invited the UN\'s SDGs in; they arrived with icons and the air of honored relatives. Portuguese speaks first (as is only polite), English follows when the moon is right. Translations are mostly tamed, although one errant string keeps hiding under the sofa. We are negotiating with biscuits.\n\n' +
+              '## The Human Touch\n\n' +
+              'The journey wasn\'t without its challenges. NextAuth v5 beta compatibility with Next.js 15 was like trying to teach a very enthusiastic puppy to sit still during a scout ceremony. But persistence, official documentation, and a healthy dose of trial and error prevailed.\n\n' +
+              'The internationalization setup taught us that sometimes the best solutions come from asking \'what would a scout leader actually need?\' rather than \'what\'s the most elegant code?\' The result is a system that speaks the language of scout leaders, literally and figuratively.\n\n' +
+              '## Technical Highlights\n\n' +
+              '- **Next.js 15** with App Router for modern React development\n' +
+              '- **Auth.js v5 beta** with Google OAuth and domain restriction\n' +
+              '- **Drizzle ORM** for type-safe database operations\n' +
+              '- **next-intl** for seamless Portuguese/English support\n' +
+              '- **Tailwind CSS + shadcn/ui** for beautiful, accessible components\n\n' +
+              '## What\'s Next\n\n' +
+              'With the foundation solid, we\'re ready to build the walls and roof. Epic 2 brings the Core UI & Layout—the visual structure that will make scout leaders feel at home. Navigation, design systems, and responsive layouts await, like a well-planned camping trip where every piece of equipment has its purpose.\n\n' +
+              'The adventure continues, and like any good scout expedition, we\'re prepared for the unexpected while staying true to our mission: making scout leaders\' lives slightly less chaotic, one feature at a time.\n\n' +
+              '---\n\n' +
+                            '*Generated from git history analysis on ' + new Date().toISOString().split('T')[0] + '*\n' +
+              '*Epic 1 Stories: ' + epic1Stories.map(s => s.name).join(', ') + '*\n' +
+              '*Total commits analyzed: ' + commits.length + '*';
             
             // Write the post
-            const filename = `epic-1-retrospective-${inputs.publish_date}.md`;
+            const filename = 'epic-1-retrospective-' + inputs.publish_date + '.md';
             const filepath = path.join(devlogDir, filename);
             fs.writeFileSync(filepath, postContent);
             
-            console.log(`Epic 1 retrospective post generated: ${filepath}`);
+            console.log('Epic 1 retrospective post generated: ' + filepath);
             
             // Create a PR with the generated post
             try {
               execSync('git config user.name "github-actions[bot]"');
               execSync('git config user.email "41898282+github-actions[bot]@users.noreply.github.com"');
               execSync('git add .');
-              execSync(`git commit -m "feat(devlog): generate Epic 1 retrospective post"`);
+              execSync('git commit -m "feat(devlog): generate Epic 1 retrospective post"');
               execSync('git push');
               
               // Create PR
-              execSync(`gh pr create --title "Epic 1 Retrospective Post" --body "Automatically generated retrospective post for Epic 1 completion. Please review and enhance with personal insights." --label "devlog"`);
+              execSync('gh pr create --title "Epic 1 Retrospective Post" --body "Automatically generated retrospective post for Epic 1 completion. Please review and enhance with personal insights." --label "devlog"');
               
               console.log('PR created for Epic 1 retrospective post');
             } catch (error) {
