@@ -69,11 +69,15 @@ jobs:
               );
             });
             
+            // Get workflow inputs
+            const epicTitle = github.event.inputs.epic_title;
+            const publishDate = github.event.inputs.publish_date;
+            
             // Generate post content
             const postContent = '---\n' +
-              'title: "Epic 1 Complete — ' + inputs.epic_title + '"\n' +
+              'title: "Epic 1 Complete — ' + epicTitle + '"\n' +
               'description: "Authentication, database setup, and the art of making computers understand scout leaders"\n' +
-              'publishDate: ' + inputs.publish_date + '\n' +
+              'publishDate: ' + publishDate + '\n' +
               'tags: [devlog, epic-complete, authentication, database, internationalization]\n' +
               'scoutingContext: "How this foundation helps leaders manage their groups more effectively"\n' +
               '---\n\n' +
@@ -106,7 +110,7 @@ jobs:
               '*Total commits analyzed: ' + commits.length + '*';
             
             // Write the post
-            const filename = 'epic-1-retrospective-' + inputs.publish_date + '.md';
+            const filename = 'epic-1-retrospective-' + publishDate + '.md';
             const filepath = path.join(devlogDir, filename);
             fs.writeFileSync(filepath, postContent);
             
