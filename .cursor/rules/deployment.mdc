@@ -1,0 +1,35 @@
+# Deployment Guidelines
+
+## Vercel Deployment
+- Use environment variables
+- Configure proper build settings
+- Set up custom domains
+- Monitor deployment health
+
+## Database Deployment
+- Use Neon PostgreSQL
+- Configure connection pooling
+- Set up read replicas if needed
+- Monitor performance metrics
+
+## Environment Setup
+- Production environment variables
+- Database connection strings
+- OAuth provider configuration
+- File upload service configuration
+
+## Monitoring
+- Set up health check endpoints
+- Monitor application performance
+- Track error rates and logs
+- Set up alerts for critical issues
+
+## Security
+- Use HTTPS in production
+- Implement proper CORS policies
+- Set up security headers
+- Regular security audits
+description:
+globs:
+alwaysApply: true
+---

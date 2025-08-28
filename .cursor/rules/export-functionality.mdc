@@ -1,0 +1,39 @@
+# Export Functionality
+
+## Excel Export
+- Use SheetJS (xlsx) library
+- Include multiple sheets (schedule, summary)
+- Proper formatting and styling
+- Handle large datasets efficiently
+
+## PDF Export
+- Use Playwright for HTML to PDF
+- Print-optimized styling
+- Include program summary
+- High-quality output
+
+## Export Structure
+```
+Program: [Program Name]
+Date: [Date]
+Start Time: [Time]
+
+Schedule:
+| Time | Activity | Duration | Location | Effort | Type |
+|------|----------|----------|----------|--------|------|
+| 09:00 | Activity 1 | 30 min | Outside | Medium | Game |
+
+Summary:
+Educational Goals: [Goals]
+SDGs: [SDG Icons]
+```
+
+## Performance
+- Use Vercel Edge Functions for PDF generation
+- Implement proper caching
+- Handle large datasets efficiently
+- Provide progress feedback
+description:
+globs:
+alwaysApply: true
+---

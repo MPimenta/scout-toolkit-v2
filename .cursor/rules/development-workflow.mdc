@@ -1,0 +1,37 @@
+# Development Workflow
+
+## Git Practices
+- Use conventional commit messages
+- Create feature branches
+- Write descriptive commit messages
+- Review code before merging
+
+## Code Review Checklist
+- Check for security issues
+- Verify performance implications
+- Ensure proper error handling
+- Validate internationalization
+- Check accessibility compliance
+
+## Environment Configuration
+- Use `.env.local` for local development
+- Use `.env.example` for documentation
+- Validate required variables
+- Use proper naming conventions
+
+## Database Configuration
+- Use separate databases for dev/staging/prod
+- Implement proper migrations
+- Use seed data for development
+- Backup production data regularly
+
+## Monitoring & Logging
+- Use Vercel Analytics
+- Monitor Core Web Vitals
+- Track user interactions
+- Monitor error rates
+- Monitor query performance
+description:
+globs:
+alwaysApply: true
+---

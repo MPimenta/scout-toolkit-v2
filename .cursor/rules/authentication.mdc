@@ -1,0 +1,27 @@
+# Authentication & Authorization
+
+## Auth.js Configuration
+- Google OAuth provider only
+- Domain restriction to `@escoteiros.pt` emails
+- Server-side email validation
+- Role-based access control (user/admin)
+- Secure session management
+
+## Protected Routes
+- Admin routes: `/admin/*`, `/api/admin/*`
+- User routes: `/programs/*`, `/api/programs/*`
+- Implement proper middleware checks
+
+## Security Considerations
+- Use HTTPS in production
+- Implement proper session security
+- Use environment variables for secrets
+- Follow OWASP guidelines
+- Use Zod schemas for all inputs
+- Validate file uploads (type, size, content)
+- Sanitize user inputs
+- Implement proper CSRF protection
+description:
+globs:
+alwaysApply: true
+---

@@ -1,0 +1,31 @@
+# Database & ORM Patterns
+
+## Drizzle ORM Usage
+- Use schema-first approach
+- Define proper relationships and constraints
+- Use migrations for schema changes
+- Implement proper indexing for performance
+- Use prepared statements (handled by Drizzle)
+
+## Database Design Principles
+- Use JSONB for multilingual content
+- Implement proper foreign key constraints
+- Use UUIDs for primary keys
+- Add proper indexes for search and filtering
+- Use timestamps for created_at/updated_at
+
+## Content Structure
+- Store multilingual content in JSONB format
+- Use locale keys: `{ "pt": "texto", "en": "text" }`
+- Default locale is Portuguese (pt)
+- Fallback to English (en) when translation missing
+
+## Search & Filtering
+- Use PostgreSQL full-text search
+- Implement proper indexing
+- Use debouncing for search inputs
+- Cache search results
+description:
+globs:
+alwaysApply: true
+---

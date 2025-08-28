@@ -1,0 +1,30 @@
+# Accessibility Standards
+
+## WCAG Compliance
+- Aim for WCAG 2.1 AA compliance
+- Use semantic HTML
+- Implement proper ARIA labels
+- Ensure keyboard navigation
+- Test with screen readers
+
+## Keyboard Navigation
+- All interactive elements must be keyboard accessible
+- Implement proper focus management
+- Use logical tab order
+- Provide skip links for main content
+
+## Screen Reader Support
+- Use proper heading hierarchy
+- Provide alt text for images
+- Use descriptive link text
+- Implement ARIA landmarks
+
+## Color and Contrast
+- Ensure sufficient color contrast (4.5:1 minimum)
+- Don't rely solely on color to convey information
+- Support high contrast mode
+- Test with color blindness simulators
+description:
+globs:
+alwaysApply: true
+---

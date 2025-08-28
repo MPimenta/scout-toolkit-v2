@@ -1,0 +1,28 @@
+# Performance & Optimization
+
+## Frontend Optimization
+- Use Next.js Image component for optimization
+- Implement proper code splitting
+- Use React.memo for expensive components
+- Optimize bundle size
+
+## Backend Optimization
+- Implement proper caching strategies
+- Use database indexes effectively
+- Optimize database queries
+- Implement rate limiting
+
+## Performance Targets
+- **LCP (Largest Contentful Paint):** < 2.5s
+- **FID (First Input Delay):** < 100ms
+- **CLS (Cumulative Layout Shift):** < 0.1
+- **Lighthouse scores:** ≥ 90 for all metrics
+
+## Database Performance
+- **Search Queries:** < 200ms
+- **Filter Queries:** < 100ms
+- **Program Loading:** < 500ms
+description:
+globs:
+alwaysApply: true
+---

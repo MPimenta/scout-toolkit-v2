@@ -1,0 +1,23 @@
+# Scout Activities Platform
+
+This is a Next.js 15 application for scout leaders to browse activities, build programs, and manage content. The platform supports Portuguese (PT) and English (EN) localization with URL-based routing.
+
+## Tech Stack
+- **Frontend**: Next.js 15 (App Router), TypeScript, Tailwind CSS, shadcn/ui
+- **Backend**: PostgreSQL, Drizzle ORM, Auth.js
+- **Testing**: Vitest, Playwright
+- **Documentation**: OpenAPI/Swagger
+
+## Key Features
+- Activity browsing with search and filtering
+- Program builder with drag & drop
+- Export functionality (Excel/PDF)
+- Rating and commenting system
+- Public program templates
+- Admin content management
+- Internationalization (PT/EN)
+- Google OAuth with domain restriction
+description:
+globs:
+alwaysApply: true
+---

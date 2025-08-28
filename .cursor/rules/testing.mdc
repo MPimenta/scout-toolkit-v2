@@ -1,0 +1,29 @@
+# Testing Strategy
+
+## Unit Tests
+- Test business logic functions
+- Test utility functions
+- Use Vitest for fast execution
+- Aim for 80%+ coverage
+
+## Integration Tests
+- Test API endpoints
+- Test database operations
+- Test authentication flows
+- Use test database
+
+## E2E Tests
+- Test critical user flows
+- Test cross-browser compatibility
+- Use Playwright for reliable testing
+- Focus on happy path and error scenarios
+
+## Test Organization
+- Group tests by feature/component
+- Use descriptive test names
+- Mock external dependencies
+- Test error scenarios
+description:
+globs:
+alwaysApply: true
+---

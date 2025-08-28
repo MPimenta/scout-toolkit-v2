@@ -1,0 +1,42 @@
+# API Design Standards
+
+## RESTful Endpoints
+- Use proper HTTP methods (GET, POST, PUT, DELETE)
+- Implement proper status codes
+- Use consistent error response format
+- Include pagination for list endpoints
+- Implement proper filtering and sorting
+
+## Response Format
+```typescript
+// Success response
+{
+  "data": {...},
+  "pagination": {...}
+}
+
+// Error response
+{
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable message",
+    "details": {...}
+  }
+}
+```
+
+## Error Handling
+- Use proper try-catch blocks
+- Log errors appropriately
+- Return consistent error responses
+- Implement proper validation
+
+## Documentation
+- Use OpenAPI/Swagger
+- Include request/response examples
+- Document error codes
+- Keep documentation in sync with code
+description:
+globs:
+alwaysApply: true
+---

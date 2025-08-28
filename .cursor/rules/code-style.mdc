@@ -1,0 +1,32 @@
+# Code Style & Standards
+
+## TypeScript Guidelines
+- Use strict TypeScript configuration
+- Prefer interfaces over types for object shapes
+- Use proper type annotations for all functions and variables
+- Avoid `any` type - use `unknown` or proper typing instead
+- Use Zod for runtime validation
+
+## React/Next.js Patterns
+- Use functional components with hooks
+- Prefer server components when possible
+- Use proper error boundaries
+- Implement proper loading states
+- Follow Next.js 15 App Router conventions
+
+## File Organization
+- Use kebab-case for file names
+- Group related components in folders
+- Keep components small and focused
+- Use index files for clean imports
+
+## Naming Conventions
+- Components: PascalCase (e.g., `ActivityCard`)
+- Files: kebab-case (e.g., `activity-card.tsx`)
+- Functions: camelCase (e.g., `getActivityById`)
+- Constants: UPPER_SNAKE_CASE (e.g., `MAX_FILE_SIZE`)
+- Database tables: snake_case (e.g., `activity_educational_goals`)
+description:
+globs:
+alwaysApply: true
+---

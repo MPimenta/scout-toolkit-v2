@@ -1,0 +1,36 @@
+# File Upload Guidelines
+
+## UploadThing Integration
+- Validate file types and sizes
+- Generate secure URLs
+- Implement proper error handling
+- Use Next.js Image for optimization
+
+## Image Requirements
+- Max size: 5MB
+- Formats: JPEG, PNG, WebP
+- Max dimensions: 2048x2048px
+- Generate thumbnails for performance
+
+## Storage Structure
+```
+s3://bucket/
+├── activities/
+│   ├── activity-1/
+│   │   ├── original.jpg
+│   │   └── thumbnail.jpg
+│   └── activity-2/
+└── sdg-icons/
+    ├── sdg-1.png
+    └── sdg-2.png
+```
+
+## Security
+- Validate file types and sizes
+- Scan for malicious content
+- Use secure URLs with expiration
+- Implement proper access controls
+description:
+globs:
+alwaysApply: true
+---
