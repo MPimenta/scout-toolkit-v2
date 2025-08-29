@@ -11,8 +11,8 @@ export function Header() {
         <div className="flex items-center space-x-4">
           <Link href="/" className="flex items-center space-x-2">
             <Image
-              src="/logo.svg"
-              alt="Scout Toolkit"
+              src="/logo_escoteiros.png"
+              alt="Escoteiros de Portugal"
               width={40}
               height={40}
               className="h-10 w-10"
