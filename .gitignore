@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+/devlog/node_modules
+/eminent-eclipse/node_modules
 /.pnp
 .pnp.*
 .yarn/*
