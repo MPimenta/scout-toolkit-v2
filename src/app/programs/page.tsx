@@ -6,7 +6,7 @@ export default function ProgramsPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-4">Programas</h1>
         <p className="text-muted-foreground">
-          Crie e organize programas personalizados para os seus escuteiros.
+          Crie e organize programas personalizados para os seus escoteiros.
         </p>
       </div>
       

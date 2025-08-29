@@ -15,7 +15,7 @@ export default function HomePage() {
           </h1>
           <p className="mb-8 text-xl text-muted-foreground max-w-3xl mx-auto">
             Navegue por centenas de atividades, crie programas personalizados e 
-            ajude os seus escuteiros a crescer com experiências significativas.
+            ajude os seus escoteiros a crescer com experiências significativas.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg">

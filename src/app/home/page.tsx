@@ -9,7 +9,7 @@ export default function HomePage() {
             Kit de Atividades
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Navega por centenas de atividades, cria programas personalizados e ajuda os teus escuteiros a crescer com experiências significativas.
+            Navega por centenas de atividades, cria programas personalizados e ajuda os teus escoteiros a crescer com experiências significativas.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
