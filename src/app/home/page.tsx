@@ -6,10 +6,10 @@ export default function HomePage() {
       <div className="container mx-auto px-4 py-16">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-6">
-            Scout Toolkit
+            Kit de Atividades
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Uma plataforma para líderes escutistas navegarem atividades, filtrá-las e criarem programas para os seus grupos.
+            Navega por centenas de atividades, cria programas personalizados e ajuda os teus escuteiros a crescer com experiências significativas.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -17,21 +17,21 @@ export default function HomePage() {
               href="/activities"
               className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
             >
-              Navegar Atividades
+              Explorar Atividades
             </Link>
             <Link
               href="/programs"
               className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
             >
-              Criar Programas
+              Criar Programa
             </Link>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-lg font-semibold mb-3">Navegar Atividades</h3>
+              <h3 className="text-lg font-semibold mb-3">Explorar Atividades</h3>
               <p className="text-gray-600">
-                Descobre uma vasta gama de atividades escutistas com filtros para duração, grupo etário e muito mais.
+                Encontra uma vasta gama de atividades escutistas com filtros para duração, grupo etário e muito mais.
               </p>
             </div>
 

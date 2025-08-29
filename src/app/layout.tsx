@@ -8,7 +8,7 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Scout Toolkit - Ferramentas para Líderes',
+  title: 'Kit de Atividades - Ferramentas para Líderes',
   description: 'Uma plataforma para líderes escoteiros navegarem atividades e criarem programas',
 };
 

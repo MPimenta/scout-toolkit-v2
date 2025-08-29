@@ -29,11 +29,11 @@ export function Header() {
               alt="Escoteiros de Portugal"
               width={40}
               height={40}
-              className="h-10 w-10"
+              className="object-contain"
             />
             <div className="flex flex-col">
               <span className="text-lg font-bold text-primary">Scout Toolkit</span>
-              <span className="text-xs text-muted-foreground">Ferramentas para Líderes</span>
+              <span className="text-xs text-muted-foreground">Kit de Atividades</span>
             </div>
           </Link>
         </div>
