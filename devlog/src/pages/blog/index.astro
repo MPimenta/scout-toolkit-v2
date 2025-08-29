@@ -94,7 +94,7 @@ const posts = (await getCollection('blog')).sort(
 					{
 						posts.map((post) => (
 							<li>
-								<a href={new URL(`/blog/${post.id}/`, Astro.site).pathname}>
+								<a href={`/scout-toolkit-v2/blog/${post.id}/`}>
 									{post.data.heroImage && (
 										<Image width={720} height={360} src={post.data.heroImage} alt="" />
 									)}
