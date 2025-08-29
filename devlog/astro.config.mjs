@@ -6,7 +6,7 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://ctw03345.github.io',
+	site: 'https://mpimenta.github.io',
 	base: '/scout-toolkit-v2',
 	integrations: [mdx(), sitemap()],
 	output: 'static',

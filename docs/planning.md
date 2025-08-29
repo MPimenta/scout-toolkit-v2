@@ -345,12 +345,14 @@ After successfully implementing Story 1.4 (Internationalization Setup), we encou
 - [ ] Typography system
 - [ ] Component variants
 - [ ] Consistent spacing
+- [ ] Devlog also uses the color palette
 - [ ] Dark mode support (future)
 
 **Tasks:**
 - [ ] Define color tokens
 - [ ] Setup typography scale
 - [ ] Create component variants
+- [ ] Update the devlog to use the design system color palette
 - [ ] Document design system
 
 #### Epic 2 Devlog Tasks
