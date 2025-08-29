@@ -7,7 +7,7 @@ scoutingContext: "How this foundation helps leaders manage their groups more eff
 epicNumber: 1
 epicName: "Project Setup & Infrastructure"
 status: published
-heroImage: ./epic1-cover.svg
+heroImage: ./epic1-cover.png
 ---
 
 ## The Journey Begins 🚀

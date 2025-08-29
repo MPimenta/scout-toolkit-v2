@@ -189,7 +189,7 @@ description: "Authentication, database setup, and the art of making computers un
 publishDate: 2024-01-28
 tags: [devlog, epic-complete, authentication, database]
 scoutingContext: "How this helps leaders manage their groups more effectively"
-heroImage: ../../assets/epic1-cover.svg
+heroImage: ../../assets/epic1-cover.png
 ---
 
 ## The Journey Begins
