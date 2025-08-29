@@ -1,4 +1,4 @@
-import { db } from '@/lib/db';
+// Database connection is handled by individual seed files
 import { seedSDGs } from './sdgs.js';
 import { seedActivityTypes } from './activity-types.js';
 import { seedEducationalAreas } from './educational-areas.js';

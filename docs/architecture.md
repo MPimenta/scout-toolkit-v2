@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the technical architecture, stack choices, and key design decisions for the Scout Activities Platform - a web application for scout leaders to browse activities, build programs, and manage content.
+This document outlines the technical architecture, stack choices, and key design decisions for the Scout Activities Platform - a web application for Portuguese scout leaders to browse activities, build programs, and manage content.
 
 ## Core Stack
 
@@ -22,9 +22,10 @@ This document outlines the technical architecture, stack choices, and key design
 - **TanStack Table** - Powerful data grid for table views
 - **Zustand** - Lightweight client state management for program builder
 
-### Internationalization
-- **next-intl** - Internationalization library optimized for Next.js App Router
-- **Locale routing** - URL-based locale switching (`/pt/activities`, `/en/activities`)
+### Content & Localization
+- **Portuguese-only interface** - All UI text and content in Portuguese
+- **Direct routing** - Simple URL structure without locale prefixes
+- **Hardcoded Portuguese content** - No translation system complexity
 
 ### File Storage & Media
 - **UploadThing** - File upload service with S3 backend
@@ -59,11 +60,10 @@ scout-toolkit-v2/
 │   └── api.md
 ├── src/
 │   ├── app/
-│   │   ├── [locale]/
-│   │   │   ├── activities/
-│   │   │   ├── programs/
-│   │   │   ├── admin/
-│   │   │   └── api/
+│   │   ├── activities/
+│   │   ├── programs/
+│   │   ├── admin/
+│   │   ├── api/
 │   │   ├── globals.css
 │   │   └── layout.tsx
 │   ├── components/
@@ -76,7 +76,6 @@ scout-toolkit-v2/
 │   ├── lib/
 │   │   ├── db/
 │   │   ├── auth/
-│   │   ├── i18n/
 │   │   └── utils/
 │   ├── types/
 │   └── hooks/
@@ -95,8 +94,8 @@ scout-toolkit-v2/
 
 ### Key Directories Explained
 
-#### `src/app/[locale]/`
-- **Internationalized routes** with locale-based routing
+#### `src/app/`
+- **Direct routes** without locale prefixes
 - **Activities pages** for browsing and viewing activities
 - **Programs pages** for program builder and management
 - **Admin pages** for content management (admin only)
@@ -110,7 +109,6 @@ scout-toolkit-v2/
 #### `src/lib/`
 - **`db/`** - Database configuration, schema, and utilities
 - **`auth/`** - Authentication configuration and utilities
-- **`i18n/`** - Internationalization configuration
 - **`utils/`** - Shared utility functions
 
 #### `drizzle/`
@@ -149,9 +147,9 @@ user_roles {
 ```typescript
 activities {
   id: string (primary key)
-  name: jsonb // { pt: string, en: string }
-  description: jsonb // { pt: string, en: string }
-  materials: jsonb // { pt: string, en: string }
+  name: text // Portuguese activity name
+  description: text // Portuguese activity description
+  materials: text // Portuguese materials list
   approximate_duration_minutes: number
   group_size: 'small' | 'medium' | 'large'
   effort_level: 'low' | 'medium' | 'high'
@@ -170,15 +168,15 @@ activities {
 ```typescript
 activity_types {
   id: string (primary key)
-  name: jsonb // { pt: string, en: string }
-  description?: jsonb // { pt: string, en: string }
+  name: text // Portuguese activity type name
+  description?: text // Portuguese activity type description
   created_at: timestamp
 }
 
 educational_areas {
   id: string (primary key)
-  name: jsonb // { pt: string, en: string }
-  description?: jsonb // { pt: string, en: string }
+  name: text // Portuguese educational area name
+  description?: text // Portuguese educational area description
   icon: string
   code: string (unique)
   created_at: timestamp
@@ -187,8 +185,8 @@ educational_areas {
 educational_goals {
   id: string (primary key)
   area_id: string (foreign key)
-  title: jsonb // { pt: string, en: string }
-  description?: jsonb // { pt: string, en: string }
+  title: text // Portuguese educational goal title
+  description?: text // Portuguese educational goal description
   code: string (unique)
   created_at: timestamp
 }
@@ -196,8 +194,8 @@ educational_goals {
 sdgs {
   id: string (primary key)
   number: number (1-17, unique)
-  name: jsonb // { pt: string, en: string }
-  description: jsonb // { pt: string, en: string }
+  name: text // Portuguese SDG name
+  description: text // Portuguese SDG description
   icon_url: string
   created_at: timestamp
 }
@@ -276,12 +274,12 @@ edit_suggestions {
 #### Performance Indexes
 ```sql
 -- Full-text search on activities
-CREATE INDEX idx_activities_fts ON activities USING gin(to_tsvector('portuguese', name->>'pt' || ' ' || description->>'pt' || ' ' || materials->>'pt'));
+CREATE INDEX idx_activities_fts ON activities USING gin(to_tsvector('portuguese', name || ' ' || description || ' ' || materials));
 
 -- Trigram indexes for fuzzy search
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
-CREATE INDEX idx_activities_name_trgm ON activities USING gin((name->>'pt') gin_trgm_ops);
-CREATE INDEX idx_activities_description_trgm ON activities USING gin((description->>'pt') gin_trgm_ops);
+CREATE INDEX idx_activities_name_trgm ON activities USING gin(name gin_trgm_ops);
+CREATE INDEX idx_activities_description_trgm ON activities USING gin(description gin_trgm_ops);
 
 -- Filter indexes
 CREATE INDEX idx_activities_group_size ON activities(group_size);
@@ -323,29 +321,30 @@ CREATE INDEX idx_reviews_user ON reviews(user_id);
 - `/api/admin/*` - Admin role required
 - `/api/programs/*` - Authenticated users only
 
-## Internationalization Strategy
+## Content Strategy
 
 ### Implementation
-- **Library:** next-intl with App Router integration
-- **Locale Routing:** URL-based switching (`/pt/activities`, `/en/activities`)
-- **Default Locale:** Portuguese (pt)
-- **Fallback:** English (en)
+- **Language:** Portuguese-only interface
+- **Routing:** Direct routes without locale prefixes (`/activities`, `/programs`)
+- **Content Storage:** Simple text fields in Portuguese
+- **No Translation System:** Simplified content management
 
 ### Content Storage
-- **UI Strings:** Dictionary files per locale
-- **Content Fields:** JSONB columns with locale keys
+- **UI Strings:** Hardcoded Portuguese text in components
+- **Content Fields:** Simple text columns in Portuguese
 - **Example:**
-```json
-{
-  "pt": "Nome da Atividade",
-  "en": "Activity Name"
-}
+```typescript
+const activityName = "Nome da Atividade";
+const activityDescription = "Descrição da atividade em português";
 ```
 
-### Locale Detection
-1. URL path (`/pt/activities`)
-2. Accept-Language header
-3. Default to Portuguese
+### URL Structure
+- `/` - Homepage
+- `/activities` - Activities list
+- `/activities/[id]` - Activity details
+- `/programs` - Programs list
+- `/programs/[id]` - Program details
+- `/admin/*` - Admin area
 
 ## Search & Filtering Strategy
 
@@ -365,13 +364,13 @@ CREATE INDEX idx_reviews_user ON reviews(user_id);
 ### Search Query Structure
 ```sql
 SELECT a.*, 
-       ts_rank(to_tsvector('portuguese', name->>'pt' || ' ' || description->>'pt'), plainto_tsquery('portuguese', $1)) as rank
+       ts_rank(to_tsvector('portuguese', name || ' ' || description), plainto_tsquery('portuguese', $1)) as rank
 FROM activities a
-WHERE to_tsvector('portuguese', name->>'pt' || ' ' || description->>'pt') @@ plainto_tsquery('portuguese', $1)
+WHERE to_tsvector('portuguese', name || ' ' || description) @@ plainto_tsquery('portuguese', $1)
   AND group_size = ANY($2)
   AND effort_level = ANY($3)
   AND approximate_duration_minutes $4 $5
-ORDER BY rank DESC, name->>'pt';
+ORDER BY rank DESC, name;
 ```
 
 ## File Storage Strategy

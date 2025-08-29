@@ -1,11 +1,11 @@
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
+// Edge Runtime compatible database connection
+// This file is for client-side imports that need database types
+// For actual database operations, use src/lib/db/server.ts
+
 import * as schema from '../../../drizzle/schema';
 
-// Database connection
-const connectionString = process.env.DATABASE_URL!;
-const client = postgres(connectionString);
-export const db = drizzle(client, { schema });
+// Re-export schema for type usage
+export { schema };
 
-// Export for use in other files
-export { db as default };
+// Note: Actual database operations should use the server.ts file
+// to avoid Edge Runtime compatibility issues

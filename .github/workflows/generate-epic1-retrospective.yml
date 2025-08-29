@@ -92,8 +92,11 @@ jobs:
               '## The Journey Begins\n\n' +
               'In the world of scouting, where every leader juggles the impossible task of keeping 20 kids engaged while secretly hoping they learn something useful, we\'ve just laid the foundation for something remarkable. Epic 1 is complete, and like a well-organized patrol kit, everything has its place.\n\n' +
               '## What We Built\n\n' +
+              '### Cursor Project Scaffold\n' +
+              'This is the second life of a previous project that started in Replit - it is a great platform, but when you want a bigger lifetime, complexity and maintainability, Cursor is the way to go. The thing is that when we shifted to Cursor, we already had a lot of baggage from the original structure, without the best practices that Cursor allows us to define. \n\n' +
+              'We started with having Cursor define the plan for the project, with the instructions in the docs folder and the summary in the README.md file. We followed that up by defining the set of cursor rules that would allow us to guide Cursor along the best path. This is really key to keep Cursor on track. \n\n' +
               '### Repository Scaffold\n' +
-              'We started with the basics—Next.js 15, TypeScript, and a folder structure that would make even the most organized scout leader proud. The project scaffold is like setting up camp: you need a solid foundation before you can start the real work.\n\n' +
+              'Having the plan and the guardrails, it was time to start scaffolding. We began with the basics—Next.js 15, TypeScript, and a folder structure that would make even the most organized scout leader proud. The project scaffold is like setting up camp: you need a solid foundation before you can start the real work.\n\n' +
               '### Database Setup\n' +
               'PostgreSQL and Drizzle ORM now handle our data like a well-trained patrol leader handles their scouts—with precision, care, and the ability to adapt when things get chaotic. The database schema is our map, and the migrations are our compass.\n\n' +
               '### Authentication Setup\n' +

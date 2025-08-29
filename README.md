@@ -1,6 +1,6 @@
 # Scout Activities Platform 🏕️
 
-A modern web platform for scout leaders to browse activities, build programs, and manage content. Built with Next.js 15, TypeScript, and PostgreSQL.
+A modern web platform for Portuguese scout leaders to browse activities, build programs, and manage content. Built with Next.js 15, TypeScript, and PostgreSQL.
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
@@ -10,7 +10,7 @@ A modern web platform for scout leaders to browse activities, build programs, an
 
 - **🎯 Activity Browsing** - Search and filter activities by various criteria
 - **📋 Program Builder** - Create and manage event schedules with drag & drop
-- **🌍 Internationalization** - Full support for Portuguese (PT) and English (EN)
+- **🇵🇹 Portuguese Interface** - Complete interface in Portuguese
 - **📊 Export Functionality** - Export programs to Excel and PDF
 - **⭐ Rating System** - Rate and comment on activities
 - **👥 Public Programs** - Share and discover program templates
@@ -22,8 +22,9 @@ A modern web platform for scout leaders to browse activities, build programs, an
 ### Prerequisites
 
 - Node.js 18+ 
-- PostgreSQL 15+
-- Google OAuth credentials
+- Docker and Docker Compose
+- Google OAuth credentials (for authentication)
+- UploadThing account (for file uploads)
 
 ### Installation
 
@@ -38,26 +39,28 @@ A modern web platform for scout leaders to browse activities, build programs, an
    npm install
    ```
 
-3. **Set up environment variables**
+3. **Set up database and environment (Automated)**
    ```bash
-   cp .env.example .env.local
+   npm run setup:db
    ```
    
-   Edit `.env.local` with your configuration:
+   This will:
+   - Create `.env.local` with default configuration
+   - Start PostgreSQL container with Docker
+   - Run database migrations
+   - Seed initial data (SDGs, educational areas, demo activities)
+
+4. **Configure authentication and file upload**
+   
+   Edit `.env.local` and update these values:
    ```env
-   DATABASE_URL="postgresql://user:password@localhost:5432/scout_toolkit"
+   # Get these from Google Cloud Console
    GOOGLE_CLIENT_ID="your-google-client-id"
    GOOGLE_CLIENT_SECRET="your-google-client-secret"
-   NEXTAUTH_SECRET="your-nextauth-secret"
-   NEXTAUTH_URL="http://localhost:3000"
+   
+   # Get these from uploadthing.com
    UPLOADTHING_SECRET="your-uploadthing-secret"
    UPLOADTHING_APP_ID="your-uploadthing-app-id"
-   ```
-
-4. **Set up the database**
-   ```bash
-   npm run db:migrate
-   npm run db:seed
    ```
 
 5. **Start the development server**
@@ -67,6 +70,24 @@ A modern web platform for scout leaders to browse activities, build programs, an
 
 6. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
+
+### Manual Database Setup (Alternative)
+
+If you prefer manual setup:
+
+```bash
+# Create environment file
+npm run setup:env
+
+# Start database
+npm run db:start
+
+# Run migrations
+npm run db:migrate
+
+# Seed data
+npm run db:seed
+```
 
 ## 📚 Documentation
 
@@ -98,13 +119,23 @@ npm run test:coverage # Coverage report
 | `npm run start` | Start production server |
 | `npm run lint` | Run ESLint |
 | `npm run format` | Format code with Prettier |
+| `npm run setup:db` | Complete database setup (Docker + migrations + seed) |
+| `npm run setup:env` | Create .env.local with default configuration |
+| `npm run db:start` | Start PostgreSQL container |
+| `npm run db:stop` | Stop PostgreSQL container |
+| `npm run db:reset` | Reset database (delete data and restart) |
 | `npm run db:migrate` | Run database migrations |
 | `npm run db:seed` | Seed database with initial data |
+| `npm run db:studio` | Open Drizzle Studio (database GUI) |
 
-## 🌍 Internationalization
+## 🌍 Interface Language
 
-- **Portuguese (default):** `/pt/activities`
-- **English:** `/en/activities`
+- **Portuguese:** Complete interface in Portuguese
+- **URL Structure:** Direct routes without locale prefixes
+  - `/` - Homepage
+  - `/activities` - Activities list
+  - `/programs` - Programs list
+  - `/admin/*` - Admin area
 
 ## 🔐 Authentication
 
@@ -129,4 +160,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-**Built with ❤️ for the Scout community**
+**Built with ❤️ for the Portuguese Scout community**

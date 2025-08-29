@@ -23,6 +23,46 @@
 - Use descriptive test names
 - Mock external dependencies
 - Test error scenarios
+
+## Testing Standards
+
+### Unit Testing
+- Create unit tests for all new components in `tests/unit/components/`
+- Test utility functions in `tests/unit/utils/`
+- Test business logic in `tests/unit/lib/`
+- Maintain 80%+ coverage for new code
+- Use `npm test` to run unit tests
+
+### Integration Testing  
+- Create integration tests for new API endpoints in `tests/integration/api/`
+- Test database operations in `tests/integration/db/`
+- Test authentication flows in `tests/integration/auth/`
+- Use `npm test` to run integration tests
+
+### E2E Testing
+- Create E2E tests for critical user flows in `tests/e2e/`
+- Test cross-browser compatibility
+- Test mobile responsiveness
+- Use `npm run test:e2e` to run E2E tests
+
+### Test Naming Conventions
+- Unit tests: `ComponentName.test.tsx` or `functionName.test.ts`
+- Integration tests: `endpointName.integration.test.ts`
+- E2E tests: `userFlow.spec.ts`
+
+### Test Quality Standards
+- Each test should be independent and isolated
+- Use descriptive test names that explain the scenario
+- Mock external dependencies appropriately
+- Test both success and error cases
+- Keep tests simple and focused
+
+### Enforcement Rules
+- Always create unit tests for new components
+- Write integration tests for new API endpoints
+- Add E2E tests for critical user flows
+- Maintain test coverage above 80%
+- Run tests before committing code
 description:
 globs:
 alwaysApply: true

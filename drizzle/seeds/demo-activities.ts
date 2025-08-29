@@ -1,6 +1,10 @@
-import { db } from '@/lib/db';
+import * as dotenv from 'dotenv';
+import { db } from '@/lib/db/server';
 import { activityTypes, educationalGoals, sdgs } from '../schema/taxonomies';
 import { activities, activityEducationalGoals, activitySdgs } from '../schema/activities';
+
+// Load environment variables
+dotenv.config({ path: '.env.local' });
 import { sql, eq } from 'drizzle-orm';
 
 // Demo activities for testing
@@ -121,9 +125,9 @@ export async function seedDemoActivities() {
 
       // Insert activity
       const [activity] = await db.insert(activities).values({
-        name: JSON.stringify(activityData.name),
-        description: JSON.stringify(activityData.description),
-        materials: JSON.stringify(activityData.materials),
+        name: activityData.name,
+        description: activityData.description,
+        materials: activityData.materials,
         approximate_duration_minutes: activityData.approximate_duration_minutes,
         group_size: activityData.group_size,
         effort_level: activityData.effort_level,

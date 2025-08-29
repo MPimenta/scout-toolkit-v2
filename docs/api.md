@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the API endpoints, data structures, and integration details for the Scout Activities Platform. The API follows RESTful principles and uses JSON for data exchange.
+This document outlines the API endpoints, data structures, and integration details for the Scout Activities Platform. The API follows RESTful principles and uses JSON for data exchange. The platform is designed for Portuguese scout leaders with all content in Portuguese.
 
 ## OpenAPI Documentation
 

@@ -77,7 +77,7 @@ const TONE_TEMPLATES = {
   
   authentication: "Google sign-in now checks for @escoteiros.pt, like a nightclub bouncer who's read the guest list and your aura.",
   
-  internationalization: "We invited the UN's SDGs in; they arrived with icons and the air of honored relatives. Portuguese speaks first (as is only polite), English follows when the moon is right.",
+  portuguese_interface: "We invited the UN's SDGs in; they arrived with icons and the air of honored relatives. Portuguese speaks first (as is only polite), and now it's the only language we need.",
   
   search_filters: "We taught the search bar to stop panicking when asked for 'less than 15 minutes but more than my patience.'",
   
@@ -179,6 +179,7 @@ jobs:
 - **Scouting Context**: Always connect technical decisions to scout leader needs
 - **Technical Accuracy**: Maintain precision while being entertaining
 - **Accessible**: Explain complex concepts in relatable terms
+- **Strategic Emojis**: Use 1-2 emojis per major section to make content more eye-catching (🚀 for beginnings, 🏗️ for setup, 🗄️ for data, 🔐 for security, 🧪 for testing, 🔮 for future plans, etc.)
 
 ### Content Structure
 ```markdown

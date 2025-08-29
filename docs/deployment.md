@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the complete deployment strategy for the Scout Activities Platform, from local development to production. The platform is designed to be deployed on Vercel with Neon PostgreSQL database and UploadThing for file storage.
+This document outlines the complete deployment strategy for the Scout Activities Platform, from local development to production. The platform is designed to be deployed on Vercel with Neon PostgreSQL database and UploadThing for file storage. The application is built for Portuguese scout leaders with a Portuguese-only interface.
 
 ## Architecture Overview
 

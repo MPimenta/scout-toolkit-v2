@@ -1,5 +1,9 @@
-import { db } from '@/lib/db';
+import * as dotenv from 'dotenv';
+import { db } from '@/lib/db/server';
 import { sdgs } from '../schema/taxonomies';
+
+// Load environment variables
+dotenv.config({ path: '.env.local' });
 
 // UN Sustainable Development Goals data
 const sdgData = [

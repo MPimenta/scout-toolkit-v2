@@ -1,5 +1,9 @@
-import { db } from '@/lib/db';
+import * as dotenv from 'dotenv';
+import { db } from '@/lib/db/server';
 import { activityTypes } from '../schema/taxonomies';
+
+// Load environment variables
+dotenv.config({ path: '.env.local' });
 
 // Basic activity types
 const activityTypeData = [
@@ -51,8 +55,8 @@ export async function seedActivityTypes() {
   try {
     for (const activityType of activityTypeData) {
       await db.insert(activityTypes).values({
-        name: JSON.stringify(activityType.name),
-        description: JSON.stringify(activityType.description),
+        name: activityType.name,
+        description: activityType.description,
       }).onConflictDoNothing();
     }
     

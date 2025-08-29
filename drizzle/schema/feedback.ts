@@ -6,7 +6,7 @@ import { activities } from './activities';
 
 // Reviews table
 export const reviews = pgTable('reviews', {
-  id: uuid('id').primaryKey().defaultRandom(),
+  id: uuid('id').defaultRandom(),
   activity_id: uuid('activity_id').notNull().references(() => activities.id, { onDelete: 'cascade' }),
   user_id: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   rating: integer('rating').notNull(), // 1-5

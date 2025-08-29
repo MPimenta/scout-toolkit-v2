@@ -1,4 +1,4 @@
-import { auth } from '../../../auth';
+import { auth } from './config';
 
 export async function getSession() {
   return await auth();

@@ -1,5 +1,9 @@
-import { db } from '@/lib/db';
+import * as dotenv from 'dotenv';
+import { db } from '@/lib/db/server';
 import { educationalAreas, educationalGoals } from '../schema/taxonomies';
+
+// Load environment variables
+dotenv.config({ path: '.env.local' });
 
 // Educational areas and their goals
 const educationalAreasData = [
@@ -137,8 +141,8 @@ export async function seedEducationalAreas() {
     for (const areaData of educationalAreasData) {
       // Insert educational area
       const [area] = await db.insert(educationalAreas).values({
-        name: JSON.stringify(areaData.area.name),
-        description: JSON.stringify(areaData.area.description),
+        name: areaData.area.name,
+        description: areaData.area.description,
         icon: areaData.area.icon,
         code: areaData.area.code,
       }).onConflictDoNothing().returning();
@@ -148,8 +152,8 @@ export async function seedEducationalAreas() {
         for (const goal of areaData.goals) {
           await db.insert(educationalGoals).values({
             area_id: area.id,
-            title: JSON.stringify(goal.title),
-            description: JSON.stringify(goal.description),
+            title: goal.title,
+            description: goal.description,
             code: goal.code,
           }).onConflictDoNothing();
         }
