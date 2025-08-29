@@ -5,11 +5,11 @@ import HeaderLink from './HeaderLink.astro';
 
 <header>
 	<nav>
-		<h2><a href="/">{SITE_TITLE}</a></h2>
+		<h2><a href={new URL('/', Astro.site).pathname}>{SITE_TITLE}</a></h2>
 		<div class="internal-links">
-			<HeaderLink href="/">Home</HeaderLink>
-			<HeaderLink href="/blog/">Blog</HeaderLink>
-			<HeaderLink href="/about/">About</HeaderLink>
+			<HeaderLink href={new URL('/', Astro.site).pathname}>Home</HeaderLink>
+			<HeaderLink href={new URL('/blog/', Astro.site).pathname}>Blog</HeaderLink>
+			<HeaderLink href={new URL('/about/', Astro.site).pathname}>About</HeaderLink>
 		</div>
 		<div class="social-links">
 			<a href="https://github.com/MPimenta/scout-toolkit-v2" target="_blank">
