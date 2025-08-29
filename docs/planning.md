@@ -323,19 +323,28 @@ After successfully implementing Story 1.4 (Internationalization Setup), we encou
 #### Story 2.1: Base Layout & Navigation
 **Priority:** Critical
 **Estimate:** 1 day
+**Status:** ✅ **COMPLETED**
 **Acceptance Criteria:**
-- [ ] Top navbar with logo
-- [ ] Auth status display
-- [ ] Responsive design
-- [ ] Navigation links
-- [ ] Portuguese interface elements
+- [x] Top navbar with logo
+- [x] Auth status display
+- [x] Responsive design
+- [x] Navigation links
+- [x] Portuguese interface elements
 
 **Tasks:**
-- [ ] Create main layout component
-- [ ] Build top navbar
-- [ ] Display auth status
-- [ ] Make responsive
-- [ ] Ensure all text is in Portuguese
+- [x] Create main layout component
+- [x] Build top navbar
+- [x] Display auth status
+- [x] Make responsive
+- [x] Ensure all text is in Portuguese
+
+**Implementation Details:**
+- Header with Escoteiros de Portugal logo and brand
+- Responsive navigation with mobile hamburger menu
+- Google OAuth integration with user dropdown
+- Portuguese interface throughout
+- Sticky header with backdrop blur
+- Mobile-first responsive design
 
 #### Story 2.2: Design System
 **Priority:** High
