@@ -9,7 +9,7 @@ export default function SignInPage() {
             Iniciar Sessão
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Acede à plataforma Scout Toolkit
+            Acede à plataforma Kit de Atividades
           </p>
         </div>
         <div className="mt-8 space-y-6">

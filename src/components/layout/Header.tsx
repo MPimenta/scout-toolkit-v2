@@ -23,18 +23,19 @@ export function Header() {
       <div className="container flex h-16 items-center justify-between">
         {/* Logo and Brand */}
         <div className="flex items-center space-x-4">
-          <Link href="/" className="flex items-center space-x-2" onClick={closeMobileMenu}>
-            <Image
-              src="/logo_escoteiros.png"
-              alt="Escoteiros de Portugal"
-              width={40}
-              height={40}
-              className="object-contain"
-            />
-            <div className="flex flex-col">
-              <span className="text-lg font-bold text-primary">Scout Toolkit</span>
-              <span className="text-xs text-muted-foreground">Kit de Atividades</span>
+          <Link href="/" className="flex items-center space-x-4" onClick={closeMobileMenu}>
+            <div className="h-12 flex items-center">
+              <Image
+                src="/logo_escoteiros.png"
+                alt="Escoteiros de Portugal"
+                width={120}
+                height={40}
+                className="h-10 w-auto object-contain"
+                priority
+                unoptimized
+              />
             </div>
+
           </Link>
         </div>
 

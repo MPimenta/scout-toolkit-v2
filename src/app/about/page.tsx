@@ -4,7 +4,7 @@ export default function AboutPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">Sobre o Scout Toolkit</h1>
+        <h1 className="text-3xl font-bold mb-4">Sobre o Kit de Atividades</h1>
         <p className="text-muted-foreground">
           Uma plataforma desenvolvida especificamente para os líderes dos Escoteiros de Portugal.
         </p>
@@ -17,7 +17,7 @@ export default function AboutPage() {
           </CardHeader>
           <CardContent>
             <p>
-              O Scout Toolkit nasceu da necessidade de fornecer aos líderes escoteiros 
+              O Kit de Atividades nasceu da necessidade de fornecer aos líderes escoteiros 
               ferramentas digitais que facilitem o planeamento e execução de atividades 
               educativas de qualidade.
             </p>
@@ -73,7 +73,7 @@ export default function AboutPage() {
         </CardHeader>
         <CardContent>
           <p>
-            O Scout Toolkit é um projeto open-source desenvolvido para a comunidade 
+            O Kit de Atividades é um projeto open-source desenvolvido para a comunidade 
             dos Escoteiros de Portugal. Contribuições e sugestões são bem-vindas!
           </p>
           <div className="mt-4">

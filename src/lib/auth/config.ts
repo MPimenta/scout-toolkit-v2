@@ -16,6 +16,15 @@ export const authConfig = {
     signIn: '/auth/signin',
     error: '/auth/error',
   },
+  callbacks: {
+    async signIn({ user, account, profile }) {
+      // Only allow @escoteiros.pt emails
+      if (user.email && user.email.endsWith('@escoteiros.pt')) {
+        return true;
+      }
+      return false;
+    },
+  },
 };
 
 export const { handlers, signIn, signOut, auth } = NextAuth(authConfig);
