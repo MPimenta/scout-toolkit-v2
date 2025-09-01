@@ -102,7 +102,7 @@ scout-toolkit-v2/
 - **API routes** for backend functionality
 
 #### `src/components/`
-- **`ui/`** - shadcn/ui components and design system
+- **`ui/`** - shadcn/ui components and color palette
 - **`features/`** - Feature-specific components organized by domain
 - **`layout/`** - Layout components (header, footer, navigation)
 

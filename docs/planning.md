@@ -323,37 +323,56 @@ After successfully implementing Story 1.4 (Internationalization Setup), we encou
 #### Story 2.1: Base Layout & Navigation
 **Priority:** Critical
 **Estimate:** 1 day
+**Status:** ✅ **COMPLETED**
 **Acceptance Criteria:**
-- [ ] Top navbar with logo
-- [ ] Auth status display
-- [ ] Responsive design
-- [ ] Navigation links
-- [ ] Portuguese interface elements
+- [x] Top navbar with logo
+- [x] Auth status display
+- [x] Responsive design
+- [x] Navigation links
+- [x] Portuguese interface elements
 
 **Tasks:**
-- [ ] Create main layout component
-- [ ] Build top navbar
-- [ ] Display auth status
-- [ ] Make responsive
-- [ ] Ensure all text is in Portuguese
+- [x] Create main layout component
+- [x] Build top navbar
+- [x] Display auth status
+- [x] Make responsive
+- [x] Ensure all text is in Portuguese
 
-#### Story 2.2: Design System
+**Implementation Details:**
+- Header with Escoteiros de Portugal logo and brand
+- Responsive navigation with mobile hamburger menu
+- Google OAuth integration with user dropdown
+- Portuguese interface throughout
+- Sticky header with backdrop blur
+- Mobile-first responsive design
+
+#### Story 2.2: Color Palette Implementation ✅
 **Priority:** High
-**Estimate:** 1 day
+**Estimate:** 2 hours
+**Status:** ✅ **COMPLETED**
 **Acceptance Criteria:**
-- [ ] Color palette defined
-- [ ] Typography system
-- [ ] Component variants
-- [ ] Consistent spacing
-- [ ] Devlog also uses the color palette
-- [ ] Dark mode support (future)
+- [x] Brand color palette implemented from manual
+- [x] Devlog uses the same color palette (devlog structure minimal)
+- [x] Documentation of color decisions
+- [x] Keep existing Inter font (no typography changes)
+
+**Brand Colors (Marca Associativa):**
+- **Primary Color:** Pantone 383 C (Vibrant yellow-green) → `hsl(84 47% 50%)`
+- **Secondary Color:** Pantone 280 C (Deep dark blue) → `hsl(220 58% 23%)`
 
 **Tasks:**
-- [ ] Define color tokens
-- [ ] Setup typography scale
-- [ ] Create component variants
-- [ ] Update the devlog to use the design system color palette
-- [ ] Document design system
+- [x] Extract color palette from brand manual
+- [x] Update CSS variables in globals.css
+- [x] Sync devlog colors to match (devlog minimal structure)
+- [x] Document the color system
+
+**Implementation Details:**
+- Updated `src/app/globals.css` with brand colors
+- Primary color (Pantone 383 C) applied to `--primary`, `--accent`, and `--ring`
+- Secondary color (Pantone 280 C) applied to `--secondary`
+- Both light and dark mode updated with brand colors
+- Colors converted to HSL format for better Tailwind integration
+- Brand guidelines documented in `docs/brand-guidelines.md`
 
 #### Epic 2 Devlog Tasks
 **Priority:** Medium
