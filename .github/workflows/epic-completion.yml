@@ -35,7 +35,16 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # Debug: Check token permissions
+          echo "Checking GitHub token permissions..."
+          gh auth status
+          
+          # Debug: List existing PRs
+          echo "Existing PRs:"
+          gh pr list --limit 5
+          
           # Create PR to main with epic-complete label
+          echo "Creating PR..."
           gh pr create \
             --title "Epic ${{ steps.extract-epic.outputs.epic_number }} Complete" \
             --body "Epic ${{ steps.extract-epic.outputs.epic_number }}: ${{ steps.extract-epic.outputs.epic_name }} has been completed.
@@ -50,5 +59,4 @@ jobs:
           - [ ] Merge this PR
           - [ ] Devlog post will be automatically generated
           - [ ] Review and enhance the generated post" \
-            --label "epic-complete" \
             --base master
