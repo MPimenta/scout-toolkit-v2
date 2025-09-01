@@ -31,6 +31,51 @@ jobs:
           
           echo "Detected Epic $EPIC_NUMBER completion: $EPIC_NAME"
       
+      - name: Generate devlog post
+        run: |
+          # Create devlog directory structure
+          mkdir -p devlog/src/content/blog/_drafts
+          
+          # Generate post filename
+          POST_DATE=$(date +%Y-%m-%d)
+          POST_FILENAME="epic${{ steps.extract-epic.outputs.epic_number }}-retrospective.md"
+          
+          # Create the post content
+          cat > "devlog/src/content/blog/_drafts/$POST_FILENAME" << EOF
+          ---
+          title: "Epic ${{ steps.extract-epic.outputs.epic_number }} Complete — ${{ steps.extract-epic.outputs.epic_name }}"
+          description: "Epic ${{ steps.extract-epic.outputs.epic_number }} retrospective and lessons learned"
+          publishDate: $POST_DATE
+          tags: [devlog, epic-complete, ${{ steps.extract-epic.outputs.epic_name }}]
+          scoutingContext: "How this epic improves the scouting experience"
+          epicNumber: ${{ steps.extract-epic.outputs.epic_number }}
+          epicName: "${{ steps.extract-epic.outputs.epic_name }}"
+          status: draft
+          ---
+          
+          ## Epic ${{ steps.extract-epic.outputs.epic_number }} Complete: ${{ steps.extract-epic.outputs.epic_name }}
+          
+          Another epic completed! This time we tackled **${{ steps.extract-epic.outputs.epic_name }}** and learned some valuable lessons along the way.
+          
+          ### What We Accomplished
+          
+          [To be filled with specific achievements from this epic]
+          
+          ### Key Learnings
+          
+          [To be filled with lessons learned and insights]
+          
+          ### Next Steps
+          
+          [To be filled with what comes next]
+          
+          ---
+          
+          *This post was automatically generated when Epic ${{ steps.extract-epic.outputs.epic_number }} was completed.*
+          EOF
+          
+          echo "Generated devlog post: devlog/src/content/blog/_drafts/$POST_FILENAME"
+      
       - name: Create epic completion PR
         env:
           GH_TOKEN: ${{ github.token }}
@@ -57,6 +102,7 @@ jobs:
           ## Next Steps
           - [ ] Review the changes
           - [ ] Merge this PR
-          - [ ] Devlog post will be automatically generated
-          - [ ] Review and enhance the generated post" \
+          - [ ] Devlog post has been automatically generated in \`devlog/src/content/blog/_drafts/\`
+          - [ ] Review and enhance the generated post
+          - [ ] Move post to \`_published\` folder when ready" \
             --base master
