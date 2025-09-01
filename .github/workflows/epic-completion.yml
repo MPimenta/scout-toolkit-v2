@@ -28,6 +28,8 @@ jobs:
           echo "Detected Epic $EPIC_NUMBER completion: $EPIC_NAME"
       
       - name: Create epic completion PR
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           # Create PR to main with epic-complete label
           gh pr create \
