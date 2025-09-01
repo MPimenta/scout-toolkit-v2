@@ -4,6 +4,10 @@ on:
     branches:
       - 'epic-*-*'
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   detect-epic-completion:
     runs-on: ubuntu-latest
@@ -46,4 +50,5 @@ jobs:
           - [ ] Merge this PR
           - [ ] Devlog post will be automatically generated
           - [ ] Review and enhance the generated post" \
+            --label "epic-complete" \
             --base master
