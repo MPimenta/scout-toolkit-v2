@@ -1,0 +1,37 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>🏕️ Scout Toolkit Devlog</h1>
+			<p>
+				Welcome to the development blog for the Scout Toolkit project. This is where we document our journey
+				building tools to help scout leaders bridge the gap between kids' needs and their knowledge.
+			</p>
+			<p>
+				We're building a platform that helps scout leaders manage activities, create programs, and deliver
+				meaningful experiences to their scouts. Every technical decision we make is guided by one question:
+				"How does this help scout leaders do their job better?"
+			</p>
+			<p>Latest Posts:</p>
+			<ul>
+				<li><a href="/scout-toolkit-v2/blog/_published/epic1-retrospective/">Epic 1 Complete — The Foundation Laid</a></li>
+			</ul>
+			<p>
+				This blog is written with a Terry Pratchett-inspired wit, focusing on the human side of software development
+				and how our technical choices impact the real-world work of scout leaders.
+			</p>
+		</main>
+		<Footer />
+	</body>
+</html>
