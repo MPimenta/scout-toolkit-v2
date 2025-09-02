@@ -33,7 +33,21 @@ export interface FilterInfo {
 }
 
 export interface ActivitiesResponse {
-  activities: any[];
+  activities: Array<{
+    id: string;
+    name: Record<string, string> | string;
+    description: Record<string, string> | string;
+    materials: Record<string, string> | string;
+    approximate_duration_minutes: number;
+    group_size: string;
+    effort_level: string;
+    location: string;
+    age_group: string;
+    created_at: string;
+    activity_type: { id: string; name: Record<string, string> | string };
+    educational_goals: Array<{ id: string; title: Record<string, string> | string; code: string }>;
+    sdgs: Array<{ id: string; number: number; name: Record<string, string> | string; icon_url: string }>;
+  }>;
   pagination: PaginationInfo;
   filters: FilterInfo;
 }
@@ -66,7 +80,7 @@ function useDebounce<T>(value: T, delay: number): T {
 export function useActivities(options: UseActivitiesOptions) {
   const { filters, page = 1, limit = 20, sort = 'name', order = 'asc' } = options;
   
-  const [activities, setActivities] = useState<any[]>([]);
+  const [activities, setActivities] = useState<ActivitiesResponse['activities']>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);

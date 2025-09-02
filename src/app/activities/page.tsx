@@ -7,7 +7,7 @@ import { ActivitiesTable } from '@/components/features/activities/ActivitiesTabl
 import { ViewToggle, ViewMode } from '@/components/features/activities/ViewToggle';
 import { ActivityFilters, FilterState } from '@/components/features/activities/ActivityFilters';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, AlertCircle, Filter, X } from 'lucide-react';
+import { Loader2, AlertCircle, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function ActivitiesPage() {
@@ -189,8 +189,8 @@ export default function ActivitiesPage() {
             <ActivitiesTable 
               activities={activities}
               onViewActivity={(activity) => {
-                // TODO: Navigate to activity details page (Story 3.4)
-                console.log('View activity:', activity.id);
+                // Navigate to activity details page
+                window.location.href = `/activities/${activity.id}`;
               }}
               onEditActivity={(activity) => {
                 // TODO: Navigate to edit activity page
@@ -226,7 +226,7 @@ export default function ActivitiesPage() {
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground">
-                Funcionalidades implementadas: filtros avançados (Story 3.2), visualização em tabela (Story 3.3). Próximas: páginas de detalhes (Story 3.4) e sistema de avaliações.
+                Funcionalidades implementadas: filtros avançados (Story 3.2), visualização em tabela (Story 3.3), páginas de detalhes (Story 3.4). Próximas: sistema de avaliações e programa construtor.
               </p>
             </CardContent>
           </Card>

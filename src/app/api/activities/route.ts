@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/server';
 import { activities, activityTypes, educationalGoals, sdgs, activityEducationalGoals, activitySdgs } from '../../../../drizzle/schema';
 import { eq, and, inArray, desc, asc, sql } from 'drizzle-orm';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     
@@ -174,13 +174,13 @@ export async function GET(request: Request) {
     
     if (sdgIds && sdgIds.length > 0) {
       filteredActivities = filteredActivities.filter(activity => 
-        activity.sdgs.some(sdg => sdgIds.includes(sdg.id))
+        activity.sdgs.some(sdg => sdg.id && sdgIds.includes(sdg.id))
       );
     }
 
     if (educationalGoalIds && educationalGoalIds.length > 0) {
       filteredActivities = filteredActivities.filter(activity => 
-        activity.educational_goals.some(goal => educationalGoalIds.includes(goal.id))
+        activity.educational_goals.some(goal => goal.id && educationalGoalIds.includes(goal.id))
       );
     }
 

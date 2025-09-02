@@ -62,10 +62,10 @@ interface Activity {
   name: Record<string, string> | string;
   description: Record<string, string> | string;
   approximate_duration_minutes: number;
-  group_size: 'small' | 'medium' | 'large';
-  effort_level: 'low' | 'medium' | 'high';
-  location: 'inside' | 'outside';
-  age_group: 'cub_scouts' | 'scouts' | 'adventurers' | 'rovers' | 'leaders';
+  group_size: string; // API returns string, not union type
+  effort_level: string; // API returns string, not union type
+  location: string; // API returns string, not union type
+  age_group: string; // API returns string, not union type
   created_at: string;
   activity_type: ActivityType;
   educational_goals: EducationalGoal[];

@@ -85,9 +85,9 @@ export function ActivityFilters({
 }: ActivityFiltersProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);
-  const [activityTypeOptions, setActivityTypeOptions] = useState<any[]>([]);
-  const [sdgOptions, setSdgOptions] = useState<any[]>([]);
-  const [educationalGoalOptions, setEducationalGoalOptions] = useState<any[]>([]);
+  const [activityTypeOptions, setActivityTypeOptions] = useState<Array<{ id: string; name: Record<string, string> | string }>>([]);
+  const [sdgOptions, setSdgOptions] = useState<Array<{ id: string; name: Record<string, string> | string; number: number; icon_url?: string }>>([]);
+  const [educationalGoalOptions, setEducationalGoalOptions] = useState<Array<{ id: string; title: Record<string, string> | string; code: string; area: { name: Record<string, string> | string } }>>([]);
 
   // Update local filters when props change
   useEffect(() => {
@@ -126,7 +126,7 @@ export function ActivityFilters({
     fetchFilterOptions();
   }, []);
 
-  const handleFilterChange = (key: keyof FilterState, value: any) => {
+  const handleFilterChange = (key: keyof FilterState, value: string | string[]) => {
     const newFilters = { ...localFilters, [key]: value };
     setLocalFilters(newFilters);
     onFiltersChange(newFilters);

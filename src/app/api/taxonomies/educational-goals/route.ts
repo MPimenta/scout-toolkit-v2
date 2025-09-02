@@ -1,14 +1,14 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/server';
 import { educationalGoals, educationalAreas } from '../../../../../drizzle/schema';
 import { eq } from 'drizzle-orm';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const areaId = searchParams.get('area_id');
 
-    let query = db
+    const baseQuery = db
       .select({
         id: educationalGoals.id,
         title: educationalGoals.title,
@@ -24,9 +24,9 @@ export async function GET(request: Request) {
       .from(educationalGoals)
       .leftJoin(educationalAreas, eq(educationalGoals.area_id, educationalAreas.id));
 
-    if (areaId) {
-      query = query.where(eq(educationalGoals.area_id, areaId));
-    }
+    const query = areaId 
+      ? baseQuery.where(eq(educationalGoals.area_id, areaId))
+      : baseQuery;
 
     const goals = await query.orderBy(educationalGoals.code);
 
