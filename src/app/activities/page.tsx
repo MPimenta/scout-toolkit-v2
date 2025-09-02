@@ -23,7 +23,7 @@ export default function ActivitiesPage() {
     durationOperator: '>=',
   });
 
-  const { activities, pagination, filters: filterInfo, loading, error, refresh } = useActivities({
+  const { activities, pagination, filterInfo, loading, error, refresh } = useActivities({
     filters,
     page: 1,
     limit: 20,
@@ -102,14 +102,20 @@ export default function ActivitiesPage() {
         filters={filters}
         onFiltersChange={handleFiltersChange}
         onClearFilters={handleClearFilters}
-        availableFilters={filterInfo.available}
+        availableFilters={filterInfo?.available || {
+          group_sizes: [],
+          effort_levels: [],
+          locations: [],
+          age_groups: [],
+          activity_types: [],
+        }}
       />
 
       {/* Results Count and Active Filters Summary */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <p className="text-sm text-muted-foreground">
-            {loading ? 'A carregar...' : `${pagination.total} atividade${pagination.total !== 1 ? 's' : ''} encontrada${pagination.total !== 1 ? 's' : ''}`}
+            {loading ? 'A carregar...' : `${pagination?.total || 0} atividade${(pagination?.total || 0) !== 1 ? 's' : ''} encontrada${(pagination?.total || 0) !== 1 ? 's' : ''}`}
           </p>
           
           {/* Quick filter summary */}
@@ -167,7 +173,7 @@ export default function ActivitiesPage() {
       )}
 
       {/* Pagination (Future Story 3.3) */}
-      {!loading && pagination.total_pages > 1 && (
+      {!loading && pagination?.total_pages && pagination.total_pages > 1 && (
         <div className="mt-8 flex justify-center">
           <p className="text-sm text-muted-foreground">
             Paginação será implementada em Story 3.3: Table View

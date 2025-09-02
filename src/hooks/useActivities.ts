@@ -133,7 +133,7 @@ export function useActivities(options: UseActivitiesOptions) {
     loading,
     error,
     pagination,
-    filters: filterInfo,
+    filterInfo,
     refresh,
   };
 }

@@ -9,10 +9,15 @@
 - **File clearing** - Never remove all content from a file without asking first  
 - **Complete file replacement** - Never replace entire file contents without asking first
 - **Bulk file operations** - Never perform operations that affect multiple files without asking first
+- **Folder deletion** - Never delete folders or directories without asking first
+- **Migration files** - Never delete database migration files without asking first
+- **Configuration files** - Never delete project configuration files without asking first
+- **Database operations** - Never run database commands (migrate, seed, reset) without asking first
+- **Data operations** - Never modify, clear, or reset database data without explicit permission
 
 ### When You Need Permission:
 - ✅ **Safe operations** (editing specific sections, adding content, fixing bugs)
-- ❌ **Destructive operations** (deleting files, clearing content, complete rewrites)
+- ❌ **Destructive operations** (deleting files, clearing content, complete rewrites, folder deletions, database modifications)
 
 ### How to Ask for Permission:
 1. **Explain what you want to do** - Be specific about the operation
