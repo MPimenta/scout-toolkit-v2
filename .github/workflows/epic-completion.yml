@@ -30,6 +30,8 @@ jobs:
           echo "epic_name=$EPIC_NAME" >> $GITHUB_OUTPUT
           
           echo "Detected Epic $EPIC_NUMBER completion: $EPIC_NAME"
+          echo "Epic number: $EPIC_NUMBER"
+          echo "Epic name: $EPIC_NAME"
       
       - name: Generate devlog post
         run: |

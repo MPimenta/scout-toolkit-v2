@@ -1,12 +1,12 @@
 ---
 title: "Epic 3 Complete — Activities Browsing & Discovery"
 description: "Epic 3 retrospective: Building a comprehensive activities browsing system that helps scout leaders find the perfect activities for their groups"
-publishDate: 2025-01-28
+pubDate: 2025-01-28
 tags: [devlog, epic-complete, activities-browsing, search-filtering, table-view, activity-details]
 scoutingContext: "How this epic helps leaders discover and evaluate activities that match their group's needs and educational goals"
 epicNumber: 3
 epicName: "Activities Browsing"
-status: draft
+status: published
 ---
 
 ## Epic 3 Complete: Activities Browsing & Discovery 🎯
