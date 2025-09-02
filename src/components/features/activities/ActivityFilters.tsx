@@ -45,9 +45,6 @@ interface ActivityFiltersProps {
 }
 
 // Real data will be fetched from API
-const [ACTIVITY_TYPE_OPTIONS, setActivityTypeOptions] = useState<any[]>([]);
-const [SDG_OPTIONS, setSdgOptions] = useState<any[]>([]);
-const [EDUCATIONAL_GOAL_OPTIONS, setEducationalGoalOptions] = useState<any[]>([]);
 
 const GROUP_SIZE_OPTIONS = [
   { value: 'small', label: 'Pequeno (2-6)' },
@@ -88,9 +85,9 @@ export function ActivityFilters({
 }: ActivityFiltersProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);
-  const [ACTIVITY_TYPE_OPTIONS, setActivityTypeOptions] = useState<any[]>([]);
-  const [SDG_OPTIONS, setSdgOptions] = useState<any[]>([]);
-  const [EDUCATIONAL_GOAL_OPTIONS, setEducationalGoalOptions] = useState<any[]>([]);
+  const [activityTypeOptions, setActivityTypeOptions] = useState<any[]>([]);
+  const [sdgOptions, setSdgOptions] = useState<any[]>([]);
+  const [educationalGoalOptions, setEducationalGoalOptions] = useState<any[]>([]);
 
   // Update local filters when props change
   useEffect(() => {
@@ -255,41 +252,41 @@ export function ActivityFilters({
                 </Badge>
               ))}
 
-              {filters.activityType.map((typeId) => (
-                <Badge key={typeId} variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
-                  Tipo: {getPortugueseText(ACTIVITY_TYPE_OPTIONS.find(o => o.id === typeId)?.name || '')}
-                  <button
-                    onClick={() => handleMultiSelectChange('activityType', typeId, false)}
-                    className="ml-1 hover:text-destructive"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </Badge>
-              ))}
+                             {filters.activityType.map((typeId) => (
+                 <Badge key={typeId} variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
+                   Tipo: {getPortugueseText(activityTypeOptions.find(o => o.id === typeId)?.name || '')}
+                   <button
+                     onClick={() => handleMultiSelectChange('activityType', typeId, false)}
+                     className="ml-1 hover:text-destructive"
+                   >
+                     <X className="w-3 h-3" />
+                   </button>
+                 </Badge>
+               ))}
 
-              {filters.sdgs.map((sdgId) => (
-                <Badge key={sdgId} variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
-                  ODS {SDG_OPTIONS.find(o => o.id === sdgId)?.number}: {getPortugueseText(SDG_OPTIONS.find(o => o.id === sdgId)?.name || '')}
-                  <button
-                    onClick={() => handleMultiSelectChange('sdgs', sdgId, false)}
-                    className="ml-1 hover:text-destructive"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </Badge>
-              ))}
+               {filters.sdgs.map((sdgId) => (
+                 <Badge key={sdgId} variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
+                   ODS {sdgOptions.find(o => o.id === sdgId)?.number}: {getPortugueseText(sdgOptions.find(o => o.id === sdgId)?.name || '')}
+                   <button
+                     onClick={() => handleMultiSelectChange('sdgs', sdgId, false)}
+                     className="ml-1 hover:text-destructive"
+                   >
+                     <X className="w-3 h-3" />
+                   </button>
+                 </Badge>
+               ))}
 
-              {filters.educationalGoals.map((goalId) => (
-                <Badge key={goalId} variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
-                  {getPortugueseText(EDUCATIONAL_GOAL_OPTIONS.find(o => o.id === goalId)?.title || '')}
-                  <button
-                    onClick={() => handleMultiSelectChange('educationalGoals', goalId, false)}
-                    className="ml-1 hover:text-destructive"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </Badge>
-              ))}
+               {filters.educationalGoals.map((goalId) => (
+                 <Badge key={goalId} variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
+                   {getPortugueseText(educationalGoalOptions.find(o => o.id === goalId)?.title || '')}
+                   <button
+                     onClick={() => handleMultiSelectChange('educationalGoals', goalId, false)}
+                     className="ml-1 hover:text-destructive"
+                   >
+                     <X className="w-3 h-3" />
+                   </button>
+                 </Badge>
+               ))}
               
               {(filters.durationMin || filters.durationMax) && (
                 <Badge variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
@@ -448,19 +445,19 @@ export function ActivityFilters({
                   <Target className="w-4 h-4" />
                   Tipo de Atividade
                 </label>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {ACTIVITY_TYPE_OPTIONS.map((option) => (
-                    <label key={option.id} className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        checked={localFilters.activityType.includes(option.id)}
-                        onChange={(e) => handleMultiSelectChange('activityType', option.id, e.target.checked)}
-                        className="rounded border-gray-300"
-                      />
-                      <span className="text-sm">{getPortugueseText(option.name)}</span>
-                    </label>
-                  ))}
-                </div>
+                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                   {activityTypeOptions.map((option) => (
+                     <label key={option.id} className="flex items-center space-x-2">
+                       <input
+                         type="checkbox"
+                         checked={localFilters.activityType.includes(option.id)}
+                         onChange={(e) => handleMultiSelectChange('activityType', option.id, e.target.checked)}
+                         className="rounded border-gray-300"
+                       />
+                       <span className="text-sm">{getPortugueseText(option.name)}</span>
+                     </label>
+                   ))}
+                 </div>
               </div>
 
               {/* Duration Filters */}
@@ -513,16 +510,16 @@ export function ActivityFilters({
                   <Globe className="w-4 h-4" />
                   Objetivos de Desenvolvimento Sustentável (ODS)
                 </label>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-64 overflow-y-auto">
-                  {SDG_OPTIONS.map((option) => (
-                    <label key={option.id} className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        checked={localFilters.sdgs.includes(option.id)}
-                        onChange={(e) => handleMultiSelectChange('sdgs', option.id, e.target.checked)}
-                        className="rounded border-gray-300"
-                      />
-                                             <div className="flex items-center gap-2">
+                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-64 overflow-y-auto">
+                   {sdgOptions.map((option) => (
+                     <label key={option.id} className="flex items-center space-x-2">
+                       <input
+                         type="checkbox"
+                         checked={localFilters.sdgs.includes(option.id)}
+                         onChange={(e) => handleMultiSelectChange('sdgs', option.id, e.target.checked)}
+                         className="rounded border-gray-300"
+                       />
+                       <div className="flex items-center gap-2">
                          {/* SDG Icon - Colored circle with number */}
                          <div 
                            className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm"
@@ -537,9 +534,9 @@ export function ActivityFilters({
                            <strong>ODS {option.number}:</strong> {getPortugueseText(option.name)}
                          </span>
                        </div>
-                    </label>
-                  ))}
-                </div>
+                     </label>
+                   ))}
+                 </div>
               </div>
 
               {/* Educational Goals Filter */}
@@ -548,25 +545,25 @@ export function ActivityFilters({
                   <BookOpen className="w-4 h-4" />
                   Objetivos Educativos
                 </label>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-64 overflow-y-auto">
-                  {EDUCATIONAL_GOAL_OPTIONS.map((option) => (
-                    <label key={option.id} className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        checked={localFilters.educationalGoals.includes(option.id)}
-                        onChange={(e) => handleMultiSelectChange('educationalGoals', option.id, e.target.checked)}
-                        className="rounded border-gray-300"
-                      />
-                      <span className="text-sm">
-                        <strong>{option.code}:</strong> {getPortugueseText(option.title)}
-                        <br />
-                        <span className="text-xs text-muted-foreground">
-                          {getPortugueseText(option.area.name)}
-                        </span>
-                      </span>
-                    </label>
-                  ))}
-                </div>
+                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-64 overflow-y-auto">
+                   {educationalGoalOptions.map((option) => (
+                     <label key={option.id} className="flex items-center space-x-2">
+                       <input
+                         type="checkbox"
+                         checked={localFilters.educationalGoals.includes(option.id)}
+                         onChange={(e) => handleMultiSelectChange('educationalGoals', option.id, e.target.checked)}
+                         className="rounded border-gray-300"
+                       />
+                       <span className="text-sm">
+                         <strong>{option.code}:</strong> {getPortugueseText(option.title)}
+                         <br />
+                         <span className="text-xs text-muted-foreground">
+                           {getPortugueseText(option.area.name)}
+                         </span>
+                       </span>
+                     </label>
+                   ))}
+                 </div>
               </div>
             </div>
           )}
