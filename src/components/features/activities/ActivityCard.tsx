@@ -130,6 +130,32 @@ export function ActivityCard({ activity }: ActivityCardProps) {
             {activityTypeName}
           </Badge>
         </div>
+
+        {/* SDG Icons Overlay - Bottom Right */}
+        {activity.sdgs.length > 0 && (
+          <div className="absolute bottom-3 right-3 flex gap-1">
+            {activity.sdgs.slice(0, 4).map((sdg) => (
+              <div
+                key={sdg.id}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg border-2 border-white"
+                style={{
+                  backgroundColor: `hsl(${(sdg.number * 20) % 360}, 70%, 50%)`
+                }}
+                title={`ODS ${sdg.number}: ${getPortugueseText(sdg.name)}`}
+              >
+                {sdg.number}
+              </div>
+            ))}
+            {activity.sdgs.length > 4 && (
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg border-2 border-white bg-gray-600"
+                title={`+${activity.sdgs.length - 4} mais ODS`}
+              >
+                +{activity.sdgs.length - 4}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <CardHeader className="pb-3">
@@ -187,24 +213,7 @@ export function ActivityCard({ activity }: ActivityCardProps) {
             </div>
           )}
 
-          {/* SDGs */}
-          {activity.sdgs.length > 0 && (
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">ODS:</p>
-              <div className="flex flex-wrap gap-1">
-                {activity.sdgs.slice(0, 3).map((sdg) => (
-                  <Badge key={sdg.id} variant="outline" className="text-xs">
-                    ODS {sdg.number}
-                  </Badge>
-                ))}
-                {activity.sdgs.length > 3 && (
-                  <Badge variant="outline" className="text-xs">
-                    +{activity.sdgs.length - 3}
-                  </Badge>
-                )}
-              </div>
-            </div>
-          )}
+
         </div>
 
         {/* View Details Button */}

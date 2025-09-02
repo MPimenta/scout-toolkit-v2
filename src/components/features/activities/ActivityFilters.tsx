@@ -44,41 +44,10 @@ interface ActivityFiltersProps {
   };
 }
 
-// Mock data for now - will be replaced with API calls
-const ACTIVITY_TYPE_OPTIONS = [
-  { id: '1', name: { pt: 'Jogo', en: 'Game' } },
-  { id: '2', name: { pt: 'Atividade Manual', en: 'Craft' } },
-  { id: '3', name: { pt: 'Exploração', en: 'Exploration' } },
-  { id: '4', name: { pt: 'Serviço', en: 'Service' } },
-];
-
-const SDG_OPTIONS = [
-  { id: '1', number: 1, name: { pt: 'Erradicar a Pobreza', en: 'No Poverty' }, icon_url: '/sdg-icons/sdg-1.png' },
-  { id: '2', number: 2, name: { pt: 'Fome Zero', en: 'Zero Hunger' }, icon_url: '/sdg-icons/sdg-2.png' },
-  { id: '3', number: 3, name: { pt: 'Saúde de Qualidade', en: 'Good Health' }, icon_url: '/sdg-icons/sdg-3.png' },
-  { id: '4', number: 4, name: { pt: 'Educação de Qualidade', en: 'Quality Education' }, icon_url: '/sdg-icons/sdg-4.png' },
-  { id: '5', number: 5, name: { pt: 'Igualdade de Género', en: 'Gender Equality' }, icon_url: '/sdg-icons/sdg-5.png' },
-  { id: '6', number: 6, name: { pt: 'Água Potável e Saneamento', en: 'Clean Water' }, icon_url: '/sdg-icons/sdg-6.png' },
-  { id: '7', number: 7, name: { pt: 'Energias Renováveis', en: 'Affordable Energy' }, icon_url: '/sdg-icons/sdg-7.png' },
-  { id: '8', number: 8, name: { pt: 'Trabalho Digno', en: 'Decent Work' }, icon_url: '/sdg-icons/sdg-8.png' },
-  { id: '9', number: 9, name: { pt: 'Indústria e Inovação', en: 'Industry & Innovation' }, icon_url: '/sdg-icons/sdg-9.png' },
-  { id: '10', number: 10, name: { pt: 'Reduzir Desigualdades', en: 'Reduced Inequalities' }, icon_url: '/sdg-icons/sdg-10.png' },
-  { id: '11', number: 11, name: { pt: 'Cidades Sustentáveis', en: 'Sustainable Cities' }, icon_url: '/sdg-icons/sdg-11.png' },
-  { id: '12', number: 12, name: { pt: 'Consumo Responsável', en: 'Responsible Consumption' }, icon_url: '/sdg-icons/sdg-12.png' },
-  { id: '13', number: 13, name: { pt: 'Ação Climática', en: 'Climate Action' }, icon_url: '/sdg-icons/sdg-13.png' },
-  { id: '14', number: 14, name: { pt: 'Vida Marinha', en: 'Life Below Water' }, icon_url: '/sdg-icons/sdg-14.png' },
-  { id: '15', number: 15, name: { pt: 'Vida Terrestre', en: 'Life on Land' }, icon_url: '/sdg-icons/sdg-15.png' },
-  { id: '16', number: 16, name: { pt: 'Paz e Justiça', en: 'Peace & Justice' }, icon_url: '/sdg-icons/sdg-16.png' },
-  { id: '17', number: 17, name: { pt: 'Parcerias', en: 'Partnerships' }, icon_url: '/sdg-icons/sdg-17.png' },
-];
-
-const EDUCATIONAL_GOAL_OPTIONS = [
-  { id: '1', title: { pt: 'Trabalho em Equipa', en: 'Teamwork' }, code: 'SE1', area: { name: { pt: 'Competências Sociais', en: 'Social Skills' } } },
-  { id: '2', title: { pt: 'Liderança', en: 'Leadership' }, code: 'SE2', area: { name: { pt: 'Competências Sociais', en: 'Social Skills' } } },
-  { id: '3', title: { pt: 'Comunicação', en: 'Communication' }, code: 'SE3', area: { name: { pt: 'Competências Sociais', en: 'Social Skills' } } },
-  { id: '4', title: { pt: 'Resolução de Problemas', en: 'Problem Solving' }, code: 'CE1', area: { name: { pt: 'Competências Cognitivas', en: 'Cognitive Skills' } } },
-  { id: '5', title: { pt: 'Pensamento Crítico', en: 'Critical Thinking' }, code: 'CE2', area: { name: { pt: 'Competências Cognitivas', en: 'Cognitive Skills' } } },
-];
+// Real data will be fetched from API
+const [ACTIVITY_TYPE_OPTIONS, setActivityTypeOptions] = useState<any[]>([]);
+const [SDG_OPTIONS, setSdgOptions] = useState<any[]>([]);
+const [EDUCATIONAL_GOAL_OPTIONS, setEducationalGoalOptions] = useState<any[]>([]);
 
 const GROUP_SIZE_OPTIONS = [
   { value: 'small', label: 'Pequeno (2-6)' },
@@ -119,11 +88,46 @@ export function ActivityFilters({
 }: ActivityFiltersProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);
+  const [ACTIVITY_TYPE_OPTIONS, setActivityTypeOptions] = useState<any[]>([]);
+  const [SDG_OPTIONS, setSdgOptions] = useState<any[]>([]);
+  const [EDUCATIONAL_GOAL_OPTIONS, setEducationalGoalOptions] = useState<any[]>([]);
 
   // Update local filters when props change
   useEffect(() => {
     setLocalFilters(filters);
   }, [filters]);
+
+  // Fetch filter options from API
+  useEffect(() => {
+    const fetchFilterOptions = async () => {
+      try {
+        // Fetch activity types
+        const activityTypesResponse = await fetch('/api/taxonomies/activity-types');
+        if (activityTypesResponse.ok) {
+          const activityTypesData = await activityTypesResponse.json();
+          setActivityTypeOptions(activityTypesData.activity_types || []);
+        }
+
+        // Fetch SDGs
+        const sdgsResponse = await fetch('/api/taxonomies/sdgs');
+        if (sdgsResponse.ok) {
+          const sdgsData = await sdgsResponse.json();
+          setSdgOptions(sdgsData.sdgs || []);
+        }
+
+        // Fetch educational goals
+        const goalsResponse = await fetch('/api/taxonomies/educational-goals');
+        if (goalsResponse.ok) {
+          const goalsData = await goalsResponse.json();
+          setEducationalGoalOptions(goalsData.educational_goals || []);
+        }
+      } catch (error) {
+        console.error('Error fetching filter options:', error);
+      }
+    };
+
+    fetchFilterOptions();
+  }, []);
 
   const handleFilterChange = (key: keyof FilterState, value: any) => {
     const newFilters = { ...localFilters, [key]: value };
@@ -361,148 +365,148 @@ export function ActivityFilters({
             />
           </div>
 
-          {/* Basic Filters Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Group Size */}
-            <div>
-              <label className="text-sm font-medium mb-2 block">Tamanho do Grupo</label>
-              <div className="space-y-2">
-                {GROUP_SIZE_OPTIONS.map((option) => (
-                  <label key={option.value} className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={localFilters.groupSize.includes(option.value)}
-                      onChange={(e) => handleMultiSelectChange('groupSize', option.value, e.target.checked)}
-                      className="rounded border-gray-300"
-                    />
-                    <span className="text-sm">{option.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Effort Level */}
-            <div>
-              <label className="text-sm font-medium mb-2 block">Nível de Esforço</label>
-              <div className="space-y-2">
-                {EFFORT_LEVEL_OPTIONS.map((option) => (
-                  <label key={option.value} className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={localFilters.effortLevel.includes(option.value)}
-                      onChange={(e) => handleMultiSelectChange('effortLevel', option.value, e.target.checked)}
-                      className="rounded border-gray-300"
-                    />
-                    <span className="text-sm">{option.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Location */}
-            <div>
-              <label className="text-sm font-medium mb-2 block">Localização</label>
-              <select
-                value={localFilters.location}
-                onChange={(e) => handleFilterChange('location', e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-md text-sm"
-              >
-                <option value="">Todas</option>
-                {LOCATION_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Age Group */}
-            <div>
-              <label className="text-sm font-medium mb-2 block">Faixa Etária</label>
-              <div className="space-y-2 max-h-32 overflow-y-auto">
-                {AGE_GROUP_OPTIONS.map((option) => (
-                  <label key={option.value} className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={localFilters.ageGroup.includes(option.value)}
-                      onChange={(e) => handleMultiSelectChange('ageGroup', option.value, e.target.checked)}
-                      className="rounded border-gray-300"
-                    />
-                    <span className="text-sm">{option.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Activity Type Filter */}
-          <div>
-            <label className="text-sm font-medium mb-3 block flex items-center gap-2">
-              <Target className="w-4 h-4" />
-              Tipo de Atividade
-            </label>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {ACTIVITY_TYPE_OPTIONS.map((option) => (
-                <label key={option.id} className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={localFilters.activityType.includes(option.id)}
-                    onChange={(e) => handleMultiSelectChange('activityType', option.id, e.target.checked)}
-                    className="rounded border-gray-300"
-                  />
-                  <span className="text-sm">{getPortugueseText(option.name)}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* Duration Filters - Always Visible */}
-          <div>
-            <label className="text-sm font-medium mb-3 block flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              Duração (minutos)
-            </label>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="text-xs text-muted-foreground block mb-1">Operador</label>
-                <select
-                  value={localFilters.durationOperator}
-                  onChange={(e) => handleFilterChange('durationOperator', e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-md text-sm"
-                >
-                  {DURATION_OPERATORS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground block mb-1">Valor Mínimo</label>
-                <Input
-                  type="number"
-                  placeholder="30"
-                  value={localFilters.durationMin}
-                  onChange={(e) => handleFilterChange('durationMin', e.target.value)}
-                  className="text-sm"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground block mb-1">Valor Máximo</label>
-                <Input
-                  type="number"
-                  placeholder="120"
-                  value={localFilters.durationMax}
-                  onChange={(e) => handleFilterChange('durationMax', e.target.value)}
-                  className="text-sm"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Advanced Filters (Expanded) */}
+          {/* All Other Filters (Expanded) */}
           {isExpanded && (
             <div className="space-y-6 pt-4 border-t">
+              {/* Basic Filters Row */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Group Size */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Tamanho do Grupo</label>
+                  <div className="space-y-2">
+                    {GROUP_SIZE_OPTIONS.map((option) => (
+                      <label key={option.value} className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={localFilters.groupSize.includes(option.value)}
+                          onChange={(e) => handleMultiSelectChange('groupSize', option.value, e.target.checked)}
+                          className="rounded border-gray-300"
+                        />
+                        <span className="text-sm">{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Effort Level */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Nível de Esforço</label>
+                  <div className="space-y-2">
+                    {EFFORT_LEVEL_OPTIONS.map((option) => (
+                      <label key={option.value} className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={localFilters.effortLevel.includes(option.value)}
+                          onChange={(e) => handleMultiSelectChange('effortLevel', option.value, e.target.checked)}
+                          className="rounded border-gray-300"
+                        />
+                        <span className="text-sm">{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Location */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Localização</label>
+                  <select
+                    value={localFilters.location}
+                    onChange={(e) => handleFilterChange('location', e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                  >
+                    <option value="">Todas</option>
+                    {LOCATION_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Age Group */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Faixa Etária</label>
+                  <div className="space-y-2 max-h-32 overflow-y-auto">
+                    {AGE_GROUP_OPTIONS.map((option) => (
+                      <label key={option.value} className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={localFilters.ageGroup.includes(option.value)}
+                          onChange={(e) => handleMultiSelectChange('ageGroup', option.value, e.target.checked)}
+                          className="rounded border-gray-300"
+                        />
+                        <span className="text-sm">{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Activity Type Filter */}
+              <div>
+                <label className="text-sm font-medium mb-3 block flex items-center gap-2">
+                  <Target className="w-4 h-4" />
+                  Tipo de Atividade
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {ACTIVITY_TYPE_OPTIONS.map((option) => (
+                    <label key={option.id} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={localFilters.activityType.includes(option.id)}
+                        onChange={(e) => handleMultiSelectChange('activityType', option.id, e.target.checked)}
+                        className="rounded border-gray-300"
+                      />
+                      <span className="text-sm">{getPortugueseText(option.name)}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Duration Filters */}
+              <div>
+                <label className="text-sm font-medium mb-3 block flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  Duração (minutos)
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-xs text-muted-foreground block mb-1">Operador</label>
+                    <select
+                      value={localFilters.durationOperator}
+                      onChange={(e) => handleFilterChange('durationOperator', e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                    >
+                      {DURATION_OPERATORS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground block mb-1">Valor Mínimo</label>
+                    <Input
+                      type="number"
+                      placeholder="30"
+                      value={localFilters.durationMin}
+                      onChange={(e) => handleFilterChange('durationMin', e.target.value)}
+                      className="text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground block mb-1">Valor Máximo</label>
+                    <Input
+                      type="number"
+                      placeholder="120"
+                      value={localFilters.durationMax}
+                      onChange={(e) => handleFilterChange('durationMax', e.target.value)}
+                      className="text-sm"
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* SDGs Filter */}
               <div>
                 <label className="text-sm font-medium mb-3 block flex items-center gap-2">
@@ -518,9 +522,21 @@ export function ActivityFilters({
                         onChange={(e) => handleMultiSelectChange('sdgs', option.id, e.target.checked)}
                         className="rounded border-gray-300"
                       />
-                      <span className="text-sm">
-                        <strong>ODS {option.number}:</strong> {getPortugueseText(option.name)}
-                      </span>
+                                             <div className="flex items-center gap-2">
+                         {/* SDG Icon - Colored circle with number */}
+                         <div 
+                           className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm"
+                           style={{
+                             backgroundColor: `hsl(${(option.number * 20) % 360}, 70%, 50%)`
+                           }}
+                           title={`ODS ${option.number}: ${getPortugueseText(option.name)}`}
+                         >
+                           {option.number}
+                         </div>
+                         <span className="text-sm">
+                           <strong>ODS {option.number}:</strong> {getPortugueseText(option.name)}
+                         </span>
+                       </div>
                     </label>
                   ))}
                 </div>
