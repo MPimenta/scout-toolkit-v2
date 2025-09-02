@@ -1,0 +1,176 @@
+<svg width="720" height="360" viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f0f9ff;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#e0f2fe;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0ea5e9;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="legoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#dc2626;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#b91c1c;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="legoBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="legoGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="legoYellow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d97706;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="scheduleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f8fafc;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="720" height="360" fill="url(#bgGradient)"/>
+  
+  <!-- Decorative grid pattern -->
+  <g stroke="#ffffff" stroke-width="1" opacity="0.1">
+    <line x1="0" y1="60" x2="720" y2="60"/>
+    <line x1="0" y1="120" x2="720" y2="120"/>
+    <line x1="0" y1="180" x2="720" y2="180"/>
+    <line x1="0" y1="240" x2="720" y2="240"/>
+    <line x1="0" y1="300" x2="720" y2="300"/>
+    <line x1="60" y1="0" x2="60" y2="360"/>
+    <line x1="120" y1="0" x2="120" y2="360"/>
+    <line x1="180" y1="0" x2="180" y2="360"/>
+    <line x1="240" y1="0" x2="240" y2="360"/>
+    <line x1="300" y1="0" x2="300" y2="360"/>
+    <line x1="360" y1="0" x2="360" y2="360"/>
+    <line x1="420" y1="0" x2="420" y2="360"/>
+    <line x1="480" y1="0" x2="480" y2="360"/>
+    <line x1="540" y1="0" x2="540" y2="360"/>
+    <line x1="600" y1="0" x2="600" y2="360"/>
+    <line x1="660" y1="0" x2="660" y2="360"/>
+  </g>
+  
+  <!-- LEGO base plate -->
+  <rect x="100" y="280" width="520" height="60" fill="#1f2937" rx="4"/>
+  
+  <!-- LEGO studs on base plate -->
+  <g fill="#374151">
+    <circle cx="120" cy="300" r="3"/>
+    <circle cx="140" cy="300" r="3"/>
+    <circle cx="160" cy="300" r="3"/>
+    <circle cx="180" cy="300" r="3"/>
+    <circle cx="200" cy="300" r="3"/>
+    <circle cx="220" cy="300" r="3"/>
+    <circle cx="240" cy="300" r="3"/>
+    <circle cx="260" cy="300" r="3"/>
+    <circle cx="280" cy="300" r="3"/>
+    <circle cx="300" cy="300" r="3"/>
+    <circle cx="320" cy="300" r="3"/>
+    <circle cx="340" cy="300" r="3"/>
+    <circle cx="360" cy="300" r="3"/>
+    <circle cx="380" cy="300" r="3"/>
+    <circle cx="400" cy="300" r="3"/>
+    <circle cx="420" cy="300" r="3"/>
+    <circle cx="440" cy="300" r="3"/>
+    <circle cx="460" cy="300" r="3"/>
+    <circle cx="480" cy="300" r="3"/>
+    <circle cx="500" cy="300" r="3"/>
+    <circle cx="520" cy="300" r="3"/>
+    <circle cx="540" cy="300" r="3"/>
+    <circle cx="560" cy="300" r="3"/>
+    <circle cx="580" cy="300" r="3"/>
+    <circle cx="600" cy="300" r="3"/>
+    <circle cx="620" cy="300" r="3"/>
+  </g>
+  
+  <!-- LEGO blocks building a schedule structure -->
+  <!-- Foundation blocks -->
+  <g fill="url(#legoGradient)">
+    <rect x="120" y="240" width="40" height="40" rx="2"/>
+    <rect x="200" y="240" width="40" height="40" rx="2"/>
+    <rect x="280" y="240" width="40" height="40" rx="2"/>
+    <rect x="360" y="240" width="40" height="40" rx="2"/>
+    <rect x="440" y="240" width="40" height="40" rx="2"/>
+    <rect x="520" y="240" width="40" height="40" rx="2"/>
+  </g>
+  
+  <!-- Second layer -->
+  <g fill="url(#legoBlue)">
+    <rect x="140" y="200" width="40" height="40" rx="2"/>
+    <rect x="220" y="200" width="40" height="40" rx="2"/>
+    <rect x="300" y="200" width="40" height="40" rx="2"/>
+    <rect x="380" y="200" width="40" height="40" rx="2"/>
+    <rect x="460" y="200" width="40" height="40" rx="2"/>
+  </g>
+  
+  <!-- Third layer -->
+  <g fill="url(#legoGreen)">
+    <rect x="160" y="160" width="40" height="40" rx="2"/>
+    <rect x="240" y="160" width="40" height="40" rx="2"/>
+    <rect x="320" y="160" width="40" height="40" rx="2"/>
+    <rect x="400" y="160" width="40" height="40" rx="2"/>
+  </g>
+  
+  <!-- Fourth layer -->
+  <g fill="url(#legoYellow)">
+    <rect x="180" y="120" width="40" height="40" rx="2"/>
+    <rect x="260" y="120" width="40" height="40" rx="2"/>
+    <rect x="340" y="120" width="40" height="40" rx="2"/>
+  </g>
+  
+  <!-- Top block with schedule icon -->
+  <g fill="url(#legoGradient)">
+    <rect x="200" y="80" width="40" height="40" rx="2"/>
+  </g>
+  
+  <!-- Schedule/calendar icon on top block -->
+  <g fill="#ffffff" opacity="0.9">
+    <rect x="205" y="85" width="30" height="30" rx="2"/>
+    <rect x="205" y="85" width="30" height="8" fill="#ef4444"/>
+    <circle cx="215" cy="89" r="1.5"/>
+    <circle cx="220" cy="89" r="1.5"/>
+    <circle cx="225" cy="89" r="1.5"/>
+    <line x1="210" y1="100" x2="230" y2="100" stroke="#374151" stroke-width="1"/>
+    <line x1="210" y1="105" x2="230" y2="105" stroke="#374151" stroke-width="1"/>
+    <line x1="210" y1="110" x2="230" y2="110" stroke="#374151" stroke-width="1"/>
+  </g>
+  
+  <!-- Scattered LEGO pieces around -->
+  <g fill="url(#legoBlue)">
+    <rect x="50" y="200" width="20" height="20" rx="2"/>
+    <rect x="650" y="180" width="20" height="20" rx="2"/>
+  </g>
+  <g fill="url(#legoGreen)">
+    <rect x="80" y="220" width="20" height="20" rx="2"/>
+    <rect x="620" y="200" width="20" height="20" rx="2"/>
+  </g>
+  <g fill="url(#legoYellow)">
+    <rect x="70" y="240" width="20" height="20" rx="2"/>
+    <rect x="630" y="220" width="20" height="20" rx="2"/>
+  </g>
+  
+  <!-- Code symbols floating around -->
+  <g fill="#1f2937" font-family="monospace" font-size="12" font-weight="bold" opacity="0.7">
+    <text x="50" y="80">{ }</text>
+    <text x="650" y="100">&lt;/&gt;</text>
+    <text x="680" y="140">( )</text>
+    <text x="40" y="160">[ ]</text>
+    <text x="670" y="80">= &gt;</text>
+  </g>
+  
+  <!-- Title text -->
+  <text x="360" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#1f2937">
+    Epic 1 Complete
+  </text>
+  <text x="360" y="70" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#374151">
+    The Foundation Laid
+  </text>
+  
+  <!-- Decorative elements -->
+  <g stroke="#0ea5e9" stroke-width="2" fill="none" opacity="0.6">
+    <path d="M 50 150 Q 180 100 310 150"/>
+    <path d="M 410 150 Q 540 100 670 150"/>
+  </g>
+</svg>
