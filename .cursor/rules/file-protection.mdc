@@ -34,6 +34,7 @@ If a file is completely corrupted and unusable, explain the situation and ask fo
 **Remember:** It's better to ask twice than to accidentally lose user content!
 
 ---
-description: "Prevents accidental file deletion, clearing, or complete replacement without explicit user permission"
-globs: ["**/*"]
+description:
+globs:
 alwaysApply: true
+---
