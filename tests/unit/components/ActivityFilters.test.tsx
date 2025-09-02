@@ -1,0 +1,389 @@
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { ActivityFilters, FilterState } from '@/components/features/activities/ActivityFilters';
+
+// Mock the ActivityFilters component props
+const mockFilters: FilterState = {
+  search: '',
+  groupSize: [],
+  effortLevel: [],
+  location: '',
+  ageGroup: [],
+  activityType: [],
+  sdgs: [],
+  educationalGoals: [],
+  durationMin: '',
+  durationMax: '',
+  durationOperator: '>=',
+};
+
+const mockOnFiltersChange = vi.fn();
+const mockOnClearFilters = vi.fn();
+
+describe('ActivityFilters', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('renders all basic filter sections', () => {
+    render(
+      <ActivityFilters
+        filters={mockFilters}
+        onFiltersChange={mockOnFiltersChange}
+        onClearFilters={mockOnClearFilters}
+      />
+    );
+
+    // Check that all filter sections are rendered
+    expect(screen.getByText('Filtros de Atividades')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Pesquisar atividades por nome, descrição ou materiais...')).toBeInTheDocument();
+    expect(screen.getByText('Tamanho do Grupo')).toBeInTheDocument();
+    expect(screen.getByText('Nível de Esforço')).toBeInTheDocument();
+    expect(screen.getByText('Localização')).toBeInTheDocument();
+    expect(screen.getByText('Faixa Etária')).toBeInTheDocument();
+    expect(screen.getByText('Tipo de Atividade')).toBeInTheDocument();
+  });
+
+  it('handles search input changes', async () => {
+    render(
+      <ActivityFilters
+        filters={mockFilters}
+        onFiltersChange={mockOnFiltersChange}
+        onClearFilters={mockOnClearFilters}
+      />
+    );
+
+    const searchInput = screen.getByPlaceholderText('Pesquisar atividades por nome, descrição ou materiais...');
+    fireEvent.change(searchInput, { target: { value: 'jogo' } });
+
+    await waitFor(() => {
+      expect(mockOnFiltersChange).toHaveBeenCalledWith({
+        ...mockFilters,
+        search: 'jogo',
+      });
+    });
+  });
+
+  it('handles group size filter changes', async () => {
+    render(
+      <ActivityFilters
+        filters={mockFilters}
+        onFiltersChange={mockOnFiltersChange}
+        onClearFilters={mockOnClearFilters}
+      />
+    );
+
+    const smallGroupCheckbox = screen.getByLabelText('Pequeno (2-6)');
+    fireEvent.click(smallGroupCheckbox);
+
+    await waitFor(() => {
+      expect(mockOnFiltersChange).toHaveBeenCalledWith({
+        ...mockFilters,
+        groupSize: ['small'],
+      });
+    });
+  });
+
+  it('handles effort level filter changes', async () => {
+    render(
+      <ActivityFilters
+        filters={mockFilters}
+        onFiltersChange={mockOnFiltersChange}
+        onClearFilters={mockOnClearFilters}
+      />
+    );
+
+    const mediumEffortCheckbox = screen.getByLabelText('Médio');
+    fireEvent.click(mediumEffortCheckbox);
+
+    await waitFor(() => {
+      expect(mockOnFiltersChange).toHaveBeenCalledWith({
+        ...mockFilters,
+        effortLevel: ['medium'],
+      });
+    });
+  });
+
+  it('handles location filter changes', async () => {
+    render(
+      <ActivityFilters
+        filters={mockFilters}
+        onFiltersChange={mockOnFiltersChange}
+        onClearFilters={mockOnClearFilters}
+      />
+    );
+
+    const locationSelect = screen.getByDisplayValue('Todas');
+    fireEvent.change(locationSelect, { target: { value: 'outside' } });
+
+    await waitFor(() => {
+      expect(mockOnFiltersChange).toHaveBeenCalledWith({
+        ...mockFilters,
+        location: 'outside',
+      });
+    });
+  });
+
+  it('handles age group filter changes', async () => {
+    render(
+      <ActivityFilters
+        filters={mockFilters}
+        onFiltersChange={mockOnFiltersChange}
+        onClearFilters={mockOnClearFilters}
+      />
+    );
+
+    const scoutsCheckbox = screen.getByLabelText('Escoteiros (10-14)');
+    fireEvent.click(scoutsCheckbox);
+
+    await waitFor(() => {
+      expect(mockOnFiltersChange).toHaveBeenCalledWith({
+        ...mockFilters,
+        ageGroup: ['scouts'],
+      });
+    });
+  });
+
+  it('handles activity type filter changes', async () => {
+    render(
+      <ActivityFilters
+        filters={mockFilters}
+        onFiltersChange={mockOnFiltersChange}
+        onClearFilters={mockOnClearFilters}
+      />
+    );
+
+    const gameTypeCheckbox = screen.getByLabelText('Jogo');
+    fireEvent.click(gameTypeCheckbox);
+
+    await waitFor(() => {
+      expect(mockOnFiltersChange).toHaveBeenCalledWith({
+        ...mockFilters,
+        activityType: ['1'],
+      });
+    });
+  });
+
+  it('expands advanced filters when expand button is clicked', () => {
+    render(
+      <ActivityFilters
+        filters={mockFilters}
+        onFiltersChange={mockOnFiltersChange}
+        onClearFilters={mockOnClearFilters}
+      />
+    );
+
+    const expandButton = screen.getByRole('button', { name: /expandir/i });
+    fireEvent.click(expandButton);
+
+    // Check that advanced filters are now visible
+    expect(screen.getByText('Objetivos de Desenvolvimento Sustentável (ODS)')).toBeInTheDocument();
+    expect(screen.getByText('Objetivos Educativos')).toBeInTheDocument();
+    expect(screen.getByText('Duração (minutos)')).toBeInTheDocument();
+  });
+
+  it('handles SDG filter changes', async () => {
+    render(
+      <ActivityFilters
+        filters={mockFilters}
+        onFiltersChange={mockOnFiltersChange}
+        onClearFilters={mockOnClearFilters}
+      />
+    );
+
+    // First expand the advanced filters
+    const expandButton = screen.getByRole('button', { name: /expandir/i });
+    fireEvent.click(expandButton);
+
+    // Find and click an SDG checkbox
+    const sdg1Checkbox = screen.getByLabelText(/ODS 1: Erradicar a Pobreza/);
+    fireEvent.click(sdg1Checkbox);
+
+    await waitFor(() => {
+      expect(mockOnFiltersChange).toHaveBeenCalledWith({
+        ...mockFilters,
+        sdgs: ['1'],
+      });
+    });
+  });
+
+  it('handles educational goals filter changes', async () => {
+    render(
+      <ActivityFilters
+        filters={mockFilters}
+        onFiltersChange={mockOnFiltersChange}
+        onClearFilters={mockOnClearFilters}
+      />
+    );
+
+    // First expand the advanced filters
+    const expandButton = screen.getByRole('button', { name: /expandir/i });
+    fireEvent.click(expandButton);
+
+    // Find and click an educational goal checkbox
+    const teamworkCheckbox = screen.getByLabelText(/SE1: Trabalho em Equipa/);
+    fireEvent.click(teamworkCheckbox);
+
+    await waitFor(() => {
+      expect(mockOnFiltersChange).toHaveBeenCalledWith({
+        ...mockFilters,
+        educationalGoals: ['1'],
+      });
+    });
+  });
+
+  it('handles duration filter changes', async () => {
+    render(
+      <ActivityFilters
+        filters={mockFilters}
+        onFiltersChange={mockOnFiltersChange}
+        onClearFilters={mockOnClearFilters}
+      />
+    );
+
+    // First expand the advanced filters
+    const expandButton = screen.getByRole('button', { name: /expandir/i });
+    fireEvent.click(expandButton);
+
+    // Change duration min value
+    const durationMinInput = screen.getByPlaceholderText('30');
+    fireEvent.change(durationMinInput, { target: { value: '45' } });
+
+    await waitFor(() => {
+      expect(mockOnFiltersChange).toHaveBeenCalledWith({
+        ...mockFilters,
+        durationMin: '45',
+      });
+    });
+  });
+
+  it('shows active filters when filters are applied', () => {
+    const filtersWithValues: FilterState = {
+      ...mockFilters,
+      search: 'jogo',
+      groupSize: ['small'],
+      effortLevel: ['medium'],
+      location: 'outside',
+      ageGroup: ['scouts'],
+      activityType: ['1'],
+      sdgs: ['1'],
+      educationalGoals: ['1'],
+      durationMin: '30',
+      durationMax: '60',
+    };
+
+    render(
+      <ActivityFilters
+        filters={filtersWithValues}
+        onFiltersChange={mockOnFiltersChange}
+        onClearFilters={mockOnClearFilters}
+      />
+    );
+
+    // Check that active filters are displayed
+    expect(screen.getByText('Filtros Ativos')).toBeInTheDocument();
+    expect(screen.getByText('Pesquisa: jogo')).toBeInTheDocument();
+    expect(screen.getByText('Grupo: Pequeno (2-6)')).toBeInTheDocument();
+    expect(screen.getByText('Esforço: Médio')).toBeInTheDocument();
+    expect(screen.getByText('Local: Exterior')).toBeInTheDocument();
+    expect(screen.getByText('Idade: Escoteiros (10-14)')).toBeInTheDocument();
+    expect(screen.getByText('Tipo: Jogo')).toBeInTheDocument();
+    expect(screen.getByText('ODS 1: Erradicar a Pobreza')).toBeInTheDocument();
+    expect(screen.getByText('Trabalho em Equipa')).toBeInTheDocument();
+    expect(screen.getByText('Duração: 30 - 60 min')).toBeInTheDocument();
+  });
+
+  it('calls onClearFilters when clear all button is clicked', () => {
+    const filtersWithValues: FilterState = {
+      ...mockFilters,
+      search: 'jogo',
+      groupSize: ['small'],
+    };
+
+    render(
+      <ActivityFilters
+        filters={filtersWithValues}
+        onFiltersChange={mockOnFiltersChange}
+        onClearFilters={mockOnClearFilters}
+      />
+    );
+
+    const clearAllButton = screen.getByText('Limpar Todos');
+    fireEvent.click(clearAllButton);
+
+    expect(mockOnClearFilters).toHaveBeenCalled();
+  });
+
+  it('removes individual filters when X button is clicked', async () => {
+    const filtersWithValues: FilterState = {
+      ...mockFilters,
+      search: 'jogo',
+      groupSize: ['small'],
+    };
+
+    render(
+      <ActivityFilters
+        filters={filtersWithValues}
+        onFiltersChange={mockOnFiltersChange}
+        onClearFilters={mockOnClearFilters}
+      />
+    );
+
+    // Click the X button on the search filter
+    const searchFilterBadge = screen.getByText('Pesquisa: jogo').closest('div');
+    const searchFilterX = searchFilterBadge?.querySelector('button');
+    if (searchFilterX) {
+      fireEvent.click(searchFilterX);
+    }
+
+    await waitFor(() => {
+      expect(mockOnFiltersChange).toHaveBeenCalledWith({
+        ...filtersWithValues,
+        search: '',
+      });
+    });
+  });
+
+  it('displays correct Portuguese text for all filter options', () => {
+    render(
+      <ActivityFilters
+        filters={mockFilters}
+        onFiltersChange={mockOnFiltersChange}
+        onClearFilters={mockOnClearFilters}
+      />
+    );
+
+    // Check Portuguese labels are displayed
+    expect(screen.getByText('Lobitos (6-10)')).toBeInTheDocument();
+    expect(screen.getByText('Escoteiros (10-14)')).toBeInTheDocument();
+    expect(screen.getByText('Exploradores (14-17)')).toBeInTheDocument();
+    expect(screen.getByText('Caminheiros (17-21)')).toBeInTheDocument();
+    expect(screen.getByText('Dirigentes (21+)')).toBeInTheDocument();
+    expect(screen.getByText('Jogo')).toBeInTheDocument();
+    expect(screen.getByText('Atividade Manual')).toBeInTheDocument();
+  });
+
+  it('handles multiple filter selections correctly', async () => {
+    render(
+      <ActivityFilters
+        filters={mockFilters}
+        onFiltersChange={mockOnFiltersChange}
+        onClearFilters={mockOnClearFilters}
+      />
+    );
+
+    // Select multiple group sizes
+    const smallGroupCheckbox = screen.getByLabelText('Pequeno (2-6)');
+    const mediumGroupCheckbox = screen.getByLabelText('Médio (7-15)');
+    
+    fireEvent.click(smallGroupCheckbox);
+    fireEvent.click(mediumGroupCheckbox);
+
+    await waitFor(() => {
+      expect(mockOnFiltersChange).toHaveBeenCalledWith({
+        ...mockFilters,
+        groupSize: ['small', 'medium'],
+      });
+    });
+  });
+});

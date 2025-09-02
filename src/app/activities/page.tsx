@@ -1,20 +1,55 @@
 'use client';
 
+import { useState } from 'react';
 import { useActivities } from '@/hooks/useActivities';
 import { ActivityCard } from '@/components/features/activities/ActivityCard';
+import { ActivityFilters, FilterState } from '@/components/features/activities/ActivityFilters';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Search, Filter, AlertCircle } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { Loader2, AlertCircle, Filter, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
 
 export default function ActivitiesPage() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const { activities, total, loading, error } = useActivities({ search: searchTerm });
+  const [filters, setFilters] = useState<FilterState>({
+    search: '',
+    groupSize: [],
+    effortLevel: [],
+    location: '',
+    ageGroup: [],
+    activityType: [],
+    sdgs: [],
+    educationalGoals: [],
+    durationMin: '',
+    durationMax: '',
+    durationOperator: '>=',
+  });
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    // The search will be handled by the useActivities hook
+  const { activities, pagination, filters: filterInfo, loading, error, refresh } = useActivities({
+    filters,
+    page: 1,
+    limit: 20,
+    sort: 'name',
+    order: 'asc',
+  });
+
+  const handleFiltersChange = (newFilters: FilterState) => {
+    setFilters(newFilters);
+  };
+
+  const handleClearFilters = () => {
+    const clearedFilters: FilterState = {
+      search: '',
+      groupSize: [],
+      effortLevel: [],
+      location: '',
+      ageGroup: [],
+      activityType: [],
+      sdgs: [],
+      educationalGoals: [],
+      durationMin: '',
+      durationMax: '',
+      durationOperator: '>=',
+    };
+    setFilters(clearedFilters);
   };
 
   if (error) {
@@ -42,7 +77,7 @@ export default function ActivitiesPage() {
               Detalhes do erro: {error}
             </p>
             <Button 
-              onClick={() => window.location.reload()} 
+              onClick={refresh} 
               variant="outline"
             >
               Tentar Novamente
@@ -62,31 +97,31 @@ export default function ActivitiesPage() {
         </p>
       </div>
 
-      {/* Search and Filters */}
-      <div className="mb-6">
-        <form onSubmit={handleSearch} className="flex gap-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-            <Input
-              type="text"
-              placeholder="Pesquisar atividades..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <Button type="submit" variant="outline">
-            <Filter className="w-4 h-4 mr-2" />
-            Filtros
-          </Button>
-        </form>
-      </div>
+      {/* Filters Component */}
+      <ActivityFilters
+        filters={filters}
+        onFiltersChange={handleFiltersChange}
+        onClearFilters={handleClearFilters}
+        availableFilters={filterInfo.available}
+      />
 
-      {/* Results Count */}
+      {/* Results Count and Active Filters Summary */}
       <div className="mb-6">
-        <p className="text-sm text-muted-foreground">
-          {loading ? 'A carregar...' : `${total} atividade${total !== 1 ? 's' : ''} encontrada${total !== 1 ? 's' : ''}`}
-        </p>
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-sm text-muted-foreground">
+            {loading ? 'A carregar...' : `${pagination.total} atividade${pagination.total !== 1 ? 's' : ''} encontrada${pagination.total !== 1 ? 's' : ''}`}
+          </p>
+          
+          {/* Quick filter summary */}
+          {Object.values(filters).some(value => 
+            Array.isArray(value) ? value.length > 0 : value !== '' && value !== '>='
+          ) && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Filter className="w-4 h-4" />
+              <span>Filtros ativos</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Loading State */}
@@ -113,10 +148,10 @@ export default function ActivitiesPage() {
               Tenta ajustar os filtros de pesquisa ou contacta um administrador se acreditas que deveria haver atividades disponíveis.
             </p>
             <Button 
-              onClick={() => setSearchTerm('')} 
+              onClick={handleClearFilters} 
               variant="outline"
             >
-              Limpar Pesquisa
+              Limpar Filtros
             </Button>
           </CardContent>
         </Card>
@@ -131,6 +166,15 @@ export default function ActivitiesPage() {
         </div>
       )}
 
+      {/* Pagination (Future Story 3.3) */}
+      {!loading && pagination.total_pages > 1 && (
+        <div className="mt-8 flex justify-center">
+          <p className="text-sm text-muted-foreground">
+            Paginação será implementada em Story 3.3: Table View
+          </p>
+        </div>
+      )}
+
       {/* Development Notice */}
       {!loading && activities.length > 0 && (
         <div className="mt-8">
@@ -138,12 +182,12 @@ export default function ActivitiesPage() {
             <CardHeader>
               <CardTitle className="text-sm">Funcionalidade em Desenvolvimento</CardTitle>
               <CardDescription className="text-xs">
-                Esta é a implementação inicial da página de atividades. Funcionalidades adicionais serão adicionadas em breve.
+                Esta é a implementação da página de atividades com filtros avançados. Funcionalidades adicionais serão adicionadas em breve.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground">
-                Próximas funcionalidades: filtros avançados, pesquisa por texto, visualização em tabela, e sistema de avaliações.
+                Próximas funcionalidades: visualização em tabela (Story 3.3), páginas de detalhes (Story 3.4), e sistema de avaliações.
               </p>
             </CardContent>
           </Card>

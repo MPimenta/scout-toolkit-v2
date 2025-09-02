@@ -1,99 +1,139 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-interface EducationalGoal {
-  id: string;
-  title: Record<string, string> | string; // JSONB field - multilingual content
-  code: string;
+export interface FilterState {
+  search: string;
+  groupSize: string[];
+  effortLevel: string[];
+  location: string;
+  ageGroup: string[];
+  activityType: string[];
+  sdgs: string[];
+  educationalGoals: string[];
+  durationMin: string;
+  durationMax: string;
+  durationOperator: string;
 }
 
-interface Sdg {
-  id: string;
-  number: number;
-  name: Record<string, string> | string; // JSONB field - multilingual content
-  icon_url: string;
-}
-
-interface ActivityType {
-  id: string;
-  name: Record<string, string> | string; // JSONB field - multilingual content
-}
-
-interface Activity {
-  id: string;
-  name: Record<string, string> | string; // JSONB field - multilingual content
-  description: Record<string, string> | string; // JSONB field - multilingual content
-  materials: Record<string, string> | string; // JSONB field - multilingual content
-  approximate_duration_minutes: number;
-  group_size: 'small' | 'medium' | 'large';
-  effort_level: 'low' | 'medium' | 'high';
-  location: 'inside' | 'outside';
-  age_group: 'cub_scouts' | 'scouts' | 'adventurers' | 'rovers' | 'leaders';
-  image_url?: string;
-  created_at: string;
-  activity_type: ActivityType;
-  educational_goals: EducationalGoal[];
-  sdgs: Sdg[];
-}
-
-interface ActivitiesResponse {
-  activities: Activity[];
+export interface PaginationInfo {
+  page: number;
+  limit: number;
   total: number;
+  total_pages: number;
 }
 
-interface UseActivitiesOptions {
-  search?: string;
-  activityType?: string;
-  effortLevel?: string;
-  groupSize?: string;
-  location?: string;
-  ageGroup?: string;
+export interface FilterInfo {
+  applied: Partial<FilterState>;
+  available: {
+    group_sizes: string[];
+    effort_levels: string[];
+    locations: string[];
+    age_groups: string[];
+    activity_types: string[];
+  };
 }
 
-export function useActivities(options: UseActivitiesOptions = {}) {
-  const [activities, setActivities] = useState<Activity[]>([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export interface ActivitiesResponse {
+  activities: any[];
+  pagination: PaginationInfo;
+  filters: FilterInfo;
+}
+
+export interface UseActivitiesOptions {
+  filters: FilterState;
+  page?: number;
+  limit?: number;
+  sort?: 'name' | 'duration' | 'created_at';
+  order?: 'asc' | 'desc';
+}
+
+// Custom debounce hook
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {
-    async function fetchActivities() {
-      try {
-        setLoading(true);
-        setError(null);
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
 
-        // Build query parameters
-        const params = new URLSearchParams();
-        if (options.search) params.append('search', options.search);
-        if (options.activityType) params.append('activityType', options.activityType);
-        if (options.effortLevel) params.append('effortLevel', options.effortLevel);
-        if (options.groupSize) params.append('groupSize', options.groupSize);
-        if (options.location) params.append('location', options.location);
-        if (options.ageGroup) params.append('ageGroup', options.ageGroup);
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
 
-        const response = await fetch(`/api/activities?${params.toString()}`);
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch activities: ${response.statusText}`);
-        }
+  return debouncedValue;
+}
 
-        const data: ActivitiesResponse = await response.json();
-        setActivities(data.activities);
-        setTotal(data.total);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred while fetching activities');
-        console.error('Error fetching activities:', err);
-      } finally {
-        setLoading(false);
+export function useActivities(options: UseActivitiesOptions) {
+  const { filters, page = 1, limit = 20, sort = 'name', order = 'asc' } = options;
+  
+  const [activities, setActivities] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [pagination, setPagination] = useState<PaginationInfo | null>(null);
+  const [filterInfo, setFilterInfo] = useState<FilterInfo | null>(null);
+
+  // Debounce filters to avoid too many API calls
+  const debouncedFilters = useDebounce(filters, 300);
+
+  const fetchActivities = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const params = new URLSearchParams();
+      
+      // Add filter parameters
+      if (debouncedFilters.search) params.append('search', debouncedFilters.search);
+      if (debouncedFilters.groupSize.length > 0) params.append('group_size', debouncedFilters.groupSize.join(','));
+      if (debouncedFilters.effortLevel.length > 0) params.append('effort_level', debouncedFilters.effortLevel.join(','));
+      if (debouncedFilters.location) params.append('location', debouncedFilters.location);
+      if (debouncedFilters.ageGroup.length > 0) params.append('age_group', debouncedFilters.ageGroup.join(','));
+      if (debouncedFilters.activityType.length > 0) params.append('activity_type', debouncedFilters.activityType.join(','));
+      if (debouncedFilters.sdgs.length > 0) params.append('sdgs', debouncedFilters.sdgs.join(','));
+      if (debouncedFilters.educationalGoals.length > 0) params.append('educational_goals', debouncedFilters.educationalGoals.join(','));
+      if (debouncedFilters.durationMin) params.append('duration_min', debouncedFilters.durationMin);
+      if (debouncedFilters.durationMax) params.append('duration_max', debouncedFilters.durationMax);
+      if (debouncedFilters.durationOperator) params.append('duration_operator', debouncedFilters.durationOperator);
+      
+      // Add pagination and sorting parameters
+      params.append('page', page.toString());
+      params.append('limit', limit.toString());
+      params.append('sort', sort);
+      params.append('order', order);
+
+      const response = await fetch(`/api/activities?${params.toString()}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      
+      const data: ActivitiesResponse = await response.json();
+      
+      setActivities(data.activities);
+      setPagination(data.pagination);
+      setFilterInfo(data.filters);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred while fetching activities');
+      console.error('Error fetching activities:', err);
+    } finally {
+      setLoading(false);
     }
+  }, [debouncedFilters, page, limit, sort, order]);
 
+  useEffect(() => {
     fetchActivities();
-  }, [options.search, options.activityType, options.effortLevel, options.groupSize, options.location, options.ageGroup]);
+  }, [fetchActivities]);
+
+  const refresh = useCallback(() => {
+    fetchActivities();
+  }, [fetchActivities]);
 
   return {
     activities,
-    total,
     loading,
     error,
+    pagination,
+    filters: filterInfo,
+    refresh,
   };
 }
