@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useActivities } from '@/hooks/useActivities';
 import { ActivityCard } from '@/components/features/activities/ActivityCard';
+import { ActivitiesTable } from '@/components/features/activities/ActivitiesTable';
+import { ViewToggle, ViewMode } from '@/components/features/activities/ViewToggle';
 import { ActivityFilters, FilterState } from '@/components/features/activities/ActivityFilters';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, AlertCircle, Filter, X } from 'lucide-react';
@@ -22,6 +24,7 @@ export default function ActivitiesPage() {
     durationMax: '',
     durationOperator: '>=',
   });
+  const [viewMode, setViewMode] = useState<ViewMode>('tiles');
 
   const { activities, pagination, filterInfo, loading, error, refresh } = useActivities({
     filters,
@@ -118,15 +121,23 @@ export default function ActivitiesPage() {
             {loading ? 'A carregar...' : `${pagination?.total || 0} atividade${(pagination?.total || 0) !== 1 ? 's' : ''} encontrada${(pagination?.total || 0) !== 1 ? 's' : ''}`}
           </p>
           
-          {/* Quick filter summary */}
-          {Object.values(filters).some(value => 
-            Array.isArray(value) ? value.length > 0 : value !== '' && value !== '>='
-          ) && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Filter className="w-4 h-4" />
-              <span>Filtros ativos</span>
-            </div>
-          )}
+          <div className="flex items-center gap-4">
+            {/* Quick filter summary */}
+            {Object.values(filters).some(value => 
+              Array.isArray(value) ? value.length > 0 : value !== '' && value !== '>='
+            ) && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Filter className="w-4 h-4" />
+                <span>Filtros ativos</span>
+              </div>
+            )}
+            
+            {/* View Toggle */}
+            <ViewToggle 
+              currentView={viewMode} 
+              onViewChange={setViewMode} 
+            />
+          </div>
         </div>
       </div>
 
@@ -163,13 +174,35 @@ export default function ActivitiesPage() {
         </Card>
       )}
 
-      {/* Activities Grid */}
+      {/* Activities Display - Conditional based on view mode */}
       {!loading && activities.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {activities.map((activity) => (
-            <ActivityCard key={activity.id} activity={activity} />
-          ))}
-        </div>
+        <>
+          {viewMode === 'tiles' ? (
+            /* Activities Grid */
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {activities.map((activity) => (
+                <ActivityCard key={activity.id} activity={activity} />
+              ))}
+            </div>
+          ) : (
+            /* Activities Table */
+            <ActivitiesTable 
+              activities={activities}
+              onViewActivity={(activity) => {
+                // TODO: Navigate to activity details page (Story 3.4)
+                console.log('View activity:', activity.id);
+              }}
+              onEditActivity={(activity) => {
+                // TODO: Navigate to edit activity page
+                console.log('Edit activity:', activity.id);
+              }}
+              onDeleteActivity={(activity) => {
+                // TODO: Implement delete confirmation dialog
+                console.log('Delete activity:', activity.id);
+              }}
+            />
+          )}
+        </>
       )}
 
       {/* Pagination (Future Story 3.3) */}
@@ -188,12 +221,12 @@ export default function ActivitiesPage() {
             <CardHeader>
               <CardTitle className="text-sm">Funcionalidade em Desenvolvimento</CardTitle>
               <CardDescription className="text-xs">
-                Esta é a implementação da página de atividades com filtros avançados. Funcionalidades adicionais serão adicionadas em breve.
+                Esta é a implementação da página de atividades com filtros avançados e visualização em tabela. Funcionalidades adicionais serão adicionadas em breve.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground">
-                Próximas funcionalidades: visualização em tabela (Story 3.3), páginas de detalhes (Story 3.4), e sistema de avaliações.
+                Funcionalidades implementadas: filtros avançados (Story 3.2), visualização em tabela (Story 3.3). Próximas: páginas de detalhes (Story 3.4) e sistema de avaliações.
               </p>
             </CardContent>
           </Card>
