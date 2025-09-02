@@ -555,7 +555,7 @@ export function ActivityFilters({
                          className="rounded border-gray-300"
                        />
                        <span className="text-sm">
-                         <strong>{option.code}:</strong> {getPortugueseText(option.title)}
+                         {getPortugueseText(option.title)}
                          <br />
                          <span className="text-xs text-muted-foreground">
                            {getPortugueseText(option.area.name)}
