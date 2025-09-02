@@ -410,22 +410,35 @@ After successfully implementing Story 1.4 (Internationalization Setup), we encou
 
 ### Epic 3: Activities Browsing
 
-#### Story 3.1: Activities List Page
+#### Story 3.1: Activities List Page ✅
 **Priority:** Critical
 **Estimate:** 2 days
+**Status:** ✅ **COMPLETED**
 **Acceptance Criteria:**
-- [ ] Activities displayed in tiles view
-- [ ] Basic activity cards with image
-- [ ] Activity attributes displayed
-- [ ] Responsive grid layout
-- [ ] Loading and empty states
+- [x] Activities displayed in tiles view
+- [x] Basic activity cards with image
+- [x] Activity attributes displayed
+- [x] Responsive grid layout
+- [x] Loading and empty states
 
 **Tasks:**
-- [ ] Create activities list page
-- [ ] Build activity card component
-- [ ] Display activity attributes
-- [ ] Add loading and empty states
-- [ ] Make responsive
+- [x] Create activities list page
+- [x] Build activity card component
+- [x] Display activity attributes
+- [x] Add loading and empty states
+- [x] Make responsive
+
+**Implementation Details:**
+- Created API endpoint `/api/activities` to fetch activities with related data
+- Built comprehensive ActivityCard component with image, attributes, and badges
+- Implemented useActivities hook for data fetching and state management
+- Added responsive grid layout (1 column mobile, 2 tablet, 3 desktop)
+- Included loading states, error handling, and empty states
+- Display activity attributes: duration, group size, effort, location, age group
+- Show educational goals and SDGs as interactive badges
+- Added search input structure (ready for Story 3.2)
+- Created missing UI components: Badge and Input
+- All components working with successful build
 
 #### Story 3.2: Search & Filtering
 **Priority:** Critical
