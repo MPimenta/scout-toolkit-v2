@@ -393,13 +393,13 @@ After successfully implementing Story 1.4 (Internationalization Setup), we encou
 - [ ] Basic activity cards with image
 - [ ] Activity attributes displayed
 - [ ] Responsive grid layout
-- [ ] Loading states
+- [ ] Loading and empty states
 
 **Tasks:**
 - [ ] Create activities list page
 - [ ] Build activity card component
 - [ ] Display activity attributes
-- [ ] Add loading states
+- [ ] Add loading and empty states
 - [ ] Make responsive
 
 #### Story 3.2: Search & Filtering
