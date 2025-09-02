@@ -82,10 +82,10 @@ function getEffortLevelText(level: string): string {
 function getAgeGroupText(ageGroup: string): string {
   const ageMap = {
     cub_scouts: 'Lobitos (6-10)',
-    scouts: 'Exploradores (10-14)',
-    adventurers: 'Pioneiros (14-18)',
-    rovers: 'Caminheiros (18-22)',
-    leaders: 'Líderes (22+)',
+    scouts: 'Escoteiros (10-14)',
+    adventurers: 'Exploradores (14-17)',
+    rovers: 'Caminheiros (17-21)',
+    leaders: 'Dirigentes (21+)',
   };
   return ageMap[ageGroup as keyof typeof ageMap] || ageGroup;
 }
@@ -131,31 +131,44 @@ export function ActivityCard({ activity }: ActivityCardProps) {
           </Badge>
         </div>
 
-        {/* SDG Icons Overlay - Bottom Right */}
-        {activity.sdgs.length > 0 && (
-          <div className="absolute bottom-3 right-3 flex gap-1">
-            {activity.sdgs.slice(0, 4).map((sdg) => (
-              <div
-                key={sdg.id}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg border-2 border-white"
-                style={{
-                  backgroundColor: `hsl(${(sdg.number * 20) % 360}, 70%, 50%)`
-                }}
-                title={`ODS ${sdg.number}: ${getPortugueseText(sdg.name)}`}
-              >
-                {sdg.number}
-              </div>
-            ))}
-            {activity.sdgs.length > 4 && (
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg border-2 border-white bg-gray-600"
-                title={`+${activity.sdgs.length - 4} mais ODS`}
-              >
-                +{activity.sdgs.length - 4}
-              </div>
-            )}
-          </div>
-        )}
+                 {/* SDG Icons Overlay - Bottom Right */}
+         {activity.sdgs.length > 0 && (
+           <div className="absolute bottom-3 right-3 flex gap-1">
+             {activity.sdgs.slice(0, 4).map((sdg) => (
+               <div
+                 key={sdg.id}
+                 className="w-8 h-8 rounded-md flex items-center justify-center shadow-lg border-2 border-white bg-white overflow-hidden"
+                 title={`ODS ${sdg.number}: ${getPortugueseText(sdg.name)}`}
+               >
+                 {sdg.icon_url ? (
+                   <img
+                     src={sdg.icon_url}
+                     alt={`ODS ${sdg.number}`}
+                     className="w-full h-full object-contain"
+                   />
+                 ) : (
+                   // Fallback to colored square if no icon
+                   <div
+                     className="w-full h-full rounded-md flex items-center justify-center text-white text-xs font-bold"
+                     style={{
+                       backgroundColor: `hsl(${(sdg.number * 20) % 360}, 70%, 50%)`
+                     }}
+                   >
+                     {sdg.number}
+                   </div>
+                 )}
+               </div>
+             ))}
+             {activity.sdgs.length > 4 && (
+               <div
+                 className="w-8 h-8 rounded-md flex items-center justify-center text-white text-xs font-bold shadow-lg border-2 border-white bg-gray-600"
+                 title={`+${activity.sdgs.length - 4} mais ODS`}
+               >
+                 +{activity.sdgs.length - 4}
+               </div>
+             )}
+           </div>
+         )}
       </div>
 
       <CardHeader className="pb-3">

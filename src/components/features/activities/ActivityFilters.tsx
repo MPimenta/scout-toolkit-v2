@@ -519,21 +519,31 @@ export function ActivityFilters({
                          onChange={(e) => handleMultiSelectChange('sdgs', option.id, e.target.checked)}
                          className="rounded border-gray-300"
                        />
-                       <div className="flex items-center gap-2">
-                         {/* SDG Icon - Colored circle with number */}
-                         <div 
-                           className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm"
-                           style={{
-                             backgroundColor: `hsl(${(option.number * 20) % 360}, 70%, 50%)`
-                           }}
-                           title={`ODS ${option.number}: ${getPortugueseText(option.name)}`}
-                         >
-                           {option.number}
-                         </div>
-                         <span className="text-sm">
-                           <strong>ODS {option.number}:</strong> {getPortugueseText(option.name)}
-                         </span>
-                       </div>
+                                               <div className="flex items-center gap-2">
+                          {/* SDG Icon - Official UN SDG icon */}
+                          {option.icon_url ? (
+                            <img
+                              src={option.icon_url}
+                              alt={`ODS ${option.number}`}
+                              className="w-6 h-6 object-contain"
+                              title={`ODS ${option.number}: ${getPortugueseText(option.name)}`}
+                            />
+                          ) : (
+                            // Fallback to colored circle if no icon
+                            <div 
+                              className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm"
+                              style={{
+                                backgroundColor: `hsl(${(option.number * 20) % 360}, 70%, 50%)`
+                              }}
+                              title={`ODS ${option.number}: ${getPortugueseText(option.name)}`}
+                            >
+                              {option.number}
+                            </div>
+                          )}
+                          <span className="text-sm">
+                            <strong>ODS {option.number}:</strong> {getPortugueseText(option.name)}
+                          </span>
+                        </div>
                      </label>
                    ))}
                  </div>
