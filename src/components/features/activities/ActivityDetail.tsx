@@ -97,7 +97,10 @@ export function ActivityDetail({ activityId }: ActivityDetailProps) {
             />
           ) : (
             <div className="w-full h-64 bg-muted rounded-lg flex items-center justify-center">
-              <BookOpen className="w-16 h-16 text-muted-foreground" />
+              <div className="text-center text-muted-foreground">
+                <BookOpen className="w-16 h-16 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">Sem imagem</p>
+              </div>
             </div>
           )}
         </div>

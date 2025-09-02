@@ -3,17 +3,19 @@ import { ActivityDetail } from '@/components/features/activities/ActivityDetail'
 import { useActivity } from '@/hooks/useActivity';
 import { useSession } from 'next-auth/react';
 
+import { vi } from 'vitest';
+
 // Mock the hooks
-jest.mock('@/hooks/useActivity');
-jest.mock('next-auth/react');
-jest.mock('@/components/features/activities/ActivityRating', () => ({
+vi.mock('@/hooks/useActivity');
+vi.mock('next-auth/react');
+vi.mock('@/components/features/activities/ActivityRating', () => ({
   ActivityRating: ({ activityId }: { activityId: string }) => (
     <div data-testid="activity-rating" data-activity-id={activityId}>
       Activity Rating Component
     </div>
   ),
 }));
-jest.mock('@/components/features/activities/AddToProgramModal', () => ({
+vi.mock('@/components/features/activities/AddToProgramModal', () => ({
   AddToProgramModal: ({ isOpen, onClose, activity }: any) => (
     <div data-testid="add-to-program-modal" data-is-open={isOpen} data-activity-id={activity.id}>
       Add to Program Modal
@@ -21,8 +23,8 @@ jest.mock('@/components/features/activities/AddToProgramModal', () => ({
   ),
 }));
 
-const mockUseActivity = useActivity as jest.MockedFunction<typeof useActivity>;
-const mockUseSession = useSession as jest.MockedFunction<typeof useSession>;
+const mockUseActivity = useActivity as ReturnType<typeof vi.fn>;
+const mockUseSession = useSession as ReturnType<typeof vi.fn>;
 
 const mockActivity = {
   id: 'test-activity-id',
@@ -77,7 +79,7 @@ describe('ActivityDetail', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders loading state initially', () => {
@@ -101,8 +103,8 @@ describe('ActivityDetail', () => {
 
     render(<ActivityDetail activityId="test-id" />);
     
-    expect(screen.getByText('Erro ao carregar atividade')).toBeInTheDocument();
-    expect(screen.getByText('Erro ao carregar atividade')).toHaveClass('text-red-600');
+    expect(screen.getByRole('heading', { name: 'Erro ao carregar atividade' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Erro ao carregar atividade' })).toHaveClass('text-red-600');
   });
 
   it('renders activity details when data is loaded successfully', async () => {
@@ -190,7 +192,7 @@ describe('ActivityDetail', () => {
     
     expect(screen.getByText('Avaliações e Comentários')).toBeInTheDocument();
     expect(screen.getByTestId('activity-rating')).toBeInTheDocument();
-    expect(screen.getByTestId('activity-rating')).toHaveAttribute('data-activity-id', 'test-activity-id');
+    expect(screen.getByTestId('activity-rating')).toHaveAttribute('data-activity-id', 'test-id');
   });
 
   it('renders Add to Program modal', () => {

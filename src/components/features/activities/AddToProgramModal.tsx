@@ -119,7 +119,7 @@ export function AddToProgramModal({ isOpen, onClose, activity }: AddToProgramMod
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl" data-testid="add-to-program-modal" data-activity-id={activity.id} data-is-open={isOpen.toString()}>
         <DialogHeader>
           <DialogTitle>Adicionar ao Programa</DialogTitle>
         </DialogHeader>

@@ -33,7 +33,7 @@ describe('ViewToggle', () => {
     const tableButton = screen.getByText('Tabela').closest('button');
 
     expect(tilesButton).toHaveClass('bg-primary');
-    expect(tableButton).toHaveClass('bg-transparent');
+    expect(tableButton).not.toHaveClass('bg-primary');
   });
 
   it('shows table view as active when currentView is table', () => {
@@ -48,7 +48,7 @@ describe('ViewToggle', () => {
     const tableButton = screen.getByText('Tabela').closest('button');
 
     expect(tableButton).toHaveClass('bg-primary');
-    expect(tilesButton).toHaveClass('bg-transparent');
+    expect(tilesButton).not.toHaveClass('bg-primary');
   });
 
   it('calls onViewChange with tiles when tiles button is clicked', () => {

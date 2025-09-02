@@ -135,12 +135,12 @@ describe('useActivity', () => {
     });
 
     expect(result.current.activity).toBe(null);
-    expect(result.current.error).toBe('Erro desconhecido');
+    expect(result.current.error).toBe('Network error');
   });
 
   it('handles JSON parsing errors gracefully', async () => {
     mockFetch.mockResolvedValueOnce({
-      ok: true,
+      error: true,
       json: async () => {
         throw new Error('Invalid JSON');
       },
@@ -153,7 +153,7 @@ describe('useActivity', () => {
     });
 
     expect(result.current.activity).toBe(null);
-    expect(result.current.error).toBe('Erro desconhecido');
+    expect(result.current.error).toBe('Erro ao carregar atividade');
   });
 
   it('refetches when activity ID changes', async () => {

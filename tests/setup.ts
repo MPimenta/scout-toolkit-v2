@@ -43,6 +43,34 @@ export async function teardownTestDatabase() {
   }
 }
 
+export async function resetTestDatabase() {
+  try {
+    if (testDrizzle) {
+      // Clear all tables by deleting all data
+      // This is a simple approach - in production you might want more sophisticated reset logic
+      const tables = Object.values(schema).filter(table => 
+        typeof table === 'object' && table !== null && 'name' in table
+      );
+      
+      for (const table of tables) {
+        if (table && typeof table === 'object' && 'name' in table) {
+          try {
+            await testDrizzle.delete(table as any).execute();
+          } catch (error) {
+            // Ignore errors for tables that don't exist or can't be deleted
+            console.warn(`Could not reset table ${(table as any).name}:`, error);
+          }
+        }
+      }
+      
+      // Re-seed with minimal test data
+      await seedTestData(testDrizzle);
+    }
+  } catch (error) {
+    console.warn('Failed to reset test database:', error);
+  }
+}
+
 // Helper function to seed test data
 async function seedTestData(db: ReturnType<typeof drizzle>) {
   try {
