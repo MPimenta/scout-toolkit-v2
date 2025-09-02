@@ -1,0 +1,40 @@
+# File Protection Rule
+
+## Never Delete or Clear Files Without Permission
+
+**CRITICAL:** Before deleting, clearing, or completely replacing any file content, you MUST ask for explicit user permission.
+
+### What This Rule Covers:
+- **File deletion** - Never delete files without asking first
+- **File clearing** - Never remove all content from a file without asking first  
+- **Complete file replacement** - Never replace entire file contents without asking first
+- **Bulk file operations** - Never perform operations that affect multiple files without asking first
+- **Folder deletion** - Never delete folders or directories without asking first
+- **Migration files** - Never delete database migration files without asking first
+- **Configuration files** - Never delete project configuration files without asking first
+- **Database operations** - Never run database commands (migrate, seed, reset) without asking first
+- **Data operations** - Never modify, clear, or reset database data without explicit permission
+
+### When You Need Permission:
+- ✅ **Safe operations** (editing specific sections, adding content, fixing bugs)
+- ❌ **Destructive operations** (deleting files, clearing content, complete rewrites, folder deletions, database modifications)
+
+### How to Ask for Permission:
+1. **Explain what you want to do** - Be specific about the operation
+2. **Explain why it's necessary** - What problem are you solving?
+3. **Wait for explicit approval** - Don't proceed until user says "yes"
+4. **Confirm before proceeding** - Double-check the user's intent
+
+### Example Permission Request:
+> "I need to completely rewrite the `ActivityFilters.tsx` file because the current structure has become corrupted and is causing build errors. This will replace all existing content. Do you give me permission to proceed with a complete rewrite?"
+
+### Emergency Situations:
+If a file is completely corrupted and unusable, explain the situation and ask for permission to restore it from a working version or recreate it entirely.
+
+**Remember:** It's better to ask twice than to accidentally lose user content!
+
+---
+description:
+globs:
+alwaysApply: true
+---

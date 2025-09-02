@@ -81,6 +81,36 @@ export interface Activity {
   is_approved: boolean;
 }
 
+// API Response Activity type (what the activities list API actually returns)
+export interface ApiActivity {
+  id: string;
+  name: MultilingualContent;
+  description: MultilingualContent;
+  materials: MultilingualContent;
+  approximate_duration_minutes: number;
+  group_size: string; // API returns string, not union type
+  effort_level: string; // API returns string, not union type
+  location: string; // API returns string, not union type
+  age_group: string; // API returns string, not union type
+  image_url?: string;
+  created_at: string;
+  activity_type: {
+    id: string;
+    name: MultilingualContent;
+  };
+  educational_goals: Array<{
+    id: string;
+    title: MultilingualContent;
+    code: string;
+  }>;
+  sdgs: Array<{
+    id: string;
+    number: number;
+    name: MultilingualContent;
+    icon_url?: string;
+  }>;
+}
+
 // Program types
 export interface Program {
   id: string;

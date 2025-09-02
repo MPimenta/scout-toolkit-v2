@@ -33,6 +33,7 @@ SDGs: [SDG Icons]
 - Implement proper caching
 - Handle large datasets efficiently
 - Provide progress feedback
+---
 description:
 globs:
 alwaysApply: true
