@@ -43,7 +43,7 @@ This document outlines the technical architecture, stack choices, and key design
 
 ### Development Tools
 - **ESLint + Prettier** - Code linting and formatting
-- **Vitest** - Unit and integration testing
+- **Vitest** - Unit and integration testing with PostgreSQL
 - **Playwright** - End-to-end testing
 - **Drizzle Kit** - Database migrations and seeding
 - **OpenAPI/Swagger** - API documentation and interactive testing
@@ -118,8 +118,10 @@ scout-toolkit-v2/
 
 #### `tests/`
 - **`unit/`** - Unit tests for components and utilities
-- **`integration/`** - Integration tests for API endpoints
+- **`integration/`** - Integration tests for API endpoints with PostgreSQL
 - **`e2e/`** - End-to-end tests for user flows
+- **`setup.ts`** - PostgreSQL test database setup and schema creation
+- **`helpers/database.ts`** - Test database utilities and isolation
 
 ## Data Model
 

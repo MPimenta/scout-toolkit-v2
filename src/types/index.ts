@@ -1,13 +1,6 @@
 import { type ClassValue } from 'clsx';
 
-// Locale types
-export type Locale = 'pt' | 'en';
 
-// Multilingual content type
-export type MultilingualContent = {
-  pt: string;
-  en: string;
-};
 
 // Age group types
 export type AgeGroup = 'cub_scouts' | 'scouts' | 'adventurers' | 'rovers' | 'leaders';
@@ -65,9 +58,9 @@ export interface User {
 // Activity types
 export interface Activity {
   id: string;
-  name: MultilingualContent;
-  description: MultilingualContent;
-  materials: MultilingualContent;
+  name: string;
+  description: string;
+  materials: string;
   approximate_duration_minutes: number;
   group_size: GroupSize;
   effort_level: EffortLevel;
@@ -84,9 +77,9 @@ export interface Activity {
 // API Response Activity type (what the activities list API actually returns)
 export interface ApiActivity {
   id: string;
-  name: MultilingualContent;
-  description: MultilingualContent;
-  materials: MultilingualContent;
+  name: string;
+  description: string;
+  materials: string;
   approximate_duration_minutes: number;
   group_size: string; // API returns string, not union type
   effort_level: string; // API returns string, not union type
@@ -96,17 +89,17 @@ export interface ApiActivity {
   created_at: string;
   activity_type: {
     id: string;
-    name: MultilingualContent;
+    name: string;
   };
   educational_goals: Array<{
     id: string;
-    title: MultilingualContent;
+    title: string;
     code: string;
   }>;
   sdgs: Array<{
     id: string;
     number: number;
-    name: MultilingualContent;
+    name: string;
     icon_url?: string;
   }>;
 }

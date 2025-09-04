@@ -85,9 +85,9 @@ export function ActivityFilters({
 }: ActivityFiltersProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);
-  const [activityTypeOptions, setActivityTypeOptions] = useState<Array<{ id: string; name: Record<string, string> | string }>>([]);
-  const [sdgOptions, setSdgOptions] = useState<Array<{ id: string; name: Record<string, string> | string; number: number; icon_url?: string }>>([]);
-  const [educationalGoalOptions, setEducationalGoalOptions] = useState<Array<{ id: string; title: Record<string, string> | string; code: string; area: { name: Record<string, string> | string } }>>([]);
+  const [activityTypeOptions, setActivityTypeOptions] = useState<Array<{ id: string; name: string }>>([]);
+  const [sdgOptions, setSdgOptions] = useState<Array<{ id: string; name: string; number: number; icon_url?: string }>>([]);
+  const [educationalGoalOptions, setEducationalGoalOptions] = useState<Array<{ id: string; title: string; code: string; area: { name: string } }>>([]);
 
   // Update local filters when props change
   useEffect(() => {
@@ -168,10 +168,7 @@ export function ActivityFilters({
     Array.isArray(value) ? value.length > 0 : value !== '' && value !== '>='
   );
 
-  const getPortugueseText = (text: Record<string, string> | string) => {
-    if (typeof text === 'string') return text;
-    return text.pt || text.en || Object.values(text)[0] || '';
-  };
+
 
   return (
     <>
@@ -254,7 +251,7 @@ export function ActivityFilters({
 
                              {filters.activityType.map((typeId) => (
                  <Badge key={typeId} variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
-                   Tipo: {getPortugueseText(activityTypeOptions.find(o => o.id === typeId)?.name || '')}
+                   Tipo: {activityTypeOptions.find(o => o.id === typeId)?.name || ''}
                    <button
                      onClick={() => handleMultiSelectChange('activityType', typeId, false)}
                      className="ml-1 hover:text-destructive"
@@ -266,7 +263,7 @@ export function ActivityFilters({
 
                {filters.sdgs.map((sdgId) => (
                  <Badge key={sdgId} variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
-                   ODS {sdgOptions.find(o => o.id === sdgId)?.number}: {getPortugueseText(sdgOptions.find(o => o.id === sdgId)?.name || '')}
+                   ODS {sdgOptions.find(o => o.id === sdgId)?.number}: {sdgOptions.find(o => o.id === sdgId)?.name || ''}
                    <button
                      onClick={() => handleMultiSelectChange('sdgs', sdgId, false)}
                      className="ml-1 hover:text-destructive"
@@ -278,7 +275,7 @@ export function ActivityFilters({
 
                {filters.educationalGoals.map((goalId) => (
                  <Badge key={goalId} variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
-                   {getPortugueseText(educationalGoalOptions.find(o => o.id === goalId)?.title || '')}
+                   {educationalGoalOptions.find(o => o.id === goalId)?.title || ''}
                    <button
                      onClick={() => handleMultiSelectChange('educationalGoals', goalId, false)}
                      className="ml-1 hover:text-destructive"
@@ -454,7 +451,7 @@ export function ActivityFilters({
                          onChange={(e) => handleMultiSelectChange('activityType', option.id, e.target.checked)}
                          className="rounded border-gray-300"
                        />
-                       <span className="text-sm">{getPortugueseText(option.name)}</span>
+                       <span className="text-sm">{option.name}</span>
                      </label>
                    ))}
                  </div>
@@ -526,7 +523,7 @@ export function ActivityFilters({
                               src={option.icon_url}
                               alt={`ODS ${option.number}`}
                               className="w-6 h-6 object-contain"
-                              title={`ODS ${option.number}: ${getPortugueseText(option.name)}`}
+                              title={`ODS ${option.number}: ${option.name}`}
                             />
                           ) : (
                             // Fallback to colored circle if no icon
@@ -535,13 +532,13 @@ export function ActivityFilters({
                               style={{
                                 backgroundColor: `hsl(${(option.number * 20) % 360}, 70%, 50%)`
                               }}
-                              title={`ODS ${option.number}: ${getPortugueseText(option.name)}`}
+                              title={`ODS ${option.number}: ${option.name}`}
                             >
                               {option.number}
                             </div>
                           )}
                           <span className="text-sm">
-                            <strong>ODS {option.number}:</strong> {getPortugueseText(option.name)}
+                            <strong>ODS {option.number}:</strong> {option.name}
                           </span>
                         </div>
                      </label>
@@ -565,10 +562,10 @@ export function ActivityFilters({
                          className="rounded border-gray-300"
                        />
                        <span className="text-sm">
-                         {getPortugueseText(option.title)}
+                         {option.title}
                          <br />
                          <span className="text-xs text-muted-foreground">
-                           {getPortugueseText(option.area.name)}
+                           {option.area.name}
                          </span>
                        </span>
                      </label>

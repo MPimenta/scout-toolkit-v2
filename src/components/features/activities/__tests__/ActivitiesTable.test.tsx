@@ -16,8 +16,8 @@ vi.mock('@/components/ui/table', () => ({
 const mockActivities = [
   {
     id: '1',
-    name: { pt: 'Atividade de Teste', en: 'Test Activity' },
-    description: { pt: 'Descrição de teste', en: 'Test description' },
+    name: 'Atividade de Teste',
+    description: 'Descrição de teste',
     approximate_duration_minutes: 60,
     group_size: 'medium' as const,
     effort_level: 'medium' as const,
@@ -26,12 +26,12 @@ const mockActivities = [
     created_at: '2024-01-01T00:00:00Z',
     activity_type: {
       id: '1',
-      name: { pt: 'Jogo', en: 'Game' },
+      name: 'Jogo',
     },
     educational_goals: [
       {
         id: '1',
-        title: { pt: 'Trabalho em Equipa', en: 'Teamwork' },
+        title: 'Trabalho em Equipa',
         code: 'SE1',
       },
     ],
@@ -39,7 +39,7 @@ const mockActivities = [
       {
         id: '1',
         number: 4,
-        name: { pt: 'Educação de Qualidade', en: 'Quality Education' },
+        name: 'Educação de Qualidade',
         icon_url: '/sdg-icons/sdg-4.png',
       },
     ],

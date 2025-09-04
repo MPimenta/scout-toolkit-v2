@@ -8,41 +8,30 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Calendar, Clock, Users } from 'lucide-react';
+import { Plus, Calendar, Clock, Users, Loader2 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
+import { usePrograms } from '@/hooks/usePrograms';
 
 interface Activity {
   id: string;
-  name: Record<string, string>;
+  name: string; // Now simple string after migration
   approximate_duration_minutes: number;
   group_size: 'small' | 'medium' | 'large';
 }
 
 interface AddToProgramModalProps {
-  isOpen: boolean;
   onClose: () => void;
   activity: Activity;
 }
 
-interface Program {
-  id: string;
-  name: string;
-  description?: string;
-}
-
-export function AddToProgramModal({ isOpen, onClose, activity }: AddToProgramModalProps) {
+export function AddToProgramModal({ onClose, activity }: AddToProgramModalProps) {
   const { data: session } = useSession();
+  const { programs, loading: programsLoading, error: programsError } = usePrograms();
   const [selectedProgram, setSelectedProgram] = useState<string>('');
   const [showCreateProgram, setShowCreateProgram] = useState(false);
   const [newProgramName, setNewProgramName] = useState('');
   const [newProgramDescription, setNewProgramDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Mock programs - TODO: Replace with real API call
-  const userPrograms: Program[] = [
-    { id: '1', name: 'Acampamento de Verão 2024', description: 'Programa de atividades para o acampamento de verão' },
-    { id: '2', name: 'Reuniões Semanais', description: 'Atividades para as reuniões semanais da secção' },
-  ];
 
   const handleAddToProgram = async () => {
     if (!selectedProgram) return;
@@ -94,14 +83,9 @@ export function AddToProgramModal({ isOpen, onClose, activity }: AddToProgramMod
     }
   };
 
-  const getPortugueseText = (content: Record<string, string> | null | undefined): string => {
-    if (!content) return '';
-    return content.pt || content.en || Object.values(content)[0] || '';
-  };
-
   if (!session) {
     return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
+      <Dialog open={true} onOpenChange={onClose}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Adicionar ao Programa</DialogTitle>
@@ -118,8 +102,8 @@ export function AddToProgramModal({ isOpen, onClose, activity }: AddToProgramMod
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl" data-testid="add-to-program-modal" data-activity-id={activity.id} data-is-open={isOpen.toString()}>
+    <Dialog open={true} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl" data-testid="add-to-program-modal" data-activity-id={activity.id}>
         <DialogHeader>
           <DialogTitle>Adicionar ao Programa</DialogTitle>
         </DialogHeader>
@@ -133,7 +117,7 @@ export function AddToProgramModal({ isOpen, onClose, activity }: AddToProgramMod
             <CardContent>
               <div className="space-y-3">
                 <h3 className="font-semibold text-foreground">
-                  {getPortugueseText(activity.name)}
+                  {activity.name}
                 </h3>
                 <div className="flex gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
@@ -155,25 +139,42 @@ export function AddToProgramModal({ isOpen, onClose, activity }: AddToProgramMod
             <div className="space-y-4">
               <div>
                 <Label htmlFor="program-select">Selecionar Programa</Label>
-                <Select value={selectedProgram} onValueChange={setSelectedProgram}>
-                  <SelectTrigger id="program-select">
-                    <SelectValue placeholder="Escolha um programa existente" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {userPrograms.map((program) => (
-                      <SelectItem key={program.id} value={program.id}>
-                        <div>
-                          <div className="font-medium">{program.name}</div>
-                          {program.description && (
-                            <div className="text-sm text-muted-foreground">
-                              {program.description}
-                            </div>
-                          )}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {programsLoading ? (
+                  <div className="flex items-center gap-2 p-3 border rounded-md">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span className="text-sm text-muted-foreground">A carregar programas...</span>
+                  </div>
+                ) : programsError ? (
+                  <div className="p-3 border border-destructive/20 rounded-md bg-destructive/5">
+                    <p className="text-sm text-destructive">Erro ao carregar programas: {programsError}</p>
+                  </div>
+                ) : programs && programs.length > 0 ? (
+                  <Select value={selectedProgram} onValueChange={setSelectedProgram}>
+                    <SelectTrigger id="program-select">
+                      <SelectValue placeholder="Escolha um programa existente" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {programs.map((program) => (
+                        <SelectItem key={program.id} value={program.id}>
+                          <div>
+                            <div className="font-medium">{program.name}</div>
+                            {program.date && (
+                              <div className="text-sm text-muted-foreground">
+                                {new Date(program.date).toLocaleDateString('pt-PT')}
+                              </div>
+                            )}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="p-3 border border-muted rounded-md bg-muted/20">
+                    <p className="text-sm text-muted-foreground text-center">
+                      Ainda não tem programas. Crie o seu primeiro programa!
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-2">
@@ -188,7 +189,7 @@ export function AddToProgramModal({ isOpen, onClose, activity }: AddToProgramMod
                 
                 <Button
                   onClick={handleAddToProgram}
-                  disabled={!selectedProgram || isSubmitting}
+                  disabled={!selectedProgram || isSubmitting || programsLoading || !programs || programs.length === 0}
                   className="flex items-center gap-2"
                 >
                   <Calendar className="w-4 h-4" />
@@ -208,7 +209,7 @@ export function AddToProgramModal({ isOpen, onClose, activity }: AddToProgramMod
                   placeholder="Ex: Acampamento de Verão 2024"
                 />
               </div>
-              
+               
               <div>
                 <Label htmlFor="program-description">Descrição (opcional)</Label>
                 <Textarea
@@ -227,7 +228,7 @@ export function AddToProgramModal({ isOpen, onClose, activity }: AddToProgramMod
                 >
                   Cancelar
                 </Button>
-                
+                 
                 <Button
                   onClick={handleCreateProgram}
                   disabled={!newProgramName.trim() || isSubmitting}

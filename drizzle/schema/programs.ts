@@ -1,7 +1,7 @@
 import { pgTable, text, timestamp, uuid, integer, boolean, date, time } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
-import { users } from './users';
+import { user } from './auth';
 import { activities } from './activities';
 
 // Programs table
@@ -10,7 +10,7 @@ export const programs = pgTable('programs', {
   name: text('name').notNull(),
   date: date('date'),
   start_time: time('start_time').notNull(),
-  user_id: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  user_id: uuid('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   is_public: boolean('is_public').notNull().default(false),
   created_at: timestamp('created_at').notNull().defaultNow(),
   updated_at: timestamp('updated_at').notNull().defaultNow(),

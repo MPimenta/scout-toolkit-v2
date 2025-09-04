@@ -35,18 +35,18 @@ export interface FilterInfo {
 export interface ActivitiesResponse {
   activities: Array<{
     id: string;
-    name: Record<string, string> | string;
-    description: Record<string, string> | string;
-    materials: Record<string, string> | string;
+    name: string;
+    description: string;
+    materials: string;
     approximate_duration_minutes: number;
     group_size: string;
     effort_level: string;
     location: string;
     age_group: string;
     created_at: string;
-    activity_type: { id: string; name: Record<string, string> | string };
-    educational_goals: Array<{ id: string; title: Record<string, string> | string; code: string }>;
-    sdgs: Array<{ id: string; number: number; name: Record<string, string> | string; icon_url: string }>;
+    activity_type: { id: string; name: string };
+    educational_goals: Array<{ id: string; title: string; code: string }>;
+    sdgs: Array<{ id: string; number: number; name: string; icon_url: string }>;
   }>;
   pagination: PaginationInfo;
   filters: FilterInfo;

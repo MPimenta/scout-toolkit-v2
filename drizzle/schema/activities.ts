@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, integer, boolean, primaryKey, jsonb } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid, integer, boolean, primaryKey } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { activityTypes } from './taxonomies';
@@ -9,9 +9,9 @@ import { users } from './users';
 // Activities table
 export const activities = pgTable('activities', {
   id: uuid('id').primaryKey().defaultRandom(),
-  name: jsonb('name').notNull(), // JSONB for multilingual content
-  description: jsonb('description').notNull(), // JSONB for multilingual content
-  materials: jsonb('materials').notNull(), // JSONB for multilingual content
+  name: text('name').notNull(),
+  description: text('description').notNull(),
+  materials: text('materials').notNull(),
   approximate_duration_minutes: integer('approximate_duration_minutes').notNull(),
   group_size: text('group_size', { enum: ['small', 'medium', 'large'] }).notNull(),
   effort_level: text('effort_level', { enum: ['low', 'medium', 'high'] }).notNull(),

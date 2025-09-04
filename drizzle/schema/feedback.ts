@@ -24,7 +24,7 @@ export const editSuggestions = pgTable('edit_suggestions', {
   activity_id: uuid('activity_id').notNull().references(() => activities.id, { onDelete: 'cascade' }),
   user_id: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   field: text('field').notNull(), // e.g., 'name', 'description', 'materials'
-  suggested_value: text('suggested_value').notNull(), // JSONB for multilingual content
+  suggested_value: text('suggested_value').notNull(),
   status: text('status', { enum: ['pending', 'approved', 'rejected'] }).notNull().default('pending'),
   reviewed_at: timestamp('reviewed_at'),
   reviewed_by: uuid('reviewed_by').references(() => users.id),

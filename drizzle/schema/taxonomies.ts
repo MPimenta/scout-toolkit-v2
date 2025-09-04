@@ -1,20 +1,20 @@
-import { pgTable, text, timestamp, uuid, integer, jsonb } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid, integer } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
 // Activity types table
 export const activityTypes = pgTable('activity_types', {
   id: uuid('id').primaryKey().defaultRandom(),
-  name: jsonb('name').notNull(), // JSONB for multilingual content
-  description: jsonb('description'), // JSONB for multilingual content
+  name: text('name').notNull(),
+  description: text('description'),
   created_at: timestamp('created_at').notNull().defaultNow(),
 });
 
 // Educational areas table
 export const educationalAreas = pgTable('educational_areas', {
   id: uuid('id').primaryKey().defaultRandom(),
-  name: jsonb('name').notNull(), // JSONB for multilingual content
-  description: jsonb('description'), // JSONB for multilingual content
+  name: text('name').notNull(),
+  description: text('description'),
   icon: text('icon').notNull(),
   code: text('code').notNull().unique(),
   created_at: timestamp('created_at').notNull().defaultNow(),
@@ -24,8 +24,8 @@ export const educationalAreas = pgTable('educational_areas', {
 export const educationalGoals = pgTable('educational_goals', {
   id: uuid('id').primaryKey().defaultRandom(),
   area_id: uuid('area_id').notNull().references(() => educationalAreas.id, { onDelete: 'cascade' }),
-  title: jsonb('title').notNull(), // JSONB for multilingual content
-  description: jsonb('description'), // JSONB for multilingual content
+  title: text('title').notNull(),
+  description: text('description'),
   code: text('code').notNull().unique(),
   created_at: timestamp('created_at').notNull().defaultNow(),
 });
@@ -34,8 +34,8 @@ export const educationalGoals = pgTable('educational_goals', {
 export const sdgs = pgTable('sdgs', {
   id: uuid('id').primaryKey().defaultRandom(),
   number: integer('number').notNull().unique(), // 1-17
-  name: jsonb('name').notNull(), // JSONB for multilingual content
-  description: jsonb('description').notNull(), // JSONB for multilingual content
+  name: text('name').notNull(),
+  description: text('description').notNull(),
   icon_url: text('icon_url').notNull(),
   created_at: timestamp('created_at').notNull().defaultNow(),
 });

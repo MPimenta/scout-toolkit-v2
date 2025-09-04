@@ -19,11 +19,15 @@ export const authConfig: NextAuthConfig = {
   },
   callbacks: {
     async signIn({ user }) {
+      // TEMPORARILY DISABLED: Domain restriction for @escoteiros.pt emails
       // Only allow @escoteiros.pt emails
-      if (user.email && user.email.endsWith('@escoteiros.pt')) {
-        return true;
-      }
-      return false;
+      // if (user.email && user.email.endsWith('@escoteiros.pt')) {
+      //   return true;
+      // }
+      // return false;
+      
+      // Allow all Google emails temporarily
+      return true;
     },
   },
 };

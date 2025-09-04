@@ -105,10 +105,16 @@ npm run db:seed
 ## 🧪 Testing
 
 ```bash
-npm run test          # Unit tests
+npm run test          # Unit and integration tests with PostgreSQL
 npm run test:e2e      # E2E tests
 npm run test:coverage # Coverage report
 ```
+
+**Testing Infrastructure:**
+- **PostgreSQL-based testing** - All tests use the same database technology as production
+- **Test database isolation** - Dedicated test database with automatic cleanup between tests
+- **Real database operations** - Integration tests perform actual database queries and mutations
+- **Schema consistency** - Test schema matches production schema exactly
 
 ## 📦 Available Scripts
 

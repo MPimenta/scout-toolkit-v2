@@ -11,6 +11,8 @@ The API is fully documented using OpenAPI 3.0 specification and can be explored 
 - **Development:** `http://localhost:3000/api/docs`
 - **Production:** `https://your-domain.com/api/docs`
 
+**Note:** All API endpoints are thoroughly tested using PostgreSQL-based integration tests to ensure reliability and consistency with production database behavior.
+
 ### Features
 - Interactive API explorer with Swagger UI
 - Request/response examples for all endpoints
