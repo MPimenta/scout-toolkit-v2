@@ -872,7 +872,7 @@ The current dual approach (SQLite for units, PostgreSQL for integration) creates
 #### Story 4.2: Program Builder Interface
 **Priority:** Critical
 **Estimate:** 3 days
-**Status:** [ ] In Progress | ✅ **COMPLETED**
+**Status:** [ ] In Progress | ❌ **NOT STARTED**
 **Acceptance Criteria:**
 - [ ] Drag and drop reordering
 - [ ] Add activities to program
@@ -885,6 +885,7 @@ The current dual approach (SQLite for units, PostgreSQL for integration) creates
 - [ ] Create program builder UI
 - [ ] Implement drag and drop
 - [ ] Add activity selection
+- [ ] Create custom block editor
 - [ ] **Testing Tasks (Mandatory)**
   - [ ] Create unit tests for new builder components
   - [ ] Create integration tests for builder functionality
@@ -893,7 +894,7 @@ The current dual approach (SQLite for units, PostgreSQL for integration) creates
   - [ ] Update test coverage report
 
 **Implementation Details:**
-*To be filled upon completion*
+*To be implemented*
 
 **Testing Verification (REQUIRED for completion):**
 - [ ] Unit tests written and passing
@@ -909,7 +910,6 @@ The current dual approach (SQLite for units, PostgreSQL for integration) creates
 - **E2E Tests Created:** [List of test files]
 - **Test Results:** [✅ All tests passing | ❌ Tests failing]
 - **Coverage Impact:** [New coverage percentage]
-- [ ] Create custom block editor
 
 #### Story 4.3: Program Schedule Display
 **Priority:** High

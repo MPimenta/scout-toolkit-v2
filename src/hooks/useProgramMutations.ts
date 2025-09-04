@@ -9,10 +9,11 @@ export interface CreateProgramData {
 }
 
 export interface UpdateProgramData {
-  name: string;
+  name?: string;
   date?: string;
-  start_time: string;
+  start_time?: string;
   is_public?: boolean;
+  entries?: any[]; // Program entries for the builder
 }
 
 export function useProgramMutations() {

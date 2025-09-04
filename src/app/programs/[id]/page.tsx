@@ -126,8 +126,16 @@ export default function ProgramDetailPage() {
             {session?.user?.id === program.user.id && (
               <div className="flex gap-2 mt-4 sm:mt-0">
                 <Button variant="outline" asChild>
-                  <Edit className="h-4 w-4 mr-2" />
-                  Editar
+                  <a href={`/programs/${program.id}/edit`}>
+                    <Edit className="h-4 w-4 mr-2" />
+                    Editar
+                  </a>
+                </Button>
+                <Button variant="outline" asChild>
+                  <a href={`/programs/${program.id}/builder`}>
+                    <Target className="h-4 w-4 mr-2" />
+                    Builder
+                  </a>
                 </Button>
                 <Button
                   variant="outline"
