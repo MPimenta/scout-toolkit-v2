@@ -1,7 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { AddToProgramModal } from '@/components/features/activities/AddToProgramModal';
 import { useSession } from 'next-auth/react';
-
 import { vi } from 'vitest';
 
 // Mock next-auth
@@ -37,6 +36,46 @@ vi.mock('@/hooks/usePrograms', () => ({
   }),
 }));
 
+// Mock the useProgramMutations hook
+vi.mock('@/hooks/useProgramMutations', () => ({
+  useProgramMutations: () => ({
+    createProgram: vi.fn().mockResolvedValue({
+      id: 'new-program-id',
+      name: 'New Program',
+      date: '2024-01-01',
+      start_time: '09:00',
+      is_public: false,
+    }),
+    updateProgram: vi.fn(),
+    deleteProgram: vi.fn(),
+  }),
+}));
+
+// Mock next/navigation
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+}));
+
+// Mock sonner toast
+vi.mock('sonner', () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+    info: vi.fn(),
+    warning: vi.fn(),
+  },
+}));
+
+// Mock fetch
+global.fetch = vi.fn();
+
 const mockUseSession = useSession as ReturnType<typeof vi.fn>;
 
 describe('AddToProgramModal', () => {
@@ -64,13 +103,14 @@ describe('AddToProgramModal', () => {
   };
 
   const defaultProps = {
-    isOpen: true,
     onClose: vi.fn(),
     activity: mockActivity,
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // Reset fetch mock
+    global.fetch = vi.fn();
   });
 
   describe('when user is not authenticated', () => {
@@ -162,7 +202,6 @@ describe('AddToProgramModal', () => {
       // Check that form is displayed
       expect(screen.getByText('Nome do Programa')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('Ex: Acampamento de Verão 2024')).toBeInTheDocument();
-      expect(screen.getByText('Descrição (opcional)')).toBeInTheDocument();
       expect(screen.getByText('Cancelar')).toBeInTheDocument();
       expect(screen.getByText('Criar Programa')).toBeInTheDocument();
     });
@@ -176,10 +215,8 @@ describe('AddToProgramModal', () => {
 
       // Fill in the form
       const nameInput = screen.getByPlaceholderText('Ex: Acampamento de Verão 2024');
-      const descriptionInput = screen.getByPlaceholderText('Descreva o programa...');
       
       fireEvent.change(nameInput, { target: { value: 'Novo Programa' } });
-      fireEvent.change(descriptionInput, { target: { value: 'Descrição do novo programa' } });
 
       // Submit the form
       const submitButton = screen.getByText('Criar Programa');
@@ -282,6 +319,66 @@ describe('AddToProgramModal', () => {
 
       // Should still render without crashing, even with empty name
       expect(screen.getByTestId('add-to-program-modal')).toBeInTheDocument();
+    });
+
+    it('adds activity to selected program successfully', async () => {
+      // Mock successful API response
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ entry: { id: 'entry-1', position: 1 } }),
+      });
+
+      render(<AddToProgramModal {...defaultProps} />);
+
+      // Select a program
+      const selectTrigger = screen.getByRole('combobox');
+      fireEvent.click(selectTrigger);
+      const programOption = screen.getByText('Acampamento de Verão 2024');
+      fireEvent.click(programOption);
+
+      // Click add to program button
+      const addButton = screen.getByRole('button', { name: 'Adicionar ao Programa' });
+      fireEvent.click(addButton);
+
+      // Check loading state
+      expect(screen.getByText('A adicionar...')).toBeInTheDocument();
+
+      // Wait for API call to complete
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith(
+          '/api/programs/1/entries',
+          expect.objectContaining({
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: expect.stringContaining('"entry_type":"activity"'),
+          })
+        );
+      });
+    });
+
+    it('handles API error when adding activity to program', async () => {
+      // Mock API error response
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({ error: 'Program not found' }),
+      });
+
+      render(<AddToProgramModal {...defaultProps} />);
+
+      // Select a program
+      const selectTrigger = screen.getByRole('combobox');
+      fireEvent.click(selectTrigger);
+      const programOption = screen.getByText('Acampamento de Verão 2024');
+      fireEvent.click(programOption);
+
+      // Click add to program button
+      const addButton = screen.getByRole('button', { name: 'Adicionar ao Programa' });
+      fireEvent.click(addButton);
+
+      // Wait for error handling
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalled();
+      });
     });
   });
 

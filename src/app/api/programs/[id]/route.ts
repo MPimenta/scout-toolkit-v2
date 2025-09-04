@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth/config';
 import { db } from '@/lib/db/server';
-import { programs, programEntries, activities, user, activityTypes, educationalGoals, sdgs } from '../../../../../drizzle/schema';
+import { programs, programEntries, activities, user, activityTypes } from '../../../../../drizzle/schema';
 import { eq, and, asc } from 'drizzle-orm';
-import { sql } from 'drizzle-orm';
 
 export async function GET(
   request: NextRequest,
@@ -18,7 +17,7 @@ export async function GET(
 
     const { id: programId } = await params;
 
-    // Fetch program with user info
+    // Fetch program with user info - only show programs owned by the authenticated user
     const [programData] = await db
       .select({
         id: programs.id,
@@ -35,10 +34,7 @@ export async function GET(
       })
       .from(programs)
       .leftJoin(user, eq(programs.user_id, user.id))
-      .where(and(
-        eq(programs.id, programId),
-        eq(programs.user_id, session.user.id)
-      ));
+      .where(and(eq(programs.id, programId), eq(programs.user_id, session.user.id)));
 
     if (!programData) {
       return NextResponse.json({ error: 'Program not found' }, { status: 404 });

@@ -4,7 +4,7 @@ import { useActivity } from '@/hooks/useActivity';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+
 import { Clock, Users, Target, MapPin, BookOpen, Star, MessageSquare, Plus } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ActivityRating } from './ActivityRating';

@@ -4,13 +4,15 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Calendar, Clock, Users, Loader2 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { usePrograms } from '@/hooks/usePrograms';
+import { useProgramMutations } from '@/hooks/useProgramMutations';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 interface Activity {
   id: string;
@@ -26,11 +28,12 @@ interface AddToProgramModalProps {
 
 export function AddToProgramModal({ onClose, activity }: AddToProgramModalProps) {
   const { data: session } = useSession();
-  const { programs, loading: programsLoading, error: programsError } = usePrograms();
+  const { programs, loading: programsLoading, error: programsError, refetch: refetchPrograms } = usePrograms();
+  const { createProgram } = useProgramMutations();
+  const router = useRouter();
   const [selectedProgram, setSelectedProgram] = useState<string>('');
   const [showCreateProgram, setShowCreateProgram] = useState(false);
   const [newProgramName, setNewProgramName] = useState('');
-  const [newProgramDescription, setNewProgramDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleAddToProgram = async () => {
@@ -38,20 +41,46 @@ export function AddToProgramModal({ onClose, activity }: AddToProgramModalProps)
 
     setIsSubmitting(true);
     try {
-      // TODO: Implement API call to add activity to program
-      console.log('Adding activity to program:', {
-        activityId: activity.id,
-        programId: selectedProgram,
+      // Get the current program to determine the next position
+      const currentProgram = programs?.find(p => p.id === selectedProgram);
+      const nextPosition = (currentProgram?.entry_count || 0) + 1;
+      
+      // Calculate start and end times
+      const programStartTime = currentProgram?.start_time || '09:00';
+      const startTime = new Date(`2000-01-01T${programStartTime}`);
+      const endTime = new Date(startTime.getTime() + activity.approximate_duration_minutes * 60000);
+      
+      const startTimeStr = startTime.toTimeString().slice(0, 5);
+      const endTimeStr = endTime.toTimeString().slice(0, 5);
+
+      // Add activity to program via API
+      const response = await fetch(`/api/programs/${selectedProgram}/entries`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          entry_type: 'activity',
+          activity_id: activity.id,
+          position: nextPosition,
+          start_time: startTimeStr,
+          end_time: endTimeStr,
+        }),
       });
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to add activity to program');
+      }
+
+      toast.success('Atividade adicionada ao programa com sucesso!');
       onClose();
-      // TODO: Show success notification
+      
+      // Navigate to program builder
+      router.push(`/programs/${selectedProgram}/builder`);
     } catch (error) {
       console.error('Error adding activity to program:', error);
-      // TODO: Show error notification
+      toast.error(error instanceof Error ? error.message : 'Erro ao adicionar atividade ao programa');
     } finally {
       setIsSubmitting(false);
     }
@@ -62,22 +91,35 @@ export function AddToProgramModal({ onClose, activity }: AddToProgramModalProps)
 
     setIsSubmitting(true);
     try {
-      // TODO: Implement API call to create new program
-      console.log('Creating new program:', {
+      // Create new program
+      const newProgram = await createProgram({
         name: newProgramName,
-        description: newProgramDescription,
+        date: new Date().toISOString().split('T')[0], // Today's date
+        start_time: '09:00',
+        is_public: false,
       });
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // TODO: Add new program to list and select it
-      setShowCreateProgram(false);
-      setNewProgramName('');
-      setNewProgramDescription('');
+
+      if (newProgram) {
+        toast.success('Programa criado com sucesso!');
+        
+        // Refresh programs list
+        await refetchPrograms();
+        
+        // Select the new program
+        setSelectedProgram(newProgram.id);
+        
+        // Reset form
+        setShowCreateProgram(false);
+        setNewProgramName('');
+        
+        // Automatically add the activity to the new program
+        setTimeout(() => {
+          handleAddToProgram();
+        }, 500);
+      }
     } catch (error) {
       console.error('Error creating program:', error);
-      // TODO: Show error notification
+      toast.error(error instanceof Error ? error.message : 'Erro ao criar programa');
     } finally {
       setIsSubmitting(false);
     }
@@ -210,16 +252,6 @@ export function AddToProgramModal({ onClose, activity }: AddToProgramModalProps)
                 />
               </div>
                
-              <div>
-                <Label htmlFor="program-description">Descrição (opcional)</Label>
-                <Textarea
-                  id="program-description"
-                  value={newProgramDescription}
-                  onChange={(e) => setNewProgramDescription(e.target.value)}
-                  placeholder="Descreva o programa..."
-                  rows={3}
-                />
-              </div>
 
               <div className="flex gap-2">
                 <Button

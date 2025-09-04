@@ -78,6 +78,8 @@ export function useProgram(programId: string | null) {
       }
 
       const data = await response.json();
+      console.log('useProgram hook - API response:', data);
+      console.log('useProgram hook - Setting program:', data.program);
       setProgram(data.program);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro desconhecido');

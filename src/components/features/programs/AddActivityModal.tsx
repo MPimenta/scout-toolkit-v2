@@ -6,14 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Activity } from '@/drizzle/schema/activities';
-import { useActivities } from '@/hooks/useActivities';
+import { ActivitiesResponse } from '@/hooks/useActivities';
+import { useAllActivities } from '@/hooks/useActivities';
 import { Search, Filter, Clock, MapPin, Users, Target } from 'lucide-react';
 
 interface AddActivityModalProps {
   open: boolean;
   onClose: () => void;
-  onAdd: (activity: Activity) => void;
+  onAdd: (activity: ActivitiesResponse['activities'][0]) => void;
   programId: string;
 }
 
@@ -21,16 +21,16 @@ export function AddActivityModal({ open, onClose, onAdd, programId }: AddActivit
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [selectedLocation, setSelectedLocation] = useState<string>('all');
-  const { data: activities, isLoading } = useActivities();
+  const { activities, loading: isLoading } = useAllActivities();
 
   const filteredActivities = useMemo(() => {
     if (!activities) return [];
 
     return activities.filter(activity => {
-      const matchesSearch = activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           activity.description.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesSearch = activity.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                             activity.description.toLowerCase().includes(searchTerm.toLowerCase());
       
-      const matchesType = selectedType === 'all' || activity.activity_type === selectedType;
+      const matchesType = selectedType === 'all' || activity.activity_type.name === selectedType;
       const matchesLocation = selectedLocation === 'all' || activity.location === selectedLocation;
 
       return matchesSearch && matchesType && matchesLocation;
@@ -39,7 +39,7 @@ export function AddActivityModal({ open, onClose, onAdd, programId }: AddActivit
 
   const activityTypes = useMemo(() => {
     if (!activities) return [];
-    const types = [...new Set(activities.map(a => a.activity_type).filter(Boolean))];
+    const types = [...new Set(activities.map(a => a.activity_type?.name).filter(Boolean))];
     return types.sort();
   }, [activities]);
 
@@ -49,7 +49,7 @@ export function AddActivityModal({ open, onClose, onAdd, programId }: AddActivit
     return locs.sort();
   }, [activities]);
 
-  const handleAddActivity = (activity: Activity) => {
+  const handleAddActivity = (activity: ActivitiesResponse['activities'][0]) => {
     onAdd(activity);
     onClose();
   };
@@ -135,7 +135,7 @@ export function AddActivityModal({ open, onClose, onAdd, programId }: AddActivit
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1 space-y-2">
-                      <h3 className="font-semibold text-lg">{activity.title}</h3>
+                                                <h3 className="font-semibold text-lg">{activity.name}</h3>
                       <p className="text-sm text-muted-foreground line-clamp-2">
                         {activity.description}
                       </p>
@@ -143,7 +143,7 @@ export function AddActivityModal({ open, onClose, onAdd, programId }: AddActivit
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Clock className="w-4 h-4" />
-                          <span>{formatDuration(activity.duration_minutes || 30)}</span>
+                          <span>{formatDuration(activity.approximate_duration_minutes || 30)}</span>
                         </div>
                         
                         {activity.location && (
@@ -153,10 +153,10 @@ export function AddActivityModal({ open, onClose, onAdd, programId }: AddActivit
                           </div>
                         )}
                         
-                        <div className="flex items-center gap-1">
-                          <Users className="w-4 h-4" />
-                          <span>{activity.min_participants}-{activity.max_participants}</span>
-                        </div>
+                                                    <div className="flex items-center gap-1">
+                              <Users className="w-4 h-4" />
+                              <span>{activity.group_size} group</span>
+                            </div>
                       </div>
 
                       {activity.educational_goals && activity.educational_goals.length > 0 && (

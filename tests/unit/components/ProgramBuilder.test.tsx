@@ -2,13 +2,26 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import { ProgramBuilder } from '@/components/features/programs/ProgramBuilder';
-import { ProgramEntry } from '@/drizzle/schema/programs';
-import { Activity } from '@/drizzle/schema/activities';
+import { ProgramEntry } from '../../../drizzle/schema/programs';
+import { Activity } from '../../../drizzle/schema/activities';
 
 // Mock the hooks and components
 vi.mock('@/hooks/useProgramMutations', () => ({
   useProgramMutations: () => ({
     updateProgram: vi.fn(),
+  }),
+}));
+
+vi.mock('@/hooks/useActivities', () => ({
+  useActivities: () => ({
+    activities: [],
+    loading: false,
+    error: null,
+  }),
+  useAllActivities: () => ({
+    activities: [],
+    loading: false,
+    error: null,
   }),
 }));
 
@@ -34,12 +47,24 @@ vi.mock('@/components/features/programs/AddCustomBlockModal', () => ({
   ),
 }));
 
-vi.mock('@/components/features/programs/ProgramEntryCard', () => ({
-  ProgramEntryCard: ({ entry, index, onRemove, onUpdate }: any) => (
-    <div data-testid={`entry-${index}`}>
-      <span>{entry.entry_type === 'activity' ? 'Activity' : 'Custom'}</span>
-      <button onClick={() => onRemove(entry.id)}>Remove</button>
-      <button onClick={() => onUpdate(entry.id, { start_time: '10:00' })}>Update Time</button>
+vi.mock('@/components/features/programs/ProgramScheduleTable', () => ({
+  ProgramScheduleTable: ({ entries, onReorder, onEdit, onDelete }: any) => (
+    <div data-testid="schedule-table">
+      {entries.map((entry: any, index: number) => (
+        <div key={entry.id} data-testid={`entry-${index}`}>
+          <span>{entry.entry_type === 'activity' ? 'Activity' : 'Custom'}</span>
+          <button onClick={() => onDelete(entry.id)}>Remove</button>
+          <button onClick={() => onEdit(entry)}>Update Time</button>
+        </div>
+      ))}
+    </div>
+  ),
+}));
+
+vi.mock('@/components/features/programs/ProgramSummary', () => ({
+  ProgramSummary: ({ entries, totalDuration }: any) => (
+    <div data-testid="program-summary">
+      <span>Total: {Math.floor(totalDuration / 60)}h {totalDuration % 60}min</span>
     </div>
   ),
 }));
@@ -112,9 +137,10 @@ describe('ProgramBuilder', () => {
 
   it('shows empty state when no entries', () => {
     render(<ProgramBuilder {...defaultProps} />);
-    
-    expect(screen.getByText('No entries yet')).toBeInTheDocument();
-    expect(screen.getByText('Start building your program by adding activities or custom blocks')).toBeInTheDocument();
+
+    // With the new implementation, empty state is handled by the schedule table
+    expect(screen.getByTestId('schedule-table')).toBeInTheDocument();
+    expect(screen.getByTestId('program-summary')).toBeInTheDocument();
   });
 
   it('displays existing entries', () => {
@@ -205,7 +231,7 @@ describe('ProgramBuilder', () => {
     // First entry: 09:00-09:30 = 30min
     // Second entry: 09:30-10:00 = 30min
     // Total: 60min = 1h
-    expect(screen.getByText(/Total: 1h/)).toBeInTheDocument();
+    expect(screen.getAllByText(/Total: 1h 0min/)).toHaveLength(2); // Header and summary both show duration
   });
 
   it('calls onSave when save button is clicked', async () => {

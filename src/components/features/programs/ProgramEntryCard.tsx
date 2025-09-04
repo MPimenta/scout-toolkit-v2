@@ -3,12 +3,11 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ProgramEntry } from '@/drizzle/schema/programs';
-import { Activity } from '@/drizzle/schema/activities';
+import { ProgramEntry } from '../../../../drizzle/schema/programs';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Clock, MapPin, Target, Users, GripVertical, Edit, Trash2 } from 'lucide-react';
-import { useActivities } from '@/hooks/useActivities';
+import { useAllActivities } from '@/hooks/useActivities';
 
 interface ProgramEntryCardProps {
   entry: ProgramEntry;
@@ -18,7 +17,7 @@ interface ProgramEntryCardProps {
 }
 
 export function ProgramEntryCard({ entry, index, onRemove, onUpdate }: ProgramEntryCardProps) {
-  const { data: activities } = useActivities();
+  const { activities } = useAllActivities();
   const activity = activities?.find(a => a.id === entry.activity_id);
 
   const {
@@ -34,10 +33,6 @@ export function ProgramEntryCard({ entry, index, onRemove, onUpdate }: ProgramEn
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-  };
-
-  const formatTime = (time: string) => {
-    return time;
   };
 
   const getDuration = () => {
@@ -123,7 +118,7 @@ export function ProgramEntryCard({ entry, index, onRemove, onUpdate }: ProgramEn
           <div>
             <h3 className="font-semibold text-lg">
               {entry.entry_type === 'activity' 
-                ? activity?.title || 'Unknown Activity'
+                ? activity?.name || 'Unknown Activity'
                 : entry.custom_title || 'Untitled Block'
               }
             </h3>
@@ -176,7 +171,7 @@ export function ProgramEntryCard({ entry, index, onRemove, onUpdate }: ProgramEn
                 </div>
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4 text-muted-foreground" />
-                  <span>{activity.min_participants}-{activity.max_participants} participants</span>
+                  <span>{activity.group_size} group</span>
                 </div>
               </div>
               
@@ -184,7 +179,7 @@ export function ProgramEntryCard({ entry, index, onRemove, onUpdate }: ProgramEn
                 <div className="flex items-center gap-2">
                   <Target className="w-4 h-4 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">
-                    {activity.educational_goals.join(', ')}
+                    {activity.educational_goals.map(goal => goal.title).join(', ')}
                   </span>
                 </div>
               )}

@@ -151,3 +151,42 @@ export function useActivities(options: UseActivitiesOptions) {
     refresh,
   };
 }
+
+// Simple hook for getting all activities without filters
+export function useAllActivities() {
+  const [activities, setActivities] = useState<ActivitiesResponse['activities']>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchAllActivities = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/activities?limit=1000');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data: ActivitiesResponse = await response.json();
+      setActivities(data.activities);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred while fetching activities');
+      console.error('Error fetching activities:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchAllActivities();
+  }, [fetchAllActivities]);
+
+  return {
+    activities,
+    loading,
+    error,
+    refresh: fetchAllActivities,
+  };
+}

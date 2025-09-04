@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { ProgramEntry } from '../../drizzle/schema/programs';
 
 export interface CreateProgramData {
   name: string;
@@ -13,7 +14,7 @@ export interface UpdateProgramData {
   date?: string;
   start_time?: string;
   is_public?: boolean;
-  entries?: any[]; // Program entries for the builder
+  entries?: ProgramEntry[]; // Program entries for the builder
 }
 
 export function useProgramMutations() {
@@ -61,30 +62,61 @@ export function useProgramMutations() {
     setError(null);
 
     try {
-      const response = await fetch(`/api/programs/${programId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+      // If entries are provided, update them separately
+      if (data.entries) {
+        const entriesResponse = await fetch(`/api/programs/${programId}/entries`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ entries: data.entries }),
+        });
 
-      if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error('Não está autenticado');
+        if (!entriesResponse.ok) {
+          if (entriesResponse.status === 401) {
+            throw new Error('Não está autenticado');
+          }
+          if (entriesResponse.status === 404) {
+            throw new Error('Programa não encontrado');
+          }
+          if (entriesResponse.status === 400) {
+            const errorData = await entriesResponse.json();
+            throw new Error(errorData.error || 'Dados inválidos');
+          }
+          throw new Error('Erro ao atualizar entradas do programa');
         }
-        if (response.status === 404) {
-          throw new Error('Programa não encontrado');
-        }
-        if (response.status === 400) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Dados inválidos');
-        }
-        throw new Error('Erro ao atualizar programa');
       }
 
-      const result = await response.json();
-      return result.program;
+      // Update program metadata if provided
+      const { entries, ...programData } = data;
+      if (Object.keys(programData).length > 0) {
+        const response = await fetch(`/api/programs/${programId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(programData),
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error('Não está autenticado');
+          }
+          if (response.status === 404) {
+            throw new Error('Programa não encontrado');
+          }
+          if (response.status === 400) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Dados inválidos');
+          }
+          throw new Error('Erro ao atualizar programa');
+        }
+
+        const result = await response.json();
+        return result.program;
+      }
+
+      return true;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
       setError(errorMessage);

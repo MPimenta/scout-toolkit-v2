@@ -81,7 +81,7 @@ export function ActivityFilters({
   filters, 
   onFiltersChange, 
   onClearFilters,
-  availableFilters 
+  availableFilters
 }: ActivityFiltersProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);

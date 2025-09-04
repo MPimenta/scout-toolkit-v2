@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Clock, Users, MapPin, Target } from 'lucide-react';
+import { Clock, Users, MapPin } from 'lucide-react';
 
 interface AddCustomBlockModalProps {
   open: boolean;

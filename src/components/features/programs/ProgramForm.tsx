@@ -28,9 +28,9 @@ export function ProgramForm({ mode, initialData, onSuccess }: ProgramFormProps) 
   useEffect(() => {
     if (initialData) {
       setFormData({
-        name: initialData.name,
+        name: initialData.name || '',
         date: initialData.date || '',
-        start_time: initialData.start_time,
+        start_time: initialData.start_time || '',
         is_public: initialData.is_public || false,
       });
     }

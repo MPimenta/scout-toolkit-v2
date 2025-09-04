@@ -220,7 +220,7 @@ export default function ProgramDetailPage() {
               </div>
             ) : (
               <div className="space-y-4">
-                {program.entries.map((entry, index) => (
+                {program.entries.map((entry) => (
                   <div
                     key={entry.id}
                     className="flex items-center gap-4 p-4 border rounded-lg"

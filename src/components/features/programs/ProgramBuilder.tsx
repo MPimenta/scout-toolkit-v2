@@ -1,76 +1,61 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import { ProgramEntry } from '@/drizzle/schema/programs';
-import { Activity } from '@/drizzle/schema/activities';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ProgramEntry } from '../../../../drizzle/schema/programs';
+import { ProgramEntry as APIProgramEntry } from '@/hooks/useProgram';
+import { ActivitiesResponse } from '@/hooks/useActivities';
 import { Button } from '@/components/ui/button';
-import { Plus, Clock, MapPin, Target, Users } from 'lucide-react';
+import { Plus, Clock } from 'lucide-react';
 import { AddActivityModal } from './AddActivityModal';
 import { AddCustomBlockModal } from './AddCustomBlockModal';
-import { ProgramEntryCard } from './ProgramEntryCard';
+import { ProgramScheduleTable } from './ProgramScheduleTable';
+import { ProgramSummary } from './ProgramSummary';
 import { useProgramMutations } from '@/hooks/useProgramMutations';
+import { useAllActivities } from '@/hooks/useActivities';
 
 interface ProgramBuilderProps {
   programId: string;
-  initialEntries?: ProgramEntry[];
-  onSave?: (entries: ProgramEntry[]) => void;
+  initialEntries?: APIProgramEntry[];
+  onSave?: (entries: APIProgramEntry[]) => void;
+  onRefresh?: () => void;
 }
 
-export function ProgramBuilder({ programId, initialEntries = [], onSave }: ProgramBuilderProps) {
-  const [entries, setEntries] = useState<ProgramEntry[]>(initialEntries);
+export function ProgramBuilder({ programId, initialEntries = [], onSave, onRefresh }: ProgramBuilderProps) {
+  // Convert API ProgramEntry to Drizzle ProgramEntry
+  const convertAPIEntryToDrizzle = useCallback((apiEntry: APIProgramEntry): ProgramEntry => ({
+    id: apiEntry.id,
+    program_id: programId,
+    position: apiEntry.position,
+    start_time: apiEntry.start_time,
+    end_time: apiEntry.end_time,
+    entry_type: apiEntry.entry_type,
+    activity_id: apiEntry.activity?.id || null,
+    custom_title: apiEntry.custom_title || null,
+    custom_duration_minutes: apiEntry.custom_duration_minutes || null,
+    created_at: new Date(),
+  }), [programId]);
+
+  const [entries, setEntries] = useState<ProgramEntry[]>(
+    initialEntries.map(convertAPIEntryToDrizzle)
+  );
   const [showAddActivity, setShowAddActivity] = useState(false);
   const [showAddCustom, setShowAddCustom] = useState(false);
   const { updateProgram } = useProgramMutations();
+  const { activities } = useAllActivities();
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
+  // Sync local state with initialEntries when they change (after refresh)
+  useEffect(() => {
+    setEntries(initialEntries.map(convertAPIEntryToDrizzle));
+  }, [initialEntries, convertAPIEntryToDrizzle]);
 
-  const handleDragEnd = useCallback((event: DragEndEvent) => {
-    const { active, over } = event;
 
-    if (over && active.id !== over.id) {
-      setEntries((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-
-        const newEntries = arrayMove(items, oldIndex, newIndex);
-        
-        // Update positions
-        return newEntries.map((entry, index) => ({
-          ...entry,
-          position: index,
-        }));
-      });
-    }
-  }, []);
-
-  const handleAddActivity = (activity: Activity) => {
+  const handleAddActivity = async (activity: ActivitiesResponse['activities'][0]) => {
     const newEntry: ProgramEntry = {
       id: crypto.randomUUID(),
       program_id: programId,
       position: entries.length,
       start_time: calculateNextStartTime(),
-      end_time: calculateEndTime(calculateNextStartTime(), activity.duration_minutes || 30),
+      end_time: calculateEndTime(calculateNextStartTime(), activity.approximate_duration_minutes || 30),
       entry_type: 'activity',
       activity_id: activity.id,
       custom_title: null,
@@ -78,11 +63,25 @@ export function ProgramBuilder({ programId, initialEntries = [], onSave }: Progr
       created_at: new Date(),
     };
 
-    setEntries([...entries, newEntry]);
-    setShowAddActivity(false);
+    try {
+      // Add to local state immediately for better UX
+      setEntries([...entries, newEntry]);
+      setShowAddActivity(false);
+
+      // Persist to database
+      await updateProgram(programId, { entries: [...entries, newEntry] });
+      
+      // Refresh parent data to get the latest entries from the database
+      onRefresh?.();
+    } catch (error) {
+      console.error('Failed to add activity:', error);
+      // Revert local state on error
+      setEntries(entries);
+      setShowAddActivity(true);
+    }
   };
 
-  const handleAddCustomBlock = (title: string, durationMinutes: number) => {
+  const handleAddCustomBlock = async (title: string, durationMinutes: number) => {
     const newEntry: ProgramEntry = {
       id: crypto.randomUUID(),
       program_id: programId,
@@ -96,18 +95,70 @@ export function ProgramBuilder({ programId, initialEntries = [], onSave }: Progr
       created_at: new Date(),
     };
 
-    setEntries([...entries, newEntry]);
-    setShowAddCustom(false);
+    try {
+      // Add to local state immediately for better UX
+      setEntries([...entries, newEntry]);
+      setShowAddCustom(false);
+
+      // Persist to database
+      await updateProgram(programId, { entries: [...entries, newEntry] });
+      
+      // Refresh parent data to get the latest entries from the database
+      onRefresh?.();
+    } catch (error) {
+      console.error('Failed to add custom block:', error);
+      // Revert local state on error
+      setEntries(entries);
+      setShowAddCustom(true);
+    }
   };
 
-  const handleRemoveEntry = (entryId: string) => {
-    setEntries(entries.filter(entry => entry.id !== entryId));
+  const handleRemoveEntry = async (entryId: string) => {
+    const updatedEntries = entries.filter(entry => entry.id !== entryId);
+    
+    try {
+      // Update local state immediately for better UX
+      setEntries(updatedEntries);
+      
+      // Persist to database
+      await updateProgram(programId, { entries: updatedEntries });
+      
+      // Refresh parent data to get the latest entries from the database
+      onRefresh?.();
+    } catch (error) {
+      console.error('Failed to remove entry:', error);
+      // Revert local state on error
+      setEntries(entries);
+    }
   };
 
-  const handleUpdateEntry = (entryId: string, updates: Partial<ProgramEntry>) => {
-    setEntries(entries.map(entry => 
-      entry.id === entryId ? { ...entry, ...updates } : entry
-    ));
+
+  const handleReorderEntries = async (newEntries: ProgramEntry[]) => {
+    // Update positions based on new order
+    const updatedEntries = newEntries.map((entry, index) => ({
+      ...entry,
+      position: index,
+    }));
+    
+    try {
+      // Update local state immediately for better UX
+      setEntries(updatedEntries);
+      
+      // Persist to database
+      await updateProgram(programId, { entries: updatedEntries });
+      
+      // Refresh parent data to get the latest entries from the database
+      onRefresh?.();
+    } catch (error) {
+      console.error('Failed to reorder entries:', error);
+      // Revert local state on error
+      setEntries(entries);
+    }
+  };
+
+  const handleEditEntry = (entry: ProgramEntry) => {
+    // TODO: Implement edit functionality
+    console.log('Edit entry:', entry);
   };
 
   const calculateNextStartTime = (): string => {
@@ -126,11 +177,32 @@ export function ProgramBuilder({ programId, initialEntries = [], onSave }: Progr
     return `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}`;
   };
 
+  // Convert Drizzle ProgramEntry back to API ProgramEntry
+  const convertDrizzleEntryToAPI = (drizzleEntry: ProgramEntry): APIProgramEntry => ({
+    id: drizzleEntry.id,
+    position: drizzleEntry.position,
+    start_time: drizzleEntry.start_time,
+    end_time: drizzleEntry.end_time,
+    entry_type: drizzleEntry.entry_type,
+    custom_title: drizzleEntry.custom_title || undefined,
+    custom_duration_minutes: drizzleEntry.custom_duration_minutes || undefined,
+    activity: drizzleEntry.activity_id ? {
+      id: drizzleEntry.activity_id,
+      name: '', // Will be populated by the API
+      approximate_duration_minutes: 0,
+      group_size: '',
+      effort_level: '',
+      location: '',
+      activity_type: { name: '' }
+    } : undefined,
+  });
+
   const handleSave = async () => {
     try {
       // Update program entries in database
       await updateProgram(programId, { entries });
-      onSave?.(entries);
+      const apiEntries = entries.map(convertDrizzleEntryToAPI);
+      onSave?.(apiEntries);
     } catch (error) {
       console.error('Failed to save program:', error);
     }
@@ -186,38 +258,23 @@ export function ProgramBuilder({ programId, initialEntries = [], onSave }: Progr
         </Button>
       </div>
 
-      {/* Program Entries */}
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-        modifiers={[restrictToVerticalAxis]}
-      >
-        <SortableContext
-          items={entries.map(entry => entry.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          <div className="space-y-3">
-            {entries.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                <MapPin className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p className="text-lg font-medium">No entries yet</p>
-                <p className="text-sm">Start building your program by adding activities or custom blocks</p>
-              </div>
-            ) : (
-              entries.map((entry, index) => (
-                <ProgramEntryCard
-                  key={entry.id}
-                  entry={entry}
-                  index={index}
-                  onRemove={handleRemoveEntry}
-                  onUpdate={handleUpdateEntry}
-                />
-              ))
-            )}
-          </div>
-        </SortableContext>
-      </DndContext>
+      {/* Program Summary */}
+      <ProgramSummary
+        entries={entries}
+        activities={activities}
+        programStartTime="09:00"
+        totalDuration={totalDuration}
+      />
+
+      {/* Program Schedule Table */}
+      <ProgramScheduleTable
+        entries={entries}
+        activities={activities}
+        programStartTime="09:00"
+        onReorder={handleReorderEntries}
+        onEdit={handleEditEntry}
+        onDelete={handleRemoveEntry}
+      />
 
       {/* Modals */}
       <AddActivityModal

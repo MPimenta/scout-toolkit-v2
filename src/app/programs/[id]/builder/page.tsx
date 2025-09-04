@@ -2,27 +2,26 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useProgram } from '@/hooks/useProgram';
 import { ProgramBuilder } from '@/components/features/programs/ProgramBuilder';
-import { ProgramEntry } from '@/drizzle/schema/programs';
-import { useState } from 'react';
 
 export default function ProgramBuilderPage() {
   const params = useParams();
   const router = useRouter();
   const { data: session } = useSession();
-  const [savedEntries, setSavedEntries] = useState<ProgramEntry[]>([]);
-  
   const programId = params.id as string;
-  const { program, loading, error } = useProgram(programId);
+  const { program, loading, error, refetch } = useProgram(programId);
 
-  const handleSave = (entries: ProgramEntry[]) => {
-    setSavedEntries(entries);
+  const handleSave = (entries: unknown[]) => {
     // Show success message or redirect
     console.log('Program saved with entries:', entries);
+  };
+
+  const handleRefresh = () => {
+    refetch();
   };
 
   const handleBack = () => {
@@ -95,7 +94,7 @@ export default function ProgramBuilderPage() {
   }
 
   // Check if user owns the program
-  if (program.user_id !== session.user.id) {
+  if (program.user.id !== session.user.id) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card>
@@ -135,8 +134,9 @@ export default function ProgramBuilderPage() {
       {/* Program Builder */}
       <ProgramBuilder
         programId={programId}
-        initialEntries={savedEntries}
+        initialEntries={program.entries || []}
         onSave={handleSave}
+        onRefresh={handleRefresh}
       />
     </div>
   );

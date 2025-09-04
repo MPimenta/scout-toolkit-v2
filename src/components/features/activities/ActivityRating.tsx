@@ -22,7 +22,7 @@ interface Rating {
   createdAt: string;
 }
 
-export function ActivityRating({ activityId: _activityId }: ActivityRatingProps) {
+export function ActivityRating({ }: ActivityRatingProps) {
   const { data: session } = useSession();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');

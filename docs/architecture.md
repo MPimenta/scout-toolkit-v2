@@ -190,6 +190,7 @@ educational_goals {
   title: text // Portuguese educational goal title
   description?: text // Portuguese educational goal description
   code: string (unique)
+  icon: string // Icon for educational goal
   created_at: timestamp
 }
 
@@ -199,6 +200,36 @@ sdgs {
   name: text // Portuguese SDG name
   description: text // Portuguese SDG description
   icon_url: string
+  icon: string // Additional icon field for consistency
+  created_at: timestamp
+}
+
+// Additional taxonomy tables with icon support
+group_sizes {
+  id: string (primary key)
+  name: string // e.g., "Pequeno (4-8)", "Médio (8-12)", "Grande (12+)"
+  icon: string // e.g., "👥", "👨‍👩‍👧‍👦", "👥"
+  created_at: timestamp
+}
+
+effort_levels {
+  id: string (primary key)
+  name: string // e.g., "Baixo", "Médio", "Alto"
+  icon: string // e.g., "🟢", "🟡", "🔴"
+  created_at: timestamp
+}
+
+locations {
+  id: string (primary key)
+  name: string // e.g., "Interior", "Exterior", "Misto"
+  icon: string // e.g., "🏠", "🌳", "🏕️"
+  created_at: timestamp
+}
+
+age_groups {
+  id: string (primary key)
+  name: string // e.g., "Lobitos", "Exploradores", "Pioneiros", "Caminheiros"
+  icon: string // e.g., "🦁", "🌍", "🏔️", "🎯"
   created_at: timestamp
 }
 ```
@@ -401,6 +432,44 @@ s3://bucket/
     ├── sdg-1.png
     └── sdg-2.png
 ```
+
+## Program Builder Table Layout
+
+### Schedule Table Structure
+The program builder uses a table-based layout for displaying program entries with drag and drop functionality:
+
+#### Table Columns
+- **Start Time**: Auto-calculated based on program start time + previous entries duration
+- **End Time**: Auto-calculated based on start time + current entry duration  
+- **Name**: Activity name or custom block title
+- **Type**: Activity or Custom block indicator
+- **Group Size**: Icon + size range (e.g., "👥 8-12")
+- **Effort Level**: Icon + effort level (e.g., "🟡 Médio")
+- **Location**: Icon + location (e.g., "🌳 Exterior")
+- **Age Group**: Icon + age group (e.g., "🌍 Exploradores")
+- **Duration**: Duration display (e.g., "1h 30m")
+- **Goals**: Icon + educational goals (e.g., "🎯 Natureza")
+- **SDGs**: Icon + SDG numbers (e.g., "🌱 15")
+- **Actions**: Drag handle, edit, delete buttons
+
+#### Drag and Drop Implementation
+- **Library**: @dnd-kit for React drag and drop
+- **Behavior**: Vertical-only reordering of table rows
+- **Visual Feedback**: Drag handle, hover states, drop indicators
+- **Time Recalculation**: Automatic start/end time updates after reordering
+- **Mobile Support**: Touch-friendly drag handles and fallback buttons
+
+#### Mobile Responsiveness
+- **Horizontal Scroll**: Table scrolls horizontally on mobile devices
+- **Touch Optimization**: Larger touch targets for drag handles and buttons
+- **Stacked Layout**: Alternative stacked view for very small screens
+- **Responsive Columns**: Hide less important columns on mobile
+
+#### Icon System
+- **Database Storage**: Icons stored as strings in taxonomy tables
+- **Fallback Handling**: Default icons for missing values
+- **Consistency**: Unified icon system across all taxonomy values
+- **Customization**: Icons can be updated via admin interface
 
 ## Export Strategy
 

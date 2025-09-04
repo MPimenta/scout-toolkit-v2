@@ -1,11 +1,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Users, TrendingUp, MapPin, Calendar, BookOpen, Target, Plus } from 'lucide-react';
+import { Clock, Users, TrendingUp, MapPin, Calendar } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
-import { AddToProgramModal } from './AddToProgramModal';
-import { Button } from '@/components/ui/button';
+
 
 interface EducationalGoal {
   id: string;
@@ -90,11 +88,6 @@ function getLocationText(location: string): string {
 }
 
 export function ActivityCard({ activity }: ActivityCardProps) {
-  const [showAddToProgramModal, setShowAddToProgramModal] = useState(false);
-
-  const handleAddToProgram = () => {
-    setShowAddToProgramModal(true);
-  };
 
   const name = activity.name;
   const description = activity.description;

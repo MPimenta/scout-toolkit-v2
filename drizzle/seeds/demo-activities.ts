@@ -85,7 +85,7 @@ export async function seedDemoActivities() {
       const [activityType] = await db
         .select()
         .from(activityTypes)
-        .where(sql`${activityTypes.name}->>'pt' = ${activityData.activity_type_name}`)
+        .where(eq(activityTypes.name, activityData.activity_type_name))
         .limit(1);
 
       if (!activityType) {
