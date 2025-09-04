@@ -3,7 +3,6 @@ import { vi } from 'vitest'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import * as schema from '../drizzle/schema'
-import './mocks/auth' // Import the auth mock
 
 let testDb: ReturnType<typeof drizzle>
 export let sql: ReturnType<typeof postgres>
