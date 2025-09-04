@@ -2,11 +2,12 @@
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Edit, Trash2 } from 'lucide-react';
+import { GripVertical, Edit, Trash2, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { IconDisplay } from '@/components/ui/IconDisplay';
 import { ProgramEntry } from '../../../../drizzle/schema/programs';
 import { ActivitiesResponse } from '@/hooks/useActivities';
+import { useState } from 'react';
 
 interface ProgramScheduleRowProps {
   entry: ProgramEntry;
@@ -17,6 +18,45 @@ interface ProgramScheduleRowProps {
   onDelete: (entryId: string) => void;
 }
 
+// Helper functions to get icons for taxonomy values
+const getGroupSizeIcon = (groupSize: string) => {
+  const iconMap: Record<string, string> = {
+    'Pequeno (4-8)': '👥',
+    'Médio (8-12)': '👨‍👩‍👧‍👦',
+    'Grande (12+)': '👥',
+  };
+  return iconMap[groupSize] || '👥';
+};
+
+const getEffortLevelIcon = (effortLevel: string) => {
+  const iconMap: Record<string, string> = {
+    'Baixo': '🟢',
+    'Médio': '🟡',
+    'Alto': '🔴',
+  };
+  return iconMap[effortLevel] || '🟡';
+};
+
+const getLocationIcon = (location: string) => {
+  const iconMap: Record<string, string> = {
+    'Interior': '🏠',
+    'Exterior': '🌳',
+    'Misto': '🏕️',
+  };
+  return iconMap[location] || '🌳';
+};
+
+const getAgeGroupIcon = (ageGroup: string) => {
+  const iconMap: Record<string, string> = {
+    'Lobitos': '🦁',
+    'Exploradores': '🌍',
+    'Pioneiros': '🏔️',
+    'Caminheiros': '🎯',
+    'Dirigentes': '👨‍🏫',
+  };
+  return iconMap[ageGroup] || '🌍';
+};
+
 export function ProgramScheduleRow({
   entry,
   activity,
@@ -25,6 +65,8 @@ export function ProgramScheduleRow({
   onEdit,
   onDelete,
 }: ProgramScheduleRowProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
   const {
     attributes,
     listeners,
@@ -75,14 +117,15 @@ export function ProgramScheduleRow({
   };
 
   return (
-    <tr
-      ref={setNodeRef}
-      style={style}
-      className={cn(
-        'border-b hover:bg-muted/50 transition-colors',
-        isDragging ? 'opacity-50 shadow-lg' : ''
-      )}
-    >
+    <>
+      <tr
+        ref={setNodeRef}
+        style={style}
+        className={cn(
+          'border-b hover:bg-muted/50 transition-colors',
+          isDragging ? 'opacity-50 shadow-lg' : ''
+        )}
+      >
       {/* Start Time */}
       <td className="px-4 py-3 text-sm font-medium text-muted-foreground">
         {startTime}
@@ -106,11 +149,12 @@ export function ProgramScheduleRow({
       {/* Group Size */}
       <td className="px-4 py-3 text-sm">
         {activity ? (
-          <IconDisplay 
-            icon="👥" 
-            text={activity.group_size} 
-            className="text-muted-foreground"
-          />
+          <span 
+            title={activity.group_size}
+            className="text-lg"
+          >
+            {getGroupSizeIcon(activity.group_size)}
+          </span>
         ) : (
           <span className="text-muted-foreground">-</span>
         )}
@@ -119,11 +163,12 @@ export function ProgramScheduleRow({
       {/* Effort Level */}
       <td className="px-4 py-3 text-sm">
         {activity ? (
-          <IconDisplay 
-            icon="🟡" 
-            text={activity.effort_level} 
-            className="text-muted-foreground"
-          />
+          <span 
+            title={activity.effort_level}
+            className="text-lg"
+          >
+            {getEffortLevelIcon(activity.effort_level)}
+          </span>
         ) : (
           <span className="text-muted-foreground">-</span>
         )}
@@ -132,11 +177,12 @@ export function ProgramScheduleRow({
       {/* Location */}
       <td className="px-4 py-3 text-sm">
         {activity ? (
-          <IconDisplay 
-            icon="🌳" 
-            text={activity.location} 
-            className="text-muted-foreground"
-          />
+          <span 
+            title={activity.location}
+            className="text-lg"
+          >
+            {getLocationIcon(activity.location)}
+          </span>
         ) : (
           <span className="text-muted-foreground">-</span>
         )}
@@ -145,11 +191,12 @@ export function ProgramScheduleRow({
       {/* Age Group */}
       <td className="px-4 py-3 text-sm">
         {activity ? (
-          <IconDisplay 
-            icon="🌍" 
-            text={activity.age_group} 
-            className="text-muted-foreground"
-          />
+          <span 
+            title={activity.age_group}
+            className="text-lg"
+          >
+            {getAgeGroupIcon(activity.age_group)}
+          </span>
         ) : (
           <span className="text-muted-foreground">-</span>
         )}
@@ -176,11 +223,25 @@ export function ProgramScheduleRow({
       {/* SDGs */}
       <td className="px-4 py-3 text-sm">
         {activity && activity.sdgs && activity.sdgs.length > 0 ? (
-          <IconDisplay 
-            icon="🌱" 
-            text={activity.sdgs.map(sdg => sdg.number).join(', ')} 
-            className="text-muted-foreground"
-          />
+          <div className="flex flex-wrap gap-1">
+            {activity.sdgs.map(sdg => (
+              <div
+                key={sdg.id}
+                className="w-6 h-6 rounded-md flex items-center justify-center shadow-sm border border-gray-200 bg-white overflow-hidden"
+                title={`SDG ${sdg.number}: ${sdg.name}`}
+              >
+                {sdg.icon_url ? (
+                  <img
+                    src={sdg.icon_url}
+                    alt={`SDG ${sdg.number}`}
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <span className="text-lg">🌱</span>
+                )}
+              </div>
+            ))}
+          </div>
         ) : (
           <span className="text-muted-foreground">-</span>
         )}
@@ -198,6 +259,22 @@ export function ProgramScheduleRow({
           >
             <GripVertical className="h-4 w-4" />
           </Button>
+          
+          {activity && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => setIsExpanded(!isExpanded)}
+              title={isExpanded ? "Ocultar detalhes" : "Mostrar detalhes"}
+            >
+              {isExpanded ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </Button>
+          )}
           
           <Button
             variant="ghost"
@@ -218,7 +295,30 @@ export function ProgramScheduleRow({
           </Button>
         </div>
       </td>
-    </tr>
+      </tr>
+      {isExpanded && activity && (
+        <tr className="border-b bg-muted/30">
+          <td colSpan={12} className="px-4 py-3">
+            <div className="space-y-3 animate-in slide-in-from-top-2 duration-200">
+              <div>
+                <h4 className="font-medium text-sm mb-2">Descrição</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {activity.description || 'Nenhuma descrição disponível.'}
+                </p>
+              </div>
+              {activity.materials && (
+                <div>
+                  <h4 className="font-medium text-sm mb-2">Materiais Necessários</h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {activity.materials}
+                  </p>
+                </div>
+              )}
+            </div>
+          </td>
+        </tr>
+      )}
+    </>
   );
 }
 

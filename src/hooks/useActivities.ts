@@ -46,7 +46,7 @@ export interface ActivitiesResponse {
     created_at: string;
     activity_type: { id: string; name: string };
     educational_goals: Array<{ id: string; title: string; code: string }>;
-    sdgs: Array<{ id: string; number: number; name: string; icon_url: string }>;
+    sdgs: Array<{ id: string; number: number; name: string; icon_url: string; icon: string }>;
   }>;
   pagination: PaginationInfo;
   filters: FilterInfo;

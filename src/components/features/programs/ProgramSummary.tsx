@@ -25,13 +25,9 @@ export function ProgramSummary({
   const activityCount = entries.filter(entry => entry.entry_type === 'activity').length;
   const customBlockCount = entries.filter(entry => entry.entry_type === 'custom').length;
   
-  // Get all educational goals from activities
+  // Get all educational goals and SDGs from activities
   const allEducationalGoals = new Map();
   const allSDGs = new Map();
-  const allGroupSizes = new Set<string>();
-  const allEffortLevels = new Set<string>();
-  const allLocations = new Set<string>();
-  const allAgeGroups = new Set<string>();
 
   entries.forEach(entry => {
     if (entry.entry_type === 'activity' && entry.activity_id) {
@@ -46,12 +42,6 @@ export function ProgramSummary({
         activity.sdgs?.forEach(sdg => {
           allSDGs.set(sdg.id, sdg);
         });
-
-        // Collect other properties
-        if (activity.group_size) allGroupSizes.add(activity.group_size);
-        if (activity.effort_level) allEffortLevels.add(activity.effort_level);
-        if (activity.location) allLocations.add(activity.location);
-        if (activity.age_group) allAgeGroups.add(activity.age_group);
       }
     }
   });
@@ -127,13 +117,18 @@ export function ProgramSummary({
             <div className="flex flex-wrap gap-1">
               {Array.from(allSDGs.values()).map(sdg => (
                 <Badge key={sdg.id} variant="outline" className="text-xs">
-                  <IconDisplay 
-                    icon={sdg.icon || '🌱'} 
-                    text={`${sdg.number}`}
-                    className="gap-1"
-                    iconClassName="text-xs"
-                    textClassName="text-xs"
-                  />
+                  <div className="flex items-center gap-1">
+                    {sdg.icon_url ? (
+                      <img
+                        src={sdg.icon_url}
+                        alt={`SDG ${sdg.number}`}
+                        className="w-4 h-4 object-contain"
+                      />
+                    ) : (
+                      <span className="text-xs">🌱</span>
+                    )}
+                    <span>{sdg.number}</span>
+                  </div>
                 </Badge>
               ))}
             </div>
@@ -143,69 +138,6 @@ export function ProgramSummary({
         </CardContent>
       </Card>
 
-      {/* Activity Properties Summary */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium">Propriedades das Atividades</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {/* Group Sizes */}
-          {allGroupSizes.size > 0 && (
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">Tamanhos de Grupo:</p>
-              <div className="flex flex-wrap gap-1">
-                {Array.from(allGroupSizes).map(size => (
-                  <Badge key={size} variant="outline" className="text-xs">
-                    {size}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Effort Levels */}
-          {allEffortLevels.size > 0 && (
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">Níveis de Esforço:</p>
-              <div className="flex flex-wrap gap-1">
-                {Array.from(allEffortLevels).map(level => (
-                  <Badge key={level} variant="outline" className="text-xs">
-                    {level}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Locations */}
-          {allLocations.size > 0 && (
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">Locais:</p>
-              <div className="flex flex-wrap gap-1">
-                {Array.from(allLocations).map(location => (
-                  <Badge key={location} variant="outline" className="text-xs">
-                    {location}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Age Groups */}
-          {allAgeGroups.size > 0 && (
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">Faixas Etárias:</p>
-              <div className="flex flex-wrap gap-1">
-                {Array.from(allAgeGroups).map(ageGroup => (
-                  <Badge key={ageGroup} variant="outline" className="text-xs">
-                    {ageGroup}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
     </div>
   );
 }

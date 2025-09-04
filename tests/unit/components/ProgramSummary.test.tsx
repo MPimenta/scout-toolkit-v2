@@ -164,7 +164,7 @@ describe('ProgramSummary', () => {
     expect(screen.getAllByText(/4/)).toHaveLength(2); // Appears in duration (45 min) and SDG number
   });
 
-  it('displays activity properties summary', () => {
+  it('displays only program overview, educational goals, and SDGs', () => {
     render(
       <ProgramSummary
         entries={mockEntries}
@@ -174,11 +174,13 @@ describe('ProgramSummary', () => {
       />
     );
 
-    expect(screen.getByText('Propriedades das Atividades')).toBeInTheDocument();
-    expect(screen.getByText('Tamanhos de Grupo:')).toBeInTheDocument();
-    expect(screen.getByText('Níveis de Esforço:')).toBeInTheDocument();
-    expect(screen.getByText('Locais:')).toBeInTheDocument();
-    expect(screen.getByText('Faixas Etárias:')).toBeInTheDocument();
+    // Should have 3 cards: Program Overview, Educational Goals, and SDGs
+    expect(screen.getByText('Resumo do Programa')).toBeInTheDocument();
+    expect(screen.getByText('Objetivos Educativos')).toBeInTheDocument();
+    expect(screen.getByText('ODS (Objetivos de Desenvolvimento Sustentável)')).toBeInTheDocument();
+    
+    // Should NOT have the activity properties section
+    expect(screen.queryByText('Propriedades das Atividades')).not.toBeInTheDocument();
   });
 
   it('shows empty state when no educational goals', () => {
