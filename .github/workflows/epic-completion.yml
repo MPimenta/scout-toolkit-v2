@@ -78,6 +78,25 @@ jobs:
           
           echo "Generated devlog post: devlog/src/content/blog/_drafts/$POST_FILENAME"
       
+      - name: Commit and push generated post
+        run: |
+          # Configure git
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Add the generated post
+          git add "devlog/src/content/blog/_drafts/$POST_FILENAME"
+          
+          # Commit the post
+          git commit -m "Add Epic ${{ steps.extract-epic.outputs.epic_number }} devlog post
+
+          - Generated automatically on epic completion
+          - Post: $POST_FILENAME
+          - Epic: ${{ steps.extract-epic.outputs.epic_name }}"
+          
+          # Push the commit
+          git push origin ${{ github.ref_name }}
+      
       - name: Create epic completion PR
         env:
           GH_TOKEN: ${{ github.token }}
