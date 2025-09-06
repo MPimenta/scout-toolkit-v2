@@ -1,13 +1,13 @@
 ---
 title: "Epic 4 Complete — The Program Builder's Pocket Watch"
 description: "Drag and drop, time calculations, and the art of making scout leaders feel like they have a magic wand for program planning"
-publishDate: 2025-01-28
+pubDate: 2025-01-28
 tags: [devlog, epic-complete, program-builder, drag-drop, mobile-responsive]
 scoutingContext: "How this epic transforms chaotic program planning into organized, visual timeline management"
 epicNumber: 4
 epicName: "Program Builder"
-heroImage: ../../assets/epic4-cover.svg
-status: draft
+heroImage: /src/assets/epic4-cover.png
+status: published
 ---
 
 ## The Program Builder's Pocket Watch 🕰️

@@ -25,6 +25,11 @@
 3. **Wait for explicit approval** - Don't proceed until user says "yes"
 4. **Confirm before proceeding** - Double-check the user's intent
 
+### Planning vs Implementation:
+- **When user asks for "diagnose and plan"** - Only provide diagnosis and proposed solution, wait for approval before implementing
+- **When user asks for "diagnose and fix"** - Provide diagnosis and implement the solution
+- **Always clarify intent** - If unclear whether to plan or implement, ask for clarification
+
 ### Example Permission Request:
 > "I need to completely rewrite the `ActivityFilters.tsx` file because the current structure has become corrupted and is causing build errors. This will replace all existing content. Do you give me permission to proceed with a complete rewrite?"
 
