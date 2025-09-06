@@ -1,7 +1,7 @@
 ---
 title: "Epic 2 Complete — The Foundation Takes Shape"
 description: "Base layout, navigation, and the art of making scout leaders feel at home in a digital world"
-pubDate: 2025-01-28
+pubDate: 2025-09-01
 tags: [devlog, epic-complete, ui-layout, navigation, branding]
 scoutingContext: "How this helps leaders navigate and use the platform more effectively"
 epicNumber: 2

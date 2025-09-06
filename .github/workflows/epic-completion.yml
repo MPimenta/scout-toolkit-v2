@@ -47,7 +47,7 @@ jobs:
           ---
           title: "Epic ${{ steps.extract-epic.outputs.epic_number }} Complete — ${{ steps.extract-epic.outputs.epic_name }}"
           description: "Epic ${{ steps.extract-epic.outputs.epic_number }} retrospective and lessons learned"
-          publishDate: $POST_DATE
+          pubDate: $POST_DATE
           tags: [devlog, epic-complete, ${{ steps.extract-epic.outputs.epic_name }}]
           scoutingContext: "How this epic improves the scouting experience"
           epicNumber: ${{ steps.extract-epic.outputs.epic_number }}

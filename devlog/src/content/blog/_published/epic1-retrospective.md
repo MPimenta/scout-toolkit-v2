@@ -1,7 +1,7 @@
 ---
 title: "Epic 1 Complete — The Foundation Laid"
 description: "Authentication, database setup, and the art of making computers understand scout leaders"
-pubDate: 2025-01-28
+pubDate: 2025-08-28
 tags: [devlog, epic-complete, authentication, database, internationalization, portuguese-refactor]
 scoutingContext: "How this foundation helps leaders manage their groups more effectively"
 epicNumber: 1
