@@ -14,9 +14,9 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     
-    // Extract query parameters
+    // Extract query parameters with performance limits
     const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '20');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100); // Cap at 100 for performance
     const sort = searchParams.get('sort') as 'name' | 'date' | 'created_at' | undefined;
     const order = searchParams.get('order') as 'asc' | 'desc' | undefined;
 
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
     const totalPages = Math.ceil(total / limit);
     const offset = (page - 1) * limit;
 
-    // Fetch programs with entry count and total duration
+    // Fetch programs with aggregated entry data using JOINs instead of subqueries
     const programsData = await db
       .select({
         id: programs.id,
@@ -51,27 +51,28 @@ export async function GET(request: NextRequest) {
         is_public: programs.is_public,
         created_at: programs.created_at,
         updated_at: programs.updated_at,
-        entry_count: sql<number>`(
-          SELECT COUNT(*) FROM ${programEntries} 
-          WHERE ${programEntries.program_id} = ${programs.id}
-        )`,
-        total_duration_minutes: sql<number>`(
-          SELECT COALESCE(SUM(
-            CASE 
-              WHEN ${programEntries.entry_type} = 'activity' THEN (
-                SELECT ${activities.approximate_duration_minutes} 
-                FROM ${activities} 
-                WHERE ${activities.id} = ${programEntries.activity_id}
-              )
-              WHEN ${programEntries.entry_type} = 'custom' THEN ${programEntries.custom_duration_minutes}
-              ELSE 0
-            END
-          ), 0) FROM ${programEntries} 
-          WHERE ${programEntries.program_id} = ${programs.id}
-        )`
+        entry_count: sql<number>`COUNT(${programEntries.id})`,
+        total_duration_minutes: sql<number>`COALESCE(SUM(
+          CASE 
+            WHEN ${programEntries.entry_type} = 'activity' THEN ${activities.approximate_duration_minutes}
+            WHEN ${programEntries.entry_type} = 'custom' THEN ${programEntries.custom_duration_minutes}
+            ELSE 0
+          END
+        ), 0)`
       })
       .from(programs)
+      .leftJoin(programEntries, eq(programs.id, programEntries.program_id))
+      .leftJoin(activities, eq(programEntries.activity_id, activities.id))
       .where(eq(programs.user_id, session.user.id))
+      .groupBy(
+        programs.id,
+        programs.name,
+        programs.date,
+        programs.start_time,
+        programs.is_public,
+        programs.created_at,
+        programs.updated_at
+      )
       .orderBy(orderByClause)
       .limit(limit)
       .offset(offset);

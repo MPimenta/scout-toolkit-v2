@@ -20,18 +20,20 @@ export async function GET(request: NextRequest) {
     const durationMax = searchParams.get('duration_max');
     const durationOperator = searchParams.get('duration_operator') as '>=' | '<=' | '=' | '>' | '<' | undefined;
     const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '20');
+    const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100); // Cap at 100 for performance
     const sort = searchParams.get('sort') as 'name' | 'duration' | 'created_at' | undefined;
     const order = searchParams.get('order') as 'asc' | 'desc' | undefined;
 
     // Build where conditions
     const whereConditions = [eq(activities.is_approved, true)];
 
-    // Text search using simple ILIKE instead of full-text search to avoid JSONB issues
+    // Text search using simple ILIKE with optimized pattern matching
     if (search && search.trim()) {
       const searchTerm = search.trim();
+      // Use a more efficient search pattern - avoid leading wildcards when possible
+      const searchPattern = searchTerm.includes(' ') ? `%${searchTerm}%` : `${searchTerm}%`;
       whereConditions.push(
-        sql`(${activities.name}::text ILIKE ${`%${searchTerm}%`} OR ${activities.description}::text ILIKE ${`%${searchTerm}%`} OR ${activities.materials}::text ILIKE ${`%${searchTerm}%`})`
+        sql`(${activities.name}::text ILIKE ${searchPattern} OR ${activities.description}::text ILIKE ${searchPattern} OR ${activities.materials}::text ILIKE ${searchPattern})`
       );
     }
 
@@ -93,7 +95,58 @@ export async function GET(request: NextRequest) {
       orderByClause = order === 'desc' ? desc(activities.name) : asc(activities.name);
     }
 
-    // Fetch activities with their activity types
+    // First, get the activity IDs that match our filters (for efficient pagination)
+    const activityIds = await db
+      .select({ id: activities.id })
+      .from(activities)
+      .where(and(...whereConditions))
+      .orderBy(orderByClause)
+      .limit(limit)
+      .offset((page - 1) * limit);
+
+    if (activityIds.length === 0) {
+      return NextResponse.json({
+        activities: [],
+        pagination: {
+          page,
+          limit,
+          total: 0,
+          total_pages: 0,
+        },
+        filters: {
+          applied: {
+            search: search || undefined,
+            group_size: groupSize || undefined,
+            effort_level: effortLevel || undefined,
+            location: location || undefined,
+            age_group: ageGroup || undefined,
+            activity_type: activityType || undefined,
+            sdgs: sdgIds || undefined,
+            educational_goals: educationalGoalIds || undefined,
+            duration_min: durationMin || undefined,
+            duration_max: durationMax || undefined,
+            duration_operator: durationOperator || undefined,
+          },
+          available: {
+            group_sizes: [],
+            effort_levels: [],
+            locations: [],
+            age_groups: [],
+            activity_types: [],
+          },
+        },
+      });
+    }
+
+    const activityIdList = activityIds.map(a => a.id);
+
+    // Get total count for pagination
+    const totalCount = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(activities)
+      .where(and(...whereConditions));
+
+    // Fetch all activities with their activity types in one query
     const activitiesData = await db
       .select({
         id: activities.id,
@@ -114,61 +167,68 @@ export async function GET(request: NextRequest) {
       })
       .from(activities)
       .leftJoin(activityTypes, eq(activities.activity_type_id, activityTypes.id))
-      .where(and(...whereConditions))
-      .orderBy(orderByClause)
-      .limit(limit)
-      .offset((page - 1) * limit);
+      .where(inArray(activities.id, activityIdList))
+      .orderBy(orderByClause);
 
-    // Get total count for pagination
-    const totalCount = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(activities)
-      .where(and(...whereConditions));
-
-    // For each activity, fetch related educational goals and SDGs
-    const activitiesWithDetails = await Promise.all(
-      activitiesData.map(async (activity) => {
-        try {
-          // Fetch educational goals
-          const goals = await db
-            .select({
-              id: educationalGoals.id,
-              title: educationalGoals.title,
-              code: educationalGoals.code,
-            })
-            .from(activityEducationalGoals)
-            .leftJoin(educationalGoals, eq(activityEducationalGoals.goal_id, educationalGoals.id))
-            .where(eq(activityEducationalGoals.activity_id, activity.id));
-
-          // Fetch SDGs
-          const sdgData = await db
-            .select({
-              id: sdgs.id,
-              number: sdgs.number,
-              name: sdgs.name,
-              icon_url: sdgs.icon_url,
-              icon: sdgs.icon,
-            })
-            .from(activitySdgs)
-            .leftJoin(sdgs, eq(activitySdgs.sdg_id, sdgs.id))
-            .where(eq(activitySdgs.activity_id, activity.id));
-
-          return {
-            ...activity,
-            educational_goals: goals,
-            sdgs: sdgData,
-          };
-        } catch (detailError) {
-          console.error(`Error fetching details for activity ${activity.id}:`, detailError);
-          // Return activity with empty arrays if details fail
-          return {
-            ...activity,
-            educational_goals: [],
-            sdgs: [],
-          };
-        }
+    // Fetch all educational goals for these activities in one query
+    const allEducationalGoals = await db
+      .select({
+        activity_id: activityEducationalGoals.activity_id,
+        id: educationalGoals.id,
+        title: educationalGoals.title,
+        code: educationalGoals.code,
       })
-    );
+      .from(activityEducationalGoals)
+      .leftJoin(educationalGoals, eq(activityEducationalGoals.goal_id, educationalGoals.id))
+      .where(inArray(activityEducationalGoals.activity_id, activityIdList));
+
+    // Fetch all SDGs for these activities in one query
+    const allSdgs = await db
+      .select({
+        activity_id: activitySdgs.activity_id,
+        id: sdgs.id,
+        number: sdgs.number,
+        name: sdgs.name,
+        icon_url: sdgs.icon_url,
+        icon: sdgs.icon,
+      })
+      .from(activitySdgs)
+      .leftJoin(sdgs, eq(activitySdgs.sdg_id, sdgs.id))
+      .where(inArray(activitySdgs.activity_id, activityIdList));
+
+    // Group the related data by activity ID
+    const goalsByActivity = allEducationalGoals.reduce((acc, goal) => {
+      if (!acc[goal.activity_id]) acc[goal.activity_id] = [];
+      if (goal.id) { // Only add if goal.id is not null
+        acc[goal.activity_id].push({
+          id: goal.id,
+          title: goal.title || '',
+          code: goal.code || '',
+        });
+      }
+      return acc;
+    }, {} as Record<string, Array<{ id: string; title: string; code: string }>>);
+
+    const sdgsByActivity = allSdgs.reduce((acc, sdg) => {
+      if (!acc[sdg.activity_id]) acc[sdg.activity_id] = [];
+      if (sdg.id) { // Only add if sdg.id is not null
+        acc[sdg.activity_id].push({
+          id: sdg.id,
+          number: sdg.number || 0,
+          name: sdg.name || '',
+          icon_url: sdg.icon_url || '',
+          icon: sdg.icon || '',
+        });
+      }
+      return acc;
+    }, {} as Record<string, Array<{ id: string; number: number; name: string; icon_url: string; icon: string }>>);
+
+    // Combine all data
+    const activitiesWithDetails = activitiesData.map(activity => ({
+      ...activity,
+      educational_goals: goalsByActivity[activity.id] || [],
+      sdgs: sdgsByActivity[activity.id] || [],
+    }));
 
     // Apply client-side filtering for SDGs and educational goals if provided
     let filteredActivities = activitiesWithDetails;
