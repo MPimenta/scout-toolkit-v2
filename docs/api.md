@@ -11,7 +11,7 @@ The API is fully documented using OpenAPI 3.0 specification and can be explored 
 - **Development:** `http://localhost:3000/api/docs`
 - **Production:** `https://your-domain.com/api/docs`
 
-**Note:** All API endpoints are thoroughly tested using PostgreSQL-based integration tests to ensure reliability and consistency with production database behavior.
+**Note:** All API endpoints are thoroughly tested using PostgreSQL-based integration tests to ensure reliability and consistency with production database behavior. Epic 5 will enhance API documentation with OpenAPI/Swagger integration and improve error handling consistency.
 
 ### Features
 - Interactive API explorer with Swagger UI
@@ -758,14 +758,16 @@ GET /api/taxonomies/sdgs
 {
   "error": {
     "code": "VALIDATION_ERROR",
-    "message": "Invalid input data",
+    "message": "Dados de entrada inválidos",
     "details": {
       "field": "name",
-      "issue": "Name is required"
+      "issue": "Nome é obrigatório"
     }
   }
 }
 ```
+
+**Note:** Epic 5 will standardize all error messages to Portuguese and implement centralized error handling utilities for consistent error responses across all API endpoints.
 
 ### Common Error Codes
 - `VALIDATION_ERROR` - Invalid input data

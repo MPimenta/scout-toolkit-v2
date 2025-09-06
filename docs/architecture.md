@@ -18,9 +18,10 @@ This document outlines the technical architecture, stack choices, and key design
 - **Auth.js (NextAuth)** - Authentication library with Google OAuth provider
 
 ### State Management & Data Fetching
-- **TanStack Query** - Server state management and caching
+- **TanStack Query** - Server state management and caching (Epic 5 implementation)
 - **TanStack Table** - Powerful data grid for table views
 - **Zustand** - Lightweight client state management for program builder
+- **Custom Hooks** - Data fetching hooks (useActivities, usePrograms, useProgram) - to be migrated to TanStack Query
 
 ### Content & Localization
 - **Portuguese-only interface** - All UI text and content in Portuguese
@@ -46,7 +47,8 @@ This document outlines the technical architecture, stack choices, and key design
 - **Vitest** - Unit and integration testing with PostgreSQL
 - **Playwright** - End-to-end testing
 - **Drizzle Kit** - Database migrations and seeding
-- **OpenAPI/Swagger** - API documentation and interactive testing
+- **OpenAPI/Swagger** - API documentation and interactive testing (Epic 5 implementation)
+- **TypeScript** - Strict type checking (Epic 5 enhancement)
 
 ## Project Structure
 
@@ -110,6 +112,8 @@ scout-toolkit-v2/
 - **`db/`** - Database configuration, schema, and utilities
 - **`auth/`** - Authentication configuration and utilities
 - **`utils/`** - Shared utility functions
+- **`types/`** - Centralized type definitions (Epic 5 implementation)
+- **`errors/`** - Centralized error handling utilities (Epic 5 implementation)
 
 #### `drizzle/`
 - **`schema/`** - Database schema definitions
@@ -553,6 +557,60 @@ SDGs: [SDG Icons]
 - **Microservices:** Separate services for search, exports
 - **Real-time Features:** WebSocket integration for live updates
 - **Mobile App:** React Native or PWA approach
+
+## Epic 5: Code Quality & Architecture Refactoring
+
+### Overview
+Epic 5 focuses on improving code quality, type safety, performance, and architectural compliance. This epic addresses technical debt and ensures the codebase follows best practices.
+
+### Key Improvements
+
+#### Type Safety & Consistency
+- **Centralized Types:** All type definitions consolidated in `src/types/`
+- **API Response Types:** Unified types that match actual API responses
+- **Error Types:** Consistent error handling with proper TypeScript types
+- **Type Guards:** Runtime type validation for data integrity
+
+#### Error Handling Standardization
+- **Centralized Error Utilities:** Consistent error handling across the application
+- **Portuguese Error Messages:** All error messages in Portuguese
+- **Error Boundaries:** React error boundaries for graceful error handling
+- **Logging System:** Proper logging replacing console.log statements
+
+#### Performance Optimization
+- **Database Query Optimization:** Eliminate N+1 queries and add missing indexes
+- **TanStack Query Migration:** Server state management with caching
+- **React Optimizations:** React.memo and useMemo where appropriate
+- **Caching Strategies:** Proper cache invalidation and refetching
+
+#### State Management Refactoring
+- **TanStack Query Integration:** Migrate all data fetching hooks
+- **Optimistic Updates:** Immediate UI updates for better UX
+- **Cache Management:** Proper cache invalidation strategies
+- **Loading States:** Consistent loading and error states
+
+#### Code Quality & Standards
+- **TODO Resolution:** Implement or remove all TODO items
+- **JSDoc Documentation:** Comprehensive function documentation
+- **Code Patterns:** Consistent utilities and patterns
+- **Component Validation:** Proper prop validation
+
+#### Testing Improvements
+- **Test Isolation:** Fix failing integration tests
+- **React Testing:** Proper act() wrapping for React tests
+- **Coverage Gaps:** Add missing test coverage
+- **E2E Tests:** Critical user flow testing
+
+#### Architecture Compliance
+- **OpenAPI Documentation:** Complete API documentation
+- **Health Checks:** Monitoring and health check endpoints
+- **Logging & Observability:** Proper logging and monitoring
+- **Performance Monitoring:** Application performance tracking
+
+### Implementation Priority
+1. **High Priority:** Type safety, error handling, performance optimization
+2. **Medium Priority:** State management, code quality, testing improvements
+3. **Low Priority:** Architecture compliance, monitoring
 
 ## Monitoring & Observability
 

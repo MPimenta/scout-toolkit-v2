@@ -6,6 +6,9 @@
 - Use proper type annotations for all functions and variables
 - Avoid `any` type - use `unknown` or proper typing instead
 - Use Zod for runtime validation
+- **Epic 5:** Centralize all type definitions in `src/types/`
+- **Epic 5:** Create type guards for runtime validation
+- **Epic 5:** Ensure API response types match actual responses
 
 ## React/Next.js Patterns
 - Use functional components with hooks
@@ -13,12 +16,17 @@
 - Use proper error boundaries
 - Implement proper loading states
 - Follow Next.js 15 App Router conventions
+- **Epic 5:** Use React.memo and useMemo for performance optimization
+- **Epic 5:** Implement proper error boundaries for graceful error handling
+- **Epic 5:** Use TanStack Query for server state management
 
 ## File Organization
 - Use kebab-case for file names
 - Group related components in folders
 - Keep components small and focused
 - Use index files for clean imports
+- **Epic 5:** Organize types in `src/types/` directory
+- **Epic 5:** Create centralized error utilities in `src/lib/errors/`
 
 ## Naming Conventions
 - Components: PascalCase (e.g., `ActivityCard`)
@@ -26,6 +34,13 @@
 - Functions: camelCase (e.g., `getActivityById`)
 - Constants: UPPER_SNAKE_CASE (e.g., `MAX_FILE_SIZE`)
 - Database tables: snake_case (e.g., `activity_educational_goals`)
+
+## Code Quality Standards
+- **Epic 5:** Implement all TODO items or remove them
+- **Epic 5:** Add JSDoc documentation for all functions
+- **Epic 5:** Use proper logging instead of console.log
+- **Epic 5:** Implement consistent error handling patterns
+- **Epic 5:** Ensure all error messages are in Portuguese
 description:
 globs:
 alwaysApply: true
