@@ -7,6 +7,7 @@ scoutingContext: "How this epic helps leaders discover and evaluate activities t
 epicNumber: 3
 epicName: "Activities Browsing"
 status: published
+heroImage: /src/assets/epic3-cover.png
 ---
 
 ## Epic 3 Complete: Activities Browsing & Discovery 🎯
