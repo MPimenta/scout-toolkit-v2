@@ -147,6 +147,7 @@ export async function GET(request: NextRequest) {
               number: sdgs.number,
               name: sdgs.name,
               icon_url: sdgs.icon_url,
+              icon: sdgs.icon,
             })
             .from(activitySdgs)
             .leftJoin(sdgs, eq(activitySdgs.sdg_id, sdgs.id))

@@ -35,18 +35,18 @@ export interface FilterInfo {
 export interface ActivitiesResponse {
   activities: Array<{
     id: string;
-    name: Record<string, string> | string;
-    description: Record<string, string> | string;
-    materials: Record<string, string> | string;
+    name: string;
+    description: string;
+    materials: string;
     approximate_duration_minutes: number;
     group_size: string;
     effort_level: string;
     location: string;
     age_group: string;
     created_at: string;
-    activity_type: { id: string; name: Record<string, string> | string };
-    educational_goals: Array<{ id: string; title: Record<string, string> | string; code: string }>;
-    sdgs: Array<{ id: string; number: number; name: Record<string, string> | string; icon_url: string }>;
+    activity_type: { id: string; name: string };
+    educational_goals: Array<{ id: string; title: string; code: string }>;
+    sdgs: Array<{ id: string; number: number; name: string; icon_url: string; icon: string }>;
   }>;
   pagination: PaginationInfo;
   filters: FilterInfo;
@@ -149,5 +149,44 @@ export function useActivities(options: UseActivitiesOptions) {
     pagination,
     filterInfo,
     refresh,
+  };
+}
+
+// Simple hook for getting all activities without filters
+export function useAllActivities() {
+  const [activities, setActivities] = useState<ActivitiesResponse['activities']>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchAllActivities = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/activities?limit=1000');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data: ActivitiesResponse = await response.json();
+      setActivities(data.activities);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred while fetching activities');
+      console.error('Error fetching activities:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchAllActivities();
+  }, [fetchAllActivities]);
+
+  return {
+    activities,
+    loading,
+    error,
+    refresh: fetchAllActivities,
   };
 }

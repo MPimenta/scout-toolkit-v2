@@ -5,27 +5,27 @@ import { ActivityFilters, FilterState } from '@/components/features/activities/A
 // Mock fetch globally
 global.fetch = vi.fn();
 
-// Mock data for filter options
+// Mock data for filter options - updated to use single-language strings
 const mockActivityTypes = [
-  { id: '1', name: { pt: 'Jogo', en: 'Game' } },
-  { id: '2', name: { pt: 'Atividade Manual', en: 'Manual Activity' } },
+  { id: '1', name: 'Jogo' },
+  { id: '2', name: 'Atividade Manual' },
 ];
 
 const mockSdgs = [
-  { id: '1', number: 1, name: { pt: 'Erradicar a Pobreza', en: 'No Poverty' } },
-  { id: '2', number: 2, name: { pt: 'Fome Zero', en: 'Zero Hunger' } },
+  { id: '1', number: 1, name: 'Erradicar a Pobreza' },
+  { id: '2', number: 2, name: 'Fome Zero' },
 ];
 
 const mockEducationalGoals = [
   { 
     id: '1', 
-    title: { pt: 'SE1: Trabalho em Equipa', en: 'SE1: Teamwork' },
-    area: { name: { pt: 'Social', en: 'Social' } }
+    title: 'SE1: Trabalho em Equipa',
+    area: { name: 'Social' }
   },
   { 
     id: '2', 
-    title: { pt: 'SE2: Liderança', en: 'SE2: Leadership' },
-    area: { name: { pt: 'Social', en: 'Social' } }
+    title: 'SE2: Liderança',
+    area: { name: 'Social' }
   },
 ];
 

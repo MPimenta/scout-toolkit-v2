@@ -2,6 +2,10 @@
 import { seedSDGs } from './sdgs.js';
 import { seedActivityTypes } from './activity-types.js';
 import { seedEducationalAreas } from './educational-areas.js';
+import { seedGroupSizes } from './group-sizes.js';
+import { seedEffortLevels } from './effort-levels.js';
+import { seedLocations } from './locations.js';
+import { seedAgeGroups } from './age-groups.js';
 import { seedDemoActivities } from './demo-activities.js';
 
 async function main() {
@@ -12,6 +16,10 @@ async function main() {
     await seedSDGs();
     await seedActivityTypes();
     await seedEducationalAreas();
+    await seedGroupSizes();
+    await seedEffortLevels();
+    await seedLocations();
+    await seedAgeGroups();
     await seedDemoActivities();
 
     console.log('✅ Database seeding completed successfully!');

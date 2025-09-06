@@ -41,26 +41,26 @@ import {
 
 interface EducationalGoal {
   id: string;
-  title: Record<string, string> | string;
+  title: string;
   code: string;
 }
 
 interface Sdg {
   id: string;
   number: number;
-  name: Record<string, string> | string;
+  name: string;
   icon_url: string;
 }
 
 interface ActivityType {
   id: string;
-  name: Record<string, string> | string;
+  name: string;
 }
 
 interface Activity {
   id: string;
-  name: Record<string, string> | string;
-  description: Record<string, string> | string;
+  name: string;
+  description: string;
   approximate_duration_minutes: number;
   group_size: string; // API returns string, not union type
   effort_level: string; // API returns string, not union type
@@ -79,19 +79,7 @@ interface ActivitiesTableProps {
   onDeleteActivity?: (activity: Activity) => void;
 }
 
-// Helper function to get Portuguese text from JSONB
-function getPortugueseText(jsonbField: Record<string, string> | string): string {
-  if (!jsonbField) return '';
-  if (typeof jsonbField === 'string') return jsonbField;
-  if (jsonbField.pt) return jsonbField.pt;
-  if (jsonbField.pt_PT) return jsonbField.pt_PT;
-  if (jsonbField.pt_BR) return jsonbField.pt_BR;
-  if (jsonbField.en) return jsonbField.en;
-  if (jsonbField.en_US) return jsonbField.en_US;
-  if (jsonbField.en_GB) return jsonbField.en_GB;
-  const firstKey = Object.keys(jsonbField)[0];
-  return firstKey ? jsonbField[firstKey] : '';
-}
+
 
 // Helper function to get group size display text
 function getGroupSizeText(size: string): string {
@@ -150,7 +138,7 @@ export function ActivitiesTable({
         header: 'Nome',
         cell: ({ row }) => (
           <div className="font-medium">
-            {getPortugueseText(row.original.name)}
+            {row.original.name}
           </div>
         ),
       },
@@ -159,7 +147,7 @@ export function ActivitiesTable({
         header: 'Tipo',
         cell: ({ row }) => (
           <Badge variant="secondary" className="text-xs">
-            {getPortugueseText(row.original.activity_type.name)}
+            {row.original.activity_type.name}
           </Badge>
         ),
       },
@@ -217,7 +205,7 @@ export function ActivitiesTable({
               <div
                 key={sdg.id}
                 className="w-6 h-6 rounded-md flex items-center justify-center shadow-sm border border-gray-200 bg-white overflow-hidden"
-                title={`ODS ${sdg.number}: ${getPortugueseText(sdg.name)}`}
+                title={`ODS ${sdg.number}: ${sdg.name}`}
               >
                 {sdg.icon_url ? (
                   <img
@@ -252,7 +240,7 @@ export function ActivitiesTable({
           <div className="flex gap-1">
             {row.original.educational_goals.slice(0, 2).map((goal) => (
               <Badge key={goal.id} variant="outline" className="text-xs">
-                {getPortugueseText(goal.title)}
+                {goal.title}
               </Badge>
             ))}
             {row.original.educational_goals.length > 2 && (
@@ -331,15 +319,15 @@ export function ActivitiesTable({
     const csvContent = [
       headers.join(','),
       ...activities.map(activity => [
-        getPortugueseText(activity.name),
-        getPortugueseText(activity.activity_type.name),
+        activity.name,
+        activity.activity_type.name,
         activity.approximate_duration_minutes,
         getGroupSizeText(activity.group_size),
         getEffortLevelText(activity.effort_level),
         getLocationText(activity.location),
         getAgeGroupText(activity.age_group),
         activity.sdgs.map(sdg => `ODS ${sdg.number}`).join('; '),
-        activity.educational_goals.map(goal => getPortugueseText(goal.title)).join('; '),
+        activity.educational_goals.map(goal => goal.title).join('; '),
       ].join(','))
     ].join('\n');
 

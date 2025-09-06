@@ -1,0 +1,83 @@
+# Epic 5: Code Quality & Architecture Refactoring
+
+## Overview
+This rule guides the implementation of Epic 5, which focuses on improving code quality, type safety, performance, and architectural compliance.
+
+## Type Safety & Consistency
+- **Centralize Types:** Move all type definitions to `src/types/` directory
+- **API Response Types:** Ensure types match actual API responses
+- **Error Types:** Create consistent error type definitions
+- **Type Guards:** Implement runtime type validation functions
+- **Strict TypeScript:** Enable strict mode and fix all `any` types
+
+## Error Handling Standardization
+- **Centralized Utilities:** Create error handling utilities in `src/lib/errors/`
+- **Consistent Format:** Use standardized error response format across all API routes
+- **Portuguese Messages:** All error messages must be in Portuguese
+- **Error Boundaries:** Implement React error boundaries for graceful error handling
+- **Logging System:** Replace console.log with proper logging system
+
+## Performance Optimization
+- **Database Queries:** Fix N+1 queries and add missing indexes
+- **TanStack Query:** Migrate all data fetching to TanStack Query
+- **React Optimizations:** Use React.memo and useMemo where appropriate
+- **Caching Strategies:** Implement proper cache invalidation and refetching
+- **Bundle Optimization:** Optimize bundle size and loading
+
+## State Management Refactoring
+- **Hook Migration:** Migrate useActivities, usePrograms, useProgram to TanStack Query
+- **Optimistic Updates:** Implement immediate UI updates for better UX
+- **Cache Management:** Add proper cache invalidation strategies
+- **Loading States:** Create consistent loading and error states
+- **Refetching:** Implement proper refetching strategies
+
+## Code Quality & Standards
+- **TODO Resolution:** Implement or remove all TODO items
+- **JSDoc Documentation:** Add comprehensive function documentation
+- **Code Patterns:** Create consistent utilities and patterns
+- **Component Validation:** Add proper prop validation
+- **Auth Bypass:** Remove temporary auth bypass and implement proper domain validation
+
+## Testing Improvements
+- **Test Isolation:** Fix failing integration tests and test isolation issues
+- **React Testing:** Fix React testing warnings with proper act() wrapping
+- **Coverage Gaps:** Add missing test coverage for components
+- **Test Patterns:** Standardize test patterns and utilities
+- **E2E Tests:** Add E2E tests for critical user flows
+
+## Architecture Compliance
+- **OpenAPI Documentation:** Implement complete API documentation
+- **Health Checks:** Add monitoring and health check endpoints
+- **Logging & Observability:** Implement proper logging and monitoring
+- **Performance Monitoring:** Add application performance tracking
+
+## Implementation Priority
+1. **High Priority:** Type safety, error handling, performance optimization
+2. **Medium Priority:** State management, code quality, testing improvements
+3. **Low Priority:** Architecture compliance, monitoring
+
+## File Structure Changes
+```
+src/
+├── types/           # Centralized type definitions
+├── lib/
+│   ├── errors/      # Error handling utilities
+│   ├── query/       # TanStack Query configurations
+│   └── utils/       # Enhanced utility functions
+└── components/
+    └── error/       # Error boundary components
+```
+
+## Testing Requirements
+- All new utilities must have unit tests
+- Error handling must be tested with integration tests
+- Performance improvements must be validated with tests
+- Type guards must have comprehensive test coverage
+description: Epic 5 refactoring guidelines for code quality and architecture improvements
+globs:
+  - "src/**/*.ts"
+  - "src/**/*.tsx"
+  - "tests/**/*.test.ts"
+  - "tests/**/*.test.tsx"
+alwaysApply: true
+---

@@ -33,8 +33,14 @@ If a file is completely corrupted and unusable, explain the situation and ask fo
 
 **Remember:** It's better to ask twice than to accidentally lose user content!
 
+## Rule Enforcement
+- Always ask for permission before any destructive file operations
+- Always explain the reason for file modifications
+- Always wait for explicit user approval
+- Always confirm intent before proceeding
+- Always preserve user content when possible
 ---
-description:
-globs:
+description: File protection rules that prevent accidental deletion, clearing, or replacement of files without explicit user permission, ensuring data safety and user control
+globs: ["**/*", "**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.md", "**/*.json", "**/*.yml", "**/*.yaml"]
 alwaysApply: true
 ---

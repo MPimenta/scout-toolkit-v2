@@ -18,6 +18,7 @@ This document outlines the complete deployment strategy for the Scout Activities
 - **Local Database:** PostgreSQL via Docker
 - **Local Development:** Next.js dev server
 - **File Storage:** UploadThing development environment
+- **Testing:** PostgreSQL test database with dedicated test user and schema isolation
 
 ## Environment Setup
 
@@ -126,6 +127,8 @@ pnpm db:migrate
 # Seed database
 pnpm db:seed
 ```
+
+**Note:** The testing infrastructure uses a separate test database (`scout_toolkit_test`) with dedicated user credentials for isolated testing.
 
 ### Step 3: Environment Configuration
 ```bash

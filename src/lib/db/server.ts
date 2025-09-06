@@ -4,7 +4,9 @@ import * as dotenv from 'dotenv';
 import * as schema from '../../../drizzle/schema';
 
 // Load environment variables for server-side operations
-dotenv.config({ path: '.env.local' });
+dotenv.config({ 
+  path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env.local' 
+});
 
 // Database connection for server-side operations only
 const connectionString = process.env.DATABASE_URL!;

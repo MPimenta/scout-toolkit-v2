@@ -63,6 +63,16 @@
 - Add E2E tests for critical user flows
 - Maintain test coverage above 80%
 - Run tests before committing code
+
+## Epic 5 Testing Improvements
+- **Fix Test Isolation:** Resolve failing integration tests and test isolation issues
+- **React Testing:** Fix React testing warnings with proper act() wrapping
+- **Coverage Gaps:** Add missing test coverage for components
+- **Test Patterns:** Standardize test patterns and utilities
+- **E2E Tests:** Add E2E tests for critical user flows
+- **Type Guards:** Create unit tests for type guards and runtime validation
+- **Error Handling:** Test centralized error handling utilities
+- **Performance:** Create tests for performance optimizations
 description:
 globs:
 alwaysApply: true

@@ -1,18 +1,87 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { AddToProgramModal } from '@/components/features/activities/AddToProgramModal';
 import { useSession } from 'next-auth/react';
-
 import { vi } from 'vitest';
 
 // Mock next-auth
 vi.mock('next-auth/react');
+
+// Mock the usePrograms hook
+vi.mock('@/hooks/usePrograms', () => ({
+  usePrograms: () => ({
+    programs: [
+      {
+        id: '1',
+        name: 'Acampamento de Verão 2024',
+        date: '2024-07-15',
+        start_time: '09:00',
+        is_public: true,
+        entry_count: 5,
+        total_duration_minutes: 120,
+      },
+      {
+        id: '2',
+        name: 'Reuniões Semanais',
+        date: '2024-01-20',
+        start_time: '19:00',
+        is_public: false,
+        entry_count: 3,
+        total_duration_minutes: 90,
+      },
+    ],
+    loading: false,
+    error: null,
+    pagination: { page: 1, limit: 10, total: 2, total_pages: 1 },
+    refetch: vi.fn(),
+  }),
+}));
+
+// Mock the useProgramMutations hook
+vi.mock('@/hooks/useProgramMutations', () => ({
+  useProgramMutations: () => ({
+    createProgram: vi.fn().mockResolvedValue({
+      id: 'new-program-id',
+      name: 'New Program',
+      date: '2024-01-01',
+      start_time: '09:00',
+      is_public: false,
+    }),
+    updateProgram: vi.fn(),
+    deleteProgram: vi.fn(),
+  }),
+}));
+
+// Mock next/navigation
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+  }),
+}));
+
+// Mock sonner toast
+vi.mock('sonner', () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+    info: vi.fn(),
+    warning: vi.fn(),
+  },
+}));
+
+// Mock fetch
+global.fetch = vi.fn();
 
 const mockUseSession = useSession as ReturnType<typeof vi.fn>;
 
 describe('AddToProgramModal', () => {
   const mockActivity = {
     id: 'test-activity-id',
-    name: { pt: 'Atividade de Teste', en: 'Test Activity' },
+    name: 'Atividade de Teste',
     approximate_duration_minutes: 60,
     group_size: 'medium' as const,
   };
@@ -34,13 +103,14 @@ describe('AddToProgramModal', () => {
   };
 
   const defaultProps = {
-    isOpen: true,
     onClose: vi.fn(),
     activity: mockActivity,
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // Reset fetch mock
+    global.fetch = vi.fn();
   });
 
   describe('when user is not authenticated', () => {
@@ -72,7 +142,7 @@ describe('AddToProgramModal', () => {
       render(<AddToProgramModal {...defaultProps} />);
 
       expect(screen.getByText('Selecionar Programa')).toBeInTheDocument();
-      expect(screen.getByText('Escolha um programa existente')).toBeInTheDocument();
+      expect(screen.getByRole('combobox')).toBeInTheDocument();
       expect(screen.getByText('Criar Novo Programa')).toBeInTheDocument();
       expect(screen.getByTestId('add-to-program-modal')).toBeInTheDocument();
     });
@@ -80,22 +150,22 @@ describe('AddToProgramModal', () => {
     it('displays existing programs in dropdown', () => {
       render(<AddToProgramModal {...defaultProps} />);
 
-      // Open the dropdown
-      const selectTrigger = screen.getByText('Escolha um programa existente');
+      // Open the dropdown - the placeholder text is in the SelectValue component
+      const selectTrigger = screen.getByRole('combobox');
       fireEvent.click(selectTrigger);
 
       // Check that programs are displayed
       expect(screen.getByText('Acampamento de Verão 2024')).toBeInTheDocument();
-      expect(screen.getByText('Programa de atividades para o acampamento de verão')).toBeInTheDocument();
+      expect(screen.getByText('15/07/2024')).toBeInTheDocument();
       expect(screen.getByText('Reuniões Semanais')).toBeInTheDocument();
-      expect(screen.getByText('Atividades para as reuniões semanais da secção')).toBeInTheDocument();
+      expect(screen.getByText('20/01/2024')).toBeInTheDocument();
     });
 
     it('allows selecting an existing program', () => {
       render(<AddToProgramModal {...defaultProps} />);
 
-      // Open the dropdown
-      const selectTrigger = screen.getByText('Escolha um programa existente');
+      // Open the dropdown - the placeholder text is in the SelectValue component
+      const selectTrigger = screen.getByRole('combobox');
       fireEvent.click(selectTrigger);
 
       // Select a program
@@ -114,7 +184,7 @@ describe('AddToProgramModal', () => {
       expect(addButton).toBeDisabled();
 
       // Select a program
-      const selectTrigger = screen.getByText('Escolha um programa existente');
+      const selectTrigger = screen.getByRole('combobox');
       fireEvent.click(selectTrigger);
       const programOption = screen.getByText('Acampamento de Verão 2024');
       fireEvent.click(programOption);
@@ -132,7 +202,6 @@ describe('AddToProgramModal', () => {
       // Check that form is displayed
       expect(screen.getByText('Nome do Programa')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('Ex: Acampamento de Verão 2024')).toBeInTheDocument();
-      expect(screen.getByText('Descrição (opcional)')).toBeInTheDocument();
       expect(screen.getByText('Cancelar')).toBeInTheDocument();
       expect(screen.getByText('Criar Programa')).toBeInTheDocument();
     });
@@ -146,10 +215,8 @@ describe('AddToProgramModal', () => {
 
       // Fill in the form
       const nameInput = screen.getByPlaceholderText('Ex: Acampamento de Verão 2024');
-      const descriptionInput = screen.getByPlaceholderText('Descreva o programa...');
       
       fireEvent.change(nameInput, { target: { value: 'Novo Programa' } });
-      fireEvent.change(descriptionInput, { target: { value: 'Descrição do novo programa' } });
 
       // Submit the form
       const submitButton = screen.getByText('Criar Programa');
@@ -206,7 +273,7 @@ describe('AddToProgramModal', () => {
       render(<AddToProgramModal {...defaultProps} />);
 
       // Select a program
-      const selectTrigger = screen.getByText('Escolha um programa existente');
+      const selectTrigger = screen.getByRole('combobox');
       fireEvent.click(selectTrigger);
       const programOption = screen.getByText('Acampamento de Verão 2024');
       fireEvent.click(programOption);
@@ -242,15 +309,76 @@ describe('AddToProgramModal', () => {
       expect(screen.getByText('Atividade Selecionada')).toBeInTheDocument();
     });
 
-    it('displays fallback text when Portuguese content is not available', () => {
-      const activityWithEnglishOnly = {
+    it('displays fallback text when content is not available', () => {
+      const activityWithMissingData = {
         ...mockActivity,
-        name: { en: 'Test Activity' },
+        name: '',
       };
 
-      render(<AddToProgramModal {...defaultProps} activity={activityWithEnglishOnly} />);
+      render(<AddToProgramModal {...defaultProps} activity={activityWithMissingData} />);
 
-      expect(screen.getByText('Test Activity')).toBeInTheDocument();
+      // Should still render without crashing, even with empty name
+      expect(screen.getByTestId('add-to-program-modal')).toBeInTheDocument();
+    });
+
+    it('adds activity to selected program successfully', async () => {
+      // Mock successful API response
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ entry: { id: 'entry-1', position: 1 } }),
+      });
+
+      render(<AddToProgramModal {...defaultProps} />);
+
+      // Select a program
+      const selectTrigger = screen.getByRole('combobox');
+      fireEvent.click(selectTrigger);
+      const programOption = screen.getByText('Acampamento de Verão 2024');
+      fireEvent.click(programOption);
+
+      // Click add to program button
+      const addButton = screen.getByRole('button', { name: 'Adicionar ao Programa' });
+      fireEvent.click(addButton);
+
+      // Check loading state
+      expect(screen.getByText('A adicionar...')).toBeInTheDocument();
+
+      // Wait for API call to complete
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith(
+          '/api/programs/1/entries',
+          expect.objectContaining({
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: expect.stringContaining('"entry_type":"activity"'),
+          })
+        );
+      });
+    });
+
+    it('handles API error when adding activity to program', async () => {
+      // Mock API error response
+      (global.fetch as any).mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({ error: 'Program not found' }),
+      });
+
+      render(<AddToProgramModal {...defaultProps} />);
+
+      // Select a program
+      const selectTrigger = screen.getByRole('combobox');
+      fireEvent.click(selectTrigger);
+      const programOption = screen.getByText('Acampamento de Verão 2024');
+      fireEvent.click(programOption);
+
+      // Click add to program button
+      const addButton = screen.getByRole('button', { name: 'Adicionar ao Programa' });
+      fireEvent.click(addButton);
+
+      // Wait for error handling
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalled();
+      });
     });
   });
 
@@ -274,7 +402,8 @@ describe('AddToProgramModal', () => {
       render(<AddToProgramModal {...defaultProps} />);
 
       expect(screen.getByTestId('add-to-program-modal')).toHaveAttribute('data-activity-id', 'test-activity-id');
-      expect(screen.getByTestId('add-to-program-modal')).toHaveAttribute('data-is-open', 'true');
+      // The modal is always open in this component (open={true})
+      expect(screen.getByTestId('add-to-program-modal')).toBeInTheDocument();
     });
   });
 });

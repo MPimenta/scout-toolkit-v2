@@ -18,12 +18,24 @@ export const authConfig: NextAuthConfig = {
     error: '/auth/error',
   },
   callbacks: {
-    async signIn({ user }) {
+    async signIn() {
+      // TEMPORARILY DISABLED: Domain restriction for @escoteiros.pt emails
       // Only allow @escoteiros.pt emails
-      if (user.email && user.email.endsWith('@escoteiros.pt')) {
-        return true;
+      // if (user.email && user.email.endsWith('@escoteiros.pt')) {
+      //   return true;
+      // }
+      // return false;
+      
+      // Allow all Google emails temporarily
+      return true;
+    },
+    async session({ session, user }) {
+      // Ensure user ID is included in the session
+      if (session.user) {
+        session.user.id = user.id;
+        session.user.role = user.role || 'user';
       }
-      return false;
+      return session;
     },
   },
 };

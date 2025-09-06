@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 
 interface EducationalGoal {
   id: string;
-  title: Record<string, string>;
-  description?: Record<string, string>;
+  title: string; // Now simple string after migration
+  description?: string; // Now simple string after migration
   code: string;
   area: {
     id: string;
-    name: Record<string, string>;
-    description?: Record<string, string>;
+    name: string; // Now simple string after migration
+    description?: string; // Now simple string after migration
     icon: string;
     code: string;
   };
@@ -17,22 +17,22 @@ interface EducationalGoal {
 interface Sdg {
   id: string;
   number: number;
-  name: Record<string, string>;
-  description: Record<string, string>;
+  name: string; // Now simple string after migration
+  description: string; // Now simple string after migration
   icon_url: string;
 }
 
 interface ActivityType {
   id: string;
-  name: Record<string, string>;
-  description?: Record<string, string>;
+  name: string; // Now simple string after migration
+  description?: string; // Now simple string after migration
 }
 
 interface Activity {
   id: string;
-  name: Record<string, string>;
-  description: Record<string, string>;
-  materials: Record<string, string>;
+  name: string; // Now simple string after migration
+  description: string; // Now simple string after migration
+  materials: string; // Now simple string after migration
   approximate_duration_minutes: number;
   group_size: 'small' | 'medium' | 'large';
   effort_level: 'low' | 'medium' | 'high';

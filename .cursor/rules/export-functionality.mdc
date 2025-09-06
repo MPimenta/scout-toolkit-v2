@@ -33,8 +33,15 @@ SDGs: [SDG Icons]
 - Implement proper caching
 - Handle large datasets efficiently
 - Provide progress feedback
+
+## Rule Enforcement
+- Always use SheetJS for Excel exports
+- Always use Playwright for PDF generation
+- Always implement proper error handling for export operations
+- Always provide user feedback during export processes
+- Always optimize export performance for large datasets
 ---
-description:
-globs:
+description: Export functionality rules for Excel and PDF generation using SheetJS and Playwright, ensuring proper formatting, performance optimization, and user experience
+globs: ["**/*.ts", "**/*.tsx", "**/api/**/*.ts", "**/components/**/*.tsx"]
 alwaysApply: true
 ---

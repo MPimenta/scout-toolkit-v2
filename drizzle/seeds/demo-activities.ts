@@ -10,15 +10,9 @@ import { sql, eq } from 'drizzle-orm';
 // Demo activities for testing
 const demoActivitiesData = [
   {
-    name: { pt: 'Jogo do Nome e Gesto', en: 'Name and Gesture Game' },
-    description: { 
-      pt: 'Um jogo divertido onde cada pessoa diz o seu nome acompanhado de um gesto. Os outros repetem o nome e o gesto de todos os que já se apresentaram antes de se apresentarem a si próprios.',
-      en: 'A fun game where each person says their name accompanied by a gesture. Others repeat the name and gesture of everyone who has already introduced themselves before introducing themselves.'
-    },
-    materials: { 
-      pt: 'Nenhum material necessário',
-      en: 'No materials needed'
-    },
+    name: 'Jogo do Nome e Gesto',
+    description: 'Um jogo divertido onde cada pessoa diz o seu nome acompanhado de um gesto. Os outros repetem o nome e o gesto de todos os que já se apresentaram antes de se apresentarem a si próprios.',
+    materials: 'Nenhum material necessário',
     approximate_duration_minutes: 15,
     group_size: 'medium' as const,
     effort_level: 'low' as const,
@@ -29,15 +23,9 @@ const demoActivitiesData = [
     sdg_numbers: [4, 5],
   },
   {
-    name: { pt: 'Caça ao Tesouro', en: 'Treasure Hunt' },
-    description: { 
-      pt: 'Uma caça ao tesouro com pistas que levam os participantes a descobrir um tesouro escondido. As pistas podem incluir charadas, códigos ou orientações.',
-      en: 'A treasure hunt with clues that lead participants to discover a hidden treasure. Clues can include riddles, codes, or directions.'
-    },
-    materials: { 
-      pt: 'Pistas, tesouro (doces ou pequenos prémios), papel e lápis',
-      en: 'Clues, treasure (candies or small prizes), paper and pencil'
-    },
+    name: 'Caça ao Tesouro',
+    description: 'Uma caça ao tesouro com pistas que levam os participantes a descobrir um tesouro escondido. As pistas podem incluir charadas, códigos ou orientações.',
+    materials: 'Pistas, tesouro (doces ou pequenos prémios), papel e lápis',
     approximate_duration_minutes: 45,
     group_size: 'large' as const,
     effort_level: 'medium' as const,
@@ -48,15 +36,9 @@ const demoActivitiesData = [
     sdg_numbers: [4, 15],
   },
   {
-    name: { pt: 'Reflexão do Dia', en: 'Day Reflection' },
-    description: { 
-      pt: 'Uma atividade de reflexão onde os participantes partilham os momentos mais importantes do dia, o que aprenderam e como se sentiram.',
-      en: 'A reflection activity where participants share the most important moments of the day, what they learned and how they felt.'
-    },
-    materials: { 
-      pt: 'Vela (opcional para criar ambiente), perguntas de reflexão',
-      en: 'Candle (optional to create atmosphere), reflection questions'
-    },
+    name: 'Reflexão do Dia',
+    description: 'Uma atividade de reflexão onde os participantes partilham os momentos mais importantes do dia, o que aprenderam e como se sentiram.',
+    materials: 'Vela (opcional para criar ambiente), perguntas de reflexão',
     approximate_duration_minutes: 20,
     group_size: 'small' as const,
     effort_level: 'low' as const,
@@ -67,15 +49,9 @@ const demoActivitiesData = [
     sdg_numbers: [3, 4],
   },
   {
-    name: { pt: 'Construção de Abrigo', en: 'Shelter Building' },
-    description: { 
-      pt: 'Os participantes constroem um abrigo usando materiais naturais encontrados na natureza. Aprende-se sobre técnicas de construção e trabalho em equipa.',
-      en: 'Participants build a shelter using natural materials found in nature. Learn about construction techniques and teamwork.'
-    },
-    materials: { 
-      pt: 'Cordas, ramos, folhas, ferramentas básicas (se disponíveis)',
-      en: 'Ropes, branches, leaves, basic tools (if available)'
-    },
+    name: 'Construção de Abrigo',
+    description: 'Os participantes constroem um abrigo usando materiais naturais encontrados na natureza. Aprende-se sobre técnicas de construção e trabalho em equipa.',
+    materials: 'Cordas, ramos, folhas, ferramentas básicas (se disponíveis)',
     approximate_duration_minutes: 90,
     group_size: 'medium' as const,
     effort_level: 'high' as const,
@@ -86,15 +62,9 @@ const demoActivitiesData = [
     sdg_numbers: [4, 15],
   },
   {
-    name: { pt: 'Limpeza da Comunidade', en: 'Community Cleanup' },
-    description: { 
-      pt: 'Uma atividade de serviço onde os participantes limpam uma área da comunidade, recolhendo lixo e promovendo a consciência ambiental.',
-      en: 'A service activity where participants clean a community area, collecting trash and promoting environmental awareness.'
-    },
-    materials: { 
-      pt: 'Sacos de lixo, luvas, pinças (opcional)',
-      en: 'Garbage bags, gloves, tongs (optional)'
-    },
+    name: 'Limpeza da Comunidade',
+    description: 'Uma atividade de serviço onde os participantes limpam uma área da comunidade, recolhendo lixo e promovendo a consciência ambiental.',
+    materials: 'Sacos de lixo, luvas, pinças (opcional)',
     approximate_duration_minutes: 60,
     group_size: 'large' as const,
     effort_level: 'medium' as const,
@@ -115,7 +85,7 @@ export async function seedDemoActivities() {
       const [activityType] = await db
         .select()
         .from(activityTypes)
-        .where(sql`${activityTypes.name}->>'pt' = ${activityData.activity_type_name}`)
+        .where(eq(activityTypes.name, activityData.activity_type_name))
         .limit(1);
 
       if (!activityType) {

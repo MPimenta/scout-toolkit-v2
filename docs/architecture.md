@@ -18,9 +18,10 @@ This document outlines the technical architecture, stack choices, and key design
 - **Auth.js (NextAuth)** - Authentication library with Google OAuth provider
 
 ### State Management & Data Fetching
-- **TanStack Query** - Server state management and caching
+- **TanStack Query** - Server state management and caching (Epic 5 implementation)
 - **TanStack Table** - Powerful data grid for table views
 - **Zustand** - Lightweight client state management for program builder
+- **Custom Hooks** - Data fetching hooks (useActivities, usePrograms, useProgram) - to be migrated to TanStack Query
 
 ### Content & Localization
 - **Portuguese-only interface** - All UI text and content in Portuguese
@@ -43,10 +44,11 @@ This document outlines the technical architecture, stack choices, and key design
 
 ### Development Tools
 - **ESLint + Prettier** - Code linting and formatting
-- **Vitest** - Unit and integration testing
+- **Vitest** - Unit and integration testing with PostgreSQL
 - **Playwright** - End-to-end testing
 - **Drizzle Kit** - Database migrations and seeding
-- **OpenAPI/Swagger** - API documentation and interactive testing
+- **OpenAPI/Swagger** - API documentation and interactive testing (Epic 5 implementation)
+- **TypeScript** - Strict type checking (Epic 5 enhancement)
 
 ## Project Structure
 
@@ -110,6 +112,8 @@ scout-toolkit-v2/
 - **`db/`** - Database configuration, schema, and utilities
 - **`auth/`** - Authentication configuration and utilities
 - **`utils/`** - Shared utility functions
+- **`types/`** - Centralized type definitions (Epic 5 implementation)
+- **`errors/`** - Centralized error handling utilities (Epic 5 implementation)
 
 #### `drizzle/`
 - **`schema/`** - Database schema definitions
@@ -118,8 +122,10 @@ scout-toolkit-v2/
 
 #### `tests/`
 - **`unit/`** - Unit tests for components and utilities
-- **`integration/`** - Integration tests for API endpoints
+- **`integration/`** - Integration tests for API endpoints with PostgreSQL
 - **`e2e/`** - End-to-end tests for user flows
+- **`setup.ts`** - PostgreSQL test database setup and schema creation
+- **`helpers/database.ts`** - Test database utilities and isolation
 
 ## Data Model
 
@@ -188,6 +194,7 @@ educational_goals {
   title: text // Portuguese educational goal title
   description?: text // Portuguese educational goal description
   code: string (unique)
+  icon: string // Icon for educational goal
   created_at: timestamp
 }
 
@@ -197,6 +204,36 @@ sdgs {
   name: text // Portuguese SDG name
   description: text // Portuguese SDG description
   icon_url: string
+  icon: string // Additional icon field for consistency
+  created_at: timestamp
+}
+
+// Additional taxonomy tables with icon support
+group_sizes {
+  id: string (primary key)
+  name: string // e.g., "Pequeno (4-8)", "Médio (8-12)", "Grande (12+)"
+  icon: string // e.g., "👥", "👨‍👩‍👧‍👦", "👥"
+  created_at: timestamp
+}
+
+effort_levels {
+  id: string (primary key)
+  name: string // e.g., "Baixo", "Médio", "Alto"
+  icon: string // e.g., "🟢", "🟡", "🔴"
+  created_at: timestamp
+}
+
+locations {
+  id: string (primary key)
+  name: string // e.g., "Interior", "Exterior", "Misto"
+  icon: string // e.g., "🏠", "🌳", "🏕️"
+  created_at: timestamp
+}
+
+age_groups {
+  id: string (primary key)
+  name: string // e.g., "Lobitos", "Exploradores", "Pioneiros", "Caminheiros"
+  icon: string // e.g., "🦁", "🌍", "🏔️", "🎯"
   created_at: timestamp
 }
 ```
@@ -400,6 +437,44 @@ s3://bucket/
     └── sdg-2.png
 ```
 
+## Program Builder Table Layout
+
+### Schedule Table Structure
+The program builder uses a table-based layout for displaying program entries with drag and drop functionality:
+
+#### Table Columns
+- **Start Time**: Auto-calculated based on program start time + previous entries duration
+- **End Time**: Auto-calculated based on start time + current entry duration  
+- **Name**: Activity name or custom block title
+- **Type**: Activity or Custom block indicator
+- **Group Size**: Icon + size range (e.g., "👥 8-12")
+- **Effort Level**: Icon + effort level (e.g., "🟡 Médio")
+- **Location**: Icon + location (e.g., "🌳 Exterior")
+- **Age Group**: Icon + age group (e.g., "🌍 Exploradores")
+- **Duration**: Duration display (e.g., "1h 30m")
+- **Goals**: Icon + educational goals (e.g., "🎯 Natureza")
+- **SDGs**: Icon + SDG numbers (e.g., "🌱 15")
+- **Actions**: Drag handle, edit, delete buttons
+
+#### Drag and Drop Implementation
+- **Library**: @dnd-kit for React drag and drop
+- **Behavior**: Vertical-only reordering of table rows
+- **Visual Feedback**: Drag handle, hover states, drop indicators
+- **Time Recalculation**: Automatic start/end time updates after reordering
+- **Mobile Support**: Touch-friendly drag handles and fallback buttons
+
+#### Mobile Responsiveness
+- **Horizontal Scroll**: Table scrolls horizontally on mobile devices
+- **Touch Optimization**: Larger touch targets for drag handles and buttons
+- **Stacked Layout**: Alternative stacked view for very small screens
+- **Responsive Columns**: Hide less important columns on mobile
+
+#### Icon System
+- **Database Storage**: Icons stored as strings in taxonomy tables
+- **Fallback Handling**: Default icons for missing values
+- **Consistency**: Unified icon system across all taxonomy values
+- **Customization**: Icons can be updated via admin interface
+
 ## Export Strategy
 
 ### Excel Export
@@ -482,6 +557,60 @@ SDGs: [SDG Icons]
 - **Microservices:** Separate services for search, exports
 - **Real-time Features:** WebSocket integration for live updates
 - **Mobile App:** React Native or PWA approach
+
+## Epic 5: Code Quality & Architecture Refactoring
+
+### Overview
+Epic 5 focuses on improving code quality, type safety, performance, and architectural compliance. This epic addresses technical debt and ensures the codebase follows best practices.
+
+### Key Improvements
+
+#### Type Safety & Consistency
+- **Centralized Types:** All type definitions consolidated in `src/types/`
+- **API Response Types:** Unified types that match actual API responses
+- **Error Types:** Consistent error handling with proper TypeScript types
+- **Type Guards:** Runtime type validation for data integrity
+
+#### Error Handling Standardization
+- **Centralized Error Utilities:** Consistent error handling across the application
+- **Portuguese Error Messages:** All error messages in Portuguese
+- **Error Boundaries:** React error boundaries for graceful error handling
+- **Logging System:** Proper logging replacing console.log statements
+
+#### Performance Optimization
+- **Database Query Optimization:** Eliminate N+1 queries and add missing indexes
+- **TanStack Query Migration:** Server state management with caching
+- **React Optimizations:** React.memo and useMemo where appropriate
+- **Caching Strategies:** Proper cache invalidation and refetching
+
+#### State Management Refactoring
+- **TanStack Query Integration:** Migrate all data fetching hooks
+- **Optimistic Updates:** Immediate UI updates for better UX
+- **Cache Management:** Proper cache invalidation strategies
+- **Loading States:** Consistent loading and error states
+
+#### Code Quality & Standards
+- **TODO Resolution:** Implement or remove all TODO items
+- **JSDoc Documentation:** Comprehensive function documentation
+- **Code Patterns:** Consistent utilities and patterns
+- **Component Validation:** Proper prop validation
+
+#### Testing Improvements
+- **Test Isolation:** Fix failing integration tests
+- **React Testing:** Proper act() wrapping for React tests
+- **Coverage Gaps:** Add missing test coverage
+- **E2E Tests:** Critical user flow testing
+
+#### Architecture Compliance
+- **OpenAPI Documentation:** Complete API documentation
+- **Health Checks:** Monitoring and health check endpoints
+- **Logging & Observability:** Proper logging and monitoring
+- **Performance Monitoring:** Application performance tracking
+
+### Implementation Priority
+1. **High Priority:** Type safety, error handling, performance optimization
+2. **Medium Priority:** State management, code quality, testing improvements
+3. **Low Priority:** Architecture compliance, monitoring
 
 ## Monitoring & Observability
 

@@ -4,7 +4,7 @@ import { useActivity } from '@/hooks/useActivity';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+
 import { Clock, Users, Target, MapPin, BookOpen, Star, MessageSquare, Plus } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ActivityRating } from './ActivityRating';
@@ -13,12 +13,6 @@ import { useState } from 'react';
 
 interface ActivityDetailProps {
   activityId: string;
-}
-
-// Helper function to get Portuguese text from multilingual content
-function getPortugueseText(content: Record<string, string> | null | undefined): string {
-  if (!content) return '';
-  return content.pt || content.en || Object.values(content)[0] || '';
 }
 
 // Helper function to get age group display text
@@ -92,14 +86,14 @@ export function ActivityDetail({ activityId }: ActivityDetailProps) {
           {activity.image_url ? (
             <img
               src={activity.image_url}
-              alt={getPortugueseText(activity.name)}
+              alt={activity.name}
               className="w-full h-64 object-cover rounded-lg shadow-lg"
             />
           ) : (
             <div className="w-full h-64 bg-muted rounded-lg flex items-center justify-center">
               <div className="text-center text-muted-foreground">
-                <BookOpen className="w-16 h-16 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">Sem imagem</p>
+                <BookOpen className="h-16 w-16 mx-auto mb-2" />
+                <p>Sem imagem</p>
               </div>
             </div>
           )}
@@ -108,103 +102,98 @@ export function ActivityDetail({ activityId }: ActivityDetailProps) {
         {/* Activity Info */}
         <div className="lg:w-2/3 space-y-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              {getPortugueseText(activity.name)}
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              {getPortugueseText(activity.description)}
+            <h1 className="text-3xl font-bold mb-2">{activity.name}</h1>
+            <p className="text-muted-foreground text-lg leading-relaxed">
+              {activity.description}
             </p>
           </div>
 
-          {/* Quick Info Badges */}
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary" className="flex items-center gap-1">
-              <Clock className="w-4 h-4" />
-              {activity.approximate_duration_minutes} min
-            </Badge>
-            <Badge variant="secondary" className="flex items-center gap-1">
-              <Users className="w-4 h-4" />
-              {getGroupSizeText(activity.group_size)}
-            </Badge>
-            <Badge variant="secondary" className="flex items-center gap-1">
-              <Target className="w-4 h-4" />
-              {getEffortLevelText(activity.effort_level)}
-            </Badge>
-            <Badge variant="secondary" className="flex items-center gap-1">
-              <MapPin className="w-4 h-4" />
-              {getLocationText(activity.location)}
-            </Badge>
+          {/* Activity Type */}
+          <div className="flex items-center gap-2">
             <Badge variant="secondary">
-              {getAgeGroupText(activity.age_group)}
+              {activity.activity_type.name}
             </Badge>
-            {activity.activity_type && (
-              <Badge variant="outline">
-                {getPortugueseText(activity.activity_type.name)}
-              </Badge>
-            )}
           </div>
 
-          {/* Add to Program Button */}
-          <Button 
-            onClick={() => setShowAddToProgramModal(true)}
-            className="flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Adicionar ao Programa
-          </Button>
+          {/* Quick Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm">{activity.approximate_duration_minutes} min</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm">{getGroupSizeText(activity.group_size)}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Target className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm">{getEffortLevelText(activity.effort_level)}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm">{getLocationText(activity.location)}</span>
+            </div>
+          </div>
+
+          {/* Age Group */}
+          <div className="flex items-center gap-2">
+            <Users className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm">{getAgeGroupText(activity.age_group)}</span>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-4">
+            <Button onClick={() => setShowAddToProgramModal(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Adicionar ao Programa
+            </Button>
+            <Button variant="outline">
+              <Star className="h-4 w-4 mr-2" />
+              Avaliar
+            </Button>
+          </div>
         </div>
       </div>
-
-      <Separator />
 
       {/* Materials Section */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <BookOpen className="w-5 h-5" />
+            <BookOpen className="h-5 w-5" />
             Materiais Necessários
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">
-            {getPortugueseText(activity.materials)}
+            {activity.materials}
           </p>
         </CardContent>
       </Card>
 
       {/* Educational Goals Section */}
-      {activity.educational_goals.length > 0 && (
+      {activity.educational_goals && activity.educational_goals.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Target className="w-5 h-5" />
+              <Target className="h-5 w-5" />
               Objetivos Educativos
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-3">
+            <div className="space-y-3">
               {activity.educational_goals.map((goal) => (
-                <div key={goal.id} className="p-3 border rounded-lg">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-sm font-semibold text-primary">
-                        {goal.area.icon}
-                      </span>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-foreground">
-                        {getPortugueseText(goal.title)}
-                      </h4>
-                      <p className="text-sm text-muted-foreground">
-                        {getPortugueseText(goal.area.name)} • {goal.area.code}
-                      </p>
-                      {goal.description && (
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {getPortugueseText(goal.description)}
-                        </p>
-                      )}
-                    </div>
+                <div key={goal.id} className="p-3 bg-muted/50 rounded-lg">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Badge variant="outline" className="text-xs">
+                      {goal.area.name} • {goal.area.code}
+                    </Badge>
                   </div>
+                  <h4 className="font-medium mb-1">{goal.title}</h4>
+                  {goal.description && (
+                    <p className="text-sm text-muted-foreground">
+                      {goal.description}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
@@ -213,29 +202,35 @@ export function ActivityDetail({ activityId }: ActivityDetailProps) {
       )}
 
       {/* SDGs Section */}
-      {activity.sdgs.length > 0 && (
+      {activity.sdgs && activity.sdgs.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Star className="w-5 h-5" />
-              Objetivos de Desenvolvimento Sustentável
+              <Target className="h-5 w-5" />
+              Objetivos de Desenvolvimento Sustentável (ODS)
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {activity.sdgs.map((sdg) => (
-                <div key={sdg.id} className="text-center p-3 border rounded-lg">
-                  <img
-                    src={sdg.icon_url}
-                    alt={`SDG ${sdg.number}`}
-                    className="w-16 h-16 mx-auto mb-2"
-                  />
-                  <h4 className="font-semibold text-sm text-foreground">
-                    {sdg.number}. {getPortugueseText(sdg.name)}
-                  </h4>
-                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                    {getPortugueseText(sdg.description)}
-                  </p>
+                <div key={sdg.id} className="p-3 bg-muted/50 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    {sdg.icon_url && (
+                      <img
+                        src={sdg.icon_url}
+                        alt={`ODS ${sdg.number}`}
+                        className="w-6 h-6"
+                      />
+                    )}
+                    <span className="font-medium">
+                      {sdg.number}. {sdg.name}
+                    </span>
+                  </div>
+                  {sdg.description && (
+                    <p className="text-sm text-muted-foreground">
+                      {sdg.description}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
@@ -243,25 +238,26 @@ export function ActivityDetail({ activityId }: ActivityDetailProps) {
         </Card>
       )}
 
-      {/* Rating and Comments Section */}
+      {/* Reviews Section */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <MessageSquare className="w-5 h-5" />
-            Avaliações e Comentários
+            <MessageSquare className="h-5 w-5" />
+            Avaliações
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ActivityRating activityId={activityId} />
+          <ActivityRating activityId={activity.id} />
         </CardContent>
       </Card>
 
       {/* Add to Program Modal */}
-      <AddToProgramModal
-        isOpen={showAddToProgramModal}
-        onClose={() => setShowAddToProgramModal(false)}
-        activity={activity}
-      />
+      {showAddToProgramModal && (
+        <AddToProgramModal
+          activity={activity}
+          onClose={() => setShowAddToProgramModal(false)}
+        />
+      )}
     </div>
   );
 }
