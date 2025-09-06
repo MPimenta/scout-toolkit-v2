@@ -4,7 +4,7 @@ import { ProgramEntry } from '../../drizzle/schema/programs';
 
 export interface CreateProgramData {
   name: string;
-  date?: string;
+  date: string;
   start_time: string;
   is_public?: boolean;
 }
@@ -88,7 +88,7 @@ export function useProgramMutations() {
       }
 
       // Update program metadata if provided
-      const { entries, ...programData } = data;
+      const { entries: _entries, ...programData } = data;
       if (Object.keys(programData).length > 0) {
         const response = await fetch(`/api/programs/${programId}`, {
           method: 'PUT',

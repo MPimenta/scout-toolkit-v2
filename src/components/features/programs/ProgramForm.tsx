@@ -122,7 +122,7 @@ export function ProgramForm({ mode, initialData, onSuccess }: ProgramFormProps) 
           <div className="flex items-center space-x-2">
             <Switch
               id="is_public"
-              checked={formData.is_public}
+              checked={formData.is_public || false}
               onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_public: checked }))}
             />
             <Label htmlFor="is_public">Tornar programa público</Label>

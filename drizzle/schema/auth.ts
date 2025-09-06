@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, boolean } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 
 // NextAuth.js v5 required tables for DrizzleAdapter
 // These table names and structures are fixed by NextAuth.js

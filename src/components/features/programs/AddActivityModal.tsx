@@ -17,7 +17,7 @@ interface AddActivityModalProps {
   programId: string;
 }
 
-export function AddActivityModal({ open, onClose, onAdd, programId }: AddActivityModalProps) {
+export function AddActivityModal({ open, onClose, onAdd, programId: _programId }: AddActivityModalProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [selectedLocation, setSelectedLocation] = useState<string>('all');

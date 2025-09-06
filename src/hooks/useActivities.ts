@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { log } from '@/lib/errors';
 
 export interface FilterState {
   search: string;
@@ -128,7 +129,7 @@ export function useActivities(options: UseActivitiesOptions) {
       setFilterInfo(data.filters);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred while fetching activities');
-      console.error('Error fetching activities:', err);
+      log.error('Error fetching activities', err instanceof Error ? err : new Error(String(err)));
     } finally {
       setLoading(false);
     }
@@ -173,7 +174,7 @@ export function useAllActivities() {
       setActivities(data.activities);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred while fetching activities');
-      console.error('Error fetching activities:', err);
+      log.error('Error fetching activities', err instanceof Error ? err : new Error(String(err)));
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { log } from '@/lib/errors';
 
 export interface ProgramEntry {
   id: string;
@@ -78,8 +79,11 @@ export function useProgram(programId: string | null) {
       }
 
       const data = await response.json();
-      console.log('useProgram hook - API response:', data);
-      console.log('useProgram hook - Setting program:', data.program);
+      log.debug('useProgram hook - API response received', { programId: data.program.id });
+      log.debug('useProgram hook - Setting program data', { 
+        programId: data.program.id,
+        entryCount: data.program.entries.length 
+      });
       setProgram(data.program);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro desconhecido');

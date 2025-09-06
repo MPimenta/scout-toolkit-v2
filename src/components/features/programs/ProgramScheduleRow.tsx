@@ -11,7 +11,7 @@ import { useState } from 'react';
 
 interface ProgramScheduleRowProps {
   entry: ProgramEntry;
-  activity?: ActivitiesResponse['activities'][0];
+  activity: ActivitiesResponse['activities'][0] | null;
   startTime: string;
   endTime: string;
   onEdit: (entry: ProgramEntry) => void;

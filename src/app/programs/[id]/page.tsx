@@ -17,7 +17,7 @@ export default function ProgramDetailPage() {
   const { data: session } = useSession();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   
-  const programId = params.id as string;
+  const programId = params['id'] as string;
   const { program, loading, error } = useProgram(programId);
   const { deleteProgram } = useProgramMutations();
 

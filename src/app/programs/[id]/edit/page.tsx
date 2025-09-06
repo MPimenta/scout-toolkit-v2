@@ -13,7 +13,7 @@ export default function EditProgramPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
   
-  const programId = params.id as string;
+  const programId = params['id'] as string;
   const { program, loading, error } = useProgram(programId);
 
   const handleSuccess = () => {
@@ -178,7 +178,7 @@ export default function EditProgramPage() {
         initialData={{
           id: program.id,
           name: program.name,
-          date: program.date || undefined,
+          ...(program.date && { date: program.date }),
           start_time: program.start_time,
           is_public: program.is_public,
         }}

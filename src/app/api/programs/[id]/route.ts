@@ -3,19 +3,33 @@ import { auth } from '@/lib/auth/config';
 import { db } from '@/lib/db/server';
 import { programs, programEntries, activities, user, activityTypes } from '../../../../../drizzle/schema';
 import { eq, and, asc } from 'drizzle-orm';
+import { 
+  apiErrors, 
+  logApiRequest, 
+  logApiResponse,
+  withApiErrorHandler 
+} from '@/lib/errors';
+import { validateUUID } from '@/lib/errors/error-handler';
 
-export async function GET(
-  request: NextRequest,
+export const GET = withApiErrorHandler(async (
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    // Check authentication
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+) => {
+  logApiRequest('GET', '/api/programs/[id]');
+  
+  // Check authentication
+  const session = await auth();
+  if (!session?.user?.id) {
+    return apiErrors.unauthorized();
+  }
 
-    const { id: programId } = await params;
+  const { id: programId } = await params;
+  
+  // Validate program ID
+  const uuidValidation = validateUUID(programId);
+  if (!uuidValidation.success) {
+    return apiErrors.validation('id', 'ID do programa inválido');
+  }
 
     // Fetch program with user info - only show programs owned by the authenticated user
     const [programData] = await db
@@ -37,7 +51,7 @@ export async function GET(
       .where(and(eq(programs.id, programId), eq(programs.user_id, session.user.id)));
 
     if (!programData) {
-      return NextResponse.json({ error: 'Program not found' }, { status: 404 });
+      return apiErrors.notFound('programa', programId);
     }
 
     // Fetch program entries with activity details
@@ -110,7 +124,7 @@ export async function GET(
       icon_url: string;
     }> = [];
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       program: {
         ...programData,
         entries: transformedEntries,
@@ -122,38 +136,38 @@ export async function GET(
         }
       }
     });
+    
+    logApiResponse('GET', '/api/programs/[id]', 200);
+    return response;
+});
 
-  } catch (error) {
-    console.error('Error fetching program:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' }, 
-      { status: 500 }
-    );
-  }
-}
-
-export async function PUT(
+export const PUT = withApiErrorHandler(async (
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    // Check authentication
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+) => {
+  logApiRequest('PUT', '/api/programs/[id]');
+  
+  // Check authentication
+  const session = await auth();
+  if (!session?.user?.id) {
+    return apiErrors.unauthorized();
+  }
 
-    const { id: programId } = await params;
-    const body = await request.json();
-    const { name, date, start_time, is_public } = body;
+  const { id: programId } = await params;
+  
+  // Validate program ID
+  const uuidValidation = validateUUID(programId);
+  if (!uuidValidation.success) {
+    return apiErrors.validation('id', 'ID do programa inválido');
+  }
+  
+  const body = await request.json();
+  const { name, date, start_time, is_public } = body;
 
-    // Validate required fields
-    if (!name || !start_time) {
-      return NextResponse.json(
-        { error: 'Name and start time are required' },
-        { status: 400 }
-      );
-    }
+  // Validate required fields
+  if (!name || !start_time) {
+    return apiErrors.validation('name, start_time', 'Nome e hora de início são obrigatórios');
+  }
 
     // Check if program exists and belongs to user
     const [existingProgram] = await db
@@ -165,7 +179,7 @@ export async function PUT(
       ));
 
     if (!existingProgram) {
-      return NextResponse.json({ error: 'Program not found' }, { status: 404 });
+      return apiErrors.notFound('programa', programId);
     }
 
     // Update program
@@ -181,32 +195,34 @@ export async function PUT(
       .where(eq(programs.id, programId))
       .returning();
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       program: updatedProgram
     });
+    
+    logApiResponse('PUT', '/api/programs/[id]', 200);
+    return response;
+});
 
-  } catch (error) {
-    console.error('Error updating program:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
-
-export async function DELETE(
-  request: NextRequest,
+export const DELETE = withApiErrorHandler(async (
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    // Check authentication
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+) => {
+  logApiRequest('DELETE', '/api/programs/[id]');
+  
+  // Check authentication
+  const session = await auth();
+  if (!session?.user?.id) {
+    return apiErrors.unauthorized();
+  }
 
-    const { id: programId } = await params;
+  const { id: programId } = await params;
+  
+  // Validate program ID
+  const uuidValidation = validateUUID(programId);
+  if (!uuidValidation.success) {
+    return apiErrors.validation('id', 'ID do programa inválido');
+  }
 
     // Check if program exists and belongs to user
     const [existingProgram] = await db
@@ -218,7 +234,7 @@ export async function DELETE(
       ));
 
     if (!existingProgram) {
-      return NextResponse.json({ error: 'Program not found' }, { status: 404 });
+      return apiErrors.notFound('programa', programId);
     }
 
     // Delete program (cascades to entries due to foreign key constraint)
@@ -226,15 +242,10 @@ export async function DELETE(
       .delete(programs)
       .where(eq(programs.id, programId));
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true
     });
-
-  } catch (error) {
-    console.error('Error deleting program:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
+    
+    logApiResponse('DELETE', '/api/programs/[id]', 200);
+    return response;
+});

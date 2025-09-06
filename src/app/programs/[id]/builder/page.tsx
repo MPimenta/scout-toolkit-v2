@@ -12,7 +12,7 @@ export default function ProgramBuilderPage() {
   const params = useParams();
   const router = useRouter();
   const { data: session } = useSession();
-  const programId = params.id as string;
+  const programId = params['id'] as string;
   const { program, loading, error, refetch } = useProgram(programId);
 
   const handleSave = (entries: unknown[]) => {

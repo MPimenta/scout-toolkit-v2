@@ -79,9 +79,9 @@ const DURATION_OPERATORS = [
 
 export function ActivityFilters({ 
   filters, 
-  onFiltersChange, 
+  onFiltersChange,
   onClearFilters,
-  availableFilters
+  availableFilters: _availableFilters
 }: ActivityFiltersProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);

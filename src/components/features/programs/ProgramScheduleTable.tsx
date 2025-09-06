@@ -142,7 +142,7 @@ export function ProgramScheduleTable({
                   <ProgramScheduleRow
                     key={entry.id}
                     entry={entry}
-                    activity={getActivityById(entry.activity_id)}
+                    activity={getActivityById(entry.activity_id) || null}
                     startTime={startTime}
                     endTime={endTime}
                     onEdit={onEdit}

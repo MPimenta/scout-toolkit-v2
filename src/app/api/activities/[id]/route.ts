@@ -2,20 +2,31 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/server';
 import { activities, activityTypes, educationalGoals, sdgs, activityEducationalGoals, activitySdgs, educationalAreas } from '../../../../../drizzle/schema';
 import { eq } from 'drizzle-orm';
+import { 
+  apiErrors, 
+  logApiRequest, 
+  logApiResponse,
+  withApiErrorHandler 
+} from '@/lib/errors';
+import { validateUUID } from '@/lib/errors/error-handler';
 
-export async function GET(
-  request: NextRequest,
+export const GET = withApiErrorHandler(async (
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params;
+) => {
+  logApiRequest('GET', '/api/activities/[id]');
+  
+  const { id } = await params;
 
-    if (!id) {
-      return NextResponse.json(
-        { error: 'Activity ID is required' },
-        { status: 400 }
-      );
-    }
+  if (!id) {
+    return apiErrors.validation('id', 'ID da atividade é obrigatório');
+  }
+  
+  // Validate activity ID
+  const uuidValidation = validateUUID(id);
+  if (!uuidValidation.success) {
+    return apiErrors.validation('id', 'ID da atividade inválido');
+  }
 
     // Fetch the main activity data
     const activityData = await db
@@ -44,10 +55,7 @@ export async function GET(
       .limit(1);
 
     if (activityData.length === 0) {
-      return NextResponse.json(
-        { error: 'Activity not found' },
-        { status: 404 }
-      );
+      return apiErrors.notFound('atividade', id);
     }
 
     const activity = activityData[0];
@@ -92,12 +100,7 @@ export async function GET(
       sdgs: sdgData,
     };
 
-    return NextResponse.json(activityWithDetails);
-  } catch (error) {
-    console.error('Error fetching activity:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch activity', details: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    );
-  }
-}
+    const response = NextResponse.json(activityWithDetails);
+    logApiResponse('GET', '/api/activities/[id]', 200);
+    return response;
+});
