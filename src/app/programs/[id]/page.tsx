@@ -158,7 +158,7 @@ export default function ProgramDetailPage() {
                 <Calendar className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm text-muted-foreground">Data</p>
-                  <p className="font-medium">{formatDate(program.date)}</p>
+                  <p className="font-medium">{formatDate(program.date || null)}</p>
                 </div>
               </div>
             </CardContent>
