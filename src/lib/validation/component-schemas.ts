@@ -277,16 +277,32 @@ export const specificSchemas = {
     fallback: z.string().optional(),
   }),
 
-  /**
-   * ExportButton component props
-   */
-  exportButton: z.object({
-    programId: z.string().min(1, 'Program ID is required'),
-    programName: z.string().min(1, 'Program name is required'),
-    variant: z.enum(['default', 'outline', 'secondary', 'ghost', 'link', 'destructive']).optional(),
-    size: z.enum(['default', 'sm', 'lg', 'icon']).optional(),
-    className: z.string().optional(),
-  }),
+          /**
+           * ExportButton component props
+           */
+          exportButton: z.object({
+            programId: z.string().min(1, 'Program ID is required'),
+            programName: z.string().min(1, 'Program name is required'),
+            variant: z.enum(['default', 'outline', 'secondary', 'ghost', 'link', 'destructive']).optional(),
+            size: z.enum(['default', 'sm', 'lg', 'icon']).optional(),
+            className: z.string().optional(),
+          }),
+
+          /**
+           * EditProgramModal component props
+           */
+          editProgramModal: z.object({
+            isOpen: z.boolean(),
+            onClose: z.function(),
+            program: z.object({
+              id: z.string().min(1, 'Program ID is required'),
+              name: z.string().min(1, 'Program name is required'),
+              date: z.string().nullable().optional(),
+              start_time: z.string().min(1, 'Start time is required'),
+              is_public: z.boolean(),
+            }),
+            onSuccess: z.function().optional(),
+          }),
 };
 
 /**

@@ -76,8 +76,8 @@ export function AddToProgramModal({ onClose, activity }: AddToProgramModalProps)
       toast.success('Atividade adicionada ao programa com sucesso!');
       onClose();
       
-      // Navigate to program builder
-      router.push(`/programs/${selectedProgram}/builder`);
+      // Navigate to program page (now unified with builder)
+      router.push(`/programs/${selectedProgram}`);
     } catch (error) {
       console.error('Error adding activity to program:', error);
       toast.error(error instanceof Error ? error.message : 'Erro ao adicionar atividade ao programa');
