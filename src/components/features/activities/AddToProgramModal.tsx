@@ -94,7 +94,7 @@ export function AddToProgramModal({ onClose, activity }: AddToProgramModalProps)
       // Create new program
       const newProgram = await createProgram({
         name: newProgramName,
-        date: new Date().toISOString().split('T')[0], // Today's date
+        date: new Date().toISOString().split('T')[0]!, // Today's date
         start_time: '09:00',
         is_public: false,
       });

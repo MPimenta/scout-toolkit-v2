@@ -17,7 +17,7 @@ export default function ProgramDetailPage() {
   const { data: session } = useSession();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   
-  const programId = params.id as string;
+  const programId = params['id'] as string;
   const { program, loading, error } = useProgram(programId);
   const { deleteProgram } = useProgramMutations();
 
@@ -30,6 +30,11 @@ export default function ProgramDetailPage() {
     }
   };
 
+  /**
+   * Formats duration in minutes to a human-readable string
+   * @param minutes - Duration in minutes
+   * @returns Formatted duration string (e.g., "2h 30min" or "45min")
+   */
   const formatDuration = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
@@ -40,6 +45,11 @@ export default function ProgramDetailPage() {
     return `${mins}min`;
   };
 
+  /**
+   * Formats a date string for display
+   * @param dateString - The date string to format (can be null)
+   * @returns Formatted date string or fallback message
+   */
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'Data não definida';
     
@@ -158,7 +168,7 @@ export default function ProgramDetailPage() {
                 <Calendar className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm text-muted-foreground">Data</p>
-                  <p className="font-medium">{formatDate(program.date)}</p>
+                  <p className="font-medium">{formatDate(program.date || null)}</p>
                 </div>
               </div>
             </CardContent>

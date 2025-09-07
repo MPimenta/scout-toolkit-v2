@@ -12,7 +12,14 @@ import { ProgramScheduleTable } from './ProgramScheduleTable';
 import { ProgramSummary } from './ProgramSummary';
 import { useProgramMutations } from '@/hooks/useProgramMutations';
 import { useAllActivities } from '@/hooks/useActivities';
+import { log } from '@/lib/errors';
+import { ErrorBoundary } from '@/lib/errors';
+import { validateProps } from '@/lib/validation';
+import { specificSchemas } from '@/lib/validation/component-schemas';
 
+/**
+ * Props for the ProgramBuilder component
+ */
 interface ProgramBuilderProps {
   programId: string;
   initialEntries?: APIProgramEntry[];
@@ -20,8 +27,25 @@ interface ProgramBuilderProps {
   onRefresh?: () => void;
 }
 
+/**
+ * ProgramBuilder component for creating and editing program schedules
+ * Provides drag-and-drop functionality, activity management, and real-time updates
+ * @param programId - The ID of the program being built
+ * @param initialEntries - Initial program entries to display
+ * @param onSave - Optional callback when entries are saved
+ * @param onRefresh - Optional callback to refresh program data
+ * @returns JSX element representing the program builder interface
+ */
 export function ProgramBuilder({ programId, initialEntries = [], onSave, onRefresh }: ProgramBuilderProps) {
-  // Convert API ProgramEntry to Drizzle ProgramEntry
+  // Validate props in development
+  if (process.env.NODE_ENV === 'development') {
+    validateProps({ programId, initialEntries, onSave, onRefresh }, specificSchemas.programBuilder, 'ProgramBuilder');
+  }
+  /**
+   * Converts API ProgramEntry to Drizzle ProgramEntry format
+   * @param apiEntry - The API program entry to convert
+   * @returns Drizzle ProgramEntry object
+   */
   const convertAPIEntryToDrizzle = useCallback((apiEntry: APIProgramEntry): ProgramEntry => ({
     id: apiEntry.id,
     program_id: programId,
@@ -74,7 +98,7 @@ export function ProgramBuilder({ programId, initialEntries = [], onSave, onRefre
       // Refresh parent data to get the latest entries from the database
       onRefresh?.();
     } catch (error) {
-      console.error('Failed to add activity:', error);
+      log.error('Failed to add activity', error instanceof Error ? error : new Error(String(error)));
       // Revert local state on error
       setEntries(entries);
       setShowAddActivity(true);
@@ -106,7 +130,7 @@ export function ProgramBuilder({ programId, initialEntries = [], onSave, onRefre
       // Refresh parent data to get the latest entries from the database
       onRefresh?.();
     } catch (error) {
-      console.error('Failed to add custom block:', error);
+      log.error('Failed to add custom block', error instanceof Error ? error : new Error(String(error)));
       // Revert local state on error
       setEntries(entries);
       setShowAddCustom(true);
@@ -126,7 +150,7 @@ export function ProgramBuilder({ programId, initialEntries = [], onSave, onRefre
       // Refresh parent data to get the latest entries from the database
       onRefresh?.();
     } catch (error) {
-      console.error('Failed to remove entry:', error);
+      log.error('Failed to remove entry', error instanceof Error ? error : new Error(String(error)));
       // Revert local state on error
       setEntries(entries);
     }
@@ -150,27 +174,45 @@ export function ProgramBuilder({ programId, initialEntries = [], onSave, onRefre
       // Refresh parent data to get the latest entries from the database
       onRefresh?.();
     } catch (error) {
-      console.error('Failed to reorder entries:', error);
+      log.error('Failed to reorder entries', error instanceof Error ? error : new Error(String(error)));
       // Revert local state on error
       setEntries(entries);
     }
   };
 
   const handleEditEntry = (entry: ProgramEntry) => {
-    // TODO: Implement edit functionality
-    console.log('Edit entry:', entry);
+    log.debug('Edit entry requested', { entryId: entry.id, entryType: entry.entry_type });
+    
+    if (entry.entry_type === 'activity') {
+      // For activity entries, we can edit the time or remove the activity
+      // For now, we'll show a simple confirmation to remove
+      if (confirm('Deseja remover esta atividade do programa?')) {
+        handleRemoveEntry(entry.id);
+      }
+    } else {
+      // For custom blocks, we can edit the title and duration
+      const newTitle = prompt('Título do bloco:', entry.custom_title || '');
+      if (newTitle !== null && newTitle !== entry.custom_title) {
+        const updatedEntries = entries.map(e => 
+          e.id === entry.id 
+            ? { ...e, custom_title: newTitle || undefined, custom_duration_minutes: e.custom_duration_minutes || undefined }
+            : { ...e, custom_title: e.custom_title || undefined, custom_duration_minutes: e.custom_duration_minutes || undefined }
+        );
+        onSave?.(updatedEntries);
+      }
+    }
   };
 
   const calculateNextStartTime = (): string => {
     if (entries.length === 0) return '09:00';
     
     const lastEntry = entries[entries.length - 1];
-    return lastEntry.end_time;
+    return lastEntry?.end_time || '09:00';
   };
 
   const calculateEndTime = (startTime: string, durationMinutes: number): string => {
     const [hours, minutes] = startTime.split(':').map(Number);
-    const totalMinutes = hours * 60 + minutes + durationMinutes;
+    const totalMinutes = (hours || 0) * 60 + (minutes || 0) + durationMinutes;
     const newHours = Math.floor(totalMinutes / 60);
     const newMinutes = totalMinutes % 60;
     
@@ -184,17 +226,19 @@ export function ProgramBuilder({ programId, initialEntries = [], onSave, onRefre
     start_time: drizzleEntry.start_time,
     end_time: drizzleEntry.end_time,
     entry_type: drizzleEntry.entry_type,
-    custom_title: drizzleEntry.custom_title || undefined,
-    custom_duration_minutes: drizzleEntry.custom_duration_minutes || undefined,
-    activity: drizzleEntry.activity_id ? {
-      id: drizzleEntry.activity_id,
-      name: '', // Will be populated by the API
-      approximate_duration_minutes: 0,
-      group_size: '',
-      effort_level: '',
-      location: '',
-      activity_type: { name: '' }
-    } : undefined,
+    ...(drizzleEntry.custom_title && { custom_title: drizzleEntry.custom_title }),
+    ...(drizzleEntry.custom_duration_minutes && { custom_duration_minutes: drizzleEntry.custom_duration_minutes }),
+    ...(drizzleEntry.activity_id && {
+      activity: {
+        id: drizzleEntry.activity_id,
+        name: '', // Will be populated by the API
+        approximate_duration_minutes: 0,
+        group_size: '',
+        effort_level: '',
+        location: '',
+        activity_type: { name: '' }
+      }
+    }),
   });
 
   const handleSave = async () => {
@@ -204,7 +248,7 @@ export function ProgramBuilder({ programId, initialEntries = [], onSave, onRefre
       const apiEntries = entries.map(convertDrizzleEntryToAPI);
       onSave?.(apiEntries);
     } catch (error) {
-      console.error('Failed to save program:', error);
+      log.error('Failed to save program', error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -218,7 +262,8 @@ export function ProgramBuilder({ programId, initialEntries = [], onSave, onRefre
   const minutes = totalDuration % 60;
 
   return (
-    <div className="space-y-6">
+    <ErrorBoundary>
+      <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -289,6 +334,7 @@ export function ProgramBuilder({ programId, initialEntries = [], onSave, onRefre
         onClose={() => setShowAddCustom(false)}
         onAdd={handleAddCustomBlock}
       />
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 }

@@ -5,7 +5,7 @@ import { activities, activityEducationalGoals, activitySdgs } from '../schema/ac
 
 // Load environment variables
 dotenv.config({ path: '.env.local' });
-import { sql, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 // Demo activities for testing
 const demoActivitiesData = [

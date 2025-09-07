@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useActivities } from '@/hooks/useActivities';
 import { ActivityCard } from '@/components/features/activities/ActivityCard';
 import { ActivitiesTable } from '@/components/features/activities/ActivitiesTable';
@@ -9,8 +10,15 @@ import { ActivityFilters, FilterState } from '@/components/features/activities/A
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, AlertCircle, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { log } from '@/lib/errors';
 
+/**
+ * ActivitiesPage component for displaying and managing activities
+ * Provides filtering, searching, and viewing capabilities for activities
+ * @returns JSX element representing the activities page
+ */
 export default function ActivitiesPage() {
+  const router = useRouter();
   const [filters, setFilters] = useState<FilterState>({
     search: '',
     groupSize: [],
@@ -193,12 +201,15 @@ export default function ActivitiesPage() {
                 window.location.href = `/activities/${activity.id}`;
               }}
               onEditActivity={(activity) => {
-                // TODO: Navigate to edit activity page
-                console.log('Edit activity:', activity.id);
+                // Navigate to edit activity page (admin only)
+                router.push(`/admin/activities/${activity.id}/edit`);
               }}
               onDeleteActivity={(activity) => {
-                // TODO: Implement delete confirmation dialog
-                console.log('Delete activity:', activity.id);
+                // Implement delete confirmation dialog
+                if (confirm(`Tem certeza que deseja eliminar a atividade "${activity.name}"?`)) {
+                  // Note: Delete functionality will be implemented in a future story
+                  log.info('Delete activity requested', { activityId: activity.id });
+                }
               }}
             />
           )}

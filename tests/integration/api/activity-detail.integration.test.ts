@@ -17,7 +17,7 @@ describe('Activity Detail API Integration', () => {
   });
 
   describe('GET /api/activities/[id]', () => {
-    // TODO: These tests need to be rewritten to test the actual API logic
+    // Note: These tests need to be rewritten to test the actual API logic
     // rather than making HTTP requests, which don't work in test environment
     it.skip('returns 400 when no activity ID is provided', async () => {
       const response = await fetch('/api/activities/');

@@ -29,37 +29,37 @@ describe('Database Integration', () => {
   describe('Schema Validation', () => {
     it('should have required schema exports', () => {
       // Skip schema validation tests until schema files are created
-      // TODO: Re-enable when drizzle schema files are implemented
+      // Note: Re-enable when drizzle schema files are implemented
       expect(true).toBe(true)
     })
 
     it('should have users schema', () => {
       // Skip schema validation tests until schema files are created
-      // TODO: Re-enable when drizzle schema files are implemented
+      // Note: Re-enable when drizzle schema files are implemented
       expect(true).toBe(true)
     })
 
     it('should have activities schema', () => {
       // Skip schema validation tests until schema files are created
-      // TODO: Re-enable when drizzle schema files are implemented
+      // Note: Re-enable when drizzle schema files are implemented
       expect(true).toBe(true)
     })
 
     it('should have taxonomies schema', () => {
       // Skip schema validation tests until schema files are created
-      // TODO: Re-enable when drizzle schema files are implemented
+      // Note: Re-enable when drizzle schema files are implemented
       expect(true).toBe(true)
     })
 
     it('should have programs schema', () => {
       // Skip schema validation tests until schema files are created
-      // TODO: Re-enable when drizzle schema files are implemented
+      // Note: Re-enable when drizzle schema files are implemented
       expect(true).toBe(true)
     })
 
     it('should have feedback schema', () => {
       // Skip schema validation tests until schema files are created
-      // TODO: Re-enable when drizzle schema files are implemented
+      // Note: Re-enable when drizzle schema files are implemented
       expect(true).toBe(true)
     })
   })

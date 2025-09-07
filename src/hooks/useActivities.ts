@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { log } from '@/lib/errors';
+import { useActivities as useTanStackActivities, ActivityFilters as TanStackActivityFilters } from '@/hooks/queries/useActivities';
 
 export interface FilterState {
   search: string;
@@ -60,7 +62,12 @@ export interface UseActivitiesOptions {
   order?: 'asc' | 'desc';
 }
 
-// Custom debounce hook
+/**
+ * Custom debounce hook to delay value updates
+ * @param value - The value to debounce
+ * @param delay - The delay in milliseconds
+ * @returns The debounced value
+ */
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
@@ -80,113 +87,76 @@ function useDebounce<T>(value: T, delay: number): T {
 export function useActivities(options: UseActivitiesOptions) {
   const { filters, page = 1, limit = 20, sort = 'name', order = 'asc' } = options;
   
-  const [activities, setActivities] = useState<ActivitiesResponse['activities']>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [pagination, setPagination] = useState<PaginationInfo | null>(null);
-  const [filterInfo, setFilterInfo] = useState<FilterInfo | null>(null);
-
   // Debounce filters to avoid too many API calls
   const debouncedFilters = useDebounce(filters, 300);
 
-  const fetchActivities = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  // Convert to TanStack Query filters format
+  const tanStackFilters: TanStackActivityFilters = {
+    search: debouncedFilters.search || undefined,
+    group_size: debouncedFilters.groupSize.length > 0 ? debouncedFilters.groupSize : undefined,
+    effort_level: debouncedFilters.effortLevel.length > 0 ? debouncedFilters.effortLevel : undefined,
+    location: debouncedFilters.location || undefined,
+    age_group: debouncedFilters.ageGroup.length > 0 ? debouncedFilters.ageGroup : undefined,
+    activity_type: debouncedFilters.activityType.length > 0 ? debouncedFilters.activityType : undefined,
+    sdgs: debouncedFilters.sdgs.length > 0 ? debouncedFilters.sdgs : undefined,
+    educational_goals: debouncedFilters.educationalGoals.length > 0 ? debouncedFilters.educationalGoals : undefined,
+    duration_min: debouncedFilters.durationMin || undefined,
+    duration_max: debouncedFilters.durationMax || undefined,
+    duration_operator: (debouncedFilters.durationOperator as '>=' | '<=' | '=' | '>' | '<') || undefined,
+    page,
+    limit,
+    sort,
+    order
+  };
 
-    try {
-      const params = new URLSearchParams();
-      
-      // Add filter parameters
-      if (debouncedFilters.search) params.append('search', debouncedFilters.search);
-      if (debouncedFilters.groupSize.length > 0) params.append('group_size', debouncedFilters.groupSize.join(','));
-      if (debouncedFilters.effortLevel.length > 0) params.append('effort_level', debouncedFilters.effortLevel.join(','));
-      if (debouncedFilters.location) params.append('location', debouncedFilters.location);
-      if (debouncedFilters.ageGroup.length > 0) params.append('age_group', debouncedFilters.ageGroup.join(','));
-      if (debouncedFilters.activityType.length > 0) params.append('activity_type', debouncedFilters.activityType.join(','));
-      if (debouncedFilters.sdgs.length > 0) params.append('sdgs', debouncedFilters.sdgs.join(','));
-      if (debouncedFilters.educationalGoals.length > 0) params.append('educational_goals', debouncedFilters.educationalGoals.join(','));
-      if (debouncedFilters.durationMin) params.append('duration_min', debouncedFilters.durationMin);
-      if (debouncedFilters.durationMax) params.append('duration_max', debouncedFilters.durationMax);
-      if (debouncedFilters.durationOperator) params.append('duration_operator', debouncedFilters.durationOperator);
-      
-      // Add pagination and sorting parameters
-      params.append('page', page.toString());
-      params.append('limit', limit.toString());
-      params.append('sort', sort);
-      params.append('order', order);
+  // Use TanStack Query for data fetching
+  const { 
+    data: response, 
+    isLoading: loading, 
+    error: queryError, 
+    refetch 
+  } = useTanStackActivities(tanStackFilters);
 
-      const response = await fetch(`/api/activities?${params.toString()}`);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data: ActivitiesResponse = await response.json();
-      
-      setActivities(data.activities);
-      setPagination(data.pagination);
-      setFilterInfo(data.filters);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred while fetching activities');
-      console.error('Error fetching activities:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [debouncedFilters, page, limit, sort, order]);
+  // Transform error to string format for backward compatibility
+  const error = queryError ? (queryError instanceof Error ? queryError.message : 'Erro desconhecido') : null;
 
+  // Log debug information
   useEffect(() => {
-    fetchActivities();
-  }, [fetchActivities]);
-
-  const refresh = useCallback(() => {
-    fetchActivities();
-  }, [fetchActivities]);
+    if (response) {
+      log.debug('useActivities hook - Activities data loaded', { 
+        activityCount: response.activities.length,
+        totalPages: response.pagination.total_pages 
+      });
+    }
+  }, [response]);
 
   return {
-    activities,
+    activities: response?.activities || [],
     loading,
     error,
-    pagination,
-    filterInfo,
-    refresh,
+    pagination: response?.pagination || null,
+    filterInfo: response?.filters || null,
+    refresh: () => refetch(),
   };
 }
 
 // Simple hook for getting all activities without filters
 export function useAllActivities() {
-  const [activities, setActivities] = useState<ActivitiesResponse['activities']>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // Use TanStack Query for data fetching with high limit
+  const { 
+    data: response, 
+    isLoading: loading, 
+    error: queryError, 
+    refetch 
+  } = useTanStackActivities({ limit: 1000 });
 
-  const fetchAllActivities = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch('/api/activities?limit=1000');
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data: ActivitiesResponse = await response.json();
-      setActivities(data.activities);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred while fetching activities');
-      console.error('Error fetching activities:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchAllActivities();
-  }, [fetchAllActivities]);
+  // Transform error to string format for backward compatibility
+  const error = queryError ? (queryError instanceof Error ? queryError.message : 'Erro desconhecido') : null;
 
   return {
-    activities,
+    activities: response?.activities || [],
     loading,
     error,
-    refresh: fetchAllActivities,
+    refresh: () => refetch(),
   };
 }

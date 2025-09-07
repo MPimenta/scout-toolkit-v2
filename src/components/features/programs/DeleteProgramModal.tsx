@@ -12,6 +12,9 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
+/**
+ * Props for the DeleteProgramModal component
+ */
 interface DeleteProgramModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -19,6 +22,15 @@ interface DeleteProgramModalProps {
   programName: string;
 }
 
+/**
+ * DeleteProgramModal component for confirming program deletion
+ * Provides a confirmation dialog with warning message
+ * @param isOpen - Whether the modal is open
+ * @param onClose - Callback function to close the modal
+ * @param onConfirm - Callback function to confirm deletion
+ * @param programName - The name of the program being deleted
+ * @returns JSX element representing the delete confirmation modal
+ */
 export function DeleteProgramModal({
   isOpen,
   onClose,

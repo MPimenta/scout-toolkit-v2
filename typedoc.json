@@ -1,0 +1,47 @@
+{
+  "entryPoints": ["src/index.ts"],
+  "entryPointStrategy": "resolve",
+  "out": "docs/api",
+  "name": "Scout Toolkit API Documentation",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeExternals": true,
+  "readme": "README.md",
+  "theme": "default",
+  "sort": ["source-order"],
+  "categorizeByGroup": true,
+  "defaultCategory": "Other",
+  "categoryOrder": [
+    "Components",
+    "Hooks", 
+    "Utilities",
+    "Types",
+    "Error Handling",
+    "Validation",
+    "Other"
+  ],
+  "navigation": {
+    "includeCategories": true,
+    "includeGroups": true
+  },
+  "searchInComments": true,
+  "cleanOutputDir": true,
+  "exclude": [
+    "**/node_modules/**",
+    "**/tests/**",
+    "**/*.test.*",
+    "**/*.spec.*",
+    "**/*.stories.*",
+    "**/devlog/**",
+    "**/eminent-eclipse/**",
+    "**/.next/**",
+    "**/dist/**",
+    "**/build/**"
+  ],
+  "tsconfig": "./tsconfig.json",
+  "excludeNotDocumented": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeExternals": true
+}

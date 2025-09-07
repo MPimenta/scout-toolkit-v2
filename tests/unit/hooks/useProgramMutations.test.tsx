@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useProgramMutations } from '@/hooks/useProgramMutations';
 
 // Mock next/navigation
@@ -16,6 +17,22 @@ vi.mock('next/navigation', () => ({
     asPath: '/',
   }),
 }));
+
+// Create a test wrapper with QueryClient
+const createWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  });
+  
+  return ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>
+      {children}
+    </QueryClientProvider>
+  );
+};
 
 
 
@@ -51,7 +68,9 @@ describe('useProgramMutations', () => {
         json: async () => ({ program: mockResponse }),
       });
 
-      const { result } = renderHook(() => useProgramMutations());
+      const { result } = renderHook(() => useProgramMutations(), {
+        wrapper: createWrapper(),
+      });
 
       let response;
       await act(async () => {
@@ -86,7 +105,9 @@ describe('useProgramMutations', () => {
         json: async () => ({ error: 'Validation error' }),
       });
 
-      const { result } = renderHook(() => useProgramMutations());
+      const { result } = renderHook(() => useProgramMutations(), {
+        wrapper: createWrapper(),
+      });
 
       await expect(
         act(async () => {
@@ -103,7 +124,9 @@ describe('useProgramMutations', () => {
     it('handles network error', async () => {
       (fetch as any).mockRejectedValueOnce(new Error('Network error'));
 
-      const { result } = renderHook(() => useProgramMutations());
+      const { result } = renderHook(() => useProgramMutations(), {
+        wrapper: createWrapper(),
+      });
 
       await expect(
         act(async () => {
@@ -126,7 +149,9 @@ describe('useProgramMutations', () => {
         json: async () => ({ program: updatedProgram }),
       });
 
-      const { result } = renderHook(() => useProgramMutations());
+      const { result } = renderHook(() => useProgramMutations(), {
+        wrapper: createWrapper(),
+      });
 
       let response;
       await act(async () => {
@@ -161,7 +186,9 @@ describe('useProgramMutations', () => {
         json: async () => ({ error: 'Programa não encontrado' }),
       });
 
-      const { result } = renderHook(() => useProgramMutations());
+      const { result } = renderHook(() => useProgramMutations(), {
+        wrapper: createWrapper(),
+      });
 
       await expect(
         act(async () => {
@@ -183,7 +210,9 @@ describe('useProgramMutations', () => {
         json: async () => ({ message: 'Programa excluído com sucesso' }),
       });
 
-      const { result } = renderHook(() => useProgramMutations());
+      const { result } = renderHook(() => useProgramMutations(), {
+        wrapper: createWrapper(),
+      });
 
       await act(async () => {
         await result.current.deleteProgram('1');
@@ -202,7 +231,9 @@ describe('useProgramMutations', () => {
         json: async () => ({ error: 'Access denied' }),
       });
 
-      const { result } = renderHook(() => useProgramMutations());
+      const { result } = renderHook(() => useProgramMutations(), {
+        wrapper: createWrapper(),
+      });
 
       await expect(
         act(async () => {
@@ -221,7 +252,9 @@ describe('useProgramMutations', () => {
         },
       });
 
-      const { result } = renderHook(() => useProgramMutations());
+      const { result } = renderHook(() => useProgramMutations(), {
+        wrapper: createWrapper(),
+      });
 
       await expect(
         act(async () => {
@@ -240,7 +273,9 @@ describe('useProgramMutations', () => {
       
       (fetch as any).mockImplementation(() => new Promise(() => {})); // Never resolves
 
-      const { result } = renderHook(() => useProgramMutations());
+      const { result } = renderHook(() => useProgramMutations(), {
+        wrapper: createWrapper(),
+      });
 
       const promise = act(async () => {
         await result.current.createProgram({
@@ -267,7 +302,9 @@ describe('useProgramMutations', () => {
         json: async () => ({ program: mockProgram }),
       });
 
-      const { result } = renderHook(() => useProgramMutations());
+      const { result } = renderHook(() => useProgramMutations(), {
+        wrapper: createWrapper(),
+      });
 
       await act(async () => {
         await result.current.createProgram({
@@ -294,7 +331,9 @@ describe('useProgramMutations', () => {
         json: async () => ({ program: mockProgram }),
       });
 
-      const { result } = renderHook(() => useProgramMutations());
+      const { result } = renderHook(() => useProgramMutations(), {
+        wrapper: createWrapper(),
+      });
 
       const programData = {
         name: 'New Program',
@@ -323,7 +362,9 @@ describe('useProgramMutations', () => {
         json: async () => null,
       });
 
-      const { result } = renderHook(() => useProgramMutations());
+      const { result } = renderHook(() => useProgramMutations(), {
+        wrapper: createWrapper(),
+      });
 
       await act(async () => {
         await result.current.deleteProgram('1');
@@ -340,7 +381,9 @@ describe('useProgramMutations', () => {
         json: async () => ({ message: 'Success' }),
       });
 
-      const { result } = renderHook(() => useProgramMutations());
+      const { result } = renderHook(() => useProgramMutations(), {
+        wrapper: createWrapper(),
+      });
 
       const response = await act(async () => {
         return await result.current.deleteProgram('1');

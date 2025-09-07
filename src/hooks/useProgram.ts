@@ -1,4 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
+import { log } from '@/lib/errors';
+import { useProgram as useTanStackProgram } from '@/hooks/queries/useProgram';
 
 export interface ProgramEntry {
   id: string;
@@ -18,7 +20,7 @@ export interface ProgramEntry {
     activity_type: {
       name: string;
     };
-  };
+  } | null;
 }
 
 export interface ProgramSummary {
@@ -54,52 +56,31 @@ export interface ProgramDetail {
 }
 
 export function useProgram(programId: string | null) {
-  const [program, setProgram] = useState<ProgramDetail | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // Use TanStack Query for data fetching
+  const { 
+    data: program, 
+    isLoading: loading, 
+    error: queryError, 
+    refetch 
+  } = useTanStackProgram(programId || '');
 
-  const fetchProgram = useCallback(async () => {
-    if (!programId) return;
+  // Transform error to string format for backward compatibility
+  const error = queryError ? (queryError instanceof Error ? queryError.message : 'Erro desconhecido') : null;
 
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch(`/api/programs/${programId}`);
-      
-      if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error('Não está autenticado');
-        }
-        if (response.status === 404) {
-          throw new Error('Programa não encontrado');
-        }
-        throw new Error('Erro ao carregar programa');
-      }
-
-      const data = await response.json();
-      console.log('useProgram hook - API response:', data);
-      console.log('useProgram hook - Setting program:', data.program);
-      setProgram(data.program);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
-    } finally {
-      setLoading(false);
-    }
-  }, [programId]);
-
+  // Log debug information
   useEffect(() => {
-    fetchProgram();
-  }, [fetchProgram]);
-
-  const refetch = useCallback(() => {
-    fetchProgram();
-  }, [fetchProgram]);
+    if (program) {
+      log.debug('useProgram hook - Program data loaded', { 
+        programId: program.id,
+        entryCount: program.entries.length 
+      });
+    }
+  }, [program]);
 
   return {
-    program,
+    program: program || null,
     loading,
     error,
-    refetch
+    refetch: () => refetch()
   };
 }

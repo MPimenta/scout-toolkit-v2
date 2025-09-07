@@ -8,14 +8,32 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { useProgramMutations, CreateProgramData, UpdateProgramData } from '@/hooks/useProgramMutations';
+import { log } from '@/lib/errors';
+import { validateProps } from '@/lib/validation';
+import { specificSchemas } from '@/lib/validation/component-schemas';
 
+/**
+ * Props for the ProgramForm component
+ */
 interface ProgramFormProps {
   mode: 'create' | 'edit';
   initialData?: UpdateProgramData & { id: string };
   onSuccess?: () => void;
 }
 
+/**
+ * ProgramForm component for creating and editing programs
+ * Provides a form interface for program data entry and validation
+ * @param mode - The form mode (create or edit)
+ * @param initialData - Initial data for editing mode
+ * @param onSuccess - Optional callback when form submission is successful
+ * @returns JSX element representing the program form
+ */
 export function ProgramForm({ mode, initialData, onSuccess }: ProgramFormProps) {
+  // Validate props in development
+  if (process.env.NODE_ENV === 'development') {
+    validateProps({ mode, initialData, onSuccess }, specificSchemas.programForm, 'ProgramForm');
+  }
   const { createProgram, updateProgram, loading, error, clearError } = useProgramMutations();
   
   const [formData, setFormData] = useState<CreateProgramData>({
@@ -51,7 +69,7 @@ export function ProgramForm({ mode, initialData, onSuccess }: ProgramFormProps) 
       }
     } catch (err) {
       // Error is handled by the hook
-      console.error('Form submission error:', err);
+      log.error('Form submission error', err as Error);
     }
   };
 
@@ -122,7 +140,7 @@ export function ProgramForm({ mode, initialData, onSuccess }: ProgramFormProps) 
           <div className="flex items-center space-x-2">
             <Switch
               id="is_public"
-              checked={formData.is_public}
+              checked={formData.is_public || false}
               onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_public: checked }))}
             />
             <Label htmlFor="is_public">Tornar programa público</Label>

@@ -1,5 +1,4 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
-import { sql } from 'drizzle-orm'
 import { setupTestDatabase, resetTestDatabase } from '../setup'
 import * as schema from '../../drizzle/schema'
 
