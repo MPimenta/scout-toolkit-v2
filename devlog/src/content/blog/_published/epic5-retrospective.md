@@ -118,6 +118,89 @@ The crown jewel of Epic 5 is our interactive API documentation. Built with `swag
 - **Security Documentation**: Authentication and authorization clearly explained
 - **Real-time Updates**: Documentation stays in sync with code changes
 
+Here's how we set up the OpenAPI configuration:
+
+```typescript
+// src/lib/swagger/config.ts
+const swaggerOptions: swaggerJSDoc.Options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Scout Toolkit API',
+      version: '1.0.0',
+      description: 'API for the Scout Toolkit application - a comprehensive platform for managing scout activities and programs.',
+    },
+    servers: [
+      {
+        url: process.env.NODE_ENV === 'production' 
+          ? 'https://scout-toolkit.com/api' 
+          : 'http://localhost:3000/api',
+        description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server',
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+        sessionAuth: {
+          type: 'apiKey',
+          in: 'cookie',
+          name: 'next-auth.session-token',
+        },
+      },
+    },
+  },
+  apis: [
+    './src/app/api/**/*.ts', // API route files
+    './src/app/api/**/*.js', // Compiled JavaScript files
+  ],
+};
+```
+
+And here's how we documented our activities API endpoint:
+
+```typescript
+/**
+ * @swagger
+ * /api/activities:
+ *   get:
+ *     summary: Get activities with filtering and pagination
+ *     description: Retrieve a paginated list of activities with advanced filtering options
+ *     tags: [Activities]
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term for activity name, description, or materials
+ *       - in: query
+ *         name: group_size
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *             enum: [small, medium, large]
+ *         style: form
+ *         explode: false
+ *         description: Filter by group size
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved activities
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 activities:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Activity'
+ */
+```
+
 ### Health Check & Monitoring
 Our monitoring system provides real-time insights into application health:
 
@@ -126,6 +209,97 @@ Our monitoring system provides real-time insights into application health:
 - **Proper Status Codes**: 200 for healthy, 503 for degraded/unhealthy
 - **Error Handling**: Comprehensive error responses with proper logging
 
+Here's how we implemented the health check endpoint:
+
+```typescript
+// src/app/api/health/route.ts
+export async function GET() {
+  const timestamp = new Date().toISOString();
+  const uptime = Math.floor((Date.now() - startTime) / 1000);
+  
+  try {
+    // Check database health
+    const dbStartTime = Date.now();
+    let dbStatus = 'unhealthy';
+    let dbResponseTime = 0;
+    
+    try {
+      // Simple database query to check connectivity
+      await db.execute('SELECT 1');
+      dbResponseTime = Date.now() - dbStartTime;
+      dbStatus = 'healthy';
+    } catch (dbError) {
+      console.error('Database health check failed:', dbError);
+      dbStatus = 'unhealthy';
+    }
+    
+    // Determine overall status
+    const overallStatus = dbStatus === 'healthy' && authStatus === 'healthy' 
+      ? 'healthy' 
+      : 'degraded';
+    
+    const healthData = {
+      status: overallStatus,
+      timestamp,
+      services: {
+        database: {
+          status: dbStatus,
+          responseTime: dbResponseTime,
+        },
+        auth: {
+          status: authStatus,
+        },
+      },
+      version: process.env.npm_package_version || '1.0.0',
+      uptime,
+      environment: process.env.NODE_ENV || 'development',
+    };
+    
+    // Return appropriate HTTP status based on health
+    const httpStatus = overallStatus === 'healthy' ? 200 : 503;
+    
+    return NextResponse.json(healthData, { status: httpStatus });
+  } catch (error) {
+    console.error('Health check failed:', error);
+    return NextResponse.json(
+      { status: 'unhealthy', timestamp, error: 'Health check failed' },
+      { status: 503 }
+    );
+  }
+}
+```
+
+And here are the terminal commands to test our new endpoints:
+
+```bash
+# Test the health check endpoint
+curl http://localhost:3000/api/health
+
+# Expected response for healthy system:
+{
+  "status": "healthy",
+  "timestamp": "2024-12-19T15:53:51.000Z",
+  "services": {
+    "database": {
+      "status": "healthy",
+      "responseTime": 12
+    },
+    "auth": {
+      "status": "healthy"
+    }
+  },
+  "version": "1.0.0",
+  "uptime": 3600,
+  "environment": "development"
+}
+
+# Test the metrics endpoint
+curl http://localhost:3000/api/metrics
+
+# Access the interactive API documentation
+open http://localhost:3000/api/docs
+```
+
 ### JSDoc & TypeDoc Integration
 Our documentation system generates beautiful, searchable documentation:
 
@@ -133,6 +307,87 @@ Our documentation system generates beautiful, searchable documentation:
 - **TypeDoc Generation**: Automatic documentation generation from TypeScript
 - **Prop Validation**: Runtime validation for component props in development
 - **Searchable Interface**: Easy navigation through complex codebases
+
+Here's how we implemented comprehensive JSDoc documentation:
+
+```typescript
+/**
+ * Validates component props against a Zod schema in development environment.
+ * Logs a warning if validation fails.
+ * 
+ * @param props - The props object to validate
+ * @param schema - The Zod schema to validate against
+ * @param componentName - The name of the component for logging purposes
+ * @example
+ * ```typescript
+ * validateProps({ name: "John", age: 25 }, userSchema, 'UserProfile');
+ * ```
+ */
+export function validateProps<T>(
+  props: T,
+  schema: ZodSchema<T>,
+  componentName: string
+): void {
+  if (process.env.NODE_ENV === 'development') {
+    try {
+      schema.parse(props);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        log.warn(`Prop validation failed for ${componentName}:`, undefined, {
+          issues: error.issues.map(issue => ({
+            path: issue.path.join('.'),
+            message: issue.message,
+            expected: issue.expected,
+            received: issue.received,
+          })),
+          propsReceived: props,
+        });
+      }
+    }
+  }
+}
+```
+
+And here's our prop validation system in action:
+
+```typescript
+// src/lib/validation/component-schemas.ts
+const programFormPropsSchema = z.object({
+  mode: z.union([z.literal('create'), z.literal('edit')]),
+  initialData: z.object({
+    id: z.string().uuid(),
+    name: z.string(),
+    date: z.string(),
+    start_time: z.string(),
+    is_public: z.boolean(),
+  }).partial().and(z.object({ id: z.string().uuid() })).optional(),
+  onSuccess: z.function().args().returns(z.void()).optional(),
+});
+
+// Usage in components
+export function ProgramForm({ mode, initialData, onSuccess }: ProgramFormProps) {
+  // Validate props in development
+  if (process.env.NODE_ENV === 'development') {
+    validateProps({ mode, initialData, onSuccess }, specificSchemas.programForm, 'ProgramForm');
+  }
+  // ... rest of component
+}
+```
+
+Here are the commands to generate and view the documentation:
+
+```bash
+# Generate TypeDoc documentation
+npm run docs
+
+# Serve the documentation locally
+npm run docs:serve
+
+# Open the documentation in browser
+npm run docs:open
+
+# Expected output: Beautiful HTML documentation at docs/api/index.html
+```
 
 ## The Impact 📊
 
@@ -185,3 +440,7 @@ The result? A system that's not just functional, but truly reliable. A system th
 ---
 
 *Ready for the next adventure? Epic 6 awaits, and with the solid foundation we've built, we're ready to tackle whatever challenges come our way.*
+
+---
+
+**Note**: This post was generated by an AI model with human review and fine-tuning. The technical implementations, code snippets, and terminal commands are all real and functional, but the witty commentary and scouting context were enhanced through human oversight to maintain the authentic voice of the Scout Toolkit development journey.
