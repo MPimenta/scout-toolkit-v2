@@ -2,6 +2,7 @@ import NextAuth from "next-auth"
 import GoogleProvider from 'next-auth/providers/google';
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import { db } from '@/lib/db/server';
+import { log } from '@/lib/errors';
 import type { NextAuthConfig } from 'next-auth';
 
 export const authConfig: NextAuthConfig = {
@@ -18,16 +19,15 @@ export const authConfig: NextAuthConfig = {
     error: '/auth/error',
   },
   callbacks: {
-    async signIn() {
-      // TEMPORARILY DISABLED: Domain restriction for @escoteiros.pt emails
+    async signIn({ user }) {
       // Only allow @escoteiros.pt emails
-      // if (user.email && user.email.endsWith('@escoteiros.pt')) {
-      //   return true;
-      // }
-      // return false;
+      if (user.email && user.email.endsWith('@escoteiros.pt')) {
+        return true;
+      }
       
-      // Allow all Google emails temporarily
-      return true;
+      // Log unauthorized access attempts
+      log.warn('Unauthorized sign-in attempt', { email: user.email });
+      return false;
     },
     async session({ session, user }) {
       // Ensure user ID is included in the session
@@ -40,7 +40,9 @@ export const authConfig: NextAuthConfig = {
   },
 };
 
-export const { handlers, signIn, signOut, auth } = NextAuth(authConfig);
+const nextAuth = NextAuth(authConfig);
+
+export const { handlers, signIn, signOut, auth } = nextAuth;
 
 // Extend NextAuth types
 declare module 'next-auth' {

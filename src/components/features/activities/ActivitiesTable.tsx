@@ -39,12 +39,18 @@ import {
   Trash2,
 } from 'lucide-react';
 
+/**
+ * Interface for educational goal data
+ */
 interface EducationalGoal {
   id: string;
   title: string;
   code: string;
 }
 
+/**
+ * Interface for SDG data
+ */
 interface Sdg {
   id: string;
   number: number;
@@ -52,11 +58,17 @@ interface Sdg {
   icon_url: string;
 }
 
+/**
+ * Interface for activity type data
+ */
 interface ActivityType {
   id: string;
   name: string;
 }
 
+/**
+ * Interface for activity data
+ */
 interface Activity {
   id: string;
   name: string;
@@ -72,6 +84,9 @@ interface Activity {
   sdgs: Sdg[];
 }
 
+/**
+ * Props for the ActivitiesTable component
+ */
 interface ActivitiesTableProps {
   activities: Activity[];
   onViewActivity?: (activity: Activity) => void;
@@ -79,9 +94,11 @@ interface ActivitiesTableProps {
   onDeleteActivity?: (activity: Activity) => void;
 }
 
-
-
-// Helper function to get group size display text
+/**
+ * Helper function to get group size display text
+ * @param size - The group size value
+ * @returns The display text for the group size
+ */
 function getGroupSizeText(size: string): string {
   const sizeMap = {
     small: 'Pequeno (2-6)',
@@ -91,7 +108,11 @@ function getGroupSizeText(size: string): string {
   return sizeMap[size as keyof typeof sizeMap] || size;
 }
 
-// Helper function to get effort level display text
+/**
+ * Helper function to get effort level display text
+ * @param level - The effort level value
+ * @returns The display text for the effort level
+ */
 function getEffortLevelText(level: string): string {
   const levelMap = {
     low: 'Baixo',
@@ -101,7 +122,11 @@ function getEffortLevelText(level: string): string {
   return levelMap[level as keyof typeof levelMap] || level;
 }
 
-// Helper function to get age group display text
+/**
+ * Helper function to get age group display text
+ * @param ageGroup - The age group value
+ * @returns The display text for the age group
+ */
 function getAgeGroupText(ageGroup: string): string {
   const ageMap = {
     cub_scouts: 'Lobitos (6-10)',
@@ -113,7 +138,11 @@ function getAgeGroupText(ageGroup: string): string {
   return ageMap[ageGroup as keyof typeof ageMap] || ageGroup;
 }
 
-// Helper function to get location display text
+/**
+ * Helper function to get location display text
+ * @param location - The location value
+ * @returns The display text for the location
+ */
 function getLocationText(location: string): string {
   const locationMap = {
     inside: 'Interior',
@@ -122,6 +151,11 @@ function getLocationText(location: string): string {
   return locationMap[location as keyof typeof locationMap] || location;
 }
 
+/**
+ * ActivitiesTable component for displaying a list of activities in a table format
+ * @param props - The component props
+ * @returns The rendered activities table
+ */
 export function ActivitiesTable({ 
   activities, 
   onViewActivity, 

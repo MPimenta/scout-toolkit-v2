@@ -14,7 +14,12 @@ import { useProgramMutations } from '@/hooks/useProgramMutations';
 import { useAllActivities } from '@/hooks/useActivities';
 import { log } from '@/lib/errors';
 import { ErrorBoundary } from '@/lib/errors';
+import { validateProps } from '@/lib/validation';
+import { specificSchemas } from '@/lib/validation/component-schemas';
 
+/**
+ * Props for the ProgramBuilder component
+ */
 interface ProgramBuilderProps {
   programId: string;
   initialEntries?: APIProgramEntry[];
@@ -22,8 +27,25 @@ interface ProgramBuilderProps {
   onRefresh?: () => void;
 }
 
+/**
+ * ProgramBuilder component for creating and editing program schedules
+ * Provides drag-and-drop functionality, activity management, and real-time updates
+ * @param programId - The ID of the program being built
+ * @param initialEntries - Initial program entries to display
+ * @param onSave - Optional callback when entries are saved
+ * @param onRefresh - Optional callback to refresh program data
+ * @returns JSX element representing the program builder interface
+ */
 export function ProgramBuilder({ programId, initialEntries = [], onSave, onRefresh }: ProgramBuilderProps) {
-  // Convert API ProgramEntry to Drizzle ProgramEntry
+  // Validate props in development
+  if (process.env.NODE_ENV === 'development') {
+    validateProps({ programId, initialEntries, onSave, onRefresh }, specificSchemas.programBuilder, 'ProgramBuilder');
+  }
+  /**
+   * Converts API ProgramEntry to Drizzle ProgramEntry format
+   * @param apiEntry - The API program entry to convert
+   * @returns Drizzle ProgramEntry object
+   */
   const convertAPIEntryToDrizzle = useCallback((apiEntry: APIProgramEntry): ProgramEntry => ({
     id: apiEntry.id,
     program_id: programId,
@@ -159,8 +181,26 @@ export function ProgramBuilder({ programId, initialEntries = [], onSave, onRefre
   };
 
   const handleEditEntry = (entry: ProgramEntry) => {
-    // TODO: Implement edit functionality
     log.debug('Edit entry requested', { entryId: entry.id, entryType: entry.entry_type });
+    
+    if (entry.entry_type === 'activity') {
+      // For activity entries, we can edit the time or remove the activity
+      // For now, we'll show a simple confirmation to remove
+      if (confirm('Deseja remover esta atividade do programa?')) {
+        handleRemoveEntry(entry.id);
+      }
+    } else {
+      // For custom blocks, we can edit the title and duration
+      const newTitle = prompt('Título do bloco:', entry.custom_title || '');
+      if (newTitle !== null && newTitle !== entry.custom_title) {
+        const updatedEntries = entries.map(e => 
+          e.id === entry.id 
+            ? { ...e, custom_title: newTitle || undefined, custom_duration_minutes: e.custom_duration_minutes || undefined }
+            : { ...e, custom_title: e.custom_title || undefined, custom_duration_minutes: e.custom_duration_minutes || undefined }
+        );
+        onSave?.(updatedEntries);
+      }
+    }
   };
 
   const calculateNextStartTime = (): string => {

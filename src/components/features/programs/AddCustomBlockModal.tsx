@@ -8,12 +8,23 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Clock, Users, MapPin } from 'lucide-react';
 
+/**
+ * Props for the AddCustomBlockModal component
+ */
 interface AddCustomBlockModalProps {
   open: boolean;
   onClose: () => void;
   onAdd: (title: string, durationMinutes: number) => void;
 }
 
+/**
+ * AddCustomBlockModal component for creating custom program blocks
+ * Allows users to add custom time blocks with title, duration, and optional details
+ * @param open - Whether the modal is open
+ * @param onClose - Callback function to close the modal
+ * @param onAdd - Callback function when a custom block is created
+ * @returns JSX element representing the custom block creation modal
+ */
 export function AddCustomBlockModal({ open, onClose, onAdd }: AddCustomBlockModalProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');

@@ -2,7 +2,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { queryKeys } from '@/lib/query-client';
 
-// Type for individual activity
+/**
+ * Interface for individual activity data structure
+ */
 export interface Activity {
   id: string;
   name: string;
@@ -33,7 +35,12 @@ export interface Activity {
   }>;
 }
 
-// Fetch individual activity
+/**
+ * Fetches an individual activity by ID from the API
+ * @param id - The activity ID to fetch
+ * @returns Promise<Activity> - The activity data
+ * @throws Error if activity is not found or request fails
+ */
 async function fetchActivity(id: string): Promise<Activity> {
   const response = await fetch(`/api/activities/${id}`);
   
@@ -47,7 +54,11 @@ async function fetchActivity(id: string): Promise<Activity> {
   return response.json();
 }
 
-// Hook for fetching individual activity
+/**
+ * Hook for fetching an individual activity by ID using TanStack Query
+ * @param id - The activity ID to fetch
+ * @returns TanStack Query result with activity data, loading state, and error handling
+ */
 export function useActivity(id: string) {
   return useQuery({
     queryKey: queryKeys.activities.detail(id),
@@ -58,7 +69,10 @@ export function useActivity(id: string) {
   });
 }
 
-// Hook for prefetching individual activity
+/**
+ * Hook for prefetching an individual activity (useful for navigation and performance optimization)
+ * @returns Function to prefetch activity by ID
+ */
 export function usePrefetchActivity() {
   const queryClient = useQueryClient();
   

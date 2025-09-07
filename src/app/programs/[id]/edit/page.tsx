@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useProgram } from '@/hooks/useProgram';
 import { ProgramForm } from '@/components/features/programs/ProgramForm';
+import { log } from '@/lib/errors';
 
 export default function EditProgramPage() {
   const params = useParams();
@@ -92,20 +93,18 @@ export default function EditProgramPage() {
 
   // Debug: Log the values being compared (only in browser)
   if (typeof window !== 'undefined') {
-    console.log('=== DEBUG INFO ===');
-    console.log('Session status:', status);
-    console.log('Session data:', session);
-    console.log('Session user ID:', session?.user?.id);
-    console.log('Program loading:', loading);
-    console.log('Program error:', error);
-    console.log('Program data:', program);
-    console.log('Program user ID:', program?.user?.id);
-    console.log('==================');
+    log.debug('Edit program page debug info', {
+      sessionStatus: status,
+      sessionUserId: session?.user?.id,
+      programLoading: loading,
+      programError: error,
+      programUserId: program?.user?.id
+    });
   }
 
   // Ensure session and program data are available
   if (!session?.user?.id || !program?.user?.id) {
-    console.error('Missing session or program user data:', { 
+    log.error('Missing session or program user data', undefined, { 
       sessionStatus: status, 
       sessionData: session, 
       programLoading: loading, 

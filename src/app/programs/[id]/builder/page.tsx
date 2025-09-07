@@ -7,7 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useProgram } from '@/hooks/useProgram';
 import { ProgramBuilder } from '@/components/features/programs/ProgramBuilder';
+import { log } from '@/lib/errors';
 
+/**
+ * ProgramBuilderPage component for the program builder interface
+ * Provides a dedicated page for building and editing program schedules
+ * @returns JSX element representing the program builder page
+ */
 export default function ProgramBuilderPage() {
   const params = useParams();
   const router = useRouter();
@@ -17,7 +23,7 @@ export default function ProgramBuilderPage() {
 
   const handleSave = (entries: unknown[]) => {
     // Show success message or redirect
-    console.log('Program saved with entries:', entries);
+    log.info('Program saved with entries', { entryCount: entries.length });
   };
 
   const handleRefresh = () => {

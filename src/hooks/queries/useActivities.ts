@@ -2,7 +2,9 @@ import { useQuery, useInfiniteQuery, useQueryClient } from '@tanstack/react-quer
 import { useCallback } from 'react';
 import { queryKeys } from '@/lib/query-client';
 
-// Types for activity filters
+/**
+ * Interface for filtering activities in API requests
+ */
 export interface ActivityFilters {
   search?: string;
   group_size?: string[];
@@ -21,7 +23,9 @@ export interface ActivityFilters {
   order?: 'asc' | 'desc';
 }
 
-// Types for activity response
+/**
+ * Interface for activity API response structure
+ */
 export interface ActivityResponse {
   activities: Array<{
     id: string;
@@ -70,7 +74,11 @@ export interface ActivityResponse {
   };
 }
 
-// Fetch activities with filters
+/**
+ * Fetches activities from the API with optional filters
+ * @param filters - Optional filters to apply to the request
+ * @returns Promise<ActivityResponse> - The activities response with pagination and filter info
+ */
 async function fetchActivities(filters: ActivityFilters = {}): Promise<ActivityResponse> {
   const searchParams = new URLSearchParams();
   
@@ -94,7 +102,11 @@ async function fetchActivities(filters: ActivityFilters = {}): Promise<ActivityR
   return response.json();
 }
 
-// Hook for fetching activities with filters
+/**
+ * Hook for fetching activities with filters using TanStack Query
+ * @param filters - Optional filters to apply to the request
+ * @returns TanStack Query result with activities data, loading state, and error handling
+ */
 export function useActivities(filters: ActivityFilters = {}) {
   return useQuery({
     queryKey: queryKeys.activities.list(filters as Record<string, unknown>),
@@ -104,7 +116,11 @@ export function useActivities(filters: ActivityFilters = {}) {
   });
 }
 
-// Hook for infinite scrolling activities
+/**
+ * Hook for infinite scrolling activities using TanStack Query
+ * @param filters - Optional filters to apply (excludes page parameter)
+ * @returns TanStack Infinite Query result for paginated activities
+ */
 export function useInfiniteActivities(filters: Omit<ActivityFilters, 'page'> = {}) {
   return useInfiniteQuery({
     queryKey: queryKeys.activities.list({ ...filters, infinite: true } as Record<string, unknown>),
@@ -119,7 +135,10 @@ export function useInfiniteActivities(filters: Omit<ActivityFilters, 'page'> = {
   });
 }
 
-// Hook for prefetching activities (useful for navigation)
+/**
+ * Hook for prefetching activities (useful for navigation and performance optimization)
+ * @returns Function to prefetch activities with given filters
+ */
 export function usePrefetchActivities() {
   const queryClient = useQueryClient();
   

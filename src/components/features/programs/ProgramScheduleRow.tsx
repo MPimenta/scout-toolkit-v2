@@ -9,6 +9,9 @@ import { ProgramEntry } from '../../../../drizzle/schema/programs';
 import { ActivitiesResponse } from '@/hooks/useActivities';
 import { useState } from 'react';
 
+/**
+ * Props for the ProgramScheduleRow component
+ */
 interface ProgramScheduleRowProps {
   entry: ProgramEntry;
   activity: ActivitiesResponse['activities'][0] | null;
@@ -18,7 +21,11 @@ interface ProgramScheduleRowProps {
   onDelete: (entryId: string) => void;
 }
 
-// Helper functions to get icons for taxonomy values
+/**
+ * Helper function to get group size icon
+ * @param groupSize - The group size string
+ * @returns The corresponding emoji icon
+ */
 const getGroupSizeIcon = (groupSize: string) => {
   const iconMap: Record<string, string> = {
     'Pequeno (4-8)': '👥',
@@ -28,6 +35,11 @@ const getGroupSizeIcon = (groupSize: string) => {
   return iconMap[groupSize] || '👥';
 };
 
+/**
+ * Helper function to get effort level icon
+ * @param effortLevel - The effort level string
+ * @returns The corresponding emoji icon
+ */
 const getEffortLevelIcon = (effortLevel: string) => {
   const iconMap: Record<string, string> = {
     'Baixo': '🟢',
@@ -37,6 +49,11 @@ const getEffortLevelIcon = (effortLevel: string) => {
   return iconMap[effortLevel] || '🟡';
 };
 
+/**
+ * Helper function to get location icon
+ * @param location - The location string
+ * @returns The corresponding emoji icon
+ */
 const getLocationIcon = (location: string) => {
   const iconMap: Record<string, string> = {
     'Interior': '🏠',
@@ -46,6 +63,11 @@ const getLocationIcon = (location: string) => {
   return iconMap[location] || '🌳';
 };
 
+/**
+ * Helper function to get age group icon
+ * @param ageGroup - The age group string
+ * @returns The corresponding emoji icon
+ */
 const getAgeGroupIcon = (ageGroup: string) => {
   const iconMap: Record<string, string> = {
     'Lobitos': '🦁',
@@ -57,6 +79,17 @@ const getAgeGroupIcon = (ageGroup: string) => {
   return iconMap[ageGroup] || '🌍';
 };
 
+/**
+ * ProgramScheduleRow component for displaying individual program schedule entries
+ * Provides drag-and-drop functionality, expandable details, and action buttons
+ * @param entry - The program entry to display
+ * @param activity - The associated activity data (if entry is an activity)
+ * @param startTime - The start time of the entry
+ * @param endTime - The end time of the entry
+ * @param onEdit - Callback function when entry is edited
+ * @param onDelete - Callback function when entry is deleted
+ * @returns JSX element representing the program schedule row
+ */
 export function ProgramScheduleRow({
   entry,
   activity,

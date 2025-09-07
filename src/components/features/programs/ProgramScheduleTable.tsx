@@ -22,6 +22,9 @@ import { ProgramScheduleRow } from './ProgramScheduleRow';
 import { ProgramEntry } from '../../../../drizzle/schema/programs';
 import { ActivitiesResponse } from '@/hooks/useActivities';
 
+/**
+ * Props for the ProgramScheduleTable component
+ */
 interface ProgramScheduleTableProps {
   entries: ProgramEntry[];
   activities: ActivitiesResponse['activities'];
@@ -31,6 +34,17 @@ interface ProgramScheduleTableProps {
   onDelete: (entryId: string) => void;
 }
 
+/**
+ * ProgramScheduleTable component for displaying and managing program schedule entries
+ * Provides drag-and-drop reordering functionality and tabular display
+ * @param entries - Array of program entries to display
+ * @param activities - Array of available activities for reference
+ * @param programStartTime - The start time of the program
+ * @param onReorder - Callback function when entries are reordered
+ * @param onEdit - Callback function when an entry is edited
+ * @param onDelete - Callback function when an entry is deleted
+ * @returns JSX element representing the program schedule table
+ */
 export function ProgramScheduleTable({
   entries,
   activities,

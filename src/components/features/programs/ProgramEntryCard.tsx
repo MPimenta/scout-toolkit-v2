@@ -9,14 +9,27 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Clock, MapPin, Target, Users, GripVertical, Edit, Trash2 } from 'lucide-react';
 import { useAllActivities } from '@/hooks/useActivities';
 
+/**
+ * Props for the ProgramEntryCard component
+ */
 interface ProgramEntryCardProps {
   entry: ProgramEntry;
   index: number;
   onRemove: (entryId: string) => void;
   onUpdate: (entryId: string, updates: Partial<ProgramEntry>) => void;
+  onEdit?: (entry: ProgramEntry) => void;
 }
 
-export function ProgramEntryCard({ entry, index, onRemove, onUpdate }: ProgramEntryCardProps) {
+/**
+ * ProgramEntryCard component for displaying individual program entries
+ * Provides drag-and-drop functionality and entry management actions
+ * @param entry - The program entry to display
+ * @param index - The index of the entry in the program
+ * @param onRemove - Callback function when entry is removed
+ * @param onUpdate - Callback function when entry is updated
+ * @returns JSX element representing the program entry card
+ */
+export function ProgramEntryCard({ entry, index, onRemove, onUpdate, onEdit }: ProgramEntryCardProps) {
   const { activities } = useAllActivities();
   const activity = activities?.find(a => a.id === entry.activity_id);
 
@@ -95,7 +108,7 @@ export function ProgramEntryCard({ entry, index, onRemove, onUpdate }: ProgramEn
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => {/* TODO: Implement edit */}}
+              onClick={() => onEdit?.(entry)}
               className="h-8 w-8 p-0"
             >
               <Edit className="w-4 h-4" />

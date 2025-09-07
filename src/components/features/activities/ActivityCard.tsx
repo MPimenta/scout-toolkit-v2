@@ -4,13 +4,18 @@ import { Clock, Users, TrendingUp, MapPin, Calendar } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-
+/**
+ * Interface for educational goal data
+ */
 interface EducationalGoal {
   id: string;
   title: string; // Now simple string after migration
   code: string;
 }
 
+/**
+ * Interface for SDG data
+ */
 interface Sdg {
   id: string;
   number: number;
@@ -18,11 +23,17 @@ interface Sdg {
   icon_url: string;
 }
 
+/**
+ * Interface for activity type data
+ */
 interface ActivityType {
   id: string;
   name: string; // Now simple string after migration
 }
 
+/**
+ * Interface for activity data
+ */
 interface Activity {
   id: string;
   name: string; // Now simple string after migration
@@ -40,13 +51,18 @@ interface Activity {
   sdgs: Sdg[];
 }
 
+/**
+ * Props for the ActivityCard component
+ */
 interface ActivityCardProps {
   activity: Activity;
 }
 
-
-
-// Helper function to get group size display text
+/**
+ * Helper function to get group size display text
+ * @param size - The group size value
+ * @returns The display text for the group size
+ */
 function getGroupSizeText(size: string): string {
   const sizeMap = {
     small: 'Pequeno (2-6)',
@@ -56,7 +72,11 @@ function getGroupSizeText(size: string): string {
   return sizeMap[size as keyof typeof sizeMap] || size;
 }
 
-// Helper function to get effort level display text
+/**
+ * Helper function to get effort level display text
+ * @param level - The effort level value
+ * @returns The display text for the effort level
+ */
 function getEffortLevelText(level: string): string {
   const levelMap = {
     low: 'Baixo',
@@ -78,7 +98,11 @@ function getAgeGroupText(ageGroup: string): string {
   return ageMap[ageGroup as keyof typeof ageMap] || ageGroup;
 }
 
-// Helper function to get location display text
+/**
+ * Helper function to get location display text
+ * @param location - The location value
+ * @returns The display text for the location
+ */
 function getLocationText(location: string): string {
   const locationMap = {
     inside: 'Interior',
@@ -87,6 +111,12 @@ function getLocationText(location: string): string {
   return locationMap[location as keyof typeof locationMap] || location;
 }
 
+/**
+ * ActivityCard component for displaying activity information in a card format
+ * Shows activity details, metadata, and provides navigation to activity details
+ * @param activity - The activity data to display
+ * @returns JSX element representing the activity card
+ */
 export function ActivityCard({ activity }: ActivityCardProps) {
 
   const name = activity.name;

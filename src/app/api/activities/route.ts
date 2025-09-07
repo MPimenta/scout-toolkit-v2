@@ -3,6 +3,167 @@ import { db } from '@/lib/db/server';
 import { activities, activityTypes, educationalGoals, sdgs, activityEducationalGoals, activitySdgs } from '../../../../drizzle/schema';
 import { eq, and, inArray, desc, asc, sql } from 'drizzle-orm';
 
+/**
+ * @swagger
+ * /api/activities:
+ *   get:
+ *     summary: Get activities with filtering and pagination
+ *     description: Retrieve a paginated list of activities with advanced filtering options
+ *     tags: [Activities]
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term for activity name, description, or materials
+ *       - in: query
+ *         name: group_size
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *             enum: [small, medium, large]
+ *         style: form
+ *         explode: false
+ *         description: Filter by group size
+ *       - in: query
+ *         name: effort_level
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *             enum: [low, medium, high]
+ *         style: form
+ *         explode: false
+ *         description: Filter by effort level
+ *       - in: query
+ *         name: location
+ *         schema:
+ *           type: string
+ *           enum: [inside, outside]
+ *         description: Filter by location type
+ *       - in: query
+ *         name: age_group
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *             enum: [cub_scouts, scouts, adventurers, rovers, leaders]
+ *         style: form
+ *         explode: false
+ *         description: Filter by age group
+ *       - in: query
+ *         name: activity_type
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         style: form
+ *         explode: false
+ *         description: Filter by activity type IDs
+ *       - in: query
+ *         name: sdgs
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         style: form
+ *         explode: false
+ *         description: Filter by SDG IDs
+ *       - in: query
+ *         name: educational_goals
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         style: form
+ *         explode: false
+ *         description: Filter by educational goal IDs
+ *       - in: query
+ *         name: duration_min
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: Minimum duration in minutes
+ *       - in: query
+ *         name: duration_max
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         description: Maximum duration in minutes
+ *       - in: query
+ *         name: duration_operator
+ *         schema:
+ *           type: string
+ *           enum: ['>=', '<=', '=', '>', '<']
+ *         description: Duration comparison operator
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 20
+ *         description: Number of activities per page
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: string
+ *           enum: [name, duration, created_at]
+ *           default: name
+ *         description: Field to sort by
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: asc
+ *         description: Sort order
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved activities
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 activities:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Activity'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     page:
+ *                       type: integer
+ *                     limit:
+ *                       type: integer
+ *                     total:
+ *                       type: integer
+ *                     total_pages:
+ *                       type: integer
+ *                 filters:
+ *                   type: object
+ *                   properties:
+ *                     applied:
+ *                       type: object
+ *                       description: Currently applied filters
+ *                     available:
+ *                       type: object
+ *                       description: Available filter options for current result set
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);

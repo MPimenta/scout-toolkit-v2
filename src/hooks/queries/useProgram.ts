@@ -2,7 +2,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { queryKeys } from '@/lib/query-client';
 
-// Type for program entry
+/**
+ * Interface for program entry data structure
+ */
 export interface ProgramEntry {
   id: string;
   position: number;
@@ -24,7 +26,9 @@ export interface ProgramEntry {
   } | null;
 }
 
-// Type for program summary
+/**
+ * Interface for program summary data structure
+ */
 export interface ProgramSummary {
   total_duration_minutes: number;
   entry_count: number;
@@ -58,7 +62,12 @@ export interface Program {
   summary: ProgramSummary;
 }
 
-// Fetch individual program
+/**
+ * Fetches an individual program by ID from the API
+ * @param id - The program ID to fetch
+ * @returns Promise<Program> - The program data with entries and summary
+ * @throws Error if program is not found, unauthorized, or request fails
+ */
 async function fetchProgram(id: string): Promise<Program> {
   const response = await fetch(`/api/programs/${id}`);
   
@@ -75,7 +84,11 @@ async function fetchProgram(id: string): Promise<Program> {
   return response.json();
 }
 
-// Hook for fetching individual program
+/**
+ * Hook for fetching an individual program by ID using TanStack Query
+ * @param id - The program ID to fetch
+ * @returns TanStack Query result with program data, loading state, and error handling
+ */
 export function useProgram(id: string) {
   return useQuery({
     queryKey: queryKeys.programs.detail(id),
@@ -86,7 +99,10 @@ export function useProgram(id: string) {
   });
 }
 
-// Hook for prefetching individual program
+/**
+ * Hook for prefetching an individual program (useful for navigation and performance optimization)
+ * @returns Function to prefetch program by ID
+ */
 export function usePrefetchProgram() {
   const queryClient = useQueryClient();
   

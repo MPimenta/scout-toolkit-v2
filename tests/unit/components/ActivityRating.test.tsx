@@ -7,7 +7,11 @@ import { vi } from 'vitest';
 // Mock next-auth
 vi.mock('next-auth/react');
 
+// Mock fetch
+global.fetch = vi.fn();
+
 const mockUseSession = useSession as ReturnType<typeof vi.fn>;
+const mockFetch = global.fetch as ReturnType<typeof vi.fn>;
 
 describe('ActivityRating', () => {
   const mockSession = {
@@ -28,6 +32,12 @@ describe('ActivityRating', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    
+    // Mock successful fetch response
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true }),
+    });
   });
 
   describe('when user is not authenticated', () => {
@@ -135,13 +145,11 @@ describe('ActivityRating', () => {
       // Check loading state - the button text should change to loading state
       expect(screen.getByRole('button', { name: /enviar/i })).toBeInTheDocument();
 
-      // Wait for submission to complete
+      // Wait for submission to complete and form to reset
       await waitFor(() => {
         expect(screen.getByText('Enviar Avaliação')).toBeInTheDocument();
+        expect(commentTextarea).toHaveValue('');
       });
-
-      // Check that form is reset
-      expect(commentTextarea).toHaveValue('');
       
       // Check that rating is displayed in the list
       expect(screen.getByText('Test User')).toBeInTheDocument();

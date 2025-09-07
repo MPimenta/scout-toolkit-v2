@@ -2,7 +2,9 @@ import { useQuery, useInfiniteQuery, useQueryClient } from '@tanstack/react-quer
 import { useCallback } from 'react';
 import { queryKeys } from '@/lib/query-client';
 
-// Types for program filters
+/**
+ * Interface for filtering programs in API requests
+ */
 export interface ProgramFilters {
   page?: number;
   limit?: number;
@@ -10,7 +12,9 @@ export interface ProgramFilters {
   order?: 'asc' | 'desc';
 }
 
-// Types for program response
+/**
+ * Interface for program API response structure
+ */
 export interface ProgramResponse {
   programs: Array<{
     id: string;
@@ -31,7 +35,11 @@ export interface ProgramResponse {
   };
 }
 
-// Fetch programs with filters
+/**
+ * Fetches programs from the API with optional filters
+ * @param filters - Optional filters to apply to the request
+ * @returns Promise<ProgramResponse> - The programs response with pagination info
+ */
 async function fetchPrograms(filters: ProgramFilters = {}): Promise<ProgramResponse> {
   const searchParams = new URLSearchParams();
   
@@ -54,7 +62,11 @@ async function fetchPrograms(filters: ProgramFilters = {}): Promise<ProgramRespo
   return response.json();
 }
 
-// Hook for fetching programs with filters
+/**
+ * Hook for fetching programs with filters using TanStack Query
+ * @param filters - Optional filters to apply to the request
+ * @returns TanStack Query result with programs data, loading state, and error handling
+ */
 export function usePrograms(filters: ProgramFilters = {}) {
   return useQuery({
     queryKey: queryKeys.programs.list(filters as Record<string, unknown>),
@@ -64,7 +76,11 @@ export function usePrograms(filters: ProgramFilters = {}) {
   });
 }
 
-// Hook for infinite scrolling programs
+/**
+ * Hook for infinite scrolling programs using TanStack Query
+ * @param filters - Optional filters to apply (excludes page parameter)
+ * @returns TanStack Infinite Query result for paginated programs
+ */
 export function useInfinitePrograms(filters: Omit<ProgramFilters, 'page'> = {}) {
   return useInfiniteQuery({
     queryKey: queryKeys.programs.list({ ...filters, infinite: true } as Record<string, unknown>),
@@ -79,7 +95,10 @@ export function useInfinitePrograms(filters: Omit<ProgramFilters, 'page'> = {}) 
   });
 }
 
-// Hook for prefetching programs
+/**
+ * Hook for prefetching programs (useful for navigation and performance optimization)
+ * @returns Function to prefetch programs with given filters
+ */
 export function usePrefetchPrograms() {
   const queryClient = useQueryClient();
   

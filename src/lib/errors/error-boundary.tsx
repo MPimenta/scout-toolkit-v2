@@ -7,27 +7,51 @@ import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { logger } from './error-logger';
 import { AppError } from '@/types/errors';
 
+/**
+ * Props for the ErrorBoundary component
+ */
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
 }
 
+/**
+ * State for the ErrorBoundary component
+ */
 interface State {
   hasError: boolean;
   error: Error | null;
 }
 
+/**
+ * ErrorBoundary component that catches JavaScript errors anywhere in the child component tree,
+ * logs those errors, and displays a fallback UI instead of the component tree that crashed
+ */
 export class ErrorBoundary extends Component<Props, State> {
+  /**
+   * Constructor for the ErrorBoundary component
+   * @param props - Component props
+   */
   constructor(props: Props) {
     super(props);
     this.state = { hasError: false, error: null };
   }
 
+  /**
+   * Static method that updates state so the next render will show the fallback UI
+   * @param error - The error that was thrown
+   * @returns New state object
+   */
   static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error };
   }
 
+  /**
+   * Lifecycle method called when an error is caught by the error boundary
+   * @param error - The error that was thrown
+   * @param errorInfo - Additional error information
+   */
   override componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Log the error
     logger.error('React Error Boundary caught an error', error, {
@@ -41,6 +65,10 @@ export class ErrorBoundary extends Component<Props, State> {
     }
   }
 
+  /**
+   * Render method that displays either children or fallback UI based on error state
+   * @returns ReactNode - Either children or fallback UI
+   */
   override render(): ReactNode {
     if (this.state.hasError) {
       // Custom fallback UI

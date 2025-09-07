@@ -8,6 +8,9 @@ import { IconDisplay } from '@/components/ui/IconDisplay';
 import { ProgramEntry } from '../../../../drizzle/schema/programs';
 import { ActivitiesResponse } from '@/hooks/useActivities';
 
+/**
+ * Props for the ProgramSummary component
+ */
 interface ProgramSummaryProps {
   entries: ProgramEntry[];
   activities: ActivitiesResponse['activities'];
@@ -15,6 +18,15 @@ interface ProgramSummaryProps {
   totalDuration: number;
 }
 
+/**
+ * ProgramSummary component for displaying program statistics and overview
+ * Shows activity counts, educational goals, SDGs, and other program metrics
+ * @param entries - Array of program entries to analyze
+ * @param activities - Array of available activities for reference
+ * @param programStartTime - The start time of the program
+ * @param totalDuration - Total duration of the program in minutes
+ * @returns JSX element representing the program summary
+ */
 export function ProgramSummary({ 
   entries, 
   activities, 

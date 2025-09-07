@@ -16,7 +16,11 @@ import {
   Globe,
   BookOpen
 } from 'lucide-react';
+import { log } from '@/lib/errors';
 
+/**
+ * Interface for activity filter state
+ */
 export interface FilterState {
   search: string;
   groupSize: string[];
@@ -31,6 +35,9 @@ export interface FilterState {
   durationOperator: string;
 }
 
+/**
+ * Props for the ActivityFilters component
+ */
 interface ActivityFiltersProps {
   filters: FilterState;
   onFiltersChange: (filters: FilterState) => void;
@@ -77,6 +84,15 @@ const DURATION_OPERATORS = [
   { value: '=', label: 'Exato' },
 ];
 
+/**
+ * ActivityFilters component for filtering activities
+ * Provides comprehensive filtering options including search, taxonomy filters, and duration filters
+ * @param filters - Current filter state
+ * @param onFiltersChange - Callback function when filters change
+ * @param onClearFilters - Callback function to clear all filters
+ * @param availableFilters - Optional available filter options from API
+ * @returns JSX element representing the activity filters interface
+ */
 export function ActivityFilters({ 
   filters, 
   onFiltersChange,
@@ -119,7 +135,7 @@ export function ActivityFilters({
           setEducationalGoalOptions(goalsData.educational_goals || []);
         }
       } catch (error) {
-        console.error('Error fetching filter options:', error);
+        log.error('Error fetching filter options', error as Error);
       }
     };
 

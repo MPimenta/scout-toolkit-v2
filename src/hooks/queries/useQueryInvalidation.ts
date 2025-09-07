@@ -2,47 +2,71 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { queryKeys } from '@/lib/query-client';
 
-// Comprehensive query invalidation strategies
+/**
+ * Hook providing comprehensive query invalidation strategies for cache management
+ * @returns Object with various invalidation functions for different scopes
+ */
 export function useQueryInvalidation() {
   const queryClient = useQueryClient();
 
-  // Invalidate all activities queries
+  /**
+   * Invalidates all activities queries
+   */
   const invalidateActivities = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: queryKeys.activities.all });
   }, [queryClient]);
 
-  // Invalidate specific activity
+  /**
+   * Invalidates a specific activity by ID
+   * @param id - The activity ID to invalidate
+   */
   const invalidateActivity = useCallback((id: string) => {
     queryClient.invalidateQueries({ queryKey: queryKeys.activities.detail(id) });
   }, [queryClient]);
 
-  // Invalidate activities list with specific filters
+  /**
+   * Invalidates activities list with specific filters
+   * @param filters - Optional filters to match for invalidation
+   */
   const invalidateActivitiesList = useCallback((filters: Record<string, unknown> = {}) => {
     queryClient.invalidateQueries({ queryKey: queryKeys.activities.list(filters) });
   }, [queryClient]);
 
-  // Invalidate all programs queries
+  /**
+   * Invalidates all programs queries
+   */
   const invalidatePrograms = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: queryKeys.programs.all });
   }, [queryClient]);
 
-  // Invalidate specific program
+  /**
+   * Invalidates a specific program by ID
+   * @param id - The program ID to invalidate
+   */
   const invalidateProgram = useCallback((id: string) => {
     queryClient.invalidateQueries({ queryKey: queryKeys.programs.detail(id) });
     queryClient.invalidateQueries({ queryKey: queryKeys.programs.entries(id) });
   }, [queryClient]);
 
-  // Invalidate programs list with specific filters
+  /**
+   * Invalidates programs list with specific filters
+   * @param filters - Optional filters to match for invalidation
+   */
   const invalidateProgramsList = useCallback((filters: Record<string, unknown> = {}) => {
     queryClient.invalidateQueries({ queryKey: queryKeys.programs.list(filters) });
   }, [queryClient]);
 
-  // Invalidate all taxonomies
+  /**
+   * Invalidates all taxonomy queries
+   */
   const invalidateTaxonomies = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: queryKeys.taxonomies.all });
   }, [queryClient]);
 
-  // Invalidate specific taxonomy
+  /**
+   * Invalidates a specific taxonomy type
+   * @param type - The taxonomy type to invalidate
+   */
   const invalidateTaxonomy = useCallback((type: 'activity-types' | 'educational-goals' | 'sdgs') => {
     const key = type === 'activity-types' 
       ? queryKeys.taxonomies.activityTypes()
@@ -53,7 +77,10 @@ export function useQueryInvalidation() {
     queryClient.invalidateQueries({ queryKey: key });
   }, [queryClient]);
 
-  // Smart invalidation based on context
+  /**
+   * Smart invalidation based on context - invalidates related queries intelligently
+   * @param context - Context object specifying what to invalidate
+   */
   const invalidateRelatedQueries = useCallback((context: {
     type: 'activity' | 'program' | 'taxonomy';
     id?: string;
@@ -88,12 +115,17 @@ export function useQueryInvalidation() {
     }
   }, [invalidateActivity, invalidateActivitiesList, invalidateProgram, invalidateProgramsList, invalidateTaxonomy, invalidateTaxonomies, invalidateActivities, invalidatePrograms]);
 
-  // Clear all caches (useful for logout)
+  /**
+   * Clears all query caches (useful for logout or complete refresh)
+   */
   const clearAllCaches = useCallback(() => {
     queryClient.clear();
   }, [queryClient]);
 
-  // Prefetch related data after mutations
+  /**
+   * Prefetches related data after mutations for better UX
+   * @param context - Context object specifying what to prefetch
+   */
   const prefetchRelatedData = useCallback(async (context: {
     type: 'activity' | 'program';
     id: string;

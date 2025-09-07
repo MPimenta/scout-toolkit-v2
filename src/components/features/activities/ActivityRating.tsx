@@ -7,11 +7,19 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Star, MessageSquare, Send } from 'lucide-react';
 import { useSession } from 'next-auth/react';
+import { log } from '@/lib/errors';
+import { toast } from 'sonner';
 
+/**
+ * Props for the ActivityRating component
+ */
 interface ActivityRatingProps {
   activityId: string;
 }
 
+/**
+ * Interface for rating data structure
+ */
 interface Rating {
   id: string;
   userId: string;
@@ -22,7 +30,13 @@ interface Rating {
   createdAt: string;
 }
 
-export function ActivityRating({ }: ActivityRatingProps) {
+/**
+ * ActivityRating component for displaying and submitting activity ratings
+ * Allows users to rate activities and view existing ratings
+ * @param activityId - The ID of the activity being rated
+ * @returns JSX element representing the activity rating interface
+ */
+export function ActivityRating({ activityId }: ActivityRatingProps) {
   const { data: session } = useSession();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
@@ -34,7 +48,22 @@ export function ActivityRating({ }: ActivityRatingProps) {
 
     setIsSubmitting(true);
     try {
-      // TODO: Implement rating submission API
+      // Submit rating to API
+      const response = await fetch(`/api/activities/${activityId}/ratings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          rating,
+          comment,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit rating');
+      }
+
       const newRating: Rating = {
         id: Date.now().toString(),
         userId: session.user.id || 'unknown',
@@ -48,8 +77,9 @@ export function ActivityRating({ }: ActivityRatingProps) {
       setRatings(prev => [newRating, ...prev]);
       setRating(0);
       setComment('');
+      toast.success('Avaliação enviada com sucesso!');
     } catch (error) {
-      console.error('Error submitting rating:', error);
+      log.error('Error submitting rating', error as Error);
     } finally {
       setIsSubmitting(false);
     }

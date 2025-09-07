@@ -2,7 +2,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-client';
 import { Program, ProgramEntry } from '../queries/useProgram';
 
-// Types for program mutations
+/**
+ * Interface for creating a new program
+ */
 export interface CreateProgramData {
   name: string;
   date?: string;
@@ -10,6 +12,9 @@ export interface CreateProgramData {
   is_public?: boolean;
 }
 
+/**
+ * Interface for updating an existing program
+ */
 export interface UpdateProgramData {
   name?: string;
   date?: string;
@@ -17,6 +22,9 @@ export interface UpdateProgramData {
   is_public?: boolean;
 }
 
+/**
+ * Interface for creating a new program entry
+ */
 export interface CreateProgramEntryData {
   position: number;
   start_time: string;
@@ -27,6 +35,9 @@ export interface CreateProgramEntryData {
   custom_duration_minutes?: number;
 }
 
+/**
+ * Interface for updating an existing program entry
+ */
 export interface UpdateProgramEntryData {
   position?: number;
   start_time?: string;
@@ -37,7 +48,12 @@ export interface UpdateProgramEntryData {
   custom_duration_minutes?: number;
 }
 
-// API functions
+/**
+ * Creates a new program via API
+ * @param data - The program data to create
+ * @returns Promise<Program> - The created program
+ * @throws Error if creation fails
+ */
 async function createProgram(data: CreateProgramData): Promise<Program> {
   const response = await fetch('/api/programs', {
     method: 'POST',
@@ -49,9 +65,17 @@ async function createProgram(data: CreateProgramData): Promise<Program> {
     throw new Error(`Failed to create program: ${response.statusText}`);
   }
 
-  return response.json();
+  const result = await response.json();
+  return result.program;
 }
 
+/**
+ * Updates an existing program via API
+ * @param id - The program ID to update
+ * @param data - The program data to update
+ * @returns Promise<Program> - The updated program
+ * @throws Error if update fails
+ */
 async function updateProgram(id: string, data: UpdateProgramData): Promise<Program> {
   const response = await fetch(`/api/programs/${id}`, {
     method: 'PUT',
@@ -63,9 +87,16 @@ async function updateProgram(id: string, data: UpdateProgramData): Promise<Progr
     throw new Error(`Failed to update program: ${response.statusText}`);
   }
 
-  return response.json();
+  const result = await response.json();
+  return result.program;
 }
 
+/**
+ * Deletes a program via API
+ * @param id - The program ID to delete
+ * @returns Promise<void>
+ * @throws Error if deletion fails
+ */
 async function deleteProgram(id: string): Promise<void> {
   const response = await fetch(`/api/programs/${id}`, {
     method: 'DELETE',
@@ -76,6 +107,13 @@ async function deleteProgram(id: string): Promise<void> {
   }
 }
 
+/**
+ * Creates a new program entry via API
+ * @param programId - The program ID to add the entry to
+ * @param data - The entry data to create
+ * @returns Promise<ProgramEntry> - The created entry
+ * @throws Error if creation fails
+ */
 async function createProgramEntry(programId: string, data: CreateProgramEntryData): Promise<ProgramEntry> {
   const response = await fetch(`/api/programs/${programId}/entries`, {
     method: 'POST',
@@ -90,6 +128,14 @@ async function createProgramEntry(programId: string, data: CreateProgramEntryDat
   return response.json();
 }
 
+/**
+ * Updates an existing program entry via API
+ * @param programId - The program ID containing the entry
+ * @param entryId - The entry ID to update
+ * @param data - The entry data to update
+ * @returns Promise<ProgramEntry> - The updated entry
+ * @throws Error if update fails
+ */
 async function updateProgramEntry(programId: string, entryId: string, data: UpdateProgramEntryData): Promise<ProgramEntry> {
   const response = await fetch(`/api/programs/${programId}/entries/${entryId}`, {
     method: 'PUT',
@@ -104,6 +150,13 @@ async function updateProgramEntry(programId: string, entryId: string, data: Upda
   return response.json();
 }
 
+/**
+ * Deletes a program entry via API
+ * @param programId - The program ID containing the entry
+ * @param entryId - The entry ID to delete
+ * @returns Promise<void>
+ * @throws Error if deletion fails
+ */
 async function deleteProgramEntry(programId: string, entryId: string): Promise<void> {
   const response = await fetch(`/api/programs/${programId}/entries/${entryId}`, {
     method: 'DELETE',
@@ -114,7 +167,10 @@ async function deleteProgramEntry(programId: string, entryId: string): Promise<v
   }
 }
 
-// Mutation hooks
+/**
+ * Hook for creating a new program with optimistic updates and cache invalidation
+ * @returns TanStack Query mutation for creating programs
+ */
 export function useCreateProgram() {
   const queryClient = useQueryClient();
 
@@ -130,6 +186,10 @@ export function useCreateProgram() {
   });
 }
 
+/**
+ * Hook for updating an existing program with optimistic updates and cache invalidation
+ * @returns TanStack Query mutation for updating programs
+ */
 export function useUpdateProgram() {
   const queryClient = useQueryClient();
 
@@ -168,6 +228,10 @@ export function useUpdateProgram() {
   });
 }
 
+/**
+ * Hook for deleting a program with cache invalidation
+ * @returns TanStack Query mutation for deleting programs
+ */
 export function useDeleteProgram() {
   const queryClient = useQueryClient();
 
@@ -183,6 +247,10 @@ export function useDeleteProgram() {
   });
 }
 
+/**
+ * Hook for creating a new program entry with cache invalidation
+ * @returns TanStack Query mutation for creating program entries
+ */
 export function useCreateProgramEntry() {
   const queryClient = useQueryClient();
 
@@ -197,6 +265,10 @@ export function useCreateProgramEntry() {
   });
 }
 
+/**
+ * Hook for updating an existing program entry with cache invalidation
+ * @returns TanStack Query mutation for updating program entries
+ */
 export function useUpdateProgramEntry() {
   const queryClient = useQueryClient();
 
@@ -211,6 +283,10 @@ export function useUpdateProgramEntry() {
   });
 }
 
+/**
+ * Hook for deleting a program entry with cache invalidation
+ * @returns TanStack Query mutation for deleting program entries
+ */
 export function useDeleteProgramEntry() {
   const queryClient = useQueryClient();
 

@@ -10,6 +10,9 @@ import { ActivitiesResponse } from '@/hooks/useActivities';
 import { useAllActivities } from '@/hooks/useActivities';
 import { Search, Filter, Clock, MapPin, Users, Target } from 'lucide-react';
 
+/**
+ * Props for the AddActivityModal component
+ */
 interface AddActivityModalProps {
   open: boolean;
   onClose: () => void;
@@ -17,6 +20,15 @@ interface AddActivityModalProps {
   programId: string;
 }
 
+/**
+ * AddActivityModal component for selecting and adding activities to a program
+ * Provides search and filtering functionality for activity selection
+ * @param open - Whether the modal is open
+ * @param onClose - Callback function to close the modal
+ * @param onAdd - Callback function when an activity is selected
+ * @param programId - The ID of the program (currently unused)
+ * @returns JSX element representing the activity selection modal
+ */
 export function AddActivityModal({ open, onClose, onAdd, programId: _programId }: AddActivityModalProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');

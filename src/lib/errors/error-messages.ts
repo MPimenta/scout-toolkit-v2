@@ -1,6 +1,10 @@
 // Standardized Portuguese Error Messages
 // This file contains all error messages used throughout the application
 
+/**
+ * Standardized error messages in Portuguese for consistent user experience
+ * Maps error codes to user-friendly messages
+ */
 export const ERROR_MESSAGES = {
   // Core error codes (matching ErrorCode type)
   VALIDATION_ERROR: 'Dados inválidos',
@@ -72,11 +76,21 @@ export const ERROR_MESSAGES = {
 export type ErrorMessageKey = keyof typeof ERROR_MESSAGES;
 
 // Helper function to get error message
+/**
+ * Helper function to get error message by key
+ * @param key - The error message key
+ * @returns The error message string
+ */
 export function getErrorMessage(key: ErrorMessageKey): string {
   return ERROR_MESSAGES[key];
 }
 
-// Helper function to get error message with fallback
+/**
+ * Helper function to get error message with fallback
+ * @param key - The error message key
+ * @param fallback - Optional fallback message
+ * @returns The error message string or fallback
+ */
 export function getErrorMessageSafe(key: ErrorMessageKey, fallback?: string): string {
   return ERROR_MESSAGES[key] || fallback || ERROR_MESSAGES.UNKNOWN_ERROR;
 }

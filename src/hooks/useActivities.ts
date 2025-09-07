@@ -62,7 +62,12 @@ export interface UseActivitiesOptions {
   order?: 'asc' | 'desc';
 }
 
-// Custom debounce hook
+/**
+ * Custom debounce hook to delay value updates
+ * @param value - The value to debounce
+ * @param delay - The delay in milliseconds
+ * @returns The debounced value
+ */
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 

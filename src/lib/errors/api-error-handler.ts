@@ -6,7 +6,9 @@ import { AppError, ErrorCode } from '@/types/errors';
 import { apiLogger } from './error-logger';
 import { handleError, createError } from './error-handler';
 
-// Standard API error response format
+/**
+ * Standard API error response format for consistent error handling
+ */
 export interface ApiErrorResponse {
   error: {
     code: string;
@@ -15,7 +17,9 @@ export interface ApiErrorResponse {
   };
 }
 
-// Map error codes to HTTP status codes
+/**
+ * Maps error codes to appropriate HTTP status codes
+ */
 const ERROR_STATUS_MAP: Record<ErrorCode, number> = {
   VALIDATION_ERROR: 400,
   AUTHENTICATION_ERROR: 401,
@@ -27,7 +31,12 @@ const ERROR_STATUS_MAP: Record<ErrorCode, number> = {
   TIMEOUT_ERROR: 504,
 };
 
-// Create standardized API error response
+/**
+ * Creates a standardized API error response with appropriate HTTP status code
+ * @param error - The AppError object to convert to API response
+ * @param statusCode - Optional custom status code, defaults to mapped status
+ * @returns NextResponse with error details and appropriate status code
+ */
 export function createApiErrorResponse(
   error: AppError,
   statusCode?: number
@@ -45,7 +54,13 @@ export function createApiErrorResponse(
   return NextResponse.json(response, { status });
 }
 
-// Handle API errors consistently
+/**
+ * Handles API errors consistently with logging and standardized responses
+ * @param error - The error to handle (can be any type)
+ * @param context - Context string for error logging
+ * @param additionalDetails - Optional additional error details
+ * @returns NextResponse with standardized error format
+ */
 export function handleApiError(
   error: unknown,
   context: string,
@@ -63,7 +78,9 @@ export function handleApiError(
   return createApiErrorResponse(appError);
 }
 
-// Common API error responses
+/**
+ * Common API error response factory functions for consistent error handling
+ */
 export const apiErrors = {
   unauthorized: (message?: string) => 
     createApiErrorResponse(createError('AUTHENTICATION_ERROR', message)),
@@ -90,7 +107,11 @@ export const apiErrors = {
     createApiErrorResponse(createError('TIMEOUT_ERROR', message)),
 };
 
-// API route wrapper for consistent error handling
+/**
+ * API route wrapper for consistent error handling
+ * @param handler - The API route handler function to wrap
+ * @returns Wrapped handler with automatic error handling
+ */
 export function withApiErrorHandler<T extends unknown[]>(
   handler: (...args: T) => Promise<NextResponse>
 ) {

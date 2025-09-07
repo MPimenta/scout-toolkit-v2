@@ -5,7 +5,13 @@ import { AppError, ErrorCode, Result } from '@/types/errors';
 import { getErrorMessage } from './error-messages';
 import { logger } from './error-logger';
 
-// Create standardized error objects
+/**
+ * Creates a standardized error object with consistent structure
+ * @param code - The error code from the ErrorCode enum
+ * @param message - Optional custom error message, defaults to standard message for code
+ * @param details - Optional additional error details
+ * @returns AppError object with standardized structure
+ */
 export function createError(
   code: ErrorCode,
   message?: string,
@@ -20,7 +26,13 @@ export function createError(
   };
 }
 
-// Create validation error
+/**
+ * Creates a validation error for a specific field
+ * @param field - The field that failed validation
+ * @param message - Optional custom error message
+ * @param details - Optional additional validation details
+ * @returns AppError object with VALIDATION_ERROR code
+ */
 export function createValidationError(
   field: string,
   message?: string,
@@ -32,17 +44,30 @@ export function createValidationError(
   });
 }
 
-// Create authentication error
+/**
+ * Creates an authentication error
+ * @param message - Optional custom error message
+ * @returns AppError object with AUTHENTICATION_ERROR code
+ */
 export function createAuthError(message?: string): AppError {
   return createError('AUTHENTICATION_ERROR', message);
 }
 
-// Create authorization error
+/**
+ * Creates an authorization error
+ * @param message - Optional custom error message
+ * @returns AppError object with AUTHORIZATION_ERROR code
+ */
 export function createAuthzError(message?: string): AppError {
   return createError('AUTHORIZATION_ERROR', message);
 }
 
-// Create not found error
+/**
+ * Creates a not found error for a specific resource
+ * @param resource - The type of resource that was not found
+ * @param id - Optional ID of the resource that was not found
+ * @returns AppError object with NOT_FOUND code
+ */
 export function createNotFoundError(resource: string, id?: string): AppError {
   return createError('NOT_FOUND', undefined, {
     resource,
@@ -50,27 +75,53 @@ export function createNotFoundError(resource: string, id?: string): AppError {
   });
 }
 
-// Create conflict error
+/**
+ * Creates a conflict error for resource conflicts
+ * @param message - Optional custom error message
+ * @param details - Optional additional conflict details
+ * @returns AppError object with CONFLICT code
+ */
 export function createConflictError(message?: string, details?: Record<string, unknown>): AppError {
   return createError('CONFLICT', message, details);
 }
 
-// Create internal server error
+/**
+ * Creates an internal server error
+ * @param message - Optional custom error message
+ * @param details - Optional additional error details
+ * @returns AppError object with INTERNAL_ERROR code
+ */
 export function createInternalError(message?: string, details?: Record<string, unknown>): AppError {
   return createError('INTERNAL_ERROR', message, details);
 }
 
-// Create network error
+/**
+ * Creates a network error
+ * @param message - Optional custom error message
+ * @param details - Optional additional error details
+ * @returns AppError object with NETWORK_ERROR code
+ */
 export function createNetworkError(message?: string, details?: Record<string, unknown>): AppError {
   return createError('NETWORK_ERROR', message, details);
 }
 
-// Create timeout error
+/**
+ * Creates a timeout error
+ * @param message - Optional custom error message
+ * @param details - Optional additional error details
+ * @returns AppError object with TIMEOUT_ERROR code
+ */
 export function createTimeoutError(message?: string, details?: Record<string, unknown>): AppError {
   return createError('TIMEOUT_ERROR', message, details);
 }
 
-// Handle and log errors consistently
+/**
+ * Handles and logs errors consistently with context information
+ * @param error - The error to handle (can be any type)
+ * @param context - Optional context string for debugging
+ * @param additionalDetails - Optional additional error details
+ * @returns AppError object with standardized structure
+ */
 export function handleError(
   error: unknown,
   context?: string,
@@ -115,7 +166,12 @@ export function handleError(
   return appError;
 }
 
-// Safe async function wrapper
+/**
+ * Safely executes an async function and returns a Result type
+ * @param fn - The async function to execute
+ * @param context - Optional context string for error handling
+ * @returns Promise<Result<T, AppError>> - Success with data or failure with error
+ */
 export async function safeAsync<T>(
   fn: () => Promise<T>,
   context?: string
@@ -129,7 +185,12 @@ export async function safeAsync<T>(
   }
 }
 
-// Safe sync function wrapper
+/**
+ * Safely executes a synchronous function and returns a Result type
+ * @param fn - The synchronous function to execute
+ * @param context - Optional context string for error handling
+ * @returns Result<T, AppError> - Success with data or failure with error
+ */
 export function safeSync<T>(
   fn: () => T,
   context?: string
@@ -167,7 +228,11 @@ export function validateRequired(
   return { success: true, data: true };
 }
 
-// Validate email format
+/**
+ * Validates email format using a comprehensive regex pattern
+ * @param email - The email string to validate
+ * @returns Result<true, AppError> - Success if valid, error if invalid
+ */
 export function validateEmail(email: string): Result<true, AppError> {
   // Basic email validation - check for consecutive dots and basic structure
   if (email.includes('..') || !email.includes('@') || !email.includes('.')) {

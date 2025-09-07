@@ -1,6 +1,9 @@
 // Centralized Logging System
 // Replaces console.log with structured logging
 
+/**
+ * Log levels for structured logging
+ */
 export enum LogLevel {
   DEBUG = 'debug',
   INFO = 'info',
@@ -8,6 +11,9 @@ export enum LogLevel {
   ERROR = 'error',
 }
 
+/**
+ * Structure for log entries
+ */
 export interface LogEntry {
   level: LogLevel;
   message: string;
@@ -16,6 +22,9 @@ export interface LogEntry {
   error?: Error;
 }
 
+/**
+ * Centralized logger class for structured logging
+ */
 class Logger {
   private get isDevelopment() {
     return process.env.NODE_ENV === 'development';
@@ -25,6 +34,14 @@ class Logger {
     return process.env.NODE_ENV === 'test';
   }
 
+  /**
+   * Formats log messages with timestamp, context, and error information
+   * @param level - The log level
+   * @param message - The log message
+   * @param context - Optional context information
+   * @param error - Optional error object
+   * @returns Formatted log message string
+   */
   private formatMessage(level: LogLevel, message: string, context?: Record<string, unknown>, error?: Error): string {
     const timestamp = new Date().toISOString();
     const contextStr = context ? ` | Context: ${JSON.stringify(context)}` : '';
@@ -33,6 +50,11 @@ class Logger {
     return `[${timestamp}] ${level.toUpperCase()}: ${message}${contextStr}${errorStr}`;
   }
 
+  /**
+   * Determines if a log message should be output based on environment and level
+   * @param level - The log level to check
+   * @returns true if the message should be logged
+   */
   private shouldLog(level: LogLevel): boolean {
     // In test environment, only log errors
     if (this.isTest) {
@@ -48,6 +70,13 @@ class Logger {
     return level === LogLevel.WARN || level === LogLevel.ERROR;
   }
 
+  /**
+   * Internal logging method that handles formatting and output
+   * @param level - The log level
+   * @param message - The log message
+   * @param context - Optional context information
+   * @param error - Optional error object
+   */
   private log(level: LogLevel, message: string, context?: Record<string, unknown>, error?: Error): void {
     if (!this.shouldLog(level)) {
       return;
@@ -71,27 +100,52 @@ class Logger {
     }
   }
 
+  /**
+   * Logs a debug message
+   * @param message - The debug message
+   * @param context - Optional context information
+   */
   debug(message: string, context?: Record<string, unknown>): void {
     this.log(LogLevel.DEBUG, message, context);
   }
 
+  /**
+   * Logs an info message
+   * @param message - The info message
+   * @param context - Optional context information
+   */
   info(message: string, context?: Record<string, unknown>): void {
     this.log(LogLevel.INFO, message, context);
   }
 
+  /**
+   * Logs a warning message
+   * @param message - The warning message
+   * @param context - Optional context information
+   */
   warn(message: string, context?: Record<string, unknown>): void {
     this.log(LogLevel.WARN, message, context);
   }
 
+  /**
+   * Logs an error message with optional error object
+   * @param message - The error message
+   * @param error - Optional Error object
+   * @param context - Optional context information
+   */
   error(message: string, error?: Error, context?: Record<string, unknown>): void {
     this.log(LogLevel.ERROR, message, context, error);
   }
 }
 
-// Export singleton instance
+/**
+ * Singleton logger instance for application-wide use
+ */
 export const logger = new Logger();
 
-// Convenience functions for common logging patterns
+/**
+ * Convenience functions for common logging patterns
+ */
 export const log = {
   debug: (message: string, context?: Record<string, unknown>) => logger.debug(message, context),
   info: (message: string, context?: Record<string, unknown>) => logger.info(message, context),
@@ -99,7 +153,9 @@ export const log = {
   error: (message: string, error?: Error, context?: Record<string, unknown>) => logger.error(message, error, context),
 };
 
-// API-specific logging helpers
+/**
+ * API-specific logging helpers for request/response logging
+ */
 export const apiLogger = {
   request: (method: string, url: string, context?: Record<string, unknown>) => {
     logger.info(`API Request: ${method} ${url}`, context);
