@@ -129,11 +129,11 @@ export default function ProgramDetailPage() {
             <div>
               <h1 className="text-3xl font-bold mb-2">{program.name}</h1>
               <p className="text-muted-foreground">
-                Criado por {program.user.name}
+                Criado por {program.user?.name || 'Utilizador desconhecido'}
               </p>
             </div>
 
-            {session?.user?.id === program.user.id && (
+            {session?.user?.id === program.user?.id && (
               <div className="flex gap-2 mt-4 sm:mt-0">
                 <Button variant="outline" asChild>
                   <a href={`/programs/${program.id}/edit`}>

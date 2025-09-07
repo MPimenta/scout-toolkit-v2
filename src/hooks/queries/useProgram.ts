@@ -81,7 +81,8 @@ async function fetchProgram(id: string): Promise<Program> {
     throw new Error(`Failed to fetch program: ${response.statusText}`);
   }
   
-  return response.json();
+  const data = await response.json();
+  return data.program;
 }
 
 /**
