@@ -10,6 +10,7 @@ import { AddActivityModal } from './AddActivityModal';
 import { AddCustomBlockModal } from './AddCustomBlockModal';
 import { ProgramScheduleTable } from './ProgramScheduleTable';
 import { ProgramSummary } from './ProgramSummary';
+import { ExportButton } from './ExportButton';
 import { useProgramMutations } from '@/hooks/useProgramMutations';
 import { useAllActivities } from '@/hooks/useActivities';
 import { log } from '@/lib/errors';
@@ -277,6 +278,12 @@ export function ProgramBuilder({ programId, initialEntries = [], onSave, onRefre
             <Clock className="inline w-4 h-4 mr-1" />
             Total: {hours}h {minutes}min
           </div>
+          <ExportButton 
+            programId={programId} 
+            programName="Programa" 
+            variant="outline"
+            size="default"
+          />
           <Button onClick={handleSave} variant="default">
             Save Program
           </Button>

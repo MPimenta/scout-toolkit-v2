@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useProgram } from '@/hooks/useProgram';
 import { ProgramBuilder } from '@/components/features/programs/ProgramBuilder';
+import { ExportButton } from '@/components/features/programs/ExportButton';
 import { log } from '@/lib/errors';
 
 /**
@@ -124,18 +125,24 @@ export default function ProgramBuilderPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={handleBack}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Voltar ao Programa
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold">Program Builder</h1>
-            <p className="text-muted-foreground">
-              Construir programa: {program.name}
-            </p>
+            <Button variant="outline" onClick={handleBack}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Voltar ao Programa
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold">Program Builder</h1>
+              <p className="text-muted-foreground">
+                Construir programa: {program.name}
+              </p>
+            </div>
           </div>
+          <ExportButton 
+            programId={programId} 
+            programName={program.name} 
+            variant="outline"
+            size="default"
+          />
         </div>
-      </div>
 
       {/* Program Builder */}
       <ProgramBuilder
