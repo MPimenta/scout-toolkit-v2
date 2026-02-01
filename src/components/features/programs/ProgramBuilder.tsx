@@ -13,6 +13,7 @@ import { AddCustomBlockModal } from './AddCustomBlockModal';
 import { ProgramScheduleTable } from './ProgramScheduleTable';
 import { ProgramSummary } from './ProgramSummary';
 import { ExportButton } from './ExportButton';
+import { PDFExportButton } from './PDFExportButton';
 import { EditProgramModal } from './EditProgramModal';
 import { DeleteProgramModal } from './DeleteProgramModal';
 import { useProgramMutations } from '@/hooks/useProgramMutations';
@@ -444,6 +445,12 @@ export function ProgramBuilder({
           </div>
           <div className="flex items-center gap-4">
             <ExportButton 
+              programId={programId} 
+              programName={program.name} 
+              variant="outline"
+              size="default"
+            />
+            <PDFExportButton 
               programId={programId} 
               programName={program.name} 
               variant="outline"

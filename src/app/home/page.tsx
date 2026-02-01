@@ -35,7 +35,7 @@ export default function HomePage() {
       <section className="py-16 bg-muted/50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">
-            Tudo o que precisas para ser um líder melhor
+            Tudo o que precisas para ser um Dirigente melhor
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card>
@@ -63,7 +63,7 @@ export default function HomePage() {
                 <Users className="h-8 w-8 text-primary mb-2" />
                 <CardTitle>Colaboração</CardTitle>
                 <CardDescription>
-                  Partilha programas com outros líderes e inspira-te em ideias
+                  Partilha programas com outros Dirigentes e inspira-te em ideias
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -88,7 +88,7 @@ export default function HomePage() {
             Pronto para começar?
           </h2>
           <p className="text-xl text-muted-foreground mb-8">
-            Junta-te a outros líderes que já estão a usar o Kit de Atividades
+            Junta-te a outros Dirigentes que já estão a usar o Kit de Atividades
           </p>
           <Button asChild size="lg">
             <Link href="/activities">

@@ -118,7 +118,7 @@ export function ProgramsList() {
             <CardTitle className="text-lg mb-2">Partilha Colaborativa</CardTitle>
             <CardContent className="p-0">
               <p className="text-muted-foreground">
-                Partilhe programas com outros líderes e colabore em projetos.
+                Partilhe programas com outros Dirigentes e colabore em projetos.
               </p>
             </CardContent>
           </Card>
@@ -131,7 +131,7 @@ export function ProgramsList() {
               Comece a Criar Programas Profissionais
             </h2>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Junte-se a outros líderes escoteiros que já estão a usar esta plataforma 
+              Junte-se a outros Dirigentes escotistas que já estão a usar esta plataforma 
               para criar programas de qualidade e organizar atividades de forma profissional.
             </p>
             <SignInButton />

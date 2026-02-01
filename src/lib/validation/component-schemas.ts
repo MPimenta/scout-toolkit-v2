@@ -303,6 +303,17 @@ export const specificSchemas = {
             }),
             onSuccess: z.function().optional(),
           }),
+
+          /**
+           * PDFExportButton component props
+           */
+          pdfExportButton: z.object({
+            programId: z.string().min(1, 'Program ID is required'),
+            programName: z.string().min(1, 'Program name is required'),
+            variant: z.enum(['default', 'outline', 'secondary', 'ghost', 'link', 'destructive']).optional(),
+            size: z.enum(['default', 'sm', 'lg', 'icon']).optional(),
+            className: z.string().optional(),
+          }),
 };
 
 /**

@@ -10,8 +10,8 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Kit de Atividades - Ferramentas para Líderes',
-  description: 'Uma plataforma para líderes escoteiros navegarem atividades e criarem programas',
+  title: 'Kit de Atividades - Ferramentas para Dirigentes',
+  description: 'Uma plataforma para Dirigentes escotistas navegarem atividades e criarem programas',
 };
 
 export default function RootLayout({

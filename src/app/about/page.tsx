@@ -6,7 +6,7 @@ export default function AboutPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-4">Sobre o Kit de Atividades</h1>
         <p className="text-muted-foreground">
-          Uma plataforma desenvolvida especificamente para os líderes dos Escoteiros de Portugal.
+          Uma plataforma desenvolvida especificamente para os Dirigentes dos Escoteiros de Portugal.
         </p>
       </div>
       
@@ -17,7 +17,7 @@ export default function AboutPage() {
           </CardHeader>
           <CardContent>
             <p>
-              O Kit de Atividades nasceu da necessidade de fornecer aos líderes escoteiros 
+              O Kit de Atividades nasceu da necessidade de fornecer aos Dirigentes escotistas 
               ferramentas digitais que facilitem o planeamento e execução de atividades 
               educativas de qualidade.
             </p>
@@ -30,7 +30,7 @@ export default function AboutPage() {
           </CardHeader>
           <CardContent>
             <p>
-              Queremos ser a plataforma de referência para líderes escoteiros em Portugal, 
+              Queremos ser a plataforma de referência para Dirigentes escotistas em Portugal, 
               promovendo a partilha de conhecimento e boas práticas.
             </p>
           </CardContent>
@@ -45,7 +45,7 @@ export default function AboutPage() {
               <li>Base de dados de atividades educativas</li>
               <li>Criador de programas personalizados</li>
               <li>Sistema de filtros e pesquisa avançada</li>
-              <li>Partilha e colaboração entre líderes</li>
+              <li>Partilha e colaboração entre Dirigentes</li>
               <li>Exportação de programas</li>
             </ul>
           </CardContent>
