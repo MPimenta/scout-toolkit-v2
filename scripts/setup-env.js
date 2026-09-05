@@ -10,9 +10,10 @@ DATABASE_URL=postgresql://postgres:password@localhost:5432/scout_toolkit_dev
 NEXTAUTH_SECRET=dev-secret-key-change-in-production
 NEXTAUTH_URL=http://localhost:3000
 
-# Google OAuth (Development)
-GOOGLE_CLIENT_ID=your-dev-google-client-id
-GOOGLE_CLIENT_SECRET=your-dev-google-client-secret
+# Orgo OAuth (Development)
+ORGO_ISSUER=https://eaep.escoteiros.pt
+ORGO_CLIENT_ID=your-orgo-client-id
+ORGO_CLIENT_SECRET=your-orgo-client-secret
 
 # File Upload (Development)
 UPLOADTHING_SECRET=your-dev-uploadthing-secret

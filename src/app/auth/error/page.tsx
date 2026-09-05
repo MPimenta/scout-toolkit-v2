@@ -11,7 +11,7 @@ function AuthErrorContent() {
   const getErrorMessage = (error: string | null) => {
     switch (error) {
       case 'AccessDenied':
-        return 'Acesso negado. Apenas utilizadores com email @escoteiros.pt podem aceder.';
+        return 'Acesso negado. Apenas associados da organização podem aceder.';
       case 'Configuration':
         return 'Erro de configuração do servidor. Contacta o administrador.';
       case 'Verification':

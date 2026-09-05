@@ -17,7 +17,7 @@ export default function SignInPage() {
             <SignInButton />
           </div>
           <div className="text-center text-sm text-gray-600">
-            <p>Apenas utilizadores com email @escoteiros.pt podem aceder</p>
+            <p>Entras com a tua conta de associado Escoteiros de Portugal</p>
           </div>
         </div>
       </div>
