@@ -1,15 +1,15 @@
-import NextAuth from "next-auth"
-import GoogleProvider from 'next-auth/providers/google';
+import NextAuth from 'next-auth';
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import { db } from '@/lib/db/server';
 import { log } from '@/lib/errors';
 import type { NextAuthConfig } from 'next-auth';
+import { OrgoProvider } from './orgo-provider';
 
 export const authConfig: NextAuthConfig = {
   providers: [
-    GoogleProvider({
-      clientId: process.env['GOOGLE_CLIENT_ID']!,
-      clientSecret: process.env['GOOGLE_CLIENT_SECRET']!,
+    OrgoProvider({
+      clientId: process.env['ORGO_CLIENT_ID']!,
+      clientSecret: process.env['ORGO_CLIENT_SECRET']!,
     }),
   ],
   adapter: DrizzleAdapter(db),
@@ -19,18 +19,22 @@ export const authConfig: NextAuthConfig = {
     error: '/auth/error',
   },
   callbacks: {
-    async signIn({ user }) {
-      // Only allow @escoteiros.pt emails
-      if (user.email && user.email.endsWith('@escoteiros.pt')) {
-        return true;
+    async signIn({ user, account }) {
+      if (account?.provider !== 'orgo') {
+        log.warn('Rejected sign-in from unexpected provider', {
+          provider: account?.provider,
+        });
+        return false;
       }
-      
-      // Log unauthorized access attempts
-      log.warn('Unauthorized sign-in attempt', { email: user.email });
-      return false;
+
+      if (!user.email) {
+        log.warn('Orgo sign-in without email', { userId: user.id });
+        return false;
+      }
+
+      return true;
     },
     async session({ session, user }) {
-      // Ensure user ID is included in the session
       if (session.user) {
         session.user.id = user.id;
         session.user.role = user.role || 'user';
@@ -44,7 +48,6 @@ const nextAuth = NextAuth(authConfig);
 
 export const { handlers, signIn, signOut, auth } = nextAuth;
 
-// Extend NextAuth types
 declare module 'next-auth' {
   interface Session {
     user: {

@@ -32,7 +32,7 @@ export const GET = withApiErrorHandler(async (
   }
 
     // Fetch program with user info - only show programs owned by the authenticated user
-    const [programData] = await db
+    const [programRow] = await db
       .select({
         id: programs.id,
         name: programs.name,
@@ -41,18 +41,25 @@ export const GET = withApiErrorHandler(async (
         is_public: programs.is_public,
         created_at: programs.created_at,
         updated_at: programs.updated_at,
-        user: {
-          id: user.id,
-          name: user.name
-        }
+        user_id: user.id,
+        user_name: user.name,
       })
       .from(programs)
       .leftJoin(user, eq(programs.user_id, user.id))
       .where(and(eq(programs.id, programId), eq(programs.user_id, session.user.id)));
 
-    if (!programData) {
+    if (!programRow) {
       return apiErrors.notFound('programa', programId);
     }
+
+    const { user_id: _userId, user_name: _userName, ...programFields } = programRow;
+    const programData = {
+      ...programFields,
+      user: {
+        id: programRow.user_id ?? session.user.id,
+        name: programRow.user_name ?? session.user.name ?? 'Utilizador',
+      },
+    };
 
     // Fetch program entries with activity details
     const entries = await db

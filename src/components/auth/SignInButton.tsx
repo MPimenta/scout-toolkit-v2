@@ -57,7 +57,7 @@ export function SignInButton() {
   }
 
   return (
-    <Button onClick={() => signIn('google')} size="sm">
+    <Button onClick={() => signIn('orgo')} size="sm">
       <LogIn className="mr-2 h-4 w-4" />
       Entrar
     </Button>

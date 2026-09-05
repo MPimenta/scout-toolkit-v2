@@ -281,8 +281,9 @@ vi.mock('process', () => ({
   env: {
     DATABASE_URL: 'postgresql://test_user:test_password@localhost:5432/scout_toolkit_test',
     NEXTAUTH_SECRET: 'test-secret',
-    GOOGLE_CLIENT_ID: 'test-client-id',
-    GOOGLE_CLIENT_SECRET: 'test-client-secret',
+    ORGO_ISSUER: 'https://eaep.escoteiros.pt',
+    ORGO_CLIENT_ID: 'test-client-id',
+    ORGO_CLIENT_SECRET: 'test-client-secret',
   },
 }))
 
