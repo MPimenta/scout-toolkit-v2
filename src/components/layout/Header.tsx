@@ -8,6 +8,7 @@ import { useSession } from 'next-auth/react';
 import { SignInButton } from '@/components/auth/SignInButton';
 import { LocaleSwitcher } from '@/components/locale/LocaleSwitcher';
 import { useLocale } from '@/components/locale/LocaleProvider';
+import { useViewAs } from '@/components/auth/ViewAsProvider';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -21,7 +22,8 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const { data: session } = useSession();
   const { t } = useLocale();
-  const isAdmin = session?.user?.role === 'admin';
+  const { effectiveIsAdmin } = useViewAs();
+  const isAdmin = effectiveIsAdmin && Boolean(session?.user);
 
   const links = [
     { href: '/activities', label: t('nav.activities') },

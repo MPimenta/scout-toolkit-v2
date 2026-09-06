@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth/utils';
+import { getEffectiveRole } from '@/lib/auth/view-as';
 import AdminForbiddenPage from './forbidden';
 
 export default async function AdminLayout({
@@ -13,7 +14,7 @@ export default async function AdminLayout({
     redirect('/auth/signin?callbackUrl=/admin');
   }
 
-  if (session.user.role !== 'admin') {
+  if ((await getEffectiveRole(session.user.role)) !== 'admin') {
     return <AdminForbiddenPage />;
   }
 

@@ -3,6 +3,7 @@ import { db } from '@/lib/db/server';
 import { activities, activityTypes, educationalGoals, sdgs, activityEducationalGoals, activitySdgs, educationalAreas, user } from '../../../../../drizzle/schema';
 import { eq } from 'drizzle-orm';
 import { auth } from '@/lib/auth/config';
+import { getEffectiveRole } from '@/lib/auth/view-as';
 import { 
   apiErrors, 
   logApiRequest, 
@@ -68,7 +69,7 @@ export const GET = withApiErrorHandler(async (
     if (!activity.is_approved) {
       const session = await auth();
       const isAuthor = session?.user?.id && session.user.id === activity.created_by;
-      const isAdmin = session?.user?.role === 'admin';
+      const isAdmin = (await getEffectiveRole(session?.user?.role)) === 'admin';
       if (!isAuthor && !isAdmin) {
         return apiErrors.notFound('atividade', id);
       }

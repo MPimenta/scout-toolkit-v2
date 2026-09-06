@@ -70,6 +70,7 @@ describe('Admin stats API', () => {
       users: 0,
       public_programs: 0,
       pending_suggestions: 0,
+      pending_reports: 0,
     });
   });
 });

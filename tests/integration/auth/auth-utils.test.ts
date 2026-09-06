@@ -6,6 +6,12 @@ vi.mock('../../../src/lib/auth/config', () => ({
   auth: vi.fn(),
 }))
 
+vi.mock('next/headers', () => ({
+  cookies: vi.fn(async () => ({
+    get: () => undefined,
+  })),
+}))
+
 describe('Auth Utils', () => {
   let mockAuth: any
 

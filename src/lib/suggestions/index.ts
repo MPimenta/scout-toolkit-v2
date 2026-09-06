@@ -5,13 +5,18 @@ import type { SuggestableField } from './fields';
 
 export { SUGGESTABLE_FIELDS, isSuggestableField, type SuggestableField } from './fields';
 
-export async function notifyAdmins(title: string, body: string, href: string) {
+export async function notifyAdmins(
+  title: string,
+  body: string,
+  href: string,
+  type = 'suggestion_submitted'
+) {
   const admins = await db.select({ id: user.id }).from(user).where(eq(user.role, 'admin'));
   if (admins.length === 0) return;
   await db.insert(notifications).values(
     admins.map((admin) => ({
       user_id: admin.id,
-      type: 'suggestion_submitted',
+      type,
       title,
       body,
       href,

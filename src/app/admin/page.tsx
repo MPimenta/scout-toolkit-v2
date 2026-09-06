@@ -11,6 +11,7 @@ interface AdminStats {
   users: number;
   public_programs: number;
   pending_suggestions: number;
+  pending_reports: number;
 }
 
 const EMPTY_STATS: AdminStats = {
@@ -19,6 +20,7 @@ const EMPTY_STATS: AdminStats = {
   users: 0,
   public_programs: 0,
   pending_suggestions: 0,
+  pending_reports: 0,
 };
 
 export default function AdminPage() {
@@ -61,6 +63,7 @@ export default function AdminPage() {
         <StatCard title={t('admin.users')} value={stats.users} />
         <StatCard title={t('nav.publicPrograms')} value={stats.public_programs} />
         <StatCard title={t('admin.suggestions')} value={stats.pending_suggestions} />
+        <StatCard title={t('admin.openReports')} value={stats.pending_reports} />
       </div>
 
       <nav className="flex flex-col sm:flex-row gap-3">
@@ -75,6 +78,9 @@ export default function AdminPage() {
         </Link>
         <Link className="text-primary underline" href="/admin/sugestoes">
           {t('admin.suggestions')}
+        </Link>
+        <Link className="text-primary underline" href="/admin/reportes">
+          {t('admin.reports')}
         </Link>
       </nav>
     </div>

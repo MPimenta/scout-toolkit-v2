@@ -1753,7 +1753,7 @@ The current dual approach (SQLite for units, PostgreSQL for integration) creates
 
 **OpenSpec pilot (2026-09-05):** New work is specified in `openspec/changes/`, not as extra checkbox copies here. Archived: `apply-new-brand`, `user-feedback-ratings` (Epic 7.1), `review-discussion-threads` (Epic 7.2, archived 2026-09-06), `swap-brand-tokens` (archived 2026-09-06). **Decision:** keep both — `planning.md` remains the epic log/roadmap; each new story is an OpenSpec change. Do not freeze this file yet.
 
-**Current status (2026-09-06):** Product epics **1–12**, **15** (Orgo event-from-program), and **17** (English locale) are implemented. Auth is **eAEP/Orgo** (not Google). Chrome defaults to Portuguese with a header PT/EN switcher (no `/pt`/`/en` prefix). Local app + Playwright use Docker `scout_toolkit_dev`; Vitest SQL uses `scout_toolkit_test`. Playwright Chromium + Mobile Chrome: 42 passed / 22 skipped / 0 failed after locale + Orgo apply. `npm run build` succeeds under Turbopack. Archived the same day: `orgo-program-event` (`openspec/specs/orgo-events/spec.md`), `english-locale` (`openspec/specs/locale/spec.md`). **Not built:** hosted Preview (`preview-environment`). **Removed from the plan:** former Epic 13 (generic Lighthouse/a11y sprint) and Epic 14 (recurring QA process) — duplicates of Epic 12 / already-shipped contrast and mobile a11y, not product gaps.
+**Current status (2026-09-06):** Product epics **1–12**, **15** (Orgo event-from-program), and **17** (English locale) are implemented. Auth is **eAEP/Orgo** (not Google). Chrome defaults to Portuguese with a header PT/EN switcher (no `/pt`/`/en` prefix). Local app + Playwright use Docker `scout_toolkit_dev`; Vitest SQL uses `scout_toolkit_test`. Playwright Chromium + Mobile Chrome: 42 passed / 22 skipped / 0 failed after locale + Orgo apply. `npm run build` succeeds under Turbopack. Archived the same day: `orgo-program-event` (`openspec/specs/orgo-events/spec.md`), `english-locale` (`openspec/specs/locale/spec.md`), `preview-environment` (`openspec/specs/preview-hosting/spec.md`). **Removed from the plan:** former Epic 13 (generic Lighthouse/a11y sprint) and Epic 14 (recurring QA process) — duplicates of Epic 12 / already-shipped contrast and mobile a11y, not product gaps.
 
 ### Epic 7: User Feedback System ✅ **COMPLETED**
 
@@ -2188,18 +2188,18 @@ Create the program as an eAEP/Orgo event (write `Api-Token`, not OAuth). Archive
 
 ### Epic 16: Preview environment
 
-Hosted Preview (Vercel + isolated Neon). Working spec: `openspec/changes/preview-environment/`. No `.env.preview`. No write tests against Preview.
+Hosted Preview (Vercel + isolated Neon). Archived 2026-09-06: `openspec/changes/archive/2026-09-06-preview-environment/`. Main spec: `openspec/specs/preview-hosting/spec.md`. No `.env.preview`. No write tests against Preview.
 
 #### Story 16.1: Vercel Preview + Neon
 **Priority:** High
-**Status:** Specced — not applied
-**OpenSpec:** `openspec/changes/preview-environment/`
+**Status:** ✅ **COMPLETED** (2026-09-06)
+**OpenSpec:** `openspec/changes/archive/2026-09-06-preview-environment/`
 **Acceptance Criteria:**
-- [ ] PRs get a Preview URL
-- [ ] Preview `DATABASE_URL` is its own Neon DB
-- [ ] eAEP sign-in works (OAuth redirects registered)
-- [ ] `/api/e2e/session` is 404 on Preview
-- [ ] CI still uses workflow Postgres only
+- [x] PRs get a Preview URL
+- [x] Preview `DATABASE_URL` is its own Neon DB
+- [x] eAEP sign-in works (OAuth redirects registered)
+- [x] `/api/e2e/session` is 404 on Preview
+- [x] CI still uses workflow Postgres only
 
 ### Epic 17: English locale
 
@@ -2253,7 +2253,7 @@ Default Portuguese chrome, optional English via a header control next to the use
 - [x] Advanced admin features (Epic 9)
 - [x] Mobile layout (Epic 11)
 - [x] English locale (Epic 17)
-- [ ] Preview environment (Epic 16 — specced, not applied)
+- [x] Preview environment (Epic 16)
 - [ ] Production deployment
 - [x] Orgo event-from-program (Epic 15)
 

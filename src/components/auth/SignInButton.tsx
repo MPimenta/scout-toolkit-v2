@@ -13,10 +13,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { LogIn, LogOut, User } from 'lucide-react';
 import { useLocale } from '@/components/locale/LocaleProvider';
+import { useViewAs } from '@/components/auth/ViewAsProvider';
 
 export function SignInButton() {
   const { data: session, status } = useSession();
   const { t } = useLocale();
+  const { storedIsAdmin, viewingAsMember, setViewingAsMember } = useViewAs();
 
   if (status === 'loading') {
     return (
@@ -30,7 +32,11 @@ export function SignInButton() {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+          <Button
+            variant="ghost"
+            className="relative h-8 w-8 rounded-full"
+            aria-label={session.user.name || session.user.email}
+          >
             <Avatar className="h-8 w-8">
               <AvatarImage src={session.user.image || ''} alt={session.user.name || ''} />
               <AvatarFallback>
@@ -49,6 +55,13 @@ export function SignInButton() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
+          {storedIsAdmin ? (
+            <DropdownMenuItem
+              onClick={() => setViewingAsMember(!viewingAsMember)}
+            >
+              <span>{viewingAsMember ? t('admin.backToAdmin') : t('admin.viewAsMember')}</span>
+            </DropdownMenuItem>
+          ) : null}
           <DropdownMenuItem onClick={() => signOut()}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>{t('auth.signOut')}</span>

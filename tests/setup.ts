@@ -304,6 +304,23 @@ async function createTestSchema() {
       )
     `;
 
+    await sql`
+      CREATE TABLE IF NOT EXISTS issue_reports (
+        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+        kind text NOT NULL,
+        message text NOT NULL,
+        contact_email text,
+        path text NOT NULL,
+        locale text NOT NULL,
+        viewport text NOT NULL,
+        user_id uuid REFERENCES "user"(id) ON DELETE SET NULL,
+        status text NOT NULL DEFAULT 'aberto',
+        created_at timestamp NOT NULL DEFAULT now(),
+        closed_at timestamp,
+        closed_by uuid REFERENCES "user"(id) ON DELETE SET NULL
+      )
+    `;
+
     console.log('Test schema created successfully')
   } catch (error) {
     console.error('Failed to create test schema:', error)
@@ -327,6 +344,7 @@ export async function resetTestDatabase() {
       // Truncate all tables in reverse dependency order using raw SQL
       const tables = [
         'reply_reactions',
+        'issue_reports',
         'review_replies',
         'review_reactions',
         'review_votes',

@@ -69,6 +69,24 @@ export const notifications = pgTable('notifications', {
   created_at: timestamp('created_at').notNull().defaultNow(),
 });
 
+export const ISSUE_REPORT_KINDS = ['incidente', 'conteudo', 'ideia'] as const;
+export const ISSUE_REPORT_STATUSES = ['aberto', 'fechado'] as const;
+
+export const issueReports = pgTable('issue_reports', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  kind: text('kind', { enum: ISSUE_REPORT_KINDS }).notNull(),
+  message: text('message').notNull(),
+  contact_email: text('contact_email'),
+  path: text('path').notNull(),
+  locale: text('locale').notNull(),
+  viewport: text('viewport').notNull(),
+  user_id: uuid('user_id').references(() => user.id, { onDelete: 'set null' }),
+  status: text('status', { enum: ISSUE_REPORT_STATUSES }).notNull().default('aberto'),
+  created_at: timestamp('created_at').notNull().defaultNow(),
+  closed_at: timestamp('closed_at'),
+  closed_by: uuid('closed_by').references(() => user.id, { onDelete: 'set null' }),
+});
+
 // Edit suggestions table
 export const editSuggestions = pgTable('edit_suggestions', {
   id: uuid('id').primaryKey().defaultRandom(),
