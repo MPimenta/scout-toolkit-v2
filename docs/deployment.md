@@ -1,687 +1,131 @@
-# Deployment Guide
+# Deployment
 
-## Overview
+Kit de Atividades runs locally on Docker Postgres and on Vercel with Neon. Chrome defaults to Portuguese; English is a header cookie (`kit-locale`), not `/pt` or `/en` URLs. Auth is eAEP/Orgo, not Google.
 
-This document outlines the complete deployment strategy for the Scout Activities Platform, from local development to production. The platform is designed to be deployed on Vercel with Neon PostgreSQL database and UploadThing for file storage. The application is built for Escoteiros de Portugal leaders. Chrome defaults to Portuguese; English is a header switcher (no `/pt` or `/en` URLs).
+The root [README](../README.md) has the short path. This page is the hosted checklist.
 
-## Architecture Overview
+## Environments
 
-### Production Stack
-- **Frontend & API:** Vercel (Next.js)
-- **Database:** Neon PostgreSQL
-- **File Storage:** UploadThing (S3 backend)
-- **Authentication:** Auth.js with eAEP/Orgo OAuth
-- **CDN:** Vercel Edge Network
-- **Monitoring:** Vercel Analytics + Custom monitoring
+| Environment | Database | Who sets env | Schema / seed |
+|---|---|---|---|
+| Local | Docker `scout_toolkit_dev` | `.env.local` | `npm run db:push` then `npm run db:seed` (or `npm run setup:db`) |
+| Vitest SQL | Docker `scout_toolkit_test` | hardcoded DSN in tests | `tests/setup.ts` — never Neon |
+| Preview | Dedicated Neon | Vercel **Preview** scope | `scripts/ensure-hosted-db.mjs` on Vercel builds |
+| Production | A **second** Neon | Vercel **Production** scope | Same build hook; not fully configured yet |
 
-### Development Stack
-- **Local Database:** PostgreSQL via Docker
-- **Local Development:** Next.js dev server
-- **File Storage:** UploadThing development environment
-- **Testing:** PostgreSQL test database with dedicated test user and schema isolation
+Do **not** add a `.env.preview` file. Next.js never loads it. Do not point `npm run test:run` or Playwright at Neon.
 
-## Environment Setup
+## Required environment variables
 
-### Environment Variables
+Copy names from `.env.example`. Values for hosted deploys stay in the Vercel dashboard.
 
-#### Required Variables
 ```env
-# Database
-DATABASE_URL=postgresql://user:password@host:port/database
-
-# Authentication
-NEXTAUTH_SECRET=your-secret-key-here
-NEXTAUTH_URL=http://localhost:3000
-
-# Google OAuth
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-
-# File Upload
-UPLOADTHING_SECRET=your-uploadthing-secret
-UPLOADTHING_APP_ID=your-uploadthing-app-id
-
-# App Configuration
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+DATABASE_URL=
+NEXTAUTH_SECRET=
+AUTH_SECRET=                    # same value as NEXTAUTH_SECRET
+NEXTAUTH_URL=                   # local only: http://localhost:3000
+AUTH_TRUST_HOST=true            # required on Preview (unique hosts)
+ORGO_ISSUER=https://eaep.escoteiros.pt
+ORGO_CLIENT_ID=
+ORGO_CLIENT_SECRET=
+ORGO_API_TOKEN=                 # optional; program → eAEP event
+ADMIN_EMAILS=                   # comma-separated; promote on Orgo sign-in
+UPLOADTHING_SECRET=
+UPLOADTHING_APP_ID=
+NEXT_PUBLIC_APP_URL=
 NEXT_PUBLIC_UPLOADTHING_URL=https://uploadthing.com
 ```
 
-#### Optional Variables
-```env
-# Email (for notifications)
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your-email@gmail.com
-SMTP_PASS=your-app-password
+There is no Google OAuth. `ENABLE_USER_GENERATED_CONTENT` / `ENABLE_EDIT_SUGGESTIONS` feature flags are not used — those features are always on.
 
-# Analytics
-NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+`ORGO_API_TOKEN` is minted in eAEP: **Settings → Developers → API Tokens** (at least `HR_LOCAL`). It never goes to the browser.
 
-# Monitoring
-SENTRY_DSN=https://your-sentry-dsn
+## Local
 
-# Feature Flags
-ENABLE_USER_GENERATED_CONTENT=false
-ENABLE_EDIT_SUGGESTIONS=false
-
-# Orgo write token (program → eAEP event). Server only. Never send to the browser.
-ORGO_API_TOKEN=
-```
-
-### Orgo API token (create event from a program)
-
-Mint a token in eAEP/Orgo: **Settings → Developers → API Tokens** (API module on). The token needs at least `HR_LOCAL`. Put it in `ORGO_API_TOKEN` on the server (Vercel env or `.env.local`). The browser never receives it. Events are created as the token owner; the signed-in leader still picks only units they may create events for.
-
-## Preview environment (Vercel + Neon)
-
-Pull requests get a Vercel Preview URL. Preview uses its **own Neon database**, not `scout_toolkit_dev`, not `scout_toolkit_test`, and not production.
-
-Set env vars in the Vercel dashboard on the **Preview** scope. Do **not** add a `.env.preview` file — Next.js never loads it. Required Preview names (values stay in Vercel):
-
-- `DATABASE_URL` (Preview Neon)
-- `NEXTAUTH_SECRET` / Auth secret
-- `NEXTAUTH_URL` (the Preview host) and `trustHost` as required by Auth.js
-- `ORGO_ISSUER`, `ORGO_CLIENT_ID`, `ORGO_CLIENT_SECRET`
-- `ADMIN_EMAILS`
-- UploadThing keys
-- `ORGO_API_TOKEN` only if you want program → eAEP create on Preview
-
-Register the Preview callback URL(s) on the Orgo OAuth app (same app or a Preview app). `/api/e2e/session` returns 404 on Preview because `NODE_ENV` is `production`. CI stays on workflow Postgres — do not add write tests against the Preview URL.
-
-Apply schema to the Preview Neon database on deploy (`drizzle-kit push` or migrate in the deploy command).
-
-Epic 16 in `docs/planning.md` tracks this. Hosting tasks (create the Vercel project, provision Neon, register Orgo redirects) are done in those dashboards, not in this repo.
-
-### Environment Files
-
-#### Development (.env.local)
-```env
-# Copy from .env.example and fill in your values
-DATABASE_URL=postgresql://postgres:password@localhost:5432/scout_toolkit_dev
-NEXTAUTH_SECRET=dev-secret-key
-NEXTAUTH_URL=http://localhost:3000
-GOOGLE_CLIENT_ID=your-dev-google-client-id
-GOOGLE_CLIENT_SECRET=your-dev-google-client-secret
-UPLOADTHING_SECRET=your-dev-uploadthing-secret
-UPLOADTHING_APP_ID=your-dev-uploadthing-app-id
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-```
-
-#### Production (.env.production)
-```env
-# Set these in Vercel dashboard
-DATABASE_URL=postgresql://user:password@host:port/database
-NEXTAUTH_SECRET=your-production-secret-key
-NEXTAUTH_URL=https://your-domain.com
-GOOGLE_CLIENT_ID=your-production-google-client-id
-GOOGLE_CLIENT_SECRET=your-production-google-client-secret
-UPLOADTHING_SECRET=your-production-uploadthing-secret
-UPLOADTHING_APP_ID=your-production-uploadthing-app-id
-NEXT_PUBLIC_APP_URL=https://your-domain.com
-```
-
-## Local Development Setup
-
-### Prerequisites
-- Node.js 18+ 
-- pnpm (recommended) or npm
-- Docker (for local PostgreSQL)
-- Git
-
-### Step 1: Clone and Install
 ```bash
-git clone https://github.com/your-org/scout-toolkit-v2.git
-cd scout-toolkit-v2
-pnpm install
+npm install
+npm run setup:db
 ```
 
-### Step 2: Database Setup
-```bash
-# Start PostgreSQL with Docker
-docker run --name scout-postgres \
-  -e POSTGRES_DB=scout_toolkit_dev \
-  -e POSTGRES_USER=postgres \
-  -e POSTGRES_PASSWORD=password \
-  -p 5432:5432 \
-  -d postgres:15
+That creates `.env.local` if missing, starts Compose, runs `drizzle-kit push`, and seeds. Then set Orgo keys and `ADMIN_EMAILS` in `.env.local`.
 
-# Wait for database to be ready
-sleep 10
+Register on the **local** Orgo app:
 
-# Run migrations
-pnpm db:migrate
-
-# Seed database
-pnpm db:seed
-```
-
-**Note:** The testing infrastructure uses a separate test database (`scout_toolkit_test`) with dedicated user credentials for isolated testing.
-
-### Step 3: Environment Configuration
-```bash
-# Copy environment template
-cp .env.example .env.local
-
-# Edit .env.local with your values
-# Get Google OAuth credentials from Google Cloud Console
-# Get UploadThing credentials from uploadthing.com
-```
-
-### Step 4: Start Development Server
-```bash
-pnpm dev
-```
-
-The application will be available at `http://localhost:3000`
-
-## Database Setup
-
-### Neon PostgreSQL (Production)
-
-#### 1. Create Neon Account
-1. Go to [neon.tech](https://neon.tech)
-2. Sign up and create a new project
-3. Note your connection string
-
-#### 2. Configure Database
-```bash
-# Set production database URL
-export DATABASE_URL="postgresql://user:password@host:port/database"
-
-# Run migrations
-pnpm db:migrate
-
-# Seed production data
-pnpm db:seed:production
-```
-
-#### 3. Database Configuration
-```sql
--- Enable required extensions
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS "pg_trgm";
-
--- Create indexes for performance
-CREATE INDEX CONCURRENTLY idx_activities_fts ON activities 
-USING gin(to_tsvector('portuguese', name->>'pt' || ' ' || description->>'pt' || ' ' || materials->>'pt'));
-
-CREATE INDEX CONCURRENTLY idx_activities_name_trgm ON activities 
-USING gin((name->>'pt') gin_trgm_ops);
-```
-
-### Local PostgreSQL (Development)
-
-#### Docker Compose Setup
-```yaml
-# docker-compose.yml
-version: '3.8'
-services:
-  postgres:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: scout_toolkit_dev
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:
+```text
+http://localhost:3000/api/auth/callback/orgo
 ```
 
 ```bash
-# Start database
-docker-compose up -d
-
-# Run migrations
-pnpm db:migrate
-
-# Seed data
-pnpm db:seed
+npm run playwright:install
+npm run dev
 ```
 
-## File Storage Setup
+Schema is **push**, not a migrations folder. `npm run db:migrate` is not the supported local path. After `npm run db:reset`, run `db:push` and `db:seed` again.
 
-### UploadThing Configuration
+`db:seed` writes taxonomies (SDGs, activity types, educational areas, group sizes, effort, locations, age groups) and demo activities. It uses whatever `DATABASE_URL` is in the environment. Locally that must be `scout_toolkit_dev`.
 
-#### 1. Create UploadThing Account
-1. Go to [uploadthing.com](https://uploadthing.com)
-2. Create account and new project
-3. Get API keys
+## Preview (Vercel + Neon)
 
-#### 2. Configure UploadThing
-```typescript
-// lib/uploadthing.ts
-import { generateComponents } from "@uploadthing/react";
-import { generateReactHelpers } from "@uploadthing/react/hooks";
-import type { OurFileRouter } from "@/app/api/uploadthing/core";
+1. Create a Neon project used only for Preview. Copy the **pooled** connection string.
+2. In Vercel → Settings → Environment Variables, add the table above on the **Preview** scope only.
+3. Do **not** set `NEXTAUTH_URL` on Preview. Set `AUTH_TRUST_HOST=true`.
+4. Create a **Preview** Orgo OAuth app (one Redirect URL per app). Callback:
 
-export const { UploadButton, UploadDropzone, Uploader } = generateComponents<OurFileRouter>();
-export const { useUploadThing, uploadFiles } = generateReactHelpers<OurFileRouter>();
+```text
+https://<preview-host>/api/auth/callback/orgo
 ```
 
-#### 3. Environment Variables
-```env
-UPLOADTHING_SECRET=your-secret-key
-UPLOADTHING_APP_ID=your-app-id
-```
+Prefer a stable alias (for example the git-branch host) over adding every unique `*.vercel.app` deployment URL.
 
-## Authentication Setup
+5. Redeploy after changing env vars. `ADMIN_EMAILS` is read at sign-in; an existing deploy keeps the old value until you redeploy, then the user must **sign out and sign in**.
 
-### Google OAuth Configuration
+On Vercel, `npm run build` runs `scripts/ensure-hosted-db.mjs`:
 
-#### 1. Google Cloud Console
-1. Go to [Google Cloud Console](https://console.cloud.google.com)
-2. Create new project or select existing
-3. Enable Google+ API
-4. Create OAuth 2.0 credentials
+- `drizzle-kit push --force` against that environment’s `DATABASE_URL`
+- `npm run db:seed` only if `activities` is empty
 
-#### 2. Configure OAuth
-```typescript
-// lib/auth.ts
-import { NextAuthOptions } from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
+A local `npm run build` skips that hook (`VERCEL` is unset). `/api/e2e/session` returns 404 on Preview because `NODE_ENV` is `production`.
 
-export const authOptions: NextAuthOptions = {
-  providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-  ],
-  callbacks: {
-    async signIn({ user, account }) {
-      // Validate email domain
-      if (!user.email?.endsWith('@escoteiros.pt')) {
-        return false;
-      }
-      return true;
-    },
-  },
-};
-```
+This project’s **Production Branch is still `master`**. Pushing `master` creates a Production deploy and can steal the `git-master` Preview alias. Change **Settings → Git → Production Branch** to `main` before treating `master` as Preview-only.
 
-#### 3. Environment Variables
-```env
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-NEXTAUTH_SECRET=your-secret-key
-NEXTAUTH_URL=http://localhost:3000
-```
+## Production
 
-## Vercel Deployment
+Not fully set up. When you launch it:
 
-### 1. Connect Repository
-1. Go to [vercel.com](https://vercel.com)
-2. Import your GitHub repository
-3. Configure build settings
+1. A second Neon project (not Preview, not Docker).
+2. The same variable names, scoped to **Production**.
+3. A third Orgo app whose Redirect URL is `https://<production-host>/api/auth/callback/orgo`.
+4. New `NEXTAUTH_SECRET` (do not reuse the local or Preview secret).
+5. Redeploy Production after saving vars.
 
-### 2. Environment Variables
-Set all production environment variables in Vercel dashboard:
-- `DATABASE_URL`
-- `NEXTAUTH_SECRET`
-- `NEXTAUTH_URL`
-- `GOOGLE_CLIENT_ID`
-- `GOOGLE_CLIENT_SECRET`
-- `UPLOADTHING_SECRET`
-- `UPLOADTHING_APP_ID`
-- `NEXT_PUBLIC_APP_URL`
+There is no `db:seed:production` script. The first Production build seeds if the catalogue is empty. Do not run seed against a database that already has real activities unless you intend to insert the demo set again.
 
-### 3. Build Configuration
-```json
-// vercel.json
-{
-  "buildCommand": "pnpm build",
-  "installCommand": "pnpm install",
-  "framework": "nextjs",
-  "functions": {
-    "app/api/programs/[id]/export/pdf/route.ts": {
-      "maxDuration": 30
-    }
-  }
-}
-```
+## Orgo checklist
 
-### 4. Deploy
-```bash
-# Deploy to Vercel
-vercel --prod
+| App | Redirect URL |
+|---|---|
+| Local | `http://localhost:3000/api/auth/callback/orgo` |
+| Preview | `https://<preview-host>/api/auth/callback/orgo` |
+| Production | `https://<production-host>/api/auth/callback/orgo` |
 
-# Or push to main branch for automatic deployment
-git push origin main
-```
+Same `ORGO_ISSUER`. Different client id and secret per app.
 
-## CI/CD Pipeline
+## CI
 
-### GitHub Actions Workflow
-```yaml
-# .github/workflows/deploy.yml
-name: Deploy to Production
+GitHub Actions (`.github/workflows/test.yml`) runs on `main` and `master`: workflow Postgres, `drizzle-kit push`, `npm run test:run`, Playwright Chromium. It does not deploy and does not write to Preview or Production.
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+## Health
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          cache: 'pnpm'
-      
-      - run: pnpm install
-      - run: pnpm lint
-      - run: pnpm test
-      - run: pnpm build
-
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v3
-      - uses: amondnet/vercel-action@v20
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
-```
-
-### Required Secrets
-- `VERCEL_TOKEN` - Vercel API token
-- `VERCEL_ORG_ID` - Vercel organization ID
-- `VERCEL_PROJECT_ID` - Vercel project ID
-
-## Monitoring & Analytics
-
-### Vercel Analytics
-```typescript
-// app/layout.tsx
-import { Analytics } from '@vercel/analytics/react';
-
-export default function RootLayout({ children }) {
-  return (
-    <html>
-      <body>
-        {children}
-        <Analytics />
-      </body>
-    </html>
-  );
-}
-```
-
-### Custom Monitoring
-```typescript
-// lib/monitoring.ts
-export function trackEvent(event: string, properties?: Record<string, any>) {
-  // Send to your analytics service
-  console.log('Event:', event, properties);
-}
-
-export function trackError(error: Error, context?: Record<string, any>) {
-  // Send to error tracking service
-  console.error('Error:', error, context);
-}
-```
-
-### Health Checks
-```typescript
-// app/api/health/route.ts
-import { NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-
-export async function GET() {
-  try {
-    // Check database connection
-    await db.execute(sql`SELECT 1`);
-    
-    return NextResponse.json({
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-      database: 'connected'
-    });
-  } catch (error) {
-    return NextResponse.json({
-      status: 'unhealthy',
-      timestamp: new Date().toISOString(),
-      database: 'disconnected',
-      error: error.message
-    }, { status: 500 });
-  }
-}
-```
-
-## Performance Optimization
-
-### Image Optimization
-```typescript
-// next.config.js
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  images: {
-    domains: ['uploadthing.com', 'your-s3-bucket.amazonaws.com'],
-    formats: ['image/webp', 'image/avif'],
-  },
-  experimental: {
-    optimizeCss: true,
-  },
-};
-
-module.exports = nextConfig;
-```
-
-### Database Optimization
-```sql
--- Connection pooling
--- Use PgBouncer for connection management
--- Configure in neon.tech dashboard
-
--- Query optimization
-EXPLAIN ANALYZE SELECT * FROM activities WHERE group_size = 'medium';
-
--- Index optimization
-CREATE INDEX CONCURRENTLY idx_activities_composite 
-ON activities(group_size, effort_level, location);
-```
-
-### Caching Strategy
-```typescript
-// lib/cache.ts
-import { unstable_cache } from 'next/cache';
-
-export const getCachedActivities = unstable_cache(
-  async (filters: ActivityFilters) => {
-    return await getActivities(filters);
-  },
-  ['activities'],
-  {
-    revalidate: 300, // 5 minutes
-    tags: ['activities']
-  }
-);
-```
-
-## Security Configuration
-
-### Security Headers
-```typescript
-// next.config.js
-const securityHeaders = [
-  {
-    key: 'X-DNS-Prefetch-Control',
-    value: 'on'
-  },
-  {
-    key: 'Strict-Transport-Security',
-    value: 'max-age=63072000; includeSubDomains; preload'
-  },
-  {
-    key: 'X-XSS-Protection',
-    value: '1; mode=block'
-  },
-  {
-    key: 'X-Frame-Options',
-    value: 'DENY'
-  },
-  {
-    key: 'X-Content-Type-Options',
-    value: 'nosniff'
-  },
-  {
-    key: 'Referrer-Policy',
-    value: 'origin-when-cross-origin'
-  }
-];
-
-module.exports = {
-  async headers() {
-    return [
-      {
-        source: '/(.*)',
-        headers: securityHeaders,
-      },
-    ];
-  },
-};
-```
-
-### Rate Limiting
-```typescript
-// lib/rate-limit.ts
-import { Ratelimit } from '@upstash/ratelimit';
-import { Redis } from '@upstash/redis';
-
-const ratelimit = new Ratelimit({
-  redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(10, '10 s'),
-});
-
-export async function rateLimit(identifier: string) {
-  const { success } = await ratelimit.limit(identifier);
-  return success;
-}
-```
-
-## Backup Strategy
-
-### Database Backups
-```bash
-# Automated backups with Neon
-# Neon provides automatic daily backups
-# Manual backup command
-pg_dump $DATABASE_URL > backup_$(date +%Y%m%d_%H%M%S).sql
-
-# Restore backup
-psql $DATABASE_URL < backup_20240115_100000.sql
-```
-
-### File Storage Backups
-- UploadThing automatically backs up to S3
-- Configure S3 lifecycle policies for cost optimization
-- Cross-region replication for disaster recovery
+`GET /api/health` reports process liveness. It is not a substitute for checking Neon or Orgo.
 
 ## Troubleshooting
 
-### Common Issues
+**Not admin on Preview** — Confirm `ADMIN_EMAILS` on the Preview scope, redeploy so the running build sees it, then sign out and sign in on the Preview host. Promotion does not run on refresh. Preview uses its own Neon; changing a leftover local Neon URL does not help.
 
-#### Database Connection Issues
-```bash
-# Check database connection
-psql $DATABASE_URL -c "SELECT 1"
+**Vercel login page** — Deployment Protection, not Kit. Continue with Vercel, then use **Entrar com o eAEP**.
 
-# Check connection pool
-SELECT * FROM pg_stat_activity WHERE datname = 'scout_toolkit';
-```
+**Orgo callback error** — The Redirect URL on that Orgo app must match the host you opened, path `/api/auth/callback/orgo`.
 
-#### Build Failures
-```bash
-# Clear Next.js cache
-rm -rf .next
-pnpm build
+**Empty catalogue on a new Preview** — The build seeds only when `activities` is empty. If push failed, check the Vercel build log for `ensure-hosted-db`.
 
-# Check for missing dependencies
-pnpm install --frozen-lockfile
-```
-
-#### Authentication Issues
-```bash
-# Check environment variables
-echo $NEXTAUTH_SECRET
-echo $GOOGLE_CLIENT_ID
-
-# Test OAuth flow
-curl -X POST http://localhost:3000/api/auth/signin/google
-```
-
-### Performance Issues
-```bash
-# Check bundle size
-pnpm build
-# Look for large chunks in .next/static/chunks/
-
-# Check database performance
-EXPLAIN ANALYZE SELECT * FROM activities WHERE search_vector @@ plainto_tsquery('portuguese', 'game');
-```
-
-### Monitoring Commands
-```bash
-# Check application health
-curl https://your-domain.com/api/health
-
-# Check database status
-curl https://your-domain.com/api/health/database
-
-# Monitor logs
-vercel logs --follow
-```
-
-## Scaling Considerations
-
-### Horizontal Scaling
-- Vercel automatically scales based on traffic
-- Database read replicas for search-heavy workloads
-- CDN for static assets
-
-### Vertical Scaling
-- Upgrade Neon database plan for more resources
-- Optimize database queries and indexes
-- Implement caching strategies
-
-### Cost Optimization
-- Monitor Vercel usage and optimize functions
-- Use Neon's serverless scaling
-- Implement proper caching to reduce database calls
-- Optimize image sizes and formats
-
-## Disaster Recovery
-
-### Recovery Procedures
-1. **Database Recovery**
-   - Restore from Neon backup
-   - Verify data integrity
-   - Update application if needed
-
-2. **Application Recovery**
-   - Redeploy from Git repository
-   - Verify environment variables
-   - Test critical functionality
-
-3. **File Recovery**
-   - Restore from S3 backup
-   - Update file references in database
-   - Verify file accessibility
-
-### Business Continuity
-- Maintain backup deployment environment
-- Document recovery procedures
-- Regular disaster recovery testing
-- Monitor system health continuously
+**PDF export fails locally** — `npm run playwright:install` (this repo’s Playwright, not a global CLI).

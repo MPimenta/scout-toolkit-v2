@@ -18,6 +18,7 @@
     "test:e2e:headed": "playwright test --headed",
     "playwright:install": "node node_modules/playwright/cli.js install chromium",
     "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
     "db:seed": "tsx drizzle/seeds/index.ts",
     "db:studio": "drizzle-kit studio",

@@ -1,173 +1,194 @@
-# Scout Activities Platform 🏕️
+# Kit de Atividades
 
-A modern web platform for Portuguese scout leaders to browse activities, build programs, and manage content. Built with Next.js 15, TypeScript, and PostgreSQL.
+Web app for Escoteiros de Portugal leaders: browse activities, build session programs, and manage catalogue content. Built with Next.js 15, TypeScript, and PostgreSQL.
+
+The product name stays **Kit de Atividades**. Chrome defaults to Portuguese; English is a header switcher (cookie `kit-locale`). There are no `/pt` or `/en` URLs.
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue?style=flat-square&logo=postgresql)](https://www.postgresql.org/)
 
-## ✨ Features
+## What is implemented
 
-- **🎯 Activity Browsing** - Search and filter activities by various criteria
-- **📋 Program Builder** - Create and manage event schedules with drag & drop
-- **🇵🇹 Portuguese Interface** - Complete interface in Portuguese
-- **📊 Export Functionality** - Export programs to Excel and PDF
-- **⭐ Rating System** - Rate and comment on activities
-- **👥 Public Programs** - Share and discover program templates
-- **🔐 Secure Authentication** - eAEP (Orgo) membership login
-- **👨‍💼 Admin Panel** - Complete content management system
+- **Activity catalogue** — search, filters, table view, and activity detail
+- **Program builder** — create and edit schedules (drag-and-drop on desktop; move up/down on phone)
+- **Public programs** — gallery of programs marked public, plus copy as a template
+- **Export** — program Excel (`.xlsx`) and PDF (Playwright Chromium)
+- **Ratings and discussion** — one review per user, votes, reactions, and replies
+- **Propose and suggest** — leaders can propose activities and suggest edits; admins approve
+- **Issue reports** — floating **Reportar** / **Report** on every page (guests allowed)
+- **eAEP login** — Orgo OAuth (`Entrar com o eAEP`), not Google
+- **Admin** — dashboard, activities, taxonomies, users, suggestion queue, issue-report queue
+- **View as member** — admins can hide admin chrome without changing their stored role
+- **Orgo event** — owner can create the program as an eAEP event (`ORGO_API_TOKEN`, server-only)
+- **Mobile layout** — hamburger, stacked catalogue, phone-sized builder
+- **Hosted Preview** — Vercel Preview with its own Neon database; schema and first seed run on deploy
 
-## 🚀 Quick Start
+Not implemented (do not treat these as shipped):
+
+- Admin Excel **import** of activities (OpenSpec only)
+- Production Neon + Production Orgo app (Preview is the hosted environment today)
+- Email / SMTP notifications (in-app only)
+
+Working specs live in `openspec/specs/`. The epic log is `docs/planning.md`.
+
+## Quick start (local)
 
 ### Prerequisites
 
-- Node.js 18+ 
-- Docker and Docker Compose
-- eAEP / Orgo OAuth credentials (for authentication)
-- UploadThing account (for file uploads)
-- Playwright Chromium (for PDF export: `npm run playwright:install`)
+- Node.js 20
+- Docker Desktop (Compose)
+- An eAEP / Orgo OAuth app (for sign-in)
+- UploadThing keys (only needed to upload images)
+- Playwright Chromium for PDF export: `npm run playwright:install`
 
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-org/scout-toolkit-v2.git
-   cd scout-toolkit-v2
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set up database and environment (Automated)**
-   ```bash
-   npm run setup:db
-   ```
-   
-   This will:
-   - Create `.env.local` with default configuration
-   - Start PostgreSQL container with Docker
-   - Run database migrations
-   - Seed initial data (SDGs, educational areas, demo activities)
-
-4. **Configure authentication and file upload**
-   
-   Edit `.env.local` and update these values:
-   ```env
-   # Get these from the eAEP / Orgo tenant
-   ORGO_ISSUER="https://eaep.escoteiros.pt"
-   ORGO_CLIENT_ID="your-orgo-client-id"
-   ORGO_CLIENT_SECRET="your-orgo-client-secret"
-   
-   # Get these from uploadthing.com
-   UPLOADTHING_SECRET="your-uploadthing-secret"
-   UPLOADTHING_APP_ID="your-uploadthing-app-id"
-   ```
-
-5. **Start the development server**
-   ```bash
-   npm run dev
-   ```
-
-6. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
-
-### Manual Database Setup (Alternative)
-
-If you prefer manual setup:
+### Install and seed
 
 ```bash
-# Create environment file
-npm run setup:env
+git clone https://github.com/MPimenta/scout-toolkit-v2.git
+cd scout-toolkit-v2
+npm install
+npm run setup:db
+```
 
-# Start database
+`setup:db` will:
+
+1. Create `.env.local` if it is missing (defaults for Docker Postgres)
+2. Start Compose (`scout_toolkit_dev` + `scout_toolkit_test`)
+3. Apply the Drizzle schema with `drizzle-kit push`
+4. Seed taxonomies and demo activities (`npm run db:seed`)
+
+Then edit `.env.local`:
+
+```env
+ORGO_ISSUER=https://eaep.escoteiros.pt
+ORGO_CLIENT_ID=your-orgo-client-id
+ORGO_CLIENT_SECRET=your-orgo-client-secret
+ADMIN_EMAILS=you@escoteiros.pt
+```
+
+Register this exact Orgo Redirect URL on the **local** OAuth app:
+
+```text
+http://localhost:3000/api/auth/callback/orgo
+```
+
+Orgo allows **one Redirect URL per app**. Local, Preview, and Production each need their own app (same issuer, different client id/secret).
+
+```bash
+npm run playwright:install
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000). Sign in once with eAEP; `ADMIN_EMAILS` promotes that account to admin.
+
+### Manual database commands
+
+Schema is applied with **push**, not a migrations folder. `npm run db:migrate` is not the local path.
+
+```bash
+npm run setup:env          # create .env.local if missing
+npm run db:start           # docker compose up -d
+npm run db:push            # drizzle-kit push
+npm run db:seed            # taxonomies + demo activities
+npm run db:studio          # Drizzle Studio
+npm run db:stop
+npm run db:reset           # wipe the Docker volume, then start again (re-run db:push + db:seed)
+```
+
+`db:seed` reads `DATABASE_URL` from `.env.local`. Point it only at `scout_toolkit_dev` locally. Never seed `scout_toolkit_test` this way, and never point `npm run test:run` at Neon.
+
+## Deploying (Vercel + Neon)
+
+There is no `.env.preview` file. Next.js never loads one. Hosted values live in the Vercel dashboard.
+
+`npm run build` on Vercel runs `scripts/ensure-hosted-db.mjs`: `drizzle-kit push --force`, then `db:seed` **only if** the `activities` table is empty. A local `npm run build` skips that (no `VERCEL` env).
+
+### Preview
+
+1. Create a Neon project used **only** for Preview (pooled URL).
+2. In Vercel, set these on the **Preview** scope:
+
+| Name | Notes |
+|---|---|
+| `DATABASE_URL` | Preview Neon, pooled |
+| `NEXTAUTH_SECRET` / `AUTH_SECRET` | Same generated secret |
+| `AUTH_TRUST_HOST` | `true` — do **not** set `NEXTAUTH_URL` (each Preview host differs) |
+| `ORGO_ISSUER` | `https://eaep.escoteiros.pt` |
+| `ORGO_CLIENT_ID` / `ORGO_CLIENT_SECRET` | **Preview** Orgo app |
+| `ADMIN_EMAILS` | Comma-separated eAEP emails to promote on sign-in |
+| `UPLOADTHING_SECRET` / `UPLOADTHING_APP_ID` | Image uploads |
+| `ORGO_API_TOKEN` | Optional; program → eAEP event |
+
+3. Register the Preview callback on that Orgo app:
+
+```text
+https://<preview-host>/api/auth/callback/orgo
+```
+
+A stable host such as `https://scout-toolkit-v2-git-master-aep5.vercel.app` is easier than adding a new callback for every unique `*.vercel.app` URL.
+
+4. Redeploy after changing env vars. Promotion runs on the **next Orgo sign-in**, not on a page refresh.
+
+This Vercel project’s **Production Branch is still `master`**. A `git push` to `master` creates a Production deploy. Preview and Production must not share Neon or Orgo apps.
+
+### Production (not fully configured yet)
+
+Production needs its own Neon, its own Orgo app, and the same variable names scoped to **Production**. Do not reuse Preview `DATABASE_URL`. After the first Production deploy, seed only if the catalogue is empty (the Vercel build already does that).
+
+There is no `db:seed:production` script.
+
+## Testing
+
+See [docs/testing.md](docs/testing.md). Short version:
+
+```bash
 npm run db:start
-
-# Run migrations
-npm run db:migrate
-
-# Seed data
-npm run db:seed
+npm run test:run           # unit + SQL-integration; fails if scout_toolkit_test is down
+npx playwright test        # default: Chromium (+ Mobile Chrome when you touch layout)
 ```
 
-## 📚 Documentation
+SQL-integration tests use only `postgresql://test_user:test_password@localhost:5432/scout_toolkit_test`. CI uses workflow Postgres (`.github/workflows/test.yml`). `/api/e2e/session` is 404 on Preview and Production.
 
-- **[Architecture Guide](docs/architecture.md)** - Technical decisions and system design
-- **[API Documentation](docs/api.md)** - Complete API reference with OpenAPI/Swagger
-- **[Development Planning](docs/planning.md)** - Project roadmap and task breakdown
-- **[Deployment Guide](docs/deployment.md)** - Production deployment instructions
+## Main routes
 
-## 🛠️ Tech Stack
+| Path | Who |
+|---|---|
+| `/` → `/home` | Everyone |
+| `/activities`, `/activities/[id]` | Everyone |
+| `/atividades/propor`, `/atividades/minhas` | Signed-in leaders |
+| `/programs`, `/programs/[id]` | Owner (public programs also in the gallery) |
+| `/programs/public` | Everyone |
+| `/admin`, `/admin/atividades`, `/admin/taxonomias`, `/admin/utilizadores`, `/admin/sugestoes`, `/admin/reportes` | Effective admin |
+| `/auth/signin` | Guests |
+| `/api/docs` | OpenAPI / Swagger |
 
-- **Frontend:** Next.js 15, TypeScript, Tailwind CSS, shadcn/ui
-- **Backend:** PostgreSQL, Drizzle ORM, Auth.js
-- **Development:** ESLint, Prettier, Vitest, Playwright, OpenAPI/Swagger
-
-## 🧪 Testing
-
-```bash
-npm run playwright:install  # Download Chromium for PDF export (this project's Playwright version)
-npm run test                # Unit and integration tests
-npm run test:e2e            # E2E tests
-npm run test:coverage       # Coverage report
-```
-
-**Testing Infrastructure:**
-- **PostgreSQL-based testing** - All tests use the same database technology as production
-- **Test database isolation** - Dedicated test database with automatic cleanup between tests
-- **Real database operations** - Integration tests perform actual database queries and mutations
-- **Schema consistency** - Test schema matches production schema exactly
-
-## 📦 Available Scripts
+## Scripts
 
 | Script | Description |
-|--------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run start` | Start production server |
-| `npm run lint` | Run ESLint |
-| `npm run format` | Format code with Prettier |
-| `npm run setup:db` | Complete database setup (Docker + migrations + seed) |
-| `npm run setup:env` | Create .env.local with default configuration |
-| `npm run db:start` | Start PostgreSQL container |
-| `npm run db:stop` | Stop PostgreSQL container |
-| `npm run db:reset` | Reset database (delete data and restart) |
-| `npm run db:migrate` | Run database migrations |
-| `npm run db:seed` | Seed database with initial data |
-| `npm run db:studio` | Open Drizzle Studio (database GUI) |
-| `npm run playwright:install` | Install this project's Playwright Chromium for PDF export |
+|---|---|
+| `npm run dev` | Next.js dev server (Turbopack) |
+| `npm run build` | Production build; on Vercel also push schema and seed if empty |
+| `npm run start` | Serve the production build |
+| `npm run lint` / `npm run format` | ESLint / Prettier |
+| `npm run setup:db` | Docker + schema push + seed |
+| `npm run db:push` | Apply Drizzle schema to `DATABASE_URL` |
+| `npm run db:seed` | Seed taxonomies and demo activities |
+| `npm run playwright:install` | This project’s Chromium (PDF + Playwright) |
 
-## 🌍 Interface Language
+## Documentation
 
-- **Portuguese:** Complete interface in Portuguese
-- **URL Structure:** Direct routes without locale prefixes
-  - `/` - Homepage
-  - `/activities` - Activities list
-  - `/programs` - Programs list
-  - `/admin/*` - Admin area
+- [Deployment](docs/deployment.md) — env names, Preview vs Production, Orgo callbacks
+- [Testing](docs/testing.md) — unit / SQL-integration / e2e
+- [Architecture](docs/architecture.md)
+- [API](docs/api.md) — also `/api/docs` while the app is running
+- [Planning](docs/planning.md) — epic log (OpenSpec is the working spec)
+- [Brand](docs/brand-guidelines.md)
 
-## 🔐 Authentication
+## Stack
 
-- Google OAuth with `@escoteiros.pt` domain restriction
-- User and Admin roles with database storage
+Next.js 15, React 19, TypeScript, Tailwind + shadcn/ui, Drizzle ORM, Auth.js, TanStack Query, Playwright, Vitest.
 
-## 🚀 Deployment
+## License
 
-Designed for Vercel deployment with Neon PostgreSQL and UploadThing. See [Deployment Guide](docs/deployment.md) for details.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Open a Pull Request
-
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) file for details.
-
----
-
-**Built with ❤️ for the Portuguese Scout community**
+No license file is in the repository yet.

@@ -9,11 +9,16 @@ DATABASE_URL=postgresql://postgres:password@localhost:5432/scout_toolkit_dev
 # Authentication
 NEXTAUTH_SECRET=dev-secret-key-change-in-production
 NEXTAUTH_URL=http://localhost:3000
+AUTH_TRUST_HOST=true
 
 # Orgo OAuth (Development)
 ORGO_ISSUER=https://eaep.escoteiros.pt
 ORGO_CLIENT_ID=your-orgo-client-id
 ORGO_CLIENT_SECRET=your-orgo-client-secret
+ORGO_API_TOKEN=
+
+# First admin (comma-separated). Promotes matching Orgo emails on sign-in.
+ADMIN_EMAILS=
 
 # File Upload (Development)
 UPLOADTHING_SECRET=your-dev-uploadthing-secret
@@ -40,7 +45,7 @@ if (fs.existsSync(envPath)) {
 console.log('\n🚀 Next steps:');
 console.log('1. Update .env.local with your actual credentials');
 console.log('2. Run: docker-compose up -d');
-console.log('3. Run: npm run db:migrate');
+console.log('3. Run: npm run db:push');
 console.log('4. Run: npm run db:seed');
 console.log('5. Run: npm run dev');
 

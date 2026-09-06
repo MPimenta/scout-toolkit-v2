@@ -51,13 +51,13 @@ while (retries < maxRetries) {
   }
 }
 
-// Step 4: Run migrations
-console.log('\n🔄 Running database migrations...');
+// Step 4: Apply schema (this repo uses drizzle-kit push, not a migrations folder)
+console.log('\n🔄 Applying database schema...');
 try {
-  execSync('npm run db:migrate', { stdio: 'inherit' });
-  console.log('✅ Migrations completed');
+  execSync('npx drizzle-kit push --force', { stdio: 'inherit' });
+  console.log('✅ Schema applied');
 } catch (error) {
-  console.error('❌ Migration failed:', error.message);
+  console.error('❌ Schema apply failed:', error.message);
   process.exit(1);
 }
 
