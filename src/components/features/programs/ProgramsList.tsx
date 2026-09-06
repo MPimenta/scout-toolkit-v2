@@ -10,8 +10,10 @@ import { useProgramMutations } from '@/hooks/useProgramMutations';
 import { ProgramCard } from './ProgramCard';
 import { ProgramForm } from './ProgramForm';
 import { SignInButton } from '@/components/auth/SignInButton';
+import { useLocale } from '@/components/locale/LocaleProvider';
 
 export function ProgramsList() {
+  const { t } = useLocale();
   const { data: session, status } = useSession();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const { programs, loading, error, pagination, refetch } = usePrograms();
@@ -42,10 +44,9 @@ export function ProgramsList() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Criador de Programas</h1>
+          <h1 className="text-4xl font-bold mb-4">{t('programs.showcaseTitle')}</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Organize e planeie atividades escoteiras com ferramentas profissionais. 
-            Crie cronogramas detalhados, adicione atividades e gere programas completos.
+            {t('programs.showcaseLead')}
           </p>
         </div>
 
@@ -55,10 +56,10 @@ export function ProgramsList() {
             <div className="mx-auto w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
               <Calendar className="h-6 w-6 text-primary" />
             </div>
-            <CardTitle className="text-lg mb-2">Cronogramas Inteligentes</CardTitle>
+            <CardTitle className="text-lg mb-2">{t('programs.featSchedule')}</CardTitle>
             <CardContent className="p-0">
               <p className="text-muted-foreground">
-                Crie cronogramas detalhados com cálculo automático de tempos e organização visual clara.
+                {t('programs.featScheduleBody')}
               </p>
             </CardContent>
           </Card>
@@ -67,10 +68,10 @@ export function ProgramsList() {
             <div className="mx-auto w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
               <Users className="h-6 w-6 text-primary" />
             </div>
-            <CardTitle className="text-lg mb-2">Gestão de Atividades</CardTitle>
+            <CardTitle className="text-lg mb-2">{t('programs.featActivities')}</CardTitle>
             <CardContent className="p-0">
               <p className="text-muted-foreground">
-                Adicione atividades do catálogo ou crie blocos personalizados para o seu programa.
+                {t('programs.featActivitiesBody')}
               </p>
             </CardContent>
           </Card>
@@ -79,10 +80,10 @@ export function ProgramsList() {
             <div className="mx-auto w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
               <Target className="h-6 w-6 text-primary" />
             </div>
-            <CardTitle className="text-lg mb-2">Objetivos Educativos</CardTitle>
+            <CardTitle className="text-lg mb-2">{t('programs.featGoals')}</CardTitle>
             <CardContent className="p-0">
               <p className="text-muted-foreground">
-                Acompanhe objetivos educativos e ODS para cada programa criado.
+                {t('programs.featGoalsBody')}
               </p>
             </CardContent>
           </Card>
@@ -91,10 +92,10 @@ export function ProgramsList() {
             <div className="mx-auto w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
               <FileText className="h-6 w-6 text-primary" />
             </div>
-            <CardTitle className="text-lg mb-2">Exportação Profissional</CardTitle>
+            <CardTitle className="text-lg mb-2">{t('programs.featExport')}</CardTitle>
             <CardContent className="p-0">
               <p className="text-muted-foreground">
-                Exporte programas para PDF e Excel com formatação profissional.
+                {t('programs.featExportBody')}
               </p>
             </CardContent>
           </Card>
@@ -103,10 +104,10 @@ export function ProgramsList() {
             <div className="mx-auto w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
               <Download className="h-6 w-6 text-primary" />
             </div>
-            <CardTitle className="text-lg mb-2">Templates Reutilizáveis</CardTitle>
+            <CardTitle className="text-lg mb-2">{t('programs.featTemplates')}</CardTitle>
             <CardContent className="p-0">
               <p className="text-muted-foreground">
-                Guarde e reutilize programas como templates para futuras atividades.
+                {t('programs.featTemplatesBody')}
               </p>
             </CardContent>
           </Card>
@@ -115,10 +116,10 @@ export function ProgramsList() {
             <div className="mx-auto w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
               <Share2 className="h-6 w-6 text-primary" />
             </div>
-            <CardTitle className="text-lg mb-2">Partilha Colaborativa</CardTitle>
+            <CardTitle className="text-lg mb-2">{t('programs.featShare')}</CardTitle>
             <CardContent className="p-0">
               <p className="text-muted-foreground">
-                Partilhe programas com outros Dirigentes e colabore em projetos.
+                {t('programs.featShareBody')}
               </p>
             </CardContent>
           </Card>
@@ -128,11 +129,10 @@ export function ProgramsList() {
         <div className="text-center">
           <div className="bg-primary/5 border border-primary/20 rounded-lg p-8 mb-8">
             <h2 className="text-2xl font-semibold mb-4">
-              Comece a Criar Programas Profissionais
+              {t('programs.ctaTitle')}
             </h2>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Junte-se a outros Dirigentes escotistas que já estão a usar esta plataforma 
-              para criar programas de qualidade e organizar atividades de forma profissional.
+              {t('programs.ctaLead')}
             </p>
             <SignInButton />
           </div>
@@ -146,9 +146,9 @@ export function ProgramsList() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Meus Programas</h1>
+          <h1 className="text-3xl font-bold mb-2">{t('programs.mine')}</h1>
           <p className="text-muted-foreground">
-            Crie e organize programas personalizados para os seus escoteiros.
+            {t('programs.mineLead')}
           </p>
         </div>
         
@@ -157,7 +157,7 @@ export function ProgramsList() {
           className="mt-4 sm:mt-0"
         >
           <Plus className="h-4 w-4 mr-2" />
-          Novo Programa
+          {t('programs.new')}
         </Button>
       </div>
 
@@ -188,14 +188,14 @@ export function ProgramsList() {
           <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
             <Calendar className="h-8 w-8 text-muted-foreground" />
           </div>
-          <CardTitle className="text-xl mb-2">Ainda não tem programas</CardTitle>
+          <CardTitle className="text-xl mb-2">{t('programs.emptyTitle')}</CardTitle>
           <CardContent className="p-0">
             <p className="text-muted-foreground mb-4">
-              Crie o seu primeiro programa para começar a organizar atividades.
+              {t('programs.emptyLead')}
             </p>
             <Button onClick={() => setShowCreateForm(true)}>
               <Plus className="h-4 w-4 mr-2" />
-              Criar Primeiro Programa
+              {t('programs.createFirst')}
             </Button>
           </CardContent>
         </Card>
@@ -214,9 +214,11 @@ export function ProgramsList() {
           {pagination && pagination.total_pages > 1 && (
             <div className="mt-8 text-center">
               <p className="text-sm text-muted-foreground">
-                Mostrando {((pagination.page - 1) * pagination.limit) + 1} a{' '}
-                {Math.min(pagination.page * pagination.limit, pagination.total)} de{' '}
-                {pagination.total} programas
+                {t('programs.showing', {
+                  from: ((pagination.page - 1) * pagination.limit) + 1,
+                  to: Math.min(pagination.page * pagination.limit, pagination.total),
+                  total: pagination.total,
+                })}
               </p>
             </div>
           )}

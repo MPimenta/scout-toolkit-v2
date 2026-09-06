@@ -1,3 +1,5 @@
+import { NextResponse } from 'next/server';
+import { apiErrors } from '@/lib/errors';
 import { auth } from './config';
 
 export async function getSession() {
@@ -31,4 +33,15 @@ export function isAdmin(user: { role: string }) {
 
 export function isAuthenticated(user: { id: string } | null) {
   return !!user?.id;
+}
+
+export async function requireAdminApi() {
+  const session = await getSession();
+  if (!session?.user?.id) {
+    return { error: apiErrors.unauthorized('Autenticação necessária') as NextResponse };
+  }
+  if (session.user.role !== 'admin') {
+    return { error: apiErrors.forbidden('Acesso de administrador necessário') as NextResponse };
+  }
+  return { user: session.user };
 }

@@ -52,14 +52,15 @@ export function OrgoProvider(
 
       return {
         id: String(profile.sub),
-        name: name || undefined,
-        email: profile.email,
+        name: name || profile.email || 'Utilizador',
+        email: profile.email ?? '',
         image: profile.picture,
+        role: 'user' as const,
       };
     },
     style: {
       brandColor: '#1B3A6B',
     },
     ...options,
-  };
+  } as OAuthConfig<OrgoProfile>;
 }

@@ -105,6 +105,9 @@ export const apiErrors = {
   
   timeout: (message?: string) => 
     createApiErrorResponse(createError('TIMEOUT_ERROR', message)),
+
+  unavailable: (message?: string) =>
+    createApiErrorResponse(createError('INTERNAL_ERROR', message), 503),
 };
 
 /**

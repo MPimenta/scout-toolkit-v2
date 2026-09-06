@@ -6,6 +6,7 @@ import { withTestDatabase, createTestUser, createTestProgram, createTestActivity
 import { auth } from '@/lib/auth/config';
 import { user, programs, activities, programEntries } from '../../../drizzle/schema';
 import { eq } from 'drizzle-orm';
+import { requireLocalTestDatabase } from '../../helpers/local-test-db';
 
 // Mock the auth function directly in the test file
 vi.mock('@/lib/auth/config', () => ({
@@ -29,6 +30,7 @@ describe('Add to Program Integration Tests', () => {
   let testActivityId: string;
 
   beforeAll(async () => {
+    requireLocalTestDatabase();
     const setup = await withTestDatabase();
     db = setup.db;
     cleanup = setup.cleanup;
@@ -61,7 +63,7 @@ describe('Add to Program Integration Tests', () => {
   });
 
   afterAll(async () => {
-    await cleanup();
+    if (cleanup) await cleanup();
   });
 
   beforeEach(async () => {

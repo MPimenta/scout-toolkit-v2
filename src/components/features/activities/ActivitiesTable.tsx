@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useLocale } from '@/components/locale/LocaleProvider';
+import { enumLabel } from '@/lib/locale/labels';
 import {
   useReactTable,
   getCoreRowModel,
@@ -99,57 +101,6 @@ interface ActivitiesTableProps {
  * @param size - The group size value
  * @returns The display text for the group size
  */
-function getGroupSizeText(size: string): string {
-  const sizeMap = {
-    small: 'Pequeno (2-6)',
-    medium: 'Médio (7-15)',
-    large: 'Grande (16+)',
-  };
-  return sizeMap[size as keyof typeof sizeMap] || size;
-}
-
-/**
- * Helper function to get effort level display text
- * @param level - The effort level value
- * @returns The display text for the effort level
- */
-function getEffortLevelText(level: string): string {
-  const levelMap = {
-    low: 'Baixo',
-    medium: 'Médio',
-    high: 'Alto',
-  };
-  return levelMap[level as keyof typeof levelMap] || level;
-}
-
-/**
- * Helper function to get age group display text
- * @param ageGroup - The age group value
- * @returns The display text for the age group
- */
-function getAgeGroupText(ageGroup: string): string {
-  const ageMap = {
-    cub_scouts: 'Lobitos (6-10)',
-    scouts: 'Escoteiros (10-14)',
-    adventurers: 'Exploradores (14-17)',
-    rovers: 'Caminheiros (17-21)',
-    leaders: 'Dirigentes (21+)',
-  };
-  return ageMap[ageGroup as keyof typeof ageMap] || ageGroup;
-}
-
-/**
- * Helper function to get location display text
- * @param location - The location value
- * @returns The display text for the location
- */
-function getLocationText(location: string): string {
-  const locationMap = {
-    inside: 'Interior',
-    outside: 'Exterior',
-  };
-  return locationMap[location as keyof typeof locationMap] || location;
-}
 
 /**
  * ActivitiesTable component for displaying a list of activities in a table format
@@ -162,6 +113,7 @@ export function ActivitiesTable({
   onEditActivity, 
   onDeleteActivity 
 }: ActivitiesTableProps) {
+  const { t } = useLocale();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
 
@@ -169,7 +121,7 @@ export function ActivitiesTable({
     () => [
       {
         accessorKey: 'name',
-        header: 'Nome',
+        header: t('activities.csvName'),
         cell: ({ row }) => (
           <div className="font-medium">
             {row.original.name}
@@ -178,7 +130,7 @@ export function ActivitiesTable({
       },
       {
         accessorKey: 'activity_type.name',
-        header: 'Tipo',
+        header: t('activities.csvType'),
         cell: ({ row }) => (
           <Badge variant="secondary" className="text-xs">
             {row.original.activity_type.name}
@@ -187,7 +139,7 @@ export function ActivitiesTable({
       },
       {
         accessorKey: 'approximate_duration_minutes',
-        header: 'Duração',
+        header: t('activities.colDuration'),
         cell: ({ row }) => (
           <span className="text-sm text-muted-foreground">
             {row.original.approximate_duration_minutes} min
@@ -196,50 +148,50 @@ export function ActivitiesTable({
       },
       {
         accessorKey: 'group_size',
-        header: 'Grupo',
+        header: t('activities.colGroup'),
         cell: ({ row }) => (
           <span className="text-sm text-muted-foreground">
-            {getGroupSizeText(row.original.group_size)}
+            {enumLabel(t, 'groupSize', row.original.group_size)}
           </span>
         ),
       },
       {
         accessorKey: 'effort_level',
-        header: 'Esforço',
+        header: t('activities.colEffort'),
         cell: ({ row }) => (
           <span className="text-sm text-muted-foreground">
-            {getEffortLevelText(row.original.effort_level)}
+            {enumLabel(t, 'effort', row.original.effort_level)}
           </span>
         ),
       },
       {
         accessorKey: 'location',
-        header: 'Local',
+        header: t('activities.colLocation'),
         cell: ({ row }) => (
           <span className="text-sm text-muted-foreground">
-            {getLocationText(row.original.location)}
+            {enumLabel(t, 'location', row.original.location)}
           </span>
         ),
       },
       {
         accessorKey: 'age_group',
-        header: 'Faixa Etária',
+        header: t('filters.age'),
         cell: ({ row }) => (
           <span className="text-sm text-muted-foreground">
-            {getAgeGroupText(row.original.age_group)}
+            {enumLabel(t, 'ageGroup', row.original.age_group)}
           </span>
         ),
       },
       {
         accessorKey: 'sdgs',
-        header: 'ODS',
+        header: t('activities.csvSdg'),
         cell: ({ row }) => (
           <div className="flex gap-1">
             {row.original.sdgs.slice(0, 3).map((sdg) => (
               <div
                 key={sdg.id}
                 className="w-6 h-6 rounded-md flex items-center justify-center shadow-sm border border-gray-200 bg-white overflow-hidden"
-                title={`ODS ${sdg.number}: ${sdg.name}`}
+                title={t('activities.sdgTitle', { number: sdg.number, name: sdg.name })}
               >
                 {sdg.icon_url ? (
                   <img
@@ -269,7 +221,7 @@ export function ActivitiesTable({
       },
       {
         accessorKey: 'educational_goals',
-        header: 'Objetivos',
+        header: t('activities.goalsShort'),
         cell: ({ row }) => (
           <div className="flex gap-1">
             {row.original.educational_goals.slice(0, 2).map((goal) => (
@@ -287,11 +239,11 @@ export function ActivitiesTable({
       },
       {
         id: 'actions',
-        header: 'Ações',
+        header: t('activities.actions'),
         cell: ({ row }) => (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0" aria-label="Ações">
+              <Button variant="ghost" className="h-8 w-8 p-0" aria-label={t('activities.actions')}>
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -299,13 +251,13 @@ export function ActivitiesTable({
               {onViewActivity && (
                 <DropdownMenuItem onClick={() => onViewActivity(row.original)}>
                   <Eye className="mr-2 h-4 w-4" />
-                  Ver Detalhes
+                  {t('activities.viewDetails')}
                 </DropdownMenuItem>
               )}
               {onEditActivity && (
                 <DropdownMenuItem onClick={() => onEditActivity(row.original)}>
                   <Edit className="mr-2 h-4 w-4" />
-                  Editar
+                  {t('common.edit')}
                 </DropdownMenuItem>
               )}
               {onDeleteActivity && (
@@ -314,7 +266,7 @@ export function ActivitiesTable({
                   className="text-destructive"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Eliminar
+                  {t('common.delete')}
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
@@ -322,7 +274,7 @@ export function ActivitiesTable({
         ),
       },
     ],
-    [onViewActivity, onEditActivity, onDeleteActivity]
+    [onViewActivity, onEditActivity, onDeleteActivity, t]
   );
 
   const table = useReactTable({
@@ -339,15 +291,15 @@ export function ActivitiesTable({
 
   const exportToCSV = () => {
     const headers = [
-      'Nome',
-      'Tipo',
-      'Duração (min)',
-      'Tamanho do Grupo',
-      'Nível de Esforço',
-      'Localização',
-      'Faixa Etária',
-      'ODS',
-      'Objetivos Educativos',
+      t('activities.csvName'),
+      t('activities.csvType'),
+      t('activities.csvDuration'),
+      t('filters.groupSize'),
+      t('filters.effort'),
+      t('filters.location'),
+      t('filters.age'),
+      t('activities.csvSdg'),
+      t('activities.goals'),
     ];
 
     const csvContent = [
@@ -356,11 +308,11 @@ export function ActivitiesTable({
         activity.name,
         activity.activity_type.name,
         activity.approximate_duration_minutes,
-        getGroupSizeText(activity.group_size),
-        getEffortLevelText(activity.effort_level),
-        getLocationText(activity.location),
-        getAgeGroupText(activity.age_group),
-        activity.sdgs.map(sdg => `ODS ${sdg.number}`).join('; '),
+        enumLabel(t, 'groupSize', activity.group_size),
+        enumLabel(t, 'effort', activity.effort_level),
+        enumLabel(t, 'location', activity.location),
+        enumLabel(t, 'ageGroup', activity.age_group),
+        activity.sdgs.map(sdg => t('activities.sdgPrefix', { number: sdg.number })).join('; '),
         activity.educational_goals.map(goal => goal.title).join('; '),
       ].join(','))
     ].join('\n');
@@ -380,23 +332,38 @@ export function ActivitiesTable({
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>Vista em Tabela</CardTitle>
+          <CardTitle>{t('activities.tableView')}</CardTitle>
           <div className="flex items-center gap-2">
             <Input
-              placeholder="Pesquisar atividades..."
+              placeholder={t('activities.search')}
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
               className="max-w-sm"
             />
             <Button onClick={exportToCSV} variant="outline" size="sm">
               <Download className="mr-2 h-4 w-4" />
-              Exportar CSV
+              {t('activities.exportCsv')}
             </Button>
           </div>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="rounded-md border">
+        <div className="md:hidden space-y-3">
+          {activities.map((activity) => (
+            <button
+              key={activity.id}
+              type="button"
+              className="w-full text-left border rounded-md p-3 min-h-11"
+              onClick={() => onViewActivity?.(activity)}
+            >
+              <p className="font-medium">{activity.name}</p>
+              <p className="text-sm text-muted-foreground">
+                {activity.activity_type.name} · {activity.approximate_duration_minutes} {t('common.minutes')} · {enumLabel(t, 'location', activity.location)}
+              </p>
+            </button>
+          ))}
+        </div>
+        <div className="hidden md:block rounded-md border">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -445,7 +412,7 @@ export function ActivitiesTable({
               ) : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="h-24 text-center">
-                    Nenhuma atividade encontrada.
+                    {t('activities.noneFound')}
                   </TableCell>
                 </TableRow>
               )}
@@ -456,7 +423,7 @@ export function ActivitiesTable({
         {/* Pagination */}
         <div className="flex items-center justify-between space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
-            Mostrando {table.getFilteredRowModel().rows.length} de {activities.length} atividades.
+            {t('activities.showing', { from: table.getFilteredRowModel().rows.length, total: activities.length })}
           </div>
           <div className="flex items-center space-x-2">
             <Button
@@ -465,12 +432,14 @@ export function ActivitiesTable({
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
             >
-              Anterior
+              {t('common.previous')}
             </Button>
             <div className="flex items-center gap-1">
               <span className="text-sm font-medium">
-                Página {table.getState().pagination.pageIndex + 1} de{' '}
-                {table.getPageCount()}
+                {t('activities.pageOf', {
+                  current: table.getState().pagination.pageIndex + 1,
+                  total: table.getPageCount(),
+                })}
               </span>
             </div>
             <Button
@@ -479,7 +448,7 @@ export function ActivitiesTable({
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
-              Próxima
+              {t('common.next')}
             </Button>
           </div>
         </div>

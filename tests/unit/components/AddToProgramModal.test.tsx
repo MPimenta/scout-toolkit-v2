@@ -48,6 +48,7 @@ vi.mock('@/hooks/useProgramMutations', () => ({
     }),
     updateProgram: vi.fn(),
     deleteProgram: vi.fn(),
+    invalidateProgram: vi.fn().mockResolvedValue(undefined),
   }),
 }));
 

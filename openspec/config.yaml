@@ -1,0 +1,40 @@
+schema: spec-driven
+
+context: |
+  Product: Kit de Atividades (name stays; do not rewrite Portuguese copy).
+  Audience: Escoteiros de Portugal leaders. UI default is Portuguese; English
+  chrome is Epic 17 (`english-locale`) — cookie switcher, no URL prefix.
+  Auth: Auth.js with eAEP/Orgo OAuth. Session user id lives in the Auth.js `user` table.
+  Data: PostgreSQL + Drizzle. Local app DB is scout_toolkit_dev (or Neon for
+  preview/prod). SQL-integration tests use only scout_toolkit_test
+  (test_user / test_password). If that database is down, npm run test:run
+  must fail — never skip-and-look-green, never point those tests at Neon.
+  UI: Next.js 15, Tailwind, shadcn/ui. Brand tokens live in src/app/globals.css
+  CSS variables. Do not invent new brand colours; wait for docs/brand-handoff.md.
+  Accessibility: WCAG 2.1 AA contrast for primary buttons and links.
+  Specs: OpenSpec is the working spec for new changes. docs/planning.md is the
+  historical epic log and high-level roadmap during the pilot. Do not duplicate
+  full task lists in both places.
+  Node: OpenSpec CLI wants Node >= 20.19. This machine may still be on 20.10.
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing

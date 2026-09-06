@@ -2,9 +2,11 @@ import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import { setupTestDatabase, teardownTestDatabase, resetTestDatabase } from '../../setup';
 import { db } from '@/lib/db/server';
 import { activities, activityTypes, educationalGoals, sdgs, activityEducationalGoals, activitySdgs, educationalAreas } from '../../../drizzle/schema';
+import { requireLocalTestDatabase } from '../../helpers/local-test-db';
 
 describe('Activity Detail API Integration', () => {
   beforeAll(async () => {
+    requireLocalTestDatabase();
     await setupTestDatabase();
   });
 

@@ -10,22 +10,22 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    
-    /* Brand Colors - Escoteiros de Portugal */
-    --primary: 84 47% 50%; /* Pantone 383 C - Vibrant yellow-green */
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 220 58% 23%; /* Pantone 280 C - Deep dark blue */
+
+    /* 2026 AEP marca associativa — Pantone/HEX from the Canva brand book */
+    --primary: 180 100% 32%; /* #00A5A5 Pantone 7716 C */
+    --primary-foreground: 222.2 84% 4.9%; /* dark on teal ~6.9:1 */
+    --secondary: 217 76% 34%; /* #154697 Pantone 2945 C */
     --secondary-foreground: 210 40% 98%;
-    
-    --muted: 210 40% 96%;
+
+    --muted: 180 47% 93%; /* #E6F6F6 verde muito claro */
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 84 47% 50%;
+    --accent: 180 100% 32%;
     --accent-foreground: 222.2 84% 4.9%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 84 47% 50%;
+    --ring: 180 100% 32%;
     --radius: 0.5rem;
   }
 
@@ -36,22 +36,21 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    
-    /* Brand Colors - Dark Mode */
-    --primary: 84 47% 50%; /* Keep brand yellow-green */
+
+    --primary: 180 100% 32%;
     --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 220 58% 23%; /* Keep brand dark blue */
+    --secondary: 217 76% 34%;
     --secondary-foreground: 210 40% 98%;
-    
+
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 84 47% 50%;
+    --accent: 180 100% 32%;
     --accent-foreground: 222.2 84% 4.9%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 84 47% 50%;
+    --ring: 180 100% 32%;
   }
 }
 

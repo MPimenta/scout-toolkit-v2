@@ -38,9 +38,9 @@ This document outlines the technical architecture, stack choices, and key design
 - **Server-side search** - Debounced API calls with caching
 
 ### Export Functionality
-- **SheetJS (xlsx)** - Excel export generation
-- **Playwright** - PDF generation via HTML rendering
-- **Vercel Edge Functions** - Serverless PDF generation
+- **SheetJS (xlsx)** - Excel export generation (Portuguese sheets: Resumo, Cronograma, Detalhes das Atividades)
+- **Playwright Chromium** - Server-side HTML to PDF, with Chrome/Edge fallback if the bundled browser is missing
+- **Local/server runtime** - PDF generation runs in the Next.js Node process, not on Vercel Edge (Playwright needs a full browser)
 
 ### Development Tools
 - **ESLint + Prettier** - Code linting and formatting

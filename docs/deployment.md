@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the complete deployment strategy for the Scout Activities Platform, from local development to production. The platform is designed to be deployed on Vercel with Neon PostgreSQL database and UploadThing for file storage. The application is built for Portuguese scout leaders with a Portuguese-only interface.
+This document outlines the complete deployment strategy for the Scout Activities Platform, from local development to production. The platform is designed to be deployed on Vercel with Neon PostgreSQL database and UploadThing for file storage. The application is built for Escoteiros de Portugal leaders. Chrome defaults to Portuguese; English is a header switcher (no `/pt` or `/en` URLs).
 
 ## Architecture Overview
 
@@ -10,7 +10,7 @@ This document outlines the complete deployment strategy for the Scout Activities
 - **Frontend & API:** Vercel (Next.js)
 - **Database:** Neon PostgreSQL
 - **File Storage:** UploadThing (S3 backend)
-- **Authentication:** Auth.js with Google OAuth
+- **Authentication:** Auth.js with eAEP/Orgo OAuth
 - **CDN:** Vercel Edge Network
 - **Monitoring:** Vercel Analytics + Custom monitoring
 
@@ -63,7 +63,34 @@ SENTRY_DSN=https://your-sentry-dsn
 # Feature Flags
 ENABLE_USER_GENERATED_CONTENT=false
 ENABLE_EDIT_SUGGESTIONS=false
+
+# Orgo write token (program → eAEP event). Server only. Never send to the browser.
+ORGO_API_TOKEN=
 ```
+
+### Orgo API token (create event from a program)
+
+Mint a token in eAEP/Orgo: **Settings → Developers → API Tokens** (API module on). The token needs at least `HR_LOCAL`. Put it in `ORGO_API_TOKEN` on the server (Vercel env or `.env.local`). The browser never receives it. Events are created as the token owner; the signed-in leader still picks only units they may create events for.
+
+## Preview environment (Vercel + Neon)
+
+Pull requests get a Vercel Preview URL. Preview uses its **own Neon database**, not `scout_toolkit_dev`, not `scout_toolkit_test`, and not production.
+
+Set env vars in the Vercel dashboard on the **Preview** scope. Do **not** add a `.env.preview` file — Next.js never loads it. Required Preview names (values stay in Vercel):
+
+- `DATABASE_URL` (Preview Neon)
+- `NEXTAUTH_SECRET` / Auth secret
+- `NEXTAUTH_URL` (the Preview host) and `trustHost` as required by Auth.js
+- `ORGO_ISSUER`, `ORGO_CLIENT_ID`, `ORGO_CLIENT_SECRET`
+- `ADMIN_EMAILS`
+- UploadThing keys
+- `ORGO_API_TOKEN` only if you want program → eAEP create on Preview
+
+Register the Preview callback URL(s) on the Orgo OAuth app (same app or a Preview app). `/api/e2e/session` returns 404 on Preview because `NODE_ENV` is `production`. CI stays on workflow Postgres — do not add write tests against the Preview URL.
+
+Apply schema to the Preview Neon database on deploy (`drizzle-kit push` or migrate in the deploy command).
+
+Epic 16 in `docs/planning.md` tracks this. Hosting tasks (create the Vercel project, provision Neon, register Orgo redirects) are done in those dashboards, not in this repo.
 
 ### Environment Files
 

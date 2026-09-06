@@ -10,8 +10,8 @@
 
 :root {
 	/* Brand Colors - Escoteiros de Portugal */
-	--accent: #7cb342; /* Pantone 383 C - Vibrant yellow-green */
-	--accent-dark: #1a365d; /* Pantone 280 C - Deep dark blue */
+	--accent: #00A5A5; /* Pantone 7716 C */
+	--accent-dark: #154697; /* Pantone 2945 C */
 	--black: 15, 18, 25;
 	--gray: 96, 115, 159;
 	--gray-light: 229, 233, 240;

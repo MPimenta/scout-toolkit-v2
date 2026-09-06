@@ -17,6 +17,9 @@ import {
   BookOpen
 } from 'lucide-react';
 import { log } from '@/lib/errors';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { useLocale } from '@/components/locale/LocaleProvider';
+import { durationOpLabel, enumLabel } from '@/lib/locale/labels';
 
 /**
  * Interface for activity filter state
@@ -53,36 +56,11 @@ interface ActivityFiltersProps {
 
 // Real data will be fetched from API
 
-const GROUP_SIZE_OPTIONS = [
-  { value: 'small', label: 'Pequeno (2-6)' },
-  { value: 'medium', label: 'Médio (7-15)' },
-  { value: 'large', label: 'Grande (16+)' },
-];
-
-const EFFORT_LEVEL_OPTIONS = [
-  { value: 'low', label: 'Baixo' },
-  { value: 'medium', label: 'Médio' },
-  { value: 'high', label: 'Alto' },
-];
-
-const LOCATION_OPTIONS = [
-  { value: 'inside', label: 'Interior' },
-  { value: 'outside', label: 'Exterior' },
-];
-
-const AGE_GROUP_OPTIONS = [
-  { value: 'cub_scouts', label: 'Lobitos (6-10)' },
-  { value: 'scouts', label: 'Escoteiros (10-14)' },
-  { value: 'adventurers', label: 'Exploradores (14-17)' },
-  { value: 'rovers', label: 'Caminheiros (17-21)' },
-  { value: 'leaders', label: 'Dirigentes (21+)' },
-];
-
-const DURATION_OPERATORS = [
-  { value: '>=', label: 'Mínimo' },
-  { value: '<=', label: 'Máximo' },
-  { value: '=', label: 'Exato' },
-];
+const GROUP_SIZE_VALUES = ['small', 'medium', 'large'] as const;
+const EFFORT_VALUES = ['low', 'medium', 'high'] as const;
+const LOCATION_VALUES = ['inside', 'outside'] as const;
+const AGE_GROUP_VALUES = ['cub_scouts', 'scouts', 'adventurers', 'rovers', 'leaders'] as const;
+const DURATION_OPERATOR_VALUES = ['>=', '<=', '='] as const;
 
 /**
  * ActivityFilters component for filtering activities
@@ -99,7 +77,29 @@ export function ActivityFilters({
   onClearFilters,
   availableFilters: _availableFilters
 }: ActivityFiltersProps) {
+  const { t } = useLocale();
+  const groupSizeOptions = GROUP_SIZE_VALUES.map((value) => ({
+    value,
+    label: enumLabel(t, 'groupSize', value),
+  }));
+  const effortOptions = EFFORT_VALUES.map((value) => ({
+    value,
+    label: enumLabel(t, 'effort', value),
+  }));
+  const locationOptions = LOCATION_VALUES.map((value) => ({
+    value,
+    label: enumLabel(t, 'location', value),
+  }));
+  const ageGroupOptions = AGE_GROUP_VALUES.map((value) => ({
+    value,
+    label: enumLabel(t, 'ageGroup', value),
+  }));
+  const durationOperators = DURATION_OPERATOR_VALUES.map((value) => ({
+    value,
+    label: durationOpLabel(t, value),
+  }));
   const [isExpanded, setIsExpanded] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);
   const [activityTypeOptions, setActivityTypeOptions] = useState<Array<{ id: string; name: string }>>([]);
   const [sdgOptions, setSdgOptions] = useState<Array<{ id: string; name: string; number: number; icon_url?: string }>>([]);
@@ -193,7 +193,7 @@ export function ActivityFilters({
         <Card className="mb-4 border-primary/20 bg-primary/5">
           <CardContent className="pt-4">
             <div className="flex items-center justify-between mb-3">
-              <label className="text-sm font-medium text-primary">Filtros Ativos</label>
+              <label className="text-sm font-medium text-primary">{t('activities.filtersActiveTitle')}</label>
               <Button 
                 variant="ghost" 
                 size="sm"
@@ -201,13 +201,13 @@ export function ActivityFilters({
                 className="text-xs text-primary hover:text-primary/80"
               >
                 <X className="w-3 h-3 mr-1" />
-                Limpar Todos
+                {t('common.clearAll')}
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
               {filters.search && (
                 <Badge variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
-                  Pesquisa: {filters.search}
+                  {t('filters.badgeSearch', { value: filters.search })}
                   <button
                     onClick={() => handleFilterChange('search', '')}
                     className="ml-1 hover:text-destructive"
@@ -219,7 +219,7 @@ export function ActivityFilters({
               
               {filters.groupSize.map((size) => (
                 <Badge key={size} variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
-                  Grupo: {GROUP_SIZE_OPTIONS.find(o => o.value === size)?.label}
+                  {t('filters.badgeGroup', { value: groupSizeOptions.find(o => o.value === size)?.label ?? size })}
                   <button
                     onClick={() => handleMultiSelectChange('groupSize', size, false)}
                     className="ml-1 hover:text-destructive"
@@ -231,7 +231,7 @@ export function ActivityFilters({
               
               {filters.effortLevel.map((level) => (
                 <Badge key={level} variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
-                  Esforço: {EFFORT_LEVEL_OPTIONS.find(o => o.value === level)?.label}
+                  {t('filters.badgeEffort', { value: effortOptions.find(o => o.value === level)?.label ?? level })}
                   <button
                     onClick={() => handleMultiSelectChange('effortLevel', level, false)}
                     className="ml-1 hover:text-destructive"
@@ -243,7 +243,7 @@ export function ActivityFilters({
               
               {filters.location && (
                 <Badge variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
-                  Local: {LOCATION_OPTIONS.find(o => o.value === filters.location)?.label}
+                  {t('filters.badgeLocation', { value: locationOptions.find(o => o.value === filters.location)?.label ?? filters.location })}
                   <button
                     onClick={() => handleFilterChange('location', '')}
                     className="ml-1 hover:text-destructive"
@@ -255,7 +255,7 @@ export function ActivityFilters({
               
               {filters.ageGroup.map((age) => (
                 <Badge key={age} variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
-                  Idade: {AGE_GROUP_OPTIONS.find(o => o.value === age)?.label}
+                  {t('filters.badgeAge', { value: ageGroupOptions.find(o => o.value === age)?.label ?? age })}
                   <button
                     onClick={() => handleMultiSelectChange('ageGroup', age, false)}
                     className="ml-1 hover:text-destructive"
@@ -267,7 +267,7 @@ export function ActivityFilters({
 
                              {filters.activityType.map((typeId) => (
                  <Badge key={typeId} variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
-                   Tipo: {activityTypeOptions.find(o => o.id === typeId)?.name || ''}
+                   {t('filters.badgeType', { value: activityTypeOptions.find(o => o.id === typeId)?.name || '' })}
                    <button
                      onClick={() => handleMultiSelectChange('activityType', typeId, false)}
                      className="ml-1 hover:text-destructive"
@@ -279,7 +279,10 @@ export function ActivityFilters({
 
                {filters.sdgs.map((sdgId) => (
                  <Badge key={sdgId} variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
-                   ODS {sdgOptions.find(o => o.id === sdgId)?.number}: {sdgOptions.find(o => o.id === sdgId)?.name || ''}
+                   {t('activities.sdgTitle', {
+                     number: sdgOptions.find(o => o.id === sdgId)?.number ?? '',
+                     name: sdgOptions.find(o => o.id === sdgId)?.name || '',
+                   })}
                    <button
                      onClick={() => handleMultiSelectChange('sdgs', sdgId, false)}
                      className="ml-1 hover:text-destructive"
@@ -303,7 +306,7 @@ export function ActivityFilters({
               
               {(filters.durationMin || filters.durationMax) && (
                 <Badge variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
-                  Duração: {filters.durationMin || '0'} - {filters.durationMax || '∞'} min
+                  {t('filters.badgeDuration', { min: filters.durationMin || '0', max: filters.durationMax || '∞' })}
                   <button
                     onClick={() => {
                       handleFilterChange('durationMin', '');
@@ -326,7 +329,7 @@ export function ActivityFilters({
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-lg">
               <Filter className="w-5 h-5" />
-              Filtros de Atividades
+              {t('activities.filtersTitle')}
             </CardTitle>
             <div className="flex items-center gap-2">
               {hasActiveFilters && (
@@ -337,24 +340,34 @@ export function ActivityFilters({
                   className="text-xs"
                 >
                   <X className="w-3 h-3 mr-1" />
-                  Limpar Filtros
+                  {t('common.clearFilters')}
                 </Button>
               )}
               <Button
+                variant="outline"
+                size="sm"
+                className="md:hidden min-h-11"
+                onClick={() => setSheetOpen(true)}
+              >
+                <Filter className="w-4 h-4 mr-1" />
+                {t('activities.filters')}
+              </Button>
+              <Button
                 variant="ghost"
                 size="sm"
+                className="hidden md:inline-flex"
                 onClick={() => setIsExpanded(!isExpanded)}
-                aria-label={isExpanded ? "Recolher filtros avançados" : "Expandir filtros avançados"}
+                aria-label={isExpanded ? t('activities.collapse') : t('activities.expand')}
               >
                 {isExpanded ? (
                   <>
                     <ChevronUp className="w-4 h-4" />
-                    <span className="ml-1">Recolher</span>
+                    <span className="ml-1">{t('activities.collapse')}</span>
                   </>
                 ) : (
                   <>
                     <ChevronDown className="w-4 h-4" />
-                    <span className="ml-1">Expandir</span>
+                    <span className="ml-1">{t('activities.expand')}</span>
                   </>
                 )}
               </Button>
@@ -368,7 +381,7 @@ export function ActivityFilters({
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
               type="text"
-              placeholder="Pesquisar atividades por nome, descrição ou materiais..."
+              placeholder={t('activities.searchLong')}
               value={localFilters.search}
               onChange={(e) => handleFilterChange('search', e.target.value)}
               className="pl-10"
@@ -377,14 +390,14 @@ export function ActivityFilters({
 
           {/* All Other Filters (Expanded) */}
           {isExpanded && (
-            <div className="space-y-6 pt-4 border-t">
+            <div className="hidden md:block space-y-6 pt-4 border-t">
               {/* Basic Filters Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Group Size */}
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Tamanho do Grupo</label>
+                  <label className="text-sm font-medium mb-2 block">{t('filters.groupSize')}</label>
                   <div className="space-y-2">
-                    {GROUP_SIZE_OPTIONS.map((option) => (
+                    {groupSizeOptions.map((option) => (
                       <label key={option.value} className="flex items-center space-x-2">
                         <input
                           type="checkbox"
@@ -400,9 +413,9 @@ export function ActivityFilters({
 
                 {/* Effort Level */}
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Nível de Esforço</label>
+                  <label className="text-sm font-medium mb-2 block">{t('filters.effort')}</label>
                   <div className="space-y-2">
-                    {EFFORT_LEVEL_OPTIONS.map((option) => (
+                    {effortOptions.map((option) => (
                       <label key={option.value} className="flex items-center space-x-2">
                         <input
                           type="checkbox"
@@ -418,14 +431,14 @@ export function ActivityFilters({
 
                 {/* Location */}
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Localização</label>
+                  <label className="text-sm font-medium mb-2 block">{t('filters.location')}</label>
                   <select
                     value={localFilters.location}
                     onChange={(e) => handleFilterChange('location', e.target.value)}
                     className="w-full p-2 border border-gray-300 rounded-md text-sm"
                   >
-                    <option value="">Todas</option>
-                    {LOCATION_OPTIONS.map((option) => (
+                    <option value="">{t('common.all')}</option>
+                    {locationOptions.map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>
@@ -435,9 +448,9 @@ export function ActivityFilters({
 
                 {/* Age Group */}
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Faixa Etária</label>
+                  <label className="text-sm font-medium mb-2 block">{t('filters.age')}</label>
                   <div className="space-y-2 max-h-32 overflow-y-auto">
-                    {AGE_GROUP_OPTIONS.map((option) => (
+                    {ageGroupOptions.map((option) => (
                       <label key={option.value} className="flex items-center space-x-2">
                         <input
                           type="checkbox"
@@ -456,7 +469,7 @@ export function ActivityFilters({
               <div>
                 <label className="text-sm font-medium mb-3 block flex items-center gap-2">
                   <Target className="w-4 h-4" />
-                  Tipo de Atividade
+                  {t('filters.activityType')}
                 </label>
                                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                    {activityTypeOptions.map((option) => (
@@ -477,17 +490,17 @@ export function ActivityFilters({
               <div>
                 <label className="text-sm font-medium mb-3 block flex items-center gap-2">
                   <Clock className="w-4 h-4" />
-                  Duração (minutos)
+                  {t('filters.duration')}
                 </label>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="text-xs text-muted-foreground block mb-1">Operador</label>
+                    <label className="text-xs text-muted-foreground block mb-1">{t('filters.operator')}</label>
                     <select
                       value={localFilters.durationOperator}
                       onChange={(e) => handleFilterChange('durationOperator', e.target.value)}
                       className="w-full p-2 border border-gray-300 rounded-md text-sm"
                     >
-                      {DURATION_OPERATORS.map((option) => (
+                      {durationOperators.map((option) => (
                         <option key={option.value} value={option.value}>
                           {option.label}
                         </option>
@@ -495,7 +508,7 @@ export function ActivityFilters({
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs text-muted-foreground block mb-1">Valor Mínimo</label>
+                    <label className="text-xs text-muted-foreground block mb-1">{t('filters.minValue')}</label>
                     <Input
                       type="number"
                       placeholder="30"
@@ -505,7 +518,7 @@ export function ActivityFilters({
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-muted-foreground block mb-1">Valor Máximo</label>
+                    <label className="text-xs text-muted-foreground block mb-1">{t('filters.maxValue')}</label>
                     <Input
                       type="number"
                       placeholder="120"
@@ -521,7 +534,7 @@ export function ActivityFilters({
               <div>
                 <label className="text-sm font-medium mb-3 block flex items-center gap-2">
                   <Globe className="w-4 h-4" />
-                  Objetivos de Desenvolvimento Sustentável (ODS)
+                  {t('activities.sdgs')}
                 </label>
                                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-64 overflow-y-auto">
                    {sdgOptions.map((option) => (
@@ -537,9 +550,9 @@ export function ActivityFilters({
                           {option.icon_url ? (
                             <img
                               src={option.icon_url}
-                              alt={`ODS ${option.number}`}
+                              alt={t('activities.sdgPrefix', { number: option.number })}
                               className="w-6 h-6 object-contain"
-                              title={`ODS ${option.number}: ${option.name}`}
+                              title={t('activities.sdgTitle', { number: option.number, name: option.name })}
                             />
                           ) : (
                             // Fallback to colored circle if no icon
@@ -548,13 +561,13 @@ export function ActivityFilters({
                               style={{
                                 backgroundColor: `hsl(${(option.number * 20) % 360}, 70%, 50%)`
                               }}
-                              title={`ODS ${option.number}: ${option.name}`}
+                              title={t('activities.sdgTitle', { number: option.number, name: option.name })}
                             >
                               {option.number}
                             </div>
                           )}
                           <span className="text-sm">
-                            <strong>ODS {option.number}:</strong> {option.name}
+                            <strong>{t('activities.sdgPrefix', { number: option.number })}:</strong> {option.name}
                           </span>
                         </div>
                      </label>
@@ -566,7 +579,7 @@ export function ActivityFilters({
               <div>
                 <label className="text-sm font-medium mb-3 block flex items-center gap-2">
                   <BookOpen className="w-4 h-4" />
-                  Objetivos Educativos
+                  {t('activities.goals')}
                 </label>
                                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-64 overflow-y-auto">
                    {educationalGoalOptions.map((option) => (
@@ -592,6 +605,49 @@ export function ActivityFilters({
           )}
         </CardContent>
       </Card>
+
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        <SheetContent side="bottom" className="overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>{t('activities.filtersTitle')}</SheetTitle>
+          </SheetHeader>
+          <div className="space-y-4 pt-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">{t('filters.groupSize')}</label>
+              {groupSizeOptions.map((option) => (
+                <label key={option.value} className="flex items-center space-x-2 min-h-11">
+                  <input
+                    type="checkbox"
+                    checked={localFilters.groupSize.includes(option.value)}
+                    onChange={(e) => handleMultiSelectChange('groupSize', option.value, e.target.checked)}
+                    className="rounded border-gray-300"
+                  />
+                  <span className="text-sm">{option.label}</span>
+                </label>
+              ))}
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">{t('filters.location')}</label>
+              <select
+                value={localFilters.location}
+                onChange={(e) => handleFilterChange('location', e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-md text-sm min-h-11"
+                aria-label={t('filters.location')}
+              >
+                <option value="">{t('common.all')}</option>
+                {locationOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <Button className="w-full min-h-11" onClick={() => setSheetOpen(false)}>
+              {t('common.apply')}
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
     </>
   );
 }

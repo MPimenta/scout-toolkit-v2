@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useActivities } from '@/hooks/useActivities';
 import { ActivityCard } from '@/components/features/activities/ActivityCard';
 import { ActivitiesTable } from '@/components/features/activities/ActivitiesTable';
@@ -10,7 +9,7 @@ import { ActivityFilters, FilterState } from '@/components/features/activities/A
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, AlertCircle, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { log } from '@/lib/errors';
+import { useLocale } from '@/components/locale/LocaleProvider';
 
 /**
  * ActivitiesPage component for displaying and managing activities
@@ -18,7 +17,7 @@ import { log } from '@/lib/errors';
  * @returns JSX element representing the activities page
  */
 export default function ActivitiesPage() {
-  const router = useRouter();
+  const { t } = useLocale();
   const [filters, setFilters] = useState<FilterState>({
     search: '',
     groupSize: [],
@@ -67,9 +66,9 @@ export default function ActivitiesPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-4">Atividades</h1>
+          <h1 className="text-3xl font-bold mb-4">{t('activities.title')}</h1>
           <p className="text-muted-foreground">
-            Explore centenas de atividades para todas as idades e objetivos educativos.
+            {t('activities.lead')}
           </p>
         </div>
         
@@ -77,21 +76,21 @@ export default function ActivitiesPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-destructive">
               <AlertCircle className="w-5 h-5" />
-              Erro ao Carregar Atividades
+              {t('activities.errorTitle')}
             </CardTitle>
             <CardDescription>
-              Ocorreu um erro ao tentar carregar as atividades. Por favor, tenta novamente.
+              {t('activities.errorLead')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-4">
-              Detalhes do erro: {error}
+              {t('common.errorDetails', { error })}
             </p>
             <Button 
               onClick={refresh} 
               variant="outline"
             >
-              Tentar Novamente
+              {t('common.retry')}
             </Button>
           </CardContent>
         </Card>
@@ -102,9 +101,19 @@ export default function ActivitiesPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">Atividades</h1>
-        <p className="text-muted-foreground">
-          Explore centenas de atividades para todas as idades e objetivos educativos.
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <h1 className="text-3xl font-bold">{t('activities.title')}</h1>
+          <div className="flex flex-wrap gap-3">
+            <Button asChild variant="outline">
+              <a href="/atividades/propor">{t('activities.propose')}</a>
+            </Button>
+            <Button asChild variant="ghost">
+              <a href="/atividades/minhas">{t('activities.mine')}</a>
+            </Button>
+          </div>
+        </div>
+        <p className="text-muted-foreground mt-4">
+          {t('activities.lead')}
         </p>
       </div>
 
@@ -126,7 +135,11 @@ export default function ActivitiesPage() {
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <p className="text-sm text-muted-foreground">
-            {loading ? 'A carregar...' : `${pagination?.total || 0} atividade${(pagination?.total || 0) !== 1 ? 's' : ''} encontrada${(pagination?.total || 0) !== 1 ? 's' : ''}`}
+            {loading
+              ? t('common.loading')
+              : (pagination?.total || 0) === 1
+                ? t('activities.foundOne')
+                : t('activities.foundMany', { count: pagination?.total || 0 })}
           </p>
           
           <div className="flex items-center gap-4">
@@ -136,7 +149,7 @@ export default function ActivitiesPage() {
             ) && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Filter className="w-4 h-4" />
-                <span>Filtros ativos</span>
+                <span>{t('activities.filtersActive')}</span>
               </div>
             )}
             
@@ -154,7 +167,7 @@ export default function ActivitiesPage() {
         <div className="flex justify-center items-center py-12">
           <div className="text-center">
             <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-muted-foreground" />
-            <p className="text-muted-foreground">A carregar atividades...</p>
+            <p className="text-muted-foreground">{t('activities.loading')}</p>
           </div>
         </div>
       )}
@@ -163,20 +176,20 @@ export default function ActivitiesPage() {
       {!loading && activities.length === 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Nenhuma Atividade Encontrada</CardTitle>
+            <CardTitle>{t('activities.emptyTitle')}</CardTitle>
             <CardDescription>
-              Não foram encontradas atividades com os critérios de pesquisa atuais.
+              {t('activities.emptyLead')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">
-              Tenta ajustar os filtros de pesquisa ou contacta um administrador se acreditas que deveria haver atividades disponíveis.
+              {t('activities.emptyHint')}
             </p>
             <Button 
               onClick={handleClearFilters} 
               variant="outline"
             >
-              Limpar Filtros
+              {t('common.clearFilters')}
             </Button>
           </CardContent>
         </Card>
@@ -197,19 +210,7 @@ export default function ActivitiesPage() {
             <ActivitiesTable 
               activities={activities}
               onViewActivity={(activity) => {
-                // Navigate to activity details page
                 window.location.href = `/activities/${activity.id}`;
-              }}
-              onEditActivity={(activity) => {
-                // Navigate to edit activity page (admin only)
-                router.push(`/admin/activities/${activity.id}/edit`);
-              }}
-              onDeleteActivity={(activity) => {
-                // Implement delete confirmation dialog
-                if (confirm(`Tem certeza que deseja eliminar a atividade "${activity.name}"?`)) {
-                  // Note: Delete functionality will be implemented in a future story
-                  log.info('Delete activity requested', { activityId: activity.id });
-                }
               }}
             />
           )}

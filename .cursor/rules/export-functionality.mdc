@@ -29,8 +29,8 @@ SDGs: [SDG Icons]
 ```
 
 ## Performance
-- Use Vercel Edge Functions for PDF generation
-- Implement proper caching
+- Generate PDFs in the Next.js Node runtime with Playwright (not Vercel Edge)
+- Fall back to installed Chrome or Edge if bundled Chromium is missing
 - Handle large datasets efficiently
 - Provide progress feedback
 

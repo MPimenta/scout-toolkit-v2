@@ -10,6 +10,7 @@ import { validateProps } from '@/lib/validation';
 import { specificSchemas } from '@/lib/validation/component-schemas';
 import { VariantProps } from 'class-variance-authority';
 import { buttonVariants } from '@/components/ui/button';
+import { useLocale } from '@/components/locale/LocaleProvider';
 
 /**
  * Props for the PDFExportButton component
@@ -38,6 +39,7 @@ export function PDFExportButton({ programId, programName, variant, size, classNa
     validateProps({ programId, programName, variant, size, className }, specificSchemas.pdfExportButton, 'PDFExportButton');
   }
 
+  const { t } = useLocale();
   const { exportToPDF, isLoading } = useProgramPDFExport();
 
   const handleExport = async () => {
@@ -68,7 +70,7 @@ export function PDFExportButton({ programId, programName, variant, size, classNa
       ) : (
         <FileText className="mr-2 h-4 w-4" />
       )}
-      Exportar PDF
+      {t('export.pdf')}
     </Button>
   );
 }

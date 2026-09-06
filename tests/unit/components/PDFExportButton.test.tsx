@@ -1,9 +1,9 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { PDFExportButton } from '@/components/features/programs/PDFExportButton';
+import { useProgramPDFExport } from '@/hooks/useProgramPDFExport';
 import { toast } from 'sonner';
 
-// Mock the useProgramPDFExport hook
 vi.mock('@/hooks/useProgramPDFExport', () => ({
   useProgramPDFExport: vi.fn(),
 }));
@@ -26,7 +26,7 @@ vi.mock('@/lib/errors', () => ({
 
 describe('PDFExportButton', () => {
   const mockExportToPDF = vi.fn();
-  const mockUseProgramPDFExport = vi.fn();
+  const mockUseProgramPDFExport = vi.mocked(useProgramPDFExport);
 
   beforeEach(() => {
     vi.clearAllMocks();

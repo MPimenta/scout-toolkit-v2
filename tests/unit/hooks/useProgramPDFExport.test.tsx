@@ -1,42 +1,13 @@
 import { renderHook, act } from '@testing-library/react';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { useProgramPDFExport } from '@/hooks/useProgramPDFExport';
 
-// Mock fetch
 const mockFetch = vi.fn();
-global.fetch = mockFetch;
-
-// Mock URL.createObjectURL and related DOM APIs
 const mockCreateObjectURL = vi.fn();
 const mockRevokeObjectURL = vi.fn();
 const mockClick = vi.fn();
-const mockAppendChild = vi.fn();
 const mockRemove = vi.fn();
 
-Object.defineProperty(window, 'URL', {
-  value: {
-    createObjectURL: mockCreateObjectURL,
-    revokeObjectURL: mockRevokeObjectURL,
-  },
-});
-
-Object.defineProperty(document, 'createElement', {
-  value: vi.fn(() => ({
-    href: '',
-    download: '',
-    click: mockClick,
-  })),
-});
-
-Object.defineProperty(document.body, 'appendChild', {
-  value: mockAppendChild,
-});
-
-Object.defineProperty(document.body, 'remove', {
-  value: mockRemove,
-});
-
-// Mock the log utility
 vi.mock('@/lib/errors', () => ({
   log: {
     info: vi.fn(),
@@ -45,9 +16,39 @@ vi.mock('@/lib/errors', () => ({
 }));
 
 describe('useProgramPDFExport', () => {
+  const originalFetch = global.fetch;
+  let clickSpy: ReturnType<typeof vi.spyOn>;
+  let removeSpy: ReturnType<typeof vi.spyOn>;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    global.fetch = mockFetch;
     mockCreateObjectURL.mockReturnValue('blob:mock-url');
+
+    Object.defineProperty(window.URL, 'createObjectURL', {
+      configurable: true,
+      writable: true,
+      value: mockCreateObjectURL,
+    });
+    Object.defineProperty(window.URL, 'revokeObjectURL', {
+      configurable: true,
+      writable: true,
+      value: mockRevokeObjectURL,
+    });
+
+    clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {
+      mockClick();
+    });
+    removeSpy = vi.spyOn(HTMLAnchorElement.prototype, 'remove').mockImplementation(function (this: HTMLAnchorElement) {
+      mockRemove();
+      this.parentNode?.removeChild(this);
+    });
+  });
+
+  afterEach(() => {
+    clickSpy.mockRestore();
+    removeSpy.mockRestore();
+    global.fetch = originalFetch;
   });
 
   it('should initialize with correct default state', () => {
@@ -58,47 +59,38 @@ describe('useProgramPDFExport', () => {
   });
 
   it('should set loading state during export', async () => {
-    const mockResponse = {
+    mockFetch.mockResolvedValue({
       ok: true,
       headers: new Headers({
         'Content-Disposition': 'attachment; filename="test.pdf"',
       }),
       blob: () => Promise.resolve(new Blob(['pdf content'])),
-    };
-
-    mockFetch.mockResolvedValue(mockResponse);
+    });
 
     const { result } = renderHook(() => useProgramPDFExport());
 
-    let loadingState: boolean;
-    
+    let exportPromise: Promise<void>;
     act(() => {
-      result.current.exportToPDF('test-program-id').then(() => {
-        loadingState = result.current.isLoading;
-      });
+      exportPromise = result.current.exportToPDF('test-program-id');
     });
 
-    // Check loading state during export
     expect(result.current.isLoading).toBe(true);
 
     await act(async () => {
-      await result.current.exportToPDF('test-program-id');
+      await exportPromise;
     });
 
-    // Check loading state after export
     expect(result.current.isLoading).toBe(false);
   });
 
   it('should call API with correct URL', async () => {
-    const mockResponse = {
+    mockFetch.mockResolvedValue({
       ok: true,
       headers: new Headers({
         'Content-Disposition': 'attachment; filename="test.pdf"',
       }),
       blob: () => Promise.resolve(new Blob(['pdf content'])),
-    };
-
-    mockFetch.mockResolvedValue(mockResponse);
+    });
 
     const { result } = renderHook(() => useProgramPDFExport());
 
@@ -116,15 +108,13 @@ describe('useProgramPDFExport', () => {
 
   it('should handle successful export', async () => {
     const mockBlob = new Blob(['pdf content']);
-    const mockResponse = {
+    mockFetch.mockResolvedValue({
       ok: true,
       headers: new Headers({
         'Content-Disposition': 'attachment; filename="programa_test_2025-09-07.pdf"',
       }),
       blob: () => Promise.resolve(mockBlob),
-    };
-
-    mockFetch.mockResolvedValue(mockResponse);
+    });
 
     const { result } = renderHook(() => useProgramPDFExport());
 
@@ -139,12 +129,10 @@ describe('useProgramPDFExport', () => {
   });
 
   it('should throw error for failed API response', async () => {
-    const mockResponse = {
+    mockFetch.mockResolvedValue({
       ok: false,
       json: () => Promise.resolve({ error: { message: 'API Error' } }),
-    };
-
-    mockFetch.mockResolvedValue(mockResponse);
+    });
 
     const { result } = renderHook(() => useProgramPDFExport());
 
@@ -167,10 +155,3 @@ describe('useProgramPDFExport', () => {
     ).rejects.toThrow('Network error');
   });
 });
-
-
-
-
-
-
-

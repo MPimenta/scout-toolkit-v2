@@ -82,7 +82,19 @@ describe('useProgramMutations', () => {
         });
       });
 
-      expect(response).toEqual(mockResponse);
+      expect(response).toEqual({
+        ...mockResponse,
+        created_at: '',
+        updated_at: '',
+        entries: [],
+        user: { id: '', name: '' },
+        summary: {
+          total_duration_minutes: 0,
+          entry_count: 0,
+          educational_goals: [],
+          sdgs: [],
+        },
+      });
       expect(fetch).toHaveBeenCalledWith('/api/programs', {
         method: 'POST',
         headers: {

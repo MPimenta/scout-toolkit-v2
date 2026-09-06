@@ -57,3 +57,18 @@ export async function createTestProgram(db: ReturnType<typeof drizzle>, userId: 
 
   return program[0]
 }
+
+export async function createTestReview(
+  db: ReturnType<typeof drizzle>,
+  activityId: string,
+  userId: string,
+  rating = 4,
+  comment = 'Boa atividade'
+) {
+  return db.insert(schema.reviews).values({
+    activity_id: activityId,
+    user_id: userId,
+    rating,
+    comment,
+  }).returning()
+}

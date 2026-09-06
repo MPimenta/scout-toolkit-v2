@@ -1,103 +1,82 @@
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Search, Calendar, Users, BookOpen } from 'lucide-react';
+import { useLocale } from '@/components/locale/LocaleProvider';
 
 export default function HomePage() {
+  const { t } = useLocale();
+
   return (
     <div className="flex flex-col gap-8">
-      {/* Hero Section */}
       <section className="py-20 text-center">
         <div className="container mx-auto px-4">
           <h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-6xl">
-            <span className="text-primary">Kit de Atividades</span>
+            <span className="text-primary">{t('productName')}</span>
           </h1>
           <p className="mb-8 text-xl text-muted-foreground max-w-3xl mx-auto">
-            Navega por centenas de atividades, cria programas personalizados e 
-            ajuda os teus escoteiros a crescer com experiências significativas.
+            {t('home.lead')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg">
-              <Link href="/activities">
-                Explorar Atividades
-              </Link>
+              <Link href="/activities">{t('home.explore')}</Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link href="/programs">
-                Criar Programa
-              </Link>
+              <Link href="/programs">{t('home.createProgram')}</Link>
             </Button>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="py-16 bg-muted/50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">
-            Tudo o que precisas para ser um Dirigente melhor
+            {t('home.featuresTitle')}
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             <Card>
               <CardHeader>
                 <Search className="h-8 w-8 text-primary mb-2" />
-                <CardTitle>Atividades</CardTitle>
-                <CardDescription>
-                  Encontra atividades por idade, duração, localização e objetivos educativos
-                </CardDescription>
+                <CardTitle>{t('home.activitiesTitle')}</CardTitle>
+                <CardDescription>{t('home.activitiesBody')}</CardDescription>
               </CardHeader>
             </Card>
-            
             <Card>
               <CardHeader>
                 <Calendar className="h-8 w-8 text-primary mb-2" />
-                <CardTitle>Programas</CardTitle>
-                <CardDescription>
-                  Cria e organiza programas completos com cronogramas detalhados
-                </CardDescription>
+                <CardTitle>{t('home.programsTitle')}</CardTitle>
+                <CardDescription>{t('home.programsBody')}</CardDescription>
               </CardHeader>
             </Card>
-            
             <Card>
               <CardHeader>
                 <Users className="h-8 w-8 text-primary mb-2" />
-                <CardTitle>Colaboração</CardTitle>
-                <CardDescription>
-                  Partilha programas com outros Dirigentes e inspira-te em ideias
-                </CardDescription>
+                <CardTitle>{t('home.collabTitle')}</CardTitle>
+                <CardDescription>{t('home.collabBody')}</CardDescription>
               </CardHeader>
             </Card>
-            
             <Card>
               <CardHeader>
                 <BookOpen className="h-8 w-8 text-primary mb-2" />
-                <CardTitle>Recursos</CardTitle>
-                <CardDescription>
-                  Acede a materiais, instruções e dicas para cada atividade
-                </CardDescription>
+                <CardTitle>{t('home.resourcesTitle')}</CardTitle>
+                <CardDescription>{t('home.resourcesBody')}</CardDescription>
               </CardHeader>
             </Card>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-16">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">
-            Pronto para começar?
-          </h2>
-          <p className="text-xl text-muted-foreground mb-8">
-            Junta-te a outros Dirigentes que já estão a usar o Kit de Atividades
-          </p>
+          <h2 className="text-3xl font-bold mb-4">{t('home.ctaTitle')}</h2>
+          <p className="text-xl text-muted-foreground mb-8">{t('home.ctaLead')}</p>
           <Button asChild size="lg">
-            <Link href="/activities">
-              Começar Agora
-            </Link>
+            <Link href="/activities">{t('home.ctaButton')}</Link>
           </Button>
         </div>
       </section>
     </div>
   );
 }
-

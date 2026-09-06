@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { log } from '@/lib/errors';
 import { validateProps } from '@/lib/validation';
 import { specificSchemas } from '@/lib/validation/component-schemas';
+import { useLocale } from '@/components/locale/LocaleProvider';
 
 /**
  * Props for the ExportButton component
@@ -42,6 +43,7 @@ export function ExportButton({
     validateProps({ programId, programName, variant, size, className }, specificSchemas.exportButton, 'ExportButton');
   }
 
+  const { t } = useLocale();
   const { exportToExcel, isExporting, exportError } = useProgramExport();
 
   const handleExport = async () => {
@@ -82,7 +84,7 @@ export function ExportButton({
       ) : (
         <FileSpreadsheet className="h-4 w-4" />
       )}
-      {isExporting ? 'A exportar...' : 'Exportar Excel'}
+      {isExporting ? t('export.exporting') : t('export.excel')}
     </Button>
   );
 }

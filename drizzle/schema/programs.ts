@@ -12,9 +12,14 @@ export const programs = pgTable('programs', {
   start_time: time('start_time').notNull(),
   user_id: uuid('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   is_public: boolean('is_public').notNull().default(false),
+  source_program_id: uuid('source_program_id'),
+  source_author_name: text('source_author_name'),
+  orgo_event_uuid: text('orgo_event_uuid'),
+  orgo_event_url: text('orgo_event_url'),
   created_at: timestamp('created_at').notNull().defaultNow(),
   updated_at: timestamp('updated_at').notNull().defaultNow(),
 }, (table) => ({
+  sourceProgramIdx: index('programs_source_program_id_idx').on(table.source_program_id),
   // Performance indexes for frequently queried fields
   userIdIdx: index('programs_user_id_idx').on(table.user_id),
   dateIdx: index('programs_date_idx').on(table.date),

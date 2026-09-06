@@ -1,8 +1,12 @@
+'use client';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Clock, Users, TrendingUp, MapPin, Calendar } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useLocale } from '@/components/locale/LocaleProvider';
+import { enumLabel } from '@/lib/locale/labels';
 
 /**
  * Interface for educational goal data
@@ -63,53 +67,6 @@ interface ActivityCardProps {
  * @param size - The group size value
  * @returns The display text for the group size
  */
-function getGroupSizeText(size: string): string {
-  const sizeMap = {
-    small: 'Pequeno (2-6)',
-    medium: 'Médio (7-15)',
-    large: 'Grande (16+)',
-  };
-  return sizeMap[size as keyof typeof sizeMap] || size;
-}
-
-/**
- * Helper function to get effort level display text
- * @param level - The effort level value
- * @returns The display text for the effort level
- */
-function getEffortLevelText(level: string): string {
-  const levelMap = {
-    low: 'Baixo',
-    medium: 'Médio',
-    high: 'Alto',
-  };
-  return levelMap[level as keyof typeof levelMap] || level;
-}
-
-// Helper function to get age group display text
-function getAgeGroupText(ageGroup: string): string {
-  const ageMap = {
-    cub_scouts: 'Lobitos (6-10)',
-    scouts: 'Escoteiros (10-14)',
-    adventurers: 'Exploradores (14-17)',
-    rovers: 'Caminheiros (17-21)',
-    leaders: 'Dirigentes (21+)',
-  };
-  return ageMap[ageGroup as keyof typeof ageMap] || ageGroup;
-}
-
-/**
- * Helper function to get location display text
- * @param location - The location value
- * @returns The display text for the location
- */
-function getLocationText(location: string): string {
-  const locationMap = {
-    inside: 'Interior',
-    outside: 'Exterior',
-  };
-  return locationMap[location as keyof typeof locationMap] || location;
-}
 
 /**
  * ActivityCard component for displaying activity information in a card format
@@ -118,7 +75,7 @@ function getLocationText(location: string): string {
  * @returns JSX element representing the activity card
  */
 export function ActivityCard({ activity }: ActivityCardProps) {
-
+  const { t } = useLocale();
   const name = activity.name;
   const description = activity.description;
   const activityTypeName = activity.activity_type.name;
@@ -138,7 +95,7 @@ export function ActivityCard({ activity }: ActivityCardProps) {
           <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
             <div className="text-center text-muted-foreground">
               <Calendar className="w-12 h-12 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">Sem imagem</p>
+              <p className="text-sm">{t('activities.noImage')}</p>
             </div>
           </div>
         )}
@@ -157,12 +114,12 @@ export function ActivityCard({ activity }: ActivityCardProps) {
                <div
                  key={sdg.id}
                  className="w-8 h-8 rounded-md flex items-center justify-center shadow-lg border-2 border-white bg-white overflow-hidden"
-                                   title={`ODS ${sdg.number}: ${sdg.name}`}
+                                   title={t('activities.sdgTitle', { number: sdg.number, name: sdg.name })}
                >
                  {sdg.icon_url ? (
                    <img
                      src={sdg.icon_url}
-                     alt={`ODS ${sdg.number}`}
+                     alt={t('activities.sdgPrefix', { number: sdg.number })}
                      className="w-full h-full object-contain"
                    />
                  ) : (
@@ -181,7 +138,7 @@ export function ActivityCard({ activity }: ActivityCardProps) {
              {activity.sdgs.length > 4 && (
                <div
                  className="w-8 h-8 rounded-md flex items-center justify-center text-white text-xs font-bold shadow-lg border-2 border-white bg-gray-600"
-                 title={`+${activity.sdgs.length - 4} mais ODS`}
+                 title={t('activities.sdgMore', { count: activity.sdgs.length - 4 })}
                >
                  +{activity.sdgs.length - 4}
                </div>
@@ -199,37 +156,37 @@ export function ActivityCard({ activity }: ActivityCardProps) {
         {/* Activity details */}
         <div className="space-y-3">
           {/* Duration, Group Size, Effort */}
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <Clock className="w-4 h-4" />
               <span>{activity.approximate_duration_minutes} min</span>
             </div>
             <div className="flex items-center gap-1">
               <Users className="w-4 h-4" />
-              <span>{getGroupSizeText(activity.group_size)}</span>
+              <span>{enumLabel(t, 'groupSize', activity.group_size)}</span>
             </div>
             <div className="flex items-center gap-1">
               <TrendingUp className="w-4 h-4" />
-              <span>{getEffortLevelText(activity.effort_level)}</span>
+              <span>{enumLabel(t, 'effort', activity.effort_level)}</span>
             </div>
           </div>
 
           {/* Location and Age Group */}
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <MapPin className="w-4 h-4" />
-              <span>{getLocationText(activity.location)}</span>
+              <span>{enumLabel(t, 'location', activity.location)}</span>
             </div>
             <div className="flex items-center gap-1">
               <Users className="w-4 h-4" />
-              <span>{getAgeGroupText(activity.age_group)}</span>
+              <span>{enumLabel(t, 'ageGroup', activity.age_group)}</span>
             </div>
           </div>
 
           {/* Educational Goals */}
           {activity.educational_goals.length > 0 && (
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">Objetivos Educativos:</p>
+              <p className="text-xs font-medium text-muted-foreground mb-1">{t('activities.goalsColon')}</p>
               <div className="flex flex-wrap gap-1">
                 {activity.educational_goals.slice(0, 3).map((goal) => (
                   <Badge key={goal.id} variant="outline" className="text-xs">
@@ -254,7 +211,7 @@ export function ActivityCard({ activity }: ActivityCardProps) {
             href={`/activities/${activity.id}`}
             className="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded-md transition-colors"
           >
-            Ver Detalhes
+            {t('activities.viewDetails')}
           </Link>
         </div>
       </CardContent>

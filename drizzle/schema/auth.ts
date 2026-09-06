@@ -10,6 +10,7 @@ export const user = pgTable('user', {
   email: text('email').notNull().unique(),
   emailVerified: timestamp('emailVerified'),
   image: text('image'),
+  role: text('role', { enum: ['user', 'admin'] }).notNull().default('user'),
 });
 
 // Accounts table - stores OAuth provider accounts

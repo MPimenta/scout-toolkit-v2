@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/server';
-import { activities, activityTypes, educationalGoals, sdgs, activityEducationalGoals, activitySdgs, educationalAreas } from '../../../../../drizzle/schema';
+import { activities, activityTypes, educationalGoals, sdgs, activityEducationalGoals, activitySdgs, educationalAreas, user } from '../../../../../drizzle/schema';
 import { eq } from 'drizzle-orm';
+import { auth } from '@/lib/auth/config';
 import { 
   apiErrors, 
   logApiRequest, 
@@ -9,6 +10,7 @@ import {
   withApiErrorHandler 
 } from '@/lib/errors';
 import { validateUUID } from '@/lib/errors/error-handler';
+import { parseActivityWrite, replaceRelations } from '@/lib/activities/write';
 
 export const GET = withApiErrorHandler(async (
   _request: NextRequest,
@@ -41,8 +43,11 @@ export const GET = withApiErrorHandler(async (
         location: activities.location,
         age_group: activities.age_group,
         image_url: activities.image_url,
+        created_by: activities.created_by,
+        is_approved: activities.is_approved,
         created_at: activities.created_at,
         updated_at: activities.updated_at,
+        author_name: user.name,
         activity_type: {
           id: activityTypes.id,
           name: activityTypes.name,
@@ -51,6 +56,7 @@ export const GET = withApiErrorHandler(async (
       })
       .from(activities)
       .leftJoin(activityTypes, eq(activities.activity_type_id, activityTypes.id))
+      .leftJoin(user, eq(activities.created_by, user.id))
       .where(eq(activities.id, id))
       .limit(1);
 
@@ -59,6 +65,14 @@ export const GET = withApiErrorHandler(async (
     }
 
     const activity = activityData[0];
+    if (!activity.is_approved) {
+      const session = await auth();
+      const isAuthor = session?.user?.id && session.user.id === activity.created_by;
+      const isAdmin = session?.user?.role === 'admin';
+      if (!isAuthor && !isAdmin) {
+        return apiErrors.notFound('atividade', id);
+      }
+    }
 
     // Fetch educational goals with their areas
     const goals = await db
@@ -103,4 +117,58 @@ export const GET = withApiErrorHandler(async (
     const response = NextResponse.json(activityWithDetails);
     logApiResponse('GET', '/api/activities/[id]', 200);
     return response;
+});
+
+export const PATCH = withApiErrorHandler(async (
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) => {
+  const session = await auth();
+  if (!session?.user?.id) return apiErrors.unauthorized();
+
+  const { id } = await params;
+  const [row] = await db.select().from(activities).where(eq(activities.id, id)).limit(1);
+  if (!row) return apiErrors.notFound('atividade', id);
+  if (row.created_by !== session.user.id || row.is_approved) {
+    return apiErrors.forbidden('Só pode editar a sua proposta enquanto estiver pendente');
+  }
+
+  const parsed = parseActivityWrite(await request.json());
+  if (typeof parsed === 'string') return apiErrors.validation('body', parsed);
+
+  const [updated] = await db
+    .update(activities)
+    .set({
+      name: parsed.name,
+      description: parsed.description,
+      materials: parsed.materials,
+      approximate_duration_minutes: parsed.approximate_duration_minutes,
+      group_size: parsed.group_size,
+      effort_level: parsed.effort_level,
+      location: parsed.location,
+      age_group: parsed.age_group,
+      activity_type_id: parsed.activity_type_id,
+      image_url: parsed.image_url,
+      updated_at: new Date(),
+    })
+    .where(eq(activities.id, id))
+    .returning();
+  await replaceRelations(id, parsed);
+  return NextResponse.json({ activity: updated });
+});
+
+export const DELETE = withApiErrorHandler(async (
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) => {
+  const session = await auth();
+  if (!session?.user?.id) return apiErrors.unauthorized();
+  const { id } = await params;
+  const [row] = await db.select().from(activities).where(eq(activities.id, id)).limit(1);
+  if (!row) return apiErrors.notFound('atividade', id);
+  if (row.created_by !== session.user.id || row.is_approved) {
+    return apiErrors.forbidden('Só pode retirar a sua proposta enquanto estiver pendente');
+  }
+  await db.delete(activities).where(eq(activities.id, id));
+  return NextResponse.json({ success: true });
 });

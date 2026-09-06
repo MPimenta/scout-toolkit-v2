@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -18,6 +18,7 @@ import {
 } from '@dnd-kit/sortable';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
 import { ProgramScheduleRow } from './ProgramScheduleRow';
 import { ProgramEntry } from '../../../../drizzle/schema/programs';
 import { ActivitiesResponse } from '@/hooks/useActivities';
@@ -54,6 +55,10 @@ export function ProgramScheduleTable({
   onDelete,
 }: ProgramScheduleTableProps) {
   const [localEntries, setLocalEntries] = useState(entries);
+
+  useEffect(() => {
+    setLocalEntries(entries);
+  }, [entries]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -94,6 +99,14 @@ export function ProgramScheduleTable({
     });
   }, [localEntries, activities, programStartTime]);
 
+  const moveEntry = (index: number, direction: -1 | 1) => {
+    const nextIndex = index + direction;
+    if (nextIndex < 0 || nextIndex >= localEntries.length) return;
+    const newEntries = arrayMove(localEntries, index, nextIndex);
+    setLocalEntries(newEntries);
+    onReorder(newEntries);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -123,7 +136,41 @@ export function ProgramScheduleTable({
 
   return (
     <div className="border rounded-lg overflow-hidden">
-      <div className="overflow-x-auto">
+      <div className="md:hidden divide-y">
+        {entriesWithTimes.map(({ entry, startTime, endTime }, index) => (
+          <div key={entry.id} className="p-3 space-y-2">
+            <p className="font-medium">
+              {entry.entry_type === 'custom'
+                ? entry.custom_title
+                : getActivityById(entry.activity_id)?.name || 'Atividade'}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {startTime}–{endTime}
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="min-h-11"
+                disabled={index === 0}
+                onClick={() => moveEntry(index, -1)}
+              >
+                Subir
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="min-h-11"
+                disabled={index === localEntries.length - 1}
+                onClick={() => moveEntry(index, 1)}
+              >
+                Descer
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="hidden md:block overflow-x-auto">
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}

@@ -1,8 +1,14 @@
+process.env.DATABASE_URL =
+  'postgresql://test_user:test_password@localhost:5432/scout_toolkit_test'
+
 import '@testing-library/jest-dom'
 import { vi } from 'vitest'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import * as schema from '../drizzle/schema'
+import { probeLocalTestDatabase } from './helpers/local-test-db'
+
+process.env.SCOUT_HAS_LOCAL_TEST_DB = (await probeLocalTestDatabase()) ? '1' : ''
 
 let testDb: ReturnType<typeof drizzle>
 export let sql: ReturnType<typeof postgres>
@@ -17,6 +23,8 @@ export async function setupTestDatabase() {
     
     // Create Drizzle instance
     testDb = drizzle(sql, { schema })
+    const { boundTestDb } = await import('./helpers/bound-test-db')
+    boundTestDb.current = testDb
     
     // Create tables if they don't exist (avoids permission issues)
     await createTestSchema()
@@ -42,9 +50,12 @@ async function createTestSchema() {
         name text,
         email text NOT NULL UNIQUE,
         "emailVerified" timestamp,
-        image text
+        image text,
+        role text NOT NULL DEFAULT 'user'
       )
     `;
+
+    await sql`ALTER TABLE "user" ADD COLUMN IF NOT EXISTS role text NOT NULL DEFAULT 'user'`;
 
     // Account table (NextAuth.js)
     await sql`
@@ -177,10 +188,19 @@ async function createTestSchema() {
         start_time time NOT NULL,
         user_id uuid NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
         is_public boolean NOT NULL DEFAULT false,
+        source_program_id uuid,
+        source_author_name text,
+        orgo_event_uuid text,
+        orgo_event_url text,
         created_at timestamp DEFAULT now(),
         updated_at timestamp DEFAULT now()
       )
     `;
+
+    await sql`ALTER TABLE programs ADD COLUMN IF NOT EXISTS source_program_id uuid`;
+    await sql`ALTER TABLE programs ADD COLUMN IF NOT EXISTS source_author_name text`;
+    await sql`ALTER TABLE programs ADD COLUMN IF NOT EXISTS orgo_event_uuid text`;
+    await sql`ALTER TABLE programs ADD COLUMN IF NOT EXISTS orgo_event_url text`;
 
     // Program entries table
     await sql`
@@ -195,6 +215,92 @@ async function createTestSchema() {
         custom_title text,
         custom_duration_minutes integer,
         created_at timestamp DEFAULT now()
+      )
+    `;
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS reviews (
+        id uuid UNIQUE DEFAULT gen_random_uuid(),
+        activity_id uuid NOT NULL REFERENCES activities(id) ON DELETE CASCADE,
+        user_id uuid NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+        rating integer NOT NULL,
+        comment text,
+        created_at timestamp NOT NULL DEFAULT now(),
+        updated_at timestamp NOT NULL DEFAULT now(),
+        PRIMARY KEY (activity_id, user_id)
+      )
+    `;
+
+    await sql`ALTER TABLE reviews ADD COLUMN IF NOT EXISTS id uuid DEFAULT gen_random_uuid()`;
+    await sql`UPDATE reviews SET id = gen_random_uuid() WHERE id IS NULL`;
+    await sql`CREATE UNIQUE INDEX IF NOT EXISTS reviews_id_unique ON reviews(id)`;
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS review_votes (
+        review_id uuid NOT NULL REFERENCES reviews(id) ON DELETE CASCADE,
+        user_id uuid NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+        value text NOT NULL,
+        created_at timestamp NOT NULL DEFAULT now(),
+        PRIMARY KEY (review_id, user_id)
+      )
+    `;
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS review_reactions (
+        review_id uuid NOT NULL REFERENCES reviews(id) ON DELETE CASCADE,
+        user_id uuid NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+        key text NOT NULL,
+        created_at timestamp NOT NULL DEFAULT now(),
+        PRIMARY KEY (review_id, user_id)
+      )
+    `;
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS review_replies (
+        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+        review_id uuid NOT NULL REFERENCES reviews(id) ON DELETE CASCADE,
+        user_id uuid NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+        body text NOT NULL,
+        mention_user_id uuid REFERENCES "user"(id) ON DELETE SET NULL,
+        created_at timestamp NOT NULL DEFAULT now(),
+        updated_at timestamp NOT NULL DEFAULT now()
+      )
+    `;
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS edit_suggestions (
+        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+        activity_id uuid NOT NULL REFERENCES activities(id) ON DELETE CASCADE,
+        user_id uuid NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+        field text NOT NULL,
+        suggested_value text NOT NULL,
+        status text NOT NULL DEFAULT 'pending',
+        reviewed_at timestamp,
+        reviewed_by uuid REFERENCES "user"(id),
+        created_at timestamp NOT NULL DEFAULT now()
+      )
+    `;
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS notifications (
+        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id uuid NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+        type text NOT NULL,
+        title text NOT NULL,
+        body text NOT NULL,
+        href text,
+        read_at timestamp,
+        created_at timestamp NOT NULL DEFAULT now()
+      )
+    `;
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS reply_reactions (
+        reply_id uuid NOT NULL REFERENCES review_replies(id) ON DELETE CASCADE,
+        user_id uuid NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+        key text NOT NULL,
+        created_at timestamp NOT NULL DEFAULT now(),
+        PRIMARY KEY (reply_id, user_id)
       )
     `;
 
@@ -220,6 +326,13 @@ export async function resetTestDatabase() {
     if (testDb && sql) {
       // Truncate all tables in reverse dependency order using raw SQL
       const tables = [
+        'reply_reactions',
+        'review_replies',
+        'review_reactions',
+        'review_votes',
+        'notifications',
+        'edit_suggestions',
+        'reviews',
         'program_entries',
         'programs', 
         'activity_sdgs',

@@ -10,12 +10,15 @@ import {
   withApiErrorHandler 
 } from '@/lib/errors';
 import { validateUUID } from '@/lib/errors/error-handler';
+import { isE2EOrgoStub, isOrgoWriteConfigured } from '@/lib/orgo/config';
+import { ensureOrgoProgramColumns } from '@/lib/orgo/ensure-columns';
 
 export const GET = withApiErrorHandler(async (
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) => {
   logApiRequest('GET', '/api/programs/[id]');
+  await ensureOrgoProgramColumns();
   
   // Check authentication
   const session = await auth();
@@ -39,6 +42,8 @@ export const GET = withApiErrorHandler(async (
         date: programs.date,
         start_time: programs.start_time,
         is_public: programs.is_public,
+        orgo_event_uuid: programs.orgo_event_uuid,
+        orgo_event_url: programs.orgo_event_url,
         created_at: programs.created_at,
         updated_at: programs.updated_at,
         user_id: user.id,
@@ -55,6 +60,7 @@ export const GET = withApiErrorHandler(async (
     const { user_id: _userId, user_name: _userName, ...programFields } = programRow;
     const programData = {
       ...programFields,
+      orgo_write_configured: isOrgoWriteConfigured() || isE2EOrgoStub(session.user.email),
       user: {
         id: programRow.user_id ?? session.user.id,
         name: programRow.user_name ?? session.user.name ?? 'Utilizador',

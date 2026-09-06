@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ActivitiesResponse } from '@/hooks/useActivities';
 import { useAllActivities } from '@/hooks/useActivities';
 import { Search, Filter, Clock, MapPin, Users, Target } from 'lucide-react';
+import { useLocale } from '@/components/locale/LocaleProvider';
 
 /**
  * Props for the AddActivityModal component
@@ -30,6 +31,7 @@ interface AddActivityModalProps {
  * @returns JSX element representing the activity selection modal
  */
 export function AddActivityModal({ open, onClose, onAdd, programId: _programId }: AddActivityModalProps) {
+  const { t } = useLocale();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [selectedLocation, setSelectedLocation] = useState<string>('all');
@@ -77,7 +79,7 @@ export function AddActivityModal({ open, onClose, onAdd, programId: _programId }
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle>Add Activity to Program</DialogTitle>
+          <DialogTitle>{t('programs.addToProgramTitle')}</DialogTitle>
         </DialogHeader>
 
         <div className="flex-1 flex flex-col space-y-4">
@@ -86,7 +88,7 @@ export function AddActivityModal({ open, onClose, onAdd, programId: _programId }
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
-                placeholder="Search activities..."
+                placeholder={t('programs.searchActivities')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -95,13 +97,13 @@ export function AddActivityModal({ open, onClose, onAdd, programId: _programId }
 
             <div className="flex gap-4">
               <div className="flex-1">
-                <Label htmlFor="type-filter">Activity Type</Label>
+                <Label htmlFor="type-filter">{t('programs.activityType')}</Label>
                 <Select value={selectedType} onValueChange={setSelectedType}>
                   <SelectTrigger id="type-filter">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="all">{t('programs.allTypes')}</SelectItem>
                     {activityTypes.map(type => (
                       <SelectItem key={type} value={type}>{type}</SelectItem>
                     ))}
@@ -110,13 +112,13 @@ export function AddActivityModal({ open, onClose, onAdd, programId: _programId }
               </div>
 
               <div className="flex-1">
-                <Label htmlFor="location-filter">Location</Label>
+                <Label htmlFor="location-filter">{t('programs.location')}</Label>
                 <Select value={selectedLocation} onValueChange={setSelectedLocation}>
                   <SelectTrigger id="location-filter">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Locations</SelectItem>
+                    <SelectItem value="all">{t('programs.allLocations')}</SelectItem>
                     {locations.map(location => (
                       <SelectItem key={location} value={location}>{location}</SelectItem>
                     ))}
@@ -130,13 +132,13 @@ export function AddActivityModal({ open, onClose, onAdd, programId: _programId }
           <div className="flex-1 overflow-y-auto space-y-3">
             {isLoading ? (
               <div className="text-center py-8 text-muted-foreground">
-                Loading activities...
+                {t('programs.loadingActivities')}
               </div>
             ) : filteredActivities.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <Filter className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p className="text-lg font-medium">No activities found</p>
-                <p className="text-sm">Try adjusting your search or filters</p>
+                <p className="text-lg font-medium">{t('programs.noActivities')}</p>
+                <p className="text-sm">{t('programs.adjustFilters')}</p>
               </div>
             ) : (
               filteredActivities.map(activity => (
@@ -175,7 +177,12 @@ export function AddActivityModal({ open, onClose, onAdd, programId: _programId }
                         <div className="flex items-center gap-2">
                           <Target className="w-4 h-4 text-muted-foreground" />
                           <span className="text-sm text-muted-foreground">
-                            {activity.educational_goals.join(', ')}
+                            {activity.educational_goals
+                              .map((goal) =>
+                                typeof goal === 'string' ? goal : goal.title || goal.code
+                              )
+                              .filter(Boolean)
+                              .join(', ')}
                           </span>
                         </div>
                       )}
@@ -189,7 +196,7 @@ export function AddActivityModal({ open, onClose, onAdd, programId: _programId }
                         handleAddActivity(activity);
                       }}
                     >
-                      Add to Program
+                      {t('programs.addToProgram')}
                     </Button>
                   </div>
                 </div>
@@ -200,7 +207,7 @@ export function AddActivityModal({ open, onClose, onAdd, programId: _programId }
 
         <div className="flex justify-end gap-3 pt-4 border-t">
           <Button variant="outline" onClick={onClose}>
-            Cancel
+            {t('programs.cancel')}
           </Button>
         </div>
       </DialogContent>

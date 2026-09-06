@@ -68,9 +68,9 @@ describe('ActivitiesTable', () => {
     );
 
     expect(screen.getByText('Vista em Tabela')).toBeInTheDocument();
-    expect(screen.getByText('Atividade de Teste')).toBeInTheDocument();
-    expect(screen.getByText('Jogo')).toBeInTheDocument();
-    expect(screen.getByText('60 min')).toBeInTheDocument();
+    expect(screen.getAllByText('Atividade de Teste').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Jogo').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('60 min').length).toBeGreaterThan(0);
   });
 
   it('renders search input', () => {

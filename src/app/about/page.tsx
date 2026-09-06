@@ -1,89 +1,77 @@
+'use client';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useLocale } from '@/components/locale/LocaleProvider';
 
 export default function AboutPage() {
+  const { t } = useLocale();
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">Sobre o Kit de Atividades</h1>
-        <p className="text-muted-foreground">
-          Uma plataforma desenvolvida especificamente para os Dirigentes dos Escoteiros de Portugal.
-        </p>
+        <h1 className="text-3xl font-bold mb-4">{t('about.title')}</h1>
+        <p className="text-muted-foreground">{t('about.lead')}</p>
       </div>
-      
+
       <div className="grid md:grid-cols-2 gap-8">
         <Card>
           <CardHeader>
-            <CardTitle>Missão</CardTitle>
+            <CardTitle>{t('about.mission')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>
-              O Kit de Atividades nasceu da necessidade de fornecer aos Dirigentes escotistas 
-              ferramentas digitais que facilitem o planeamento e execução de atividades 
-              educativas de qualidade.
-            </p>
+            <p>{t('about.missionBody')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Visão</CardTitle>
+            <CardTitle>{t('about.vision')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>
-              Queremos ser a plataforma de referência para Dirigentes escotistas em Portugal, 
-              promovendo a partilha de conhecimento e boas práticas.
-            </p>
+            <p>{t('about.visionBody')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Funcionalidades</CardTitle>
+            <CardTitle>{t('about.features')}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc list-inside space-y-1">
-              <li>Base de dados de atividades educativas</li>
-              <li>Criador de programas personalizados</li>
-              <li>Sistema de filtros e pesquisa avançada</li>
-              <li>Partilha e colaboração entre Dirigentes</li>
-              <li>Exportação de programas</li>
+              <li>{t('about.feature1')}</li>
+              <li>{t('about.feature2')}</li>
+              <li>{t('about.feature3')}</li>
+              <li>{t('about.feature4')}</li>
+              <li>{t('about.feature5')}</li>
             </ul>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Tecnologia</CardTitle>
+            <CardTitle>{t('about.tech')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>
-              Desenvolvido com tecnologias modernas como Next.js, TypeScript e PostgreSQL, 
-              garantindo performance, segurança e facilidade de uso.
-            </p>
+            <p>{t('about.techBody')}</p>
           </CardContent>
         </Card>
       </div>
 
       <Card className="mt-8">
         <CardHeader>
-          <CardTitle>Desenvolvimento</CardTitle>
-          <CardDescription>
-            Este projeto é desenvolvido de forma aberta e colaborativa
-          </CardDescription>
+          <CardTitle>{t('about.dev')}</CardTitle>
+          <CardDescription>{t('about.devLead')}</CardDescription>
         </CardHeader>
         <CardContent>
-          <p>
-            O Kit de Atividades é um projeto open-source desenvolvido para a comunidade 
-            dos Escoteiros de Portugal. Contribuições e sugestões são bem-vindas!
-          </p>
+          <p>{t('about.devBody')}</p>
           <div className="mt-4">
-            <a 
-              href="https://github.com/MPimenta/scout-toolkit-v2" 
-              target="_blank" 
+            <a
+              href="https://github.com/MPimenta/scout-toolkit-v2"
+              target="_blank"
               rel="noopener noreferrer"
               className="text-primary hover:underline"
             >
-              Ver no GitHub →
+              {t('about.github')}
             </a>
           </div>
         </CardContent>

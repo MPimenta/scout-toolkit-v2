@@ -11,7 +11,15 @@ import { users, userRoles } from './users';
 import { activityTypes, educationalAreas, educationalGoals, sdgs } from './taxonomies';
 import { activities, activityEducationalGoals, activitySdgs } from './activities';
 import { programs, programEntries } from './programs';
-import { reviews, editSuggestions } from './feedback';
+import {
+  reviews,
+  editSuggestions,
+  notifications,
+  reviewVotes,
+  reviewReactions,
+  reviewReplies,
+  replyReactions,
+} from './feedback';
 import { user, account, session, verificationToken } from './auth';
 
 export const schema = {
@@ -28,6 +36,11 @@ export const schema = {
   programEntries,
   reviews,
   editSuggestions,
+  notifications,
+  reviewVotes,
+  reviewReactions,
+  reviewReplies,
+  replyReactions,
   user,
   account,
   session,

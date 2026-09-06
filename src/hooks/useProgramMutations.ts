@@ -1,5 +1,7 @@
 import { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/query-client';
 import { ProgramEntry } from '../../drizzle/schema/programs';
 import { 
   useCreateProgram, 
@@ -29,6 +31,12 @@ export interface UpdateProgramData {
 
 export function useProgramMutations() {
   const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const invalidateProgram = useCallback(async (programId: string) => {
+    await queryClient.invalidateQueries({ queryKey: queryKeys.programs.detail(programId) });
+    await queryClient.invalidateQueries({ queryKey: queryKeys.programs.lists() });
+  }, [queryClient]);
   
   // Use TanStack Query mutations
   const createProgramMutation = useCreateProgram();
@@ -61,6 +69,7 @@ export function useProgramMutations() {
         if (!response.ok) {
           throw new Error('Failed to update program entries');
         }
+        await invalidateProgram(programId);
       }
 
       // Update program metadata if provided
@@ -77,7 +86,7 @@ export function useProgramMutations() {
     } catch (err) {
       throw err;
     }
-  }, [updateProgramMutation]);
+  }, [updateProgramMutation, invalidateProgram]);
 
   const deleteProgram = useCallback(async (programId: string) => {
     try {
@@ -145,6 +154,7 @@ export function useProgramMutations() {
     createProgram,
     updateProgram,
     deleteProgram,
+    invalidateProgram,
     createProgramEntry,
     updateProgramEntry,
     deleteProgramEntry,

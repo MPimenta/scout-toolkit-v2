@@ -16,6 +16,8 @@ import { ExportButton } from './ExportButton';
 import { PDFExportButton } from './PDFExportButton';
 import { EditProgramModal } from './EditProgramModal';
 import { DeleteProgramModal } from './DeleteProgramModal';
+import { CreateOrgoEventDialog } from './CreateOrgoEventDialog';
+import { useLocale } from '@/components/locale/LocaleProvider';
 import { useProgramMutations } from '@/hooks/useProgramMutations';
 import { useAllActivities } from '@/hooks/useActivities';
 import { log } from '@/lib/errors';
@@ -34,13 +36,16 @@ interface ProgramBuilderProps {
     date?: string | null;
     start_time: string;
     is_public: boolean;
+    orgo_event_uuid?: string | null;
+    orgo_event_url?: string | null;
+    orgo_write_configured?: boolean;
     user?: { name?: string; id?: string } | null;
     created_at: string;
     updated_at: string;
   };
   initialEntries?: APIProgramEntry[];
   onSave?: (entries: APIProgramEntry[]) => void;
-  onRefresh?: () => void;
+  onRefresh?: () => void | Promise<unknown>;
   onDelete?: () => void;
   canEdit?: boolean;
 }
@@ -66,6 +71,7 @@ export function ProgramBuilder({
   onDelete,
   canEdit = true 
 }: ProgramBuilderProps) {
+  const { t } = useLocale();
   // Validate props in development
   if (process.env.NODE_ENV === 'development') {
     validateProps({ programId, initialEntries, onSave, onRefresh }, specificSchemas.programBuilder, 'ProgramBuilder');
@@ -95,6 +101,7 @@ export function ProgramBuilder({
   const [showAddCustom, setShowAddCustom] = useState(false);
   const [showEditProgram, setShowEditProgram] = useState(false);
   const [showDeleteProgram, setShowDeleteProgram] = useState(false);
+  const [showOrgoEvent, setShowOrgoEvent] = useState(false);
   const { updateProgram, deleteProgram } = useProgramMutations();
   const { activities } = useAllActivities();
 
@@ -125,9 +132,7 @@ export function ProgramBuilder({
 
       // Persist to database
       await updateProgram(programId, { entries: [...entries, newEntry] });
-      
-      // Refresh parent data to get the latest entries from the database
-      onRefresh?.();
+      await onRefresh?.();
     } catch (error) {
       log.error('Failed to add activity', error instanceof Error ? error : new Error(String(error)));
       // Revert local state on error
@@ -157,9 +162,7 @@ export function ProgramBuilder({
 
       // Persist to database
       await updateProgram(programId, { entries: [...entries, newEntry] });
-      
-      // Refresh parent data to get the latest entries from the database
-      onRefresh?.();
+      await onRefresh?.();
     } catch (error) {
       log.error('Failed to add custom block', error instanceof Error ? error : new Error(String(error)));
       // Revert local state on error
@@ -177,9 +180,7 @@ export function ProgramBuilder({
       
       // Persist to database
       await updateProgram(programId, { entries: updatedEntries });
-      
-      // Refresh parent data to get the latest entries from the database
-      onRefresh?.();
+      await onRefresh?.();
     } catch (error) {
       log.error('Failed to remove entry', error instanceof Error ? error : new Error(String(error)));
       // Revert local state on error
@@ -201,9 +202,7 @@ export function ProgramBuilder({
       
       // Persist to database
       await updateProgram(programId, { entries: updatedEntries });
-      
-      // Refresh parent data to get the latest entries from the database
-      onRefresh?.();
+      await onRefresh?.();
     } catch (error) {
       log.error('Failed to reorder entries', error instanceof Error ? error : new Error(String(error)));
       // Revert local state on error
@@ -336,7 +335,7 @@ export function ProgramBuilder({
     <ErrorBoundary>
       <div className="space-y-6">
         {/* Program Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
             <h1 className="text-3xl font-bold">{program.name}</h1>
             <p className="text-muted-foreground">
@@ -344,14 +343,34 @@ export function ProgramBuilder({
             </p>
           </div>
           {canEdit && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              {program.orgo_event_url ? (
+                <Button variant="outline" asChild>
+                  <a href={program.orgo_event_url} target="_blank" rel="noreferrer">
+                    {t('programs.viewOrgo')}
+                  </a>
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  onClick={() => setShowOrgoEvent(true)}
+                  disabled={program.orgo_write_configured === false && !program.orgo_event_uuid}
+                  title={
+                    program.orgo_write_configured === false
+                      ? 'Integração Orgo não configurada'
+                      : undefined
+                  }
+                >
+                  {t('programs.createOrgo')}
+                </Button>
+              )}
               <Button
                 variant="outline"
                 onClick={() => setShowEditProgram(true)}
                 className="flex items-center gap-2"
               >
                 <Edit className="h-4 w-4" />
-                Editar
+                {t('programs.edit')}
               </Button>
               <Button
                 variant="outline"
@@ -359,7 +378,7 @@ export function ProgramBuilder({
                 className="text-destructive hover:text-destructive"
               >
                 <Trash2 className="h-4 w-4" />
-                Eliminar
+                {t('programs.delete')}
               </Button>
             </div>
           )}
@@ -436,7 +455,7 @@ export function ProgramBuilder({
         </div>
 
         {/* Builder Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
             <h2 className="text-2xl font-bold">Program Builder</h2>
             <p className="text-muted-foreground">
@@ -473,7 +492,7 @@ export function ProgramBuilder({
               className="flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
-              Adicionar Atividade
+              {t('programs.addActivity')}
             </Button>
             <Button 
               onClick={() => setShowAddCustom(true)}
@@ -481,7 +500,7 @@ export function ProgramBuilder({
               className="flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
-              Adicionar Bloco Personalizado
+              {t('programs.addCustom')}
             </Button>
           </div>
         )}
@@ -523,6 +542,14 @@ export function ProgramBuilder({
         onClose={() => setShowEditProgram(false)}
         program={program}
         onSuccess={onRefresh}
+      />
+
+      <CreateOrgoEventDialog
+        open={showOrgoEvent}
+        onOpenChange={setShowOrgoEvent}
+        program={program}
+        entries={initialEntries}
+        onCreated={onRefresh}
       />
 
       <DeleteProgramModal

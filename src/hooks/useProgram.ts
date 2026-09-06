@@ -45,6 +45,9 @@ export interface ProgramDetail {
   date: string | null;
   start_time: string;
   is_public: boolean;
+  orgo_event_uuid?: string | null;
+  orgo_event_url?: string | null;
+  orgo_write_configured?: boolean;
   created_at: string;
   updated_at: string;
   user: {
@@ -72,7 +75,7 @@ export function useProgram(programId: string | null) {
     if (program) {
       log.debug('useProgram hook - Program data loaded', { 
         programId: program.id,
-        entryCount: program.entries.length 
+        entryCount: program.entries?.length ?? 0 
       });
     }
   }, [program]);

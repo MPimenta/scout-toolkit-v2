@@ -52,6 +52,9 @@ export interface Program {
   date?: string;
   start_time: string;
   is_public: boolean;
+  orgo_event_uuid?: string | null;
+  orgo_event_url?: string | null;
+  orgo_write_configured?: boolean;
   created_at: string;
   updated_at: string;
   user: {
@@ -60,6 +63,35 @@ export interface Program {
   };
   entries: ProgramEntry[];
   summary: ProgramSummary;
+}
+
+const emptySummary: ProgramSummary = {
+  total_duration_minutes: 0,
+  entry_count: 0,
+  educational_goals: [],
+  sdgs: [],
+};
+
+/** Create/list payloads omit entries; the builder always needs a full detail shape. */
+export function toProgramDetail(
+  program: Partial<Program> & { id: string; date?: string | null }
+): Program {
+  const entries = program.entries ?? [];
+  return {
+    id: program.id,
+    name: program.name ?? '',
+    date: program.date ?? undefined,
+    start_time: program.start_time ?? '09:00',
+    is_public: Boolean(program.is_public),
+    orgo_event_uuid: program.orgo_event_uuid ?? null,
+    orgo_event_url: program.orgo_event_url ?? null,
+    orgo_write_configured: Boolean(program.orgo_write_configured),
+    created_at: program.created_at ?? '',
+    updated_at: program.updated_at ?? '',
+    user: program.user ?? { id: '', name: '' },
+    entries,
+    summary: program.summary ?? { ...emptySummary, entry_count: entries.length },
+  };
 }
 
 /**
@@ -82,7 +114,7 @@ async function fetchProgram(id: string): Promise<Program> {
   }
   
   const data = await response.json();
-  return data.program;
+  return toProgramDetail(data.program);
 }
 
 /**
@@ -97,6 +129,7 @@ export function useProgram(id: string) {
     enabled: !!id, // Only run query if id is provided
     staleTime: 30 * 1000, // 30 seconds for individual program (very dynamic)
     gcTime: 2 * 60 * 1000, // 2 minutes cache
+    select: (data) => toProgramDetail(data),
   });
 }
 

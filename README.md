@@ -14,7 +14,7 @@ A modern web platform for Portuguese scout leaders to browse activities, build p
 - **📊 Export Functionality** - Export programs to Excel and PDF
 - **⭐ Rating System** - Rate and comment on activities
 - **👥 Public Programs** - Share and discover program templates
-- **🔐 Secure Authentication** - Google OAuth with domain restriction
+- **🔐 Secure Authentication** - eAEP (Orgo) membership login
 - **👨‍💼 Admin Panel** - Complete content management system
 
 ## 🚀 Quick Start
@@ -23,8 +23,9 @@ A modern web platform for Portuguese scout leaders to browse activities, build p
 
 - Node.js 18+ 
 - Docker and Docker Compose
-- Google OAuth credentials (for authentication)
+- eAEP / Orgo OAuth credentials (for authentication)
 - UploadThing account (for file uploads)
+- Playwright Chromium (for PDF export: `npm run playwright:install`)
 
 ### Installation
 
@@ -54,9 +55,10 @@ A modern web platform for Portuguese scout leaders to browse activities, build p
    
    Edit `.env.local` and update these values:
    ```env
-   # Get these from Google Cloud Console
-   GOOGLE_CLIENT_ID="your-google-client-id"
-   GOOGLE_CLIENT_SECRET="your-google-client-secret"
+   # Get these from the eAEP / Orgo tenant
+   ORGO_ISSUER="https://eaep.escoteiros.pt"
+   ORGO_CLIENT_ID="your-orgo-client-id"
+   ORGO_CLIENT_SECRET="your-orgo-client-secret"
    
    # Get these from uploadthing.com
    UPLOADTHING_SECRET="your-uploadthing-secret"
@@ -105,9 +107,10 @@ npm run db:seed
 ## 🧪 Testing
 
 ```bash
-npm run test          # Unit and integration tests with PostgreSQL
-npm run test:e2e      # E2E tests
-npm run test:coverage # Coverage report
+npm run playwright:install  # Download Chromium for PDF export (this project's Playwright version)
+npm run test                # Unit and integration tests
+npm run test:e2e            # E2E tests
+npm run test:coverage       # Coverage report
 ```
 
 **Testing Infrastructure:**
@@ -133,6 +136,7 @@ npm run test:coverage # Coverage report
 | `npm run db:migrate` | Run database migrations |
 | `npm run db:seed` | Seed database with initial data |
 | `npm run db:studio` | Open Drizzle Studio (database GUI) |
+| `npm run playwright:install` | Install this project's Playwright Chromium for PDF export |
 
 ## 🌍 Interface Language
 

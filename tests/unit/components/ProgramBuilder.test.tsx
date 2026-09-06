@@ -9,7 +9,24 @@ import { Activity } from '../../../drizzle/schema/activities';
 vi.mock('@/hooks/useProgramMutations', () => ({
   useProgramMutations: () => ({
     updateProgram: vi.fn(),
+    deleteProgram: vi.fn(),
   }),
+}));
+
+vi.mock('@/components/features/programs/ExportButton', () => ({
+  ExportButton: () => <button type="button">Exportar Excel</button>,
+}));
+
+vi.mock('@/components/features/programs/PDFExportButton', () => ({
+  PDFExportButton: () => <button type="button">Exportar PDF</button>,
+}));
+
+vi.mock('@/components/features/programs/EditProgramModal', () => ({
+  EditProgramModal: () => null,
+}));
+
+vi.mock('@/components/features/programs/DeleteProgramModal', () => ({
+  DeleteProgramModal: () => null,
 }));
 
 vi.mock('@/hooks/useActivities', () => ({
@@ -114,25 +131,42 @@ const mockEntries: ProgramEntry[] = [
   },
 ];
 
+const mockProgram = {
+  id: 'program-1',
+  name: 'Programa de Teste',
+  date: '2026-04-12',
+  start_time: '09:00',
+  is_public: false,
+  user: { name: 'Chefe Ana', id: 'user-1' },
+  created_at: '2026-04-01T10:00:00.000Z',
+  updated_at: '2026-04-01T10:00:00.000Z',
+};
+
 describe('ProgramBuilder', () => {
   const defaultProps = {
     programId: 'program-1',
+    program: mockProgram,
     initialEntries: [] as ProgramEntry[],
     onSave: vi.fn(),
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubGlobal('confirm', vi.fn(() => false));
+    vi.stubGlobal('prompt', vi.fn(() => null));
   });
 
   it('renders program builder interface', () => {
     render(<ProgramBuilder {...defaultProps} />);
     
+    expect(screen.getByText('Programa de Teste')).toBeInTheDocument();
     expect(screen.getByText('Program Builder')).toBeInTheDocument();
     expect(screen.getByText('Drag and drop to reorder, add activities and custom blocks')).toBeInTheDocument();
-    expect(screen.getByText('Add Activity')).toBeInTheDocument();
-    expect(screen.getByText('Add Custom Block')).toBeInTheDocument();
+    expect(screen.getByText('Adicionar Atividade')).toBeInTheDocument();
+    expect(screen.getByText('Adicionar Bloco Personalizado')).toBeInTheDocument();
     expect(screen.getByText('Save Program')).toBeInTheDocument();
+    expect(screen.getByText('Exportar Excel')).toBeInTheDocument();
+    expect(screen.getByText('Exportar PDF')).toBeInTheDocument();
   });
 
   it('shows empty state when no entries', () => {
@@ -155,21 +189,21 @@ describe('ProgramBuilder', () => {
   it('opens add activity modal when Add Activity button is clicked', () => {
     render(<ProgramBuilder {...defaultProps} />);
     
-    fireEvent.click(screen.getByText('Add Activity'));
+    fireEvent.click(screen.getByText('Adicionar Atividade'));
     expect(screen.getByTestId('add-activity-modal')).toBeInTheDocument();
   });
 
   it('opens add custom block modal when Add Custom Block button is clicked', () => {
     render(<ProgramBuilder {...defaultProps} />);
     
-    fireEvent.click(screen.getByText('Add Custom Block'));
+    fireEvent.click(screen.getByText('Adicionar Bloco Personalizado'));
     expect(screen.getByTestId('add-custom-modal')).toBeInTheDocument();
   });
 
   it('adds activity when selected from modal', async () => {
     render(<ProgramBuilder {...defaultProps} />);
     
-    fireEvent.click(screen.getByText('Add Activity'));
+    fireEvent.click(screen.getByText('Adicionar Atividade'));
     fireEvent.click(screen.getByText('Add Mock Activity'));
     
     await waitFor(() => {
@@ -184,12 +218,8 @@ describe('ProgramBuilder', () => {
     render(<ProgramBuilder {...defaultProps} />);
     
     // Click the Add Custom Block button (first one - the main button)
-    const addCustomButtons = screen.getAllByText('Add Custom Block');
-    fireEvent.click(addCustomButtons[0]);
-    
-    // Click the Add Custom Block button in the modal (use getAllByText to get the second one)
-    const modalButtons = screen.getAllByText('Add Custom Block');
-    fireEvent.click(modalButtons[1]); // Second button is in the modal
+    fireEvent.click(screen.getByText('Adicionar Bloco Personalizado'));
+    fireEvent.click(screen.getByText('Add Custom Block'));
     
     await waitFor(() => {
       expect(screen.queryByTestId('add-custom-modal')).not.toBeInTheDocument();
@@ -231,7 +261,8 @@ describe('ProgramBuilder', () => {
     // First entry: 09:00-09:30 = 30min
     // Second entry: 09:30-10:00 = 30min
     // Total: 60min = 1h
-    expect(screen.getAllByText(/Total: 1h 0min/)).toHaveLength(2); // Header and summary both show duration
+    expect(screen.getByText('1h 0min')).toBeInTheDocument();
+    expect(screen.getByText(/Total: 1h 0min/)).toBeInTheDocument();
   });
 
   it('calls onSave when save button is clicked', async () => {

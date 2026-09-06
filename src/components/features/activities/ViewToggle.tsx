@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { LayoutGrid, Table } from 'lucide-react';
+import { useLocale } from '@/components/locale/LocaleProvider';
 
 export type ViewMode = 'tiles' | 'table';
 
@@ -11,6 +12,8 @@ interface ViewToggleProps {
 }
 
 export function ViewToggle({ currentView, onViewChange }: ViewToggleProps) {
+  const { t } = useLocale();
+
   return (
     <div className="flex items-center gap-1 p-1 bg-muted rounded-lg">
       <Button
@@ -20,7 +23,7 @@ export function ViewToggle({ currentView, onViewChange }: ViewToggleProps) {
         className="h-8 px-3"
       >
         <LayoutGrid className="h-4 w-4 mr-2" />
-        Tiles
+        {t('activities.tiles')}
       </Button>
       <Button
         variant={currentView === 'table' ? 'default' : 'ghost'}
@@ -29,7 +32,7 @@ export function ViewToggle({ currentView, onViewChange }: ViewToggleProps) {
         className="h-8 px-3"
       >
         <Table className="h-4 w-4 mr-2" />
-        Tabela
+        {t('activities.table')}
       </Button>
     </div>
   );

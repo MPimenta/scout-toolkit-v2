@@ -3,6 +3,7 @@ import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import { db } from '@/lib/db/server';
 import { log } from '@/lib/errors';
 import type { NextAuthConfig } from 'next-auth';
+import { loadUserRole, promoteAdminEmail } from './roles';
 import { OrgoProvider } from './orgo-provider';
 
 export const authConfig: NextAuthConfig = {
@@ -32,12 +33,16 @@ export const authConfig: NextAuthConfig = {
         return false;
       }
 
+      if (user.id) {
+        await promoteAdminEmail(user.id, user.email);
+      }
+
       return true;
     },
     async session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
-        session.user.role = user.role || 'user';
+        session.user.role = (await loadUserRole(user.id)) || user.role || 'user';
       }
       return session;
     },

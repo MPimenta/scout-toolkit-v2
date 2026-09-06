@@ -1,37 +1,39 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { cookies } from 'next/headers';
 import { SessionProvider } from '@/components/providers/SessionProvider';
 import { QueryProvider } from '@/components/providers/QueryProvider';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
+import { LocaleProvider } from '@/components/locale/LocaleProvider';
+import { AppShell } from '@/components/layout/AppShell';
 import { Toaster } from 'sonner';
+import { LOCALE_COOKIE, resolveLocale } from '@/lib/locale/catalog';
 import './globals.css';
-
-const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Kit de Atividades - Ferramentas para Dirigentes',
   description: 'Uma plataforma para Dirigentes escotistas navegarem atividades e criarem programas',
+  icons: {
+    icon: { url: '/brand/favicon.png', type: 'image/png' },
+    apple: '/apple-icon.png',
+  },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const cookieStore = await cookies();
+  const locale = resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+
   return (
-    <html lang="pt">
-      <body className={inter.className}>
+    <html lang={locale}>
+      <body className="font-sans">
         <SessionProvider>
           <QueryProvider>
-            <div className="flex min-h-screen flex-col">
-              <Header />
-              <main className="flex-1">
-                {children}
-              </main>
-              <Footer />
-            </div>
-            <Toaster />
+            <LocaleProvider initialLocale={locale}>
+              <AppShell>{children}</AppShell>
+              <Toaster />
+            </LocaleProvider>
           </QueryProvider>
         </SessionProvider>
       </body>

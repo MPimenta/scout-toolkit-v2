@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { getSession, getCurrentUser, requireAuth, requireAdmin, isAdmin, isAuthenticated } from '@/lib/auth/utils'
+import { getSession, getCurrentUser, requireAuth, requireAdmin, requireAdminApi, isAdmin, isAuthenticated } from '@/lib/auth/utils'
 
 // Mock the auth function
 vi.mock('../../../src/lib/auth/config', () => ({
@@ -128,6 +128,29 @@ describe('Auth Utils', () => {
       mockAuth.mockResolvedValue(null)
 
       await expect(requireAdmin()).rejects.toThrow('Authentication required')
+    })
+  })
+
+  describe('requireAdminApi', () => {
+    it('returns 401 when there is no session', async () => {
+      mockAuth.mockResolvedValue(null)
+      const result = await requireAdminApi()
+      expect(result.error?.status).toBe(401)
+    })
+
+    it('returns 403 when the user is not an admin', async () => {
+      mockAuth.mockResolvedValue({
+        user: { id: 'user-1', role: 'user', email: 'john@escoteiros.pt', name: 'John' },
+      })
+      const result = await requireAdminApi()
+      expect(result.error?.status).toBe(403)
+    })
+
+    it('returns the admin user', async () => {
+      const mockUser = { id: 'user-1', role: 'admin', email: 'john@escoteiros.pt', name: 'John' }
+      mockAuth.mockResolvedValue({ user: mockUser })
+      const result = await requireAdminApi()
+      expect(result.user).toEqual(mockUser)
     })
   })
 

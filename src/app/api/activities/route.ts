@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/server';
 import { activities, activityTypes, educationalGoals, sdgs, activityEducationalGoals, activitySdgs } from '../../../../drizzle/schema';
 import { eq, and, inArray, desc, asc, sql } from 'drizzle-orm';
+import { auth } from '@/lib/auth/config';
+import { apiErrors } from '@/lib/errors';
+import { createActivity, parseActivityWrite } from '@/lib/activities/write';
 
 /**
  * @swagger
@@ -447,4 +450,22 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+export async function POST(request: NextRequest) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return apiErrors.unauthorized();
+  }
+
+  const parsed = parseActivityWrite(await request.json());
+  if (typeof parsed === 'string') {
+    return apiErrors.validation('body', parsed);
+  }
+
+  const activity = await createActivity(parsed, {
+    createdBy: session.user.id,
+    isApproved: false,
+  });
+  return NextResponse.json({ activity }, { status: 201 });
 }

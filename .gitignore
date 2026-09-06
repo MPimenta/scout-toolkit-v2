@@ -57,3 +57,6 @@ drizzle/migrations/*.sql
 
 # OS
 Thumbs.db
+
+# unpacked brand zip (source files live in public/brand)
+.tmp-brand-assets/

@@ -11,6 +11,7 @@ import { useProgramMutations, CreateProgramData, UpdateProgramData } from '@/hoo
 import { log } from '@/lib/errors';
 import { validateProps } from '@/lib/validation';
 import { specificSchemas } from '@/lib/validation/component-schemas';
+import { useLocale } from '@/components/locale/LocaleProvider';
 
 /**
  * Props for the ProgramForm component
@@ -30,6 +31,7 @@ interface ProgramFormProps {
  * @returns JSX element representing the program form
  */
 export function ProgramForm({ mode, initialData, onSuccess }: ProgramFormProps) {
+  const { t } = useLocale();
   // Validate props in development
   if (process.env.NODE_ENV === 'development') {
     validateProps({ mode, initialData, onSuccess }, specificSchemas.programForm, 'ProgramForm');
@@ -83,7 +85,7 @@ export function ProgramForm({ mode, initialData, onSuccess }: ProgramFormProps) 
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          {mode === 'create' ? 'Criar Novo Programa' : 'Editar Programa'}
+          {mode === 'create' ? t('programs.createTitle') : t('programs.editTitle')}
         </CardTitle>
       </CardHeader>
       
@@ -96,19 +98,19 @@ export function ProgramForm({ mode, initialData, onSuccess }: ProgramFormProps) 
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="name">Nome do Programa *</Label>
+            <Label htmlFor="name">{t('programs.name')}</Label>
             <Input
               id="name"
               value={formData.name}
               onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="Ex: Acampamento de Verão"
+              placeholder={t('programs.namePlaceholder')}
               required
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="date">Data (opcional)</Label>
+              <Label htmlFor="date">{t('programs.dateOptional')}</Label>
               <div className="relative">
                 <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -122,7 +124,7 @@ export function ProgramForm({ mode, initialData, onSuccess }: ProgramFormProps) 
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="start_time">Hora de Início *</Label>
+              <Label htmlFor="start_time">{t('programs.startTime')}</Label>
               <div className="relative">
                 <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -143,7 +145,7 @@ export function ProgramForm({ mode, initialData, onSuccess }: ProgramFormProps) 
               checked={formData.is_public || false}
               onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_public: checked }))}
             />
-            <Label htmlFor="is_public">Tornar programa público</Label>
+            <Label htmlFor="is_public">{t('programs.makePublic')}</Label>
           </div>
 
           <div className="flex gap-3 pt-4">
@@ -157,7 +159,7 @@ export function ProgramForm({ mode, initialData, onSuccess }: ProgramFormProps) 
               ) : (
                 <Save className="h-4 w-4 mr-2" />
               )}
-              {mode === 'create' ? 'Criar Programa' : 'Guardar Alterações'}
+              {mode === 'create' ? t('programs.create') : t('programs.save')}
             </Button>
             
             <Button
@@ -167,7 +169,7 @@ export function ProgramForm({ mode, initialData, onSuccess }: ProgramFormProps) 
               disabled={loading}
             >
               <X className="h-4 w-4 mr-2" />
-              Cancelar
+              {t('programs.cancel')}
             </Button>
           </div>
         </form>

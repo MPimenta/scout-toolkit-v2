@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { activityTypes } from './taxonomies';
 import { educationalGoals } from './taxonomies';
 import { sdgs } from './taxonomies';
-import { users } from './users';
+import { user } from './auth';
 
 // Activities table
 export const activities = pgTable('activities', {
@@ -19,7 +19,7 @@ export const activities = pgTable('activities', {
   age_group: text('age_group', { enum: ['cub_scouts', 'scouts', 'adventurers', 'rovers', 'leaders'] }).notNull(),
   activity_type_id: uuid('activity_type_id').notNull().references(() => activityTypes.id),
   image_url: text('image_url'),
-  created_by: uuid('created_by').references(() => users.id),
+  created_by: uuid('created_by').references(() => user.id),
   is_approved: boolean('is_approved').notNull().default(true),
   created_at: timestamp('created_at').notNull().defaultNow(),
   updated_at: timestamp('updated_at').notNull().defaultNow(),

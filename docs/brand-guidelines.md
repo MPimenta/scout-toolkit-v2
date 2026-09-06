@@ -2,182 +2,98 @@
 
 ## Overview
 
-This document contains the official brand guidelines for the Kit de Atividades platform, including colors, typography, and design principles.
+Official visual system for Kit de Atividades. Product name stays **Kit de Atividades**. Visual system only — no copy rewrite.
+
+Source: 2026 AEP [Manual de Normas — Marca Associativa](https://www.canva.com/design/DAHGXTHyXS8/6csiExlDrnk-Ok6vWtABJg/view) and the lockup set in `public/brand/`. Behaviour: `openspec/specs/visual-system/spec.md` plus change `swap-brand-tokens`.
+
+Program PDFs stay print-neutral greys (`src/lib/export/pdf-html.ts`). Official SDG colours stay UN-derived.
 
 ## Color Palette
 
-### Primary Brand Colors (Marca Associativa)
+Swatches from the [Canva brand book](https://www.canva.com/design/DAHGXTHyXS8/6csiExlDrnk-Ok6vWtABJg/view?utm_content=DAHGXTHyXS8&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hd749957af2#1) (pages `#1`–`#20` in this file). The lockup PNG teal matched 7716 C exactly; the wordmark blue is the official 2945 C hex, one step off the PNG sample.
 
-#### Primary Color
-- **Pantone:** 383 C
-- **Description:** Vibrant yellow-green
-- **Usage:** Primary brand color, main CTAs, highlights
+### Primary — Teal (Pantone 7716 C)
 
-#### Secondary Color
-- **Pantone:** 280 C
-- **Description:** Deep dark blue
-- **Usage:** Secondary elements, text, borders
+- **Hex / RGB:** `#00A5A5` / 0 165 165
+- **CMYK:** 100 / 0 / 0 / 35
+- **CSS:** `--primary: 180 100% 32%`
+- **Usage:** Primary buttons, icons, large headings, focus ring
+- **Foreground:** near-black — white-on-teal fails AA for normal text
 
-### Special Thematic Colors (AEP 110 Anos)
+### Secondary — Blue (Pantone 2945 C)
 
-#### Anniversary Primary Color
-- **Pantone:** 383 C
-- **Description:** Vibrant yellow-green
-- **Usage:** Special anniversary branding, celebratory elements
-- **Context:** 110th birthday of Portuguese Scout Association
+- **Hex / RGB:** `#154697` / 21 70 151
+- **CMYK:** 86 / 54 / 0 / 41
+- **HSL (manual):** 217° / 76% / 34%
+- **Usage:** Secondary buttons, small links, header hover
+- **Foreground:** near-white
 
-#### Anniversary Secondary Color
-- **Pantone:** 280 C
-- **Description:** Deep dark blue
-- **Usage:** Anniversary secondary elements, special features
-- **Context:** 110th birthday of Portuguese Scout Association
+### Supporting — Forest (Pantone 357 CVC)
 
-**Note:** These colors are identical to the main brand colors but represent a special thematic application for the 110th anniversary celebration.
+- **Hex / RGB:** `#035928` / 20 77 41
+- **CMYK:** 80 / 0 / 100 / 56
+- **HSL (manual):** 142° / 59% / 19%
+- **Usage:** Not mapped to a Tailwind key yet (manual supporting green)
 
-### Secondary Color Palette (AEP 110 Anos Derivatives)
-
-**"Outras cores utilizadas (resultantes das cores dos 110 anos da AEP)"**
-
-This palette consists of 4 color gradients, each with 3 shades (dark, medium, light), providing 12 supporting colors for charts, data visualization, and UI elements.
-
-#### Blue/Teal Gradient
-- **Dark:** Deep rich teal
-- **Medium:** Sky blue
-- **Light:** Very light pastel blue/grey-blue
-
-#### Green Gradient
-- **Dark:** Dark earthy olive green
-- **Medium:** Vibrant lime green
-- **Light:** Pale pastel green
-
-#### Yellow/Gold Gradient
-- **Dark:** Deep mustard yellow/goldenrod
-- **Medium:** Bright clear yellow
-- **Light:** Soft pastel yellow
-
-#### Red/Orange/Brown Gradient
-- **Dark:** Muted rusty red/terracotta brown
-- **Medium:** Soft coral/salmon pink
-- **Light:** Delicate pink/peach
-
-**Usage:** Charts, data visualization, UI accents, supporting elements, background variations
-
-### Color Implementation
-
-These colors have been implemented as CSS custom properties in the application:
+### Implementation
 
 ```css
 :root {
-  --primary: 84 47% 50%; /* Pantone 383 C - Vibrant yellow-green */
+  --primary: 180 100% 32%; /* #00A5A5 Pantone 7716 C */
   --primary-foreground: 222.2 84% 4.9%;
-  --secondary: 220 58% 23%; /* Pantone 280 C - Deep dark blue */
+  --secondary: 217 76% 34%; /* #154697 Pantone 2945 C */
   --secondary-foreground: 210 40% 98%;
-  --accent: 84 47% 50%; /* Brand primary color */
-  --ring: 84 47% 50%; /* Brand primary color */
+  --accent: 180 100% 32%;
+  --ring: 180 100% 32%;
 }
 ```
 
-**Implementation Notes:**
-- Colors converted to HSL format for better Tailwind CSS integration
-- Applied to both light and dark mode themes
-- Primary color used for main CTAs, accents, and focus rings
-- Secondary color used for borders, backgrounds, and supporting elements
+The Astro devlog uses `--accent: #00A5A5` and `--accent-dark: #154697`.
+
+### Tints (manual pp. 29–30)
+
+| Token | Hex | Use |
+| --- | --- | --- |
+| Azul claro | `#2A5FB8` | Hover, light UI |
+| Azul base | `#154697` | Logo, titles, institutional |
+| Azul escuro | `#0F2F5A` | Contrast, depth |
+| Azul muito claro | `#E8EEF9` | Backgrounds |
+| Verde claro | `#33BFBF` | Hover, highlights |
+| Verde base | `#00A5A5` | Dynamic / accent |
+| Verde escuro | `#007777` | Contrast, depth |
+| Verde muito claro | `#E6F6F6` | Backgrounds (`--muted`) |
+
+Do not pair teal-on-blue or blue-on-teal (manual: evitar).
 
 ## Typography
 
-### Font Family
-- **Primary Font:** Inter (existing, no changes)
-- **Fallback:** system-ui, -apple-system, sans-serif
-
-### Font Weights
-- Regular: 400
-- Medium: 500
-- Semibold: 600
-- Bold: 700
+- **Print / institutional:** Garet — Regular, Bold, Italic, Bold Italic (p.39)
+- **Digital, including this app (p.40):** Arial Regular / Bold / Italic / Bold Italic. Do not expand, condense, or distort characters.
+- **Devlog:** Atkinson (unchanged; separate site)
 
 ## Logo Usage
 
-### Primary Logo
-- **File:** `/public/logo_escoteiros.png`
-- **Organization:** Escoteiros de Portugal
-- **Usage:** Main navigation, branding
+| File | Use |
+| --- | --- |
+| `/brand/marca_aep.png` | Header lockup on light chrome |
+| `/brand/marca_aep_branco.png` | Lockup on dark chrome |
+| `/brand/marca_aep_FL.png` | Flor-de-lis / app icon |
+| `/brand/favicon.png` | Tab/app favicon (outer white transparent) |
+| `/brand/marca_aep_FL_branco.png` | Flor-de-lis on dark chrome |
 
-### Logo Guidelines
-- Maintain aspect ratio
-- Minimum height: 40px
-- Use `unoptimized` prop for Next.js Image component
-- Ensure proper contrast against backgrounds
+- Maintain aspect ratio; minimum lockup height 40px
+- Use `unoptimized` on the crafted PNG
+- Backgrounds are transparent — do not place the white mark on white
 
-### Logo Clear Space Requirements (Security Margins)
+## Accessibility
 
-**"Unidades de medida" (Units of measurement) system**
-
-The logo requires specific clear space around it to maintain visual integrity and readability. The clear space is defined using a proportional unit system based on the logo's own dimensions.
-
-#### Clear Space Definition
-- **Measurement Unit:** Based on logo element dimensions (marked as "1 unidade")
-- **Reference Points:** 
-  - Point "1": Height of the fleur-de-lis symbol (dark blue section)
-  - Point "2": Width of the "te" letters in "escoteiros"
-- **Clear Space:** Minimum required space around all sides of the logo
-
-#### Logo Elements
-- **Main Text:** "escoteiros" in bold dark blue (with yellow-green highlights on 'o' and 'e')
-- **Fleur-de-lis Symbol:** Split vertically - left half dark blue with white star, right half yellow-green with shield
-- **Subtitle:** "DE PORTUGAL" in smaller yellow-green font
-- **Background:** Light yellow-green rectangular background
-
-#### Implementation Guidelines
-- Always maintain the defined clear space around the logo
-- Use the unit system for proportional scaling
-- Ensure the logo is never cramped or overlapped by other elements
-- Preserve the visual hierarchy and color relationships
-
-## Design Principles
-
-### Accessibility
-- Maintain WCAG 2.1 AA compliance
-- Ensure proper color contrast ratios
-- Support keyboard navigation
-- Screen reader friendly
-
-### Responsive Design
-- Mobile-first approach
-- Consistent spacing and sizing
-- Touch-friendly interface elements
-
-## Implementation Notes
-
-### Story 2.2 Scope ✅ COMPLETED
-- ✅ Focus on color palette implementation only
-- ✅ Keep existing Inter font
-- ✅ Update both main app and devlog colors (devlog minimal)
-- ✅ Document color decisions and usage
-
-### Future Considerations
-- Dark mode support (future enhancement)
-- Additional brand colors (if provided)
-- Typography system expansion (if needed)
-- Component variant system (future enhancement)
-- Anniversary theme implementation (AEP 110 Anos)
-- Special celebratory features and badges
-- Chart and data visualization color system
-- UI accent color implementation
+- WCAG 2.1 AA for buttons and small text
+- Do not use teal as small-text colour on white
+- Keyboard focus uses `--ring` (teal meets ~3:1 UI-component contrast)
 
 ## Version History
 
-- **v1.0** - Initial brand colors (Pantone 383 C, Pantone 280 C)
-- **Date:** 2025-01-28
-- **Status:** In development (Story 2.2)
-- **v1.1** - Added AEP 110 Anos thematic colors
-- **Date:** 2025-01-28
-- **Status:** Documented for future implementation
-- **v1.2** - Added secondary color palette (12 colors, 4 gradients)
-- **Date:** 2025-01-28
-- **Status:** Documented for charts and UI accents
-- **v1.3** - Added logo clear space requirements and security margins
-- **Date:** 2025-01-28
-- **Status:** Documented for proper logo implementation
-- **v1.4** - Implemented primary brand colors in application
-- **Date:** 2025-01-28
-- **Status:** ✅ Completed - Colors applied to main app
+- **v1.0–v1.4** — Story 2.2 Pantone 383 C / 280 C (110 anos)
+- **v1.5** — OpenSpec handoff gate; token swap blocked
+- **v2.0** — 2026 marca associativa (Pantone 7716 C `#00A5A5` / 2945 C `#154697`); lockup in `public/brand/`
+- **Date:** 2026-09-05

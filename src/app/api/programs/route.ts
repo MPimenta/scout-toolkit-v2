@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth/config';
 import { db } from '@/lib/db/server';
 import { programs, programEntries, activities } from '../../../../drizzle/schema';
 import { eq, desc, asc, sql, count } from 'drizzle-orm';
+import { ensureOrgoProgramColumns } from '@/lib/orgo/ensure-columns';
 
 export async function GET(request: NextRequest) {
   try {
@@ -115,6 +116,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    await ensureOrgoProgramColumns();
+
     // Create new program
     const [newProgram] = await db
       .insert(programs)
@@ -129,7 +132,26 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      program: newProgram
+      program: {
+        id: newProgram.id,
+        name: newProgram.name,
+        date: newProgram.date,
+        start_time: newProgram.start_time,
+        is_public: newProgram.is_public,
+        created_at: newProgram.created_at,
+        updated_at: newProgram.updated_at,
+        user: {
+          id: session.user.id,
+          name: session.user.name ?? 'Utilizador',
+        },
+        entries: [],
+        summary: {
+          total_duration_minutes: 0,
+          entry_count: 0,
+          educational_goals: [],
+          sdgs: [],
+        },
+      }
     }, { status: 201 });
 
   } catch (error) {

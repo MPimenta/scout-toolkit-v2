@@ -73,9 +73,10 @@ try {
 
 console.log('\n🎉 Database setup completed successfully!');
 console.log('\n📋 Next steps:');
-console.log('1. Update .env.local with your actual OAuth and UploadThing credentials');
-console.log('2. Run: npm run dev');
-console.log('3. Visit: http://localhost:3000');
+console.log('1. Update .env.local with your actual Orgo/eAEP and UploadThing credentials');
+console.log('2. Run: npm run playwright:install  (Chromium for PDF export)');
+console.log('3. Run: npm run dev');
+console.log('4. Visit: http://localhost:3000');
 console.log('\n🔧 Useful commands:');
 console.log('- npm run db:studio (Database GUI)');
 console.log('- npm run db:stop (Stop database)');

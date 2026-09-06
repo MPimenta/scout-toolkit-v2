@@ -273,8 +273,8 @@ describe('ProgramScheduleTable', () => {
       />
     );
 
-    expect(screen.getByText('Test Activity 1')).toBeInTheDocument();
-    expect(screen.getByText('Test Activity 2')).toBeInTheDocument();
+    expect(screen.getAllByText('Test Activity 1').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Test Activity 2').length).toBeGreaterThan(0);
   });
 
   it('displays custom titles for custom entries', () => {
@@ -289,7 +289,50 @@ describe('ProgramScheduleTable', () => {
       />
     );
 
-    expect(screen.getByText('Break')).toBeInTheDocument();
+    expect(screen.getAllByText('Break').length).toBeGreaterThan(0);
+  });
+
+  it('shows a newly added entry and hides a removed one when props change', () => {
+    const { rerender } = render(
+      <ProgramScheduleTable
+        entries={[]}
+        activities={mockActivities}
+        programStartTime="09:00"
+        onReorder={mockOnReorder}
+        onEdit={mockOnEdit}
+        onDelete={mockOnDelete}
+      />
+    );
+
+    expect(screen.getByText('Nenhuma entrada no programa ainda.')).toBeInTheDocument();
+
+    rerender(
+      <ProgramScheduleTable
+        entries={[mockEntries[0]]}
+        activities={mockActivities}
+        programStartTime="09:00"
+        onReorder={mockOnReorder}
+        onEdit={mockOnEdit}
+        onDelete={mockOnDelete}
+      />
+    );
+
+    expect(screen.getByTestId('schedule-row-entry-1')).toBeInTheDocument();
+    expect(screen.queryByText('Nenhuma entrada no programa ainda.')).not.toBeInTheDocument();
+
+    rerender(
+      <ProgramScheduleTable
+        entries={[]}
+        activities={mockActivities}
+        programStartTime="09:00"
+        onReorder={mockOnReorder}
+        onEdit={mockOnEdit}
+        onDelete={mockOnDelete}
+      />
+    );
+
+    expect(screen.queryByTestId('schedule-row-entry-1')).not.toBeInTheDocument();
+    expect(screen.getByText('Nenhuma entrada no programa ainda.')).toBeInTheDocument();
   });
 
   it('handles empty entries array', () => {

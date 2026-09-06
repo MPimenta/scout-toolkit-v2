@@ -9,54 +9,17 @@ import { Clock, Users, Target, MapPin, BookOpen, Star, MessageSquare, Plus } fro
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ActivityRating } from './ActivityRating';
 import { AddToProgramModal } from './AddToProgramModal';
+import { SuggestEditForm } from './SuggestEditForm';
 import { useState } from 'react';
+import { useLocale } from '@/components/locale/LocaleProvider';
+import { enumLabel } from '@/lib/locale/labels';
 
 interface ActivityDetailProps {
   activityId: string;
 }
 
-// Helper function to get age group display text
-function getAgeGroupText(ageGroup: string): string {
-  const ageMap = {
-    cub_scouts: 'Lobitos (6-10)',
-    scouts: 'Escoteiros (10-14)',
-    adventurers: 'Exploradores (14-17)',
-    rovers: 'Caminheiros (17-21)',
-    leaders: 'Dirigentes (21+)',
-  };
-  return ageMap[ageGroup as keyof typeof ageMap] || ageGroup;
-}
-
-// Helper function to get group size display text
-function getGroupSizeText(groupSize: string): string {
-  const sizeMap = {
-    small: 'Pequeno (2-5)',
-    medium: 'Médio (6-15)',
-    large: 'Grande (16+)',
-  };
-  return sizeMap[groupSize as keyof typeof sizeMap] || groupSize;
-}
-
-// Helper function to get effort level display text
-function getEffortLevelText(effortLevel: string): string {
-  const effortMap = {
-    low: 'Baixo',
-    medium: 'Médio',
-    high: 'Alto',
-  };
-  return effortMap[effortLevel as keyof typeof effortMap] || effortLevel;
-}
-
-// Helper function to get location display text
-function getLocationText(location: string): string {
-  const locationMap = {
-    inside: 'Interior',
-    outside: 'Exterior',
-  };
-  return locationMap[location as keyof typeof locationMap] || location;
-}
-
 export function ActivityDetail({ activityId }: ActivityDetailProps) {
+  const { t } = useLocale();
   const { activity, loading, error } = useActivity(activityId);
   const [showAddToProgramModal, setShowAddToProgramModal] = useState(false);
 
@@ -71,8 +34,8 @@ export function ActivityDetail({ activityId }: ActivityDetailProps) {
   if (error || !activity) {
     return (
       <div className="text-center py-8">
-        <h1 className="text-2xl font-bold text-red-600 mb-4">Erro ao carregar atividade</h1>
-        <p className="text-muted-foreground">{error || 'Atividade não encontrada'}</p>
+        <h1 className="text-2xl font-bold text-red-600 mb-4">{t('activities.loadError')}</h1>
+        <p className="text-muted-foreground">{error || t('activities.notFound')}</p>
       </div>
     );
   }
@@ -93,7 +56,7 @@ export function ActivityDetail({ activityId }: ActivityDetailProps) {
             <div className="w-full h-64 bg-muted rounded-lg flex items-center justify-center">
               <div className="text-center text-muted-foreground">
                 <BookOpen className="h-16 w-16 mx-auto mb-2" />
-                <p>Sem imagem</p>
+                <p>{t('activities.noImage')}</p>
               </div>
             </div>
           )}
@@ -123,29 +86,29 @@ export function ActivityDetail({ activityId }: ActivityDetailProps) {
             </div>
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">{getGroupSizeText(activity.group_size)}</span>
+              <span className="text-sm">{enumLabel(t, 'groupSize', activity.group_size)}</span>
             </div>
             <div className="flex items-center gap-2">
               <Target className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">{getEffortLevelText(activity.effort_level)}</span>
+              <span className="text-sm">{enumLabel(t, 'effort', activity.effort_level)}</span>
             </div>
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">{getLocationText(activity.location)}</span>
+              <span className="text-sm">{enumLabel(t, 'location', activity.location)}</span>
             </div>
           </div>
 
           {/* Age Group */}
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm">{getAgeGroupText(activity.age_group)}</span>
+            <span className="text-sm">{enumLabel(t, 'ageGroup', activity.age_group)}</span>
           </div>
 
           {/* Action Buttons */}
           <div className="flex gap-3 pt-4">
             <Button onClick={() => setShowAddToProgramModal(true)}>
               <Plus className="h-4 w-4 mr-2" />
-              Adicionar ao Programa
+              {t('programs.addToProgram')}
             </Button>
             <Button variant="outline">
               <Star className="h-4 w-4 mr-2" />
@@ -176,7 +139,7 @@ export function ActivityDetail({ activityId }: ActivityDetailProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Target className="h-5 w-5" />
-              Objetivos Educativos
+              {t('activities.goals')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -207,7 +170,7 @@ export function ActivityDetail({ activityId }: ActivityDetailProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Target className="h-5 w-5" />
-              Objetivos de Desenvolvimento Sustentável (ODS)
+              {t('activities.sdgs')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -237,6 +200,8 @@ export function ActivityDetail({ activityId }: ActivityDetailProps) {
           </CardContent>
         </Card>
       )}
+
+      <SuggestEditForm activityId={activity.id} />
 
       {/* Reviews Section */}
       <Card>

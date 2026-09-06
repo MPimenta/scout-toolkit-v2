@@ -50,21 +50,20 @@ const mockOnClearFilters = vi.fn();
 describe('ActivityFilters', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
-    // Mock successful API responses
-    (global.fetch as any)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ activity_types: mockActivityTypes })
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ sdgs: mockSdgs })
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ educational_goals: mockEducationalGoals })
-      });
+
+    vi.mocked(global.fetch).mockImplementation(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.includes('/api/taxonomies/activity-types')) {
+        return { ok: true, json: async () => ({ activity_types: mockActivityTypes }) } as Response;
+      }
+      if (url.includes('/api/taxonomies/sdgs')) {
+        return { ok: true, json: async () => ({ sdgs: mockSdgs }) } as Response;
+      }
+      if (url.includes('/api/taxonomies/educational-goals')) {
+        return { ok: true, json: async () => ({ educational_goals: mockEducationalGoals }) } as Response;
+      }
+      return { ok: false, json: async () => ({}) } as Response;
+    });
   });
 
   it('renders all basic filter sections', () => {
@@ -265,31 +264,12 @@ describe('ActivityFilters', () => {
       />
     );
 
-    // First expand the advanced filters
-    const expandButton = screen.getByRole('button', { name: /expandir/i });
-    fireEvent.click(expandButton);
+    fireEvent.click(screen.getByRole('button', { name: /expandir/i }));
 
-    // Wait for the SDGs to load - look for the SDG section title first
-    await waitFor(() => {
-      expect(screen.getByText('Objetivos de Desenvolvimento Sustentável (ODS)')).toBeInTheDocument();
+    const sdgCheckbox = await screen.findByRole('checkbox', {
+      name: /ODS 1:\s*Erradicar a Pobreza/,
     });
-
-    // Find the SDG section specifically
-    const sdgSection = screen.getByText('Objetivos de Desenvolvimento Sustentável (ODS)').closest('div')?.parentElement;
-    
-    // Within the SDG section, find the label that contains the text we're looking for
-    const sdgLabels = sdgSection?.querySelectorAll('label');
-    const sdg1Label = Array.from(sdgLabels || []).find(label => {
-      const text = label.textContent || '';
-      return text.includes('ODS 1') && text.includes('Erradicar a Pobreza');
-    });
-
-    if (sdg1Label) {
-      const sdg1Checkbox = sdg1Label.querySelector('input[type="checkbox"]');
-      if (sdg1Checkbox) {
-        fireEvent.click(sdg1Checkbox);
-      }
-    }
+    fireEvent.click(sdgCheckbox);
 
     await waitFor(() => {
       expect(mockOnFiltersChange).toHaveBeenCalledWith({

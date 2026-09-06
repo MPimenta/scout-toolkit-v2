@@ -8,15 +8,15 @@ export default {
       colors: {
         // Brand Colors - Escoteiros de Portugal
         primary: {
-          DEFAULT: '#7cb342', // Pantone 383 C - Vibrant yellow-green
+          DEFAULT: '#00A5A5', // Pantone 7716 C
           foreground: '#0a0a0a',
         },
         secondary: {
-          DEFAULT: '#1a365d', // Pantone 280 C - Deep dark blue
+          DEFAULT: '#154697', // Pantone 2945 C
           foreground: '#f8fafc',
         },
-        accent: '#7cb342', // Same as primary
-        'accent-dark': '#1a365d', // Same as secondary
+        accent: '#00A5A5',
+        'accent-dark': '#154697',
       },
       fontFamily: {
         'atkinson': ['Atkinson', 'sans-serif'],

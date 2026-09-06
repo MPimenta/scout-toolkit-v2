@@ -29,7 +29,7 @@ interface AddToProgramModalProps {
 export function AddToProgramModal({ onClose, activity }: AddToProgramModalProps) {
   const { data: session } = useSession();
   const { programs, loading: programsLoading, error: programsError, refetch: refetchPrograms } = usePrograms();
-  const { createProgram } = useProgramMutations();
+  const { createProgram, invalidateProgram } = useProgramMutations();
   const router = useRouter();
   const [selectedProgram, setSelectedProgram] = useState<string>('');
   const [showCreateProgram, setShowCreateProgram] = useState(false);
@@ -74,9 +74,8 @@ export function AddToProgramModal({ onClose, activity }: AddToProgramModalProps)
       }
 
       toast.success('Atividade adicionada ao programa com sucesso!');
+      await invalidateProgram?.(selectedProgram);
       onClose();
-      
-      // Navigate to program page (now unified with builder)
       router.push(`/programs/${selectedProgram}`);
     } catch (error) {
       console.error('Error adding activity to program:', error);

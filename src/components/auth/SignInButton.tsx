@@ -12,9 +12,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { LogIn, LogOut, User } from 'lucide-react';
+import { useLocale } from '@/components/locale/LocaleProvider';
 
 export function SignInButton() {
   const { data: session, status } = useSession();
+  const { t } = useLocale();
 
   if (status === 'loading') {
     return (
@@ -49,7 +51,7 @@ export function SignInButton() {
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => signOut()}>
             <LogOut className="mr-2 h-4 w-4" />
-            <span>Sair</span>
+            <span>{t('auth.signOut')}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -59,7 +61,7 @@ export function SignInButton() {
   return (
     <Button onClick={() => signIn('orgo')} size="sm">
       <LogIn className="mr-2 h-4 w-4" />
-      Entrar
+      {t('auth.enter')}
     </Button>
   );
 }

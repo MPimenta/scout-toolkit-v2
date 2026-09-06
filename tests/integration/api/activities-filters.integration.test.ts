@@ -1,10 +1,12 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { setupTestDatabase, teardownTestDatabase } from '../../setup';
+import { requireLocalTestDatabase } from '../../helpers/local-test-db';
 
 describe('Activities API - Filtering Integration Tests', () => {
   let testDb: any;
 
   beforeAll(async () => {
+    requireLocalTestDatabase();
     testDb = await setupTestDatabase();
   });
 

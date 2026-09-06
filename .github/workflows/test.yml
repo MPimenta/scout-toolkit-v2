@@ -1,0 +1,71 @@
+name: Test
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: scout_toolkit_dev
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d scout_toolkit_dev"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://postgres:password@localhost:5432/scout_toolkit_dev
+      NEXTAUTH_SECRET: ci-test-secret
+      AUTH_SECRET: ci-test-secret
+      NEXTAUTH_URL: http://localhost:3000
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      ORGO_ISSUER: https://eaep.escoteiros.pt
+      ORGO_CLIENT_ID: ci-client-id
+      ORGO_CLIENT_SECRET: ci-client-secret
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create scout_toolkit_test
+        env:
+          PGPASSWORD: password
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+          psql -h localhost -U postgres -c "CREATE USER test_user WITH PASSWORD 'test_password';"
+          psql -h localhost -U postgres -c "CREATE DATABASE scout_toolkit_test OWNER test_user;"
+          psql -h localhost -U postgres -d scout_toolkit_test -c "GRANT ALL ON SCHEMA public TO test_user; ALTER SCHEMA public OWNER TO test_user;"
+
+      - name: Vitest (unit + SQL-integration)
+        run: npm run test:run
+
+      - name: Apply app schema and seed
+        run: |
+          npx drizzle-kit push --force --strict=false
+          npm run db:seed
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Playwright Chromium
+        run: npx playwright test --project=chromium

@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { withTestDatabase } from '../../helpers/database';
+import { requireLocalTestDatabase } from '../../helpers/local-test-db';
 import { db } from '@/lib/db/server';
 import { 
   activities, 
@@ -29,6 +30,9 @@ import {
 } from '@/types/guards';
 
 describe('Type Validation Integration Tests', () => {
+  beforeEach(() => {
+    requireLocalTestDatabase();
+  });
   describe('Database Entity Type Validation', () => {
     it('should validate user entities from database', async () => {
       await withTestDatabase(async () => {

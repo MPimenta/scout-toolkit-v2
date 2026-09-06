@@ -17,7 +17,7 @@ describe('ViewToggle', () => {
       />
     );
 
-    expect(screen.getByText('Tiles')).toBeInTheDocument();
+    expect(screen.getByText('Mosaicos')).toBeInTheDocument();
     expect(screen.getByText('Tabela')).toBeInTheDocument();
   });
 
@@ -29,7 +29,7 @@ describe('ViewToggle', () => {
       />
     );
 
-    const tilesButton = screen.getByText('Tiles').closest('button');
+    const tilesButton = screen.getByText('Mosaicos').closest('button');
     const tableButton = screen.getByText('Tabela').closest('button');
 
     expect(tilesButton).toHaveClass('bg-primary');
@@ -44,7 +44,7 @@ describe('ViewToggle', () => {
       />
     );
 
-    const tilesButton = screen.getByText('Tiles').closest('button');
+    const tilesButton = screen.getByText('Mosaicos').closest('button');
     const tableButton = screen.getByText('Tabela').closest('button');
 
     expect(tableButton).toHaveClass('bg-primary');
@@ -59,7 +59,7 @@ describe('ViewToggle', () => {
       />
     );
 
-    fireEvent.click(screen.getByText('Tiles'));
+    fireEvent.click(screen.getByText('Mosaicos'));
     expect(mockOnViewChange).toHaveBeenCalledWith('tiles');
   });
 
@@ -84,7 +84,7 @@ describe('ViewToggle', () => {
     );
 
     // Check that icons are present (they should be rendered as SVG elements)
-    expect(screen.getByText('Tiles').closest('button')).toBeInTheDocument();
+    expect(screen.getByText('Mosaicos').closest('button')).toBeInTheDocument();
     expect(screen.getByText('Tabela').closest('button')).toBeInTheDocument();
   });
 });

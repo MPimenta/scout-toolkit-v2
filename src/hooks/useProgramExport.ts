@@ -48,7 +48,7 @@ export function useProgramExport() {
   });
 
   return {
-    exportToExcel: exportToExcel.mutate,
+    exportToExcel: exportToExcel.mutateAsync,
     isExporting: exportToExcel.isPending,
     exportError: exportToExcel.error,
   };

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-client';
-import { Program, ProgramEntry } from '../queries/useProgram';
+import { Program, ProgramEntry, toProgramDetail } from '../queries/useProgram';
 
 /**
  * Interface for creating a new program
@@ -66,7 +66,7 @@ async function createProgram(data: CreateProgramData): Promise<Program> {
   }
 
   const result = await response.json();
-  return result.program;
+  return toProgramDetail(result.program);
 }
 
 /**
@@ -181,7 +181,7 @@ export function useCreateProgram() {
       queryClient.invalidateQueries({ queryKey: queryKeys.programs.lists() });
       
       // Add the new program to the cache
-      queryClient.setQueryData(queryKeys.programs.detail(newProgram.id), newProgram);
+      queryClient.setQueryData(queryKeys.programs.detail(newProgram.id), toProgramDetail(newProgram));
     },
   });
 }

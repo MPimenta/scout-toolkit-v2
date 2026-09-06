@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { withTestDatabase } from '../../helpers/database';
+import { requireLocalTestDatabase } from '../../helpers/local-test-db';
 import { db } from '@/lib/db/server';
 import { 
   activities, 
@@ -23,6 +24,9 @@ import {
 } from '@/types/guards';
 
 describe('API Response Type Validation', () => {
+  beforeEach(() => {
+    requireLocalTestDatabase();
+  });
   describe('Activities API Type Validation', () => {
     it('should validate activities API response structure', async () => {
       await withTestDatabase(async () => {
