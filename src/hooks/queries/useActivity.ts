@@ -21,12 +21,18 @@ export interface Activity {
     id: string;
     name: string;
   };
-  educational_goals: Array<{
-    id: string;
-    title: string;
-    code: string;
-  }>;
-  sdgs: Array<{
+    educational_goals: Array<{
+      id: string;
+      title: string;
+      code: string;
+    }>;
+    challenges?: Array<{
+      id: string;
+      name: string;
+      description?: string;
+      type?: { id: string; name: string };
+    }>;
+    sdgs: Array<{
     id: string;
     number: number;
     name: string;

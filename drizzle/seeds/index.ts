@@ -6,6 +6,7 @@ import { seedGroupSizes } from './group-sizes.js';
 import { seedEffortLevels } from './effort-levels.js';
 import { seedLocations } from './locations.js';
 import { seedAgeGroups } from './age-groups.js';
+import { seedChallengeTypes } from './challenge-types.js';
 import { seedDemoActivities } from './demo-activities.js';
 import { client } from '@/lib/db/server';
 
@@ -20,6 +21,7 @@ async function main() {
     await seedEffortLevels();
     await seedLocations();
     await seedAgeGroups();
+    await seedChallengeTypes();
     await seedDemoActivities();
 
     console.log('✅ Database seeding completed successfully!');

@@ -1,11 +1,13 @@
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import { db } from '@/lib/db/server';
 import {
   activities,
   activityEducationalGoals,
   activitySdgs,
+  activityChallenges,
   programEntries,
 } from '../../../drizzle/schema';
+import { challenges } from '../../../drizzle/schema/taxonomies';
 
 export const ACTIVITY_FIELDS = [
   'name',
@@ -32,6 +34,7 @@ export type ActivityWrite = {
   image_url?: string | null;
   educational_goal_ids?: string[];
   sdg_ids?: string[];
+  challenge_ids?: string[];
 };
 
 export function parseActivityWrite(body: Record<string, unknown>): ActivityWrite | string {
@@ -67,12 +70,24 @@ export function parseActivityWrite(body: Record<string, unknown>): ActivityWrite
       ? body['educational_goal_ids'].map(String)
       : [],
     sdg_ids: Array.isArray(body['sdg_ids']) ? body['sdg_ids'].map(String) : [],
+    challenge_ids: Array.isArray(body['challenge_ids']) ? body['challenge_ids'].map(String) : [],
   };
+}
+
+export async function validateChallengeIds(ids: string[]): Promise<string | null> {
+  if (!ids.length) return null;
+  const unique = [...new Set(ids)];
+  const rows = await db.select({ id: challenges.id }).from(challenges).where(inArray(challenges.id, unique));
+  if (rows.length !== unique.length) {
+    return 'Desafio inválido';
+  }
+  return null;
 }
 
 export async function replaceRelations(activityId: string, data: ActivityWrite) {
   await db.delete(activityEducationalGoals).where(eq(activityEducationalGoals.activity_id, activityId));
   await db.delete(activitySdgs).where(eq(activitySdgs.activity_id, activityId));
+  await db.delete(activityChallenges).where(eq(activityChallenges.activity_id, activityId));
   if (data.educational_goal_ids?.length) {
     await db.insert(activityEducationalGoals).values(
       data.educational_goal_ids.map((goal_id) => ({ activity_id: activityId, goal_id }))
@@ -81,6 +96,11 @@ export async function replaceRelations(activityId: string, data: ActivityWrite) 
   if (data.sdg_ids?.length) {
     await db.insert(activitySdgs).values(
       data.sdg_ids.map((sdg_id) => ({ activity_id: activityId, sdg_id }))
+    );
+  }
+  if (data.challenge_ids?.length) {
+    await db.insert(activityChallenges).values(
+      data.challenge_ids.map((challenge_id) => ({ activity_id: activityId, challenge_id }))
     );
   }
 }

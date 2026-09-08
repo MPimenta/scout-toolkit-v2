@@ -5,7 +5,7 @@ import { activities } from '../../../../../../drizzle/schema';
 import { requireAdminApi } from '@/lib/auth/utils';
 import { apiErrors, withApiErrorHandler } from '@/lib/errors';
 import { validateUUID } from '@/lib/errors/error-handler';
-import { activityIsReferenced, parseActivityWrite, replaceRelations } from '@/lib/activities/write';
+import { activityIsReferenced, parseActivityWrite, replaceRelations, validateChallengeIds } from '@/lib/activities/write';
 
 export const PATCH = withApiErrorHandler(async (
   request: NextRequest,
@@ -30,6 +30,8 @@ export const PATCH = withApiErrorHandler(async (
 
   const parsed = parseActivityWrite(body);
   if (typeof parsed === 'string') return apiErrors.validation('body', parsed);
+  const challengeError = await validateChallengeIds(parsed.challenge_ids ?? []);
+  if (challengeError) return apiErrors.validation('challenge_ids', challengeError);
 
   const [updated] = await db
     .update(activities)

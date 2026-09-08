@@ -78,4 +78,25 @@ describe('Admin taxonomies API', () => {
     );
     expect(response.status).toBe(409);
   });
+
+  it('rejects a challenge with an unknown type_id', async () => {
+    mockRequireAdminApi.mockResolvedValue({
+      user: { id: 'admin-1', role: 'admin' },
+    });
+    mockSelect.mockResolvedValue([]);
+    const { POST } = await import('@/app/api/admin/taxonomies/[kind]/route');
+    const response = await POST(
+      new NextRequest('http://localhost/api/admin/taxonomies/challenges', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: 'Completar 5 nós',
+          description: 'Lista de 10 nós; basta completar 5',
+          type_id: '550e8400-e29b-41d4-a716-446655440099',
+        }),
+      }),
+      { params: Promise.resolve({ kind: 'challenges' }) }
+    );
+    expect(response.status).toBe(400);
+  });
 });

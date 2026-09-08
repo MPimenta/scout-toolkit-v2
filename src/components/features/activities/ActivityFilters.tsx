@@ -33,6 +33,7 @@ export interface FilterState {
   activityType: string[];
   sdgs: string[];
   educationalGoals: string[];
+  challenges: string[];
   durationMin: string;
   durationMax: string;
   durationOperator: string;
@@ -104,6 +105,7 @@ export function ActivityFilters({
   const [activityTypeOptions, setActivityTypeOptions] = useState<Array<{ id: string; name: string }>>([]);
   const [sdgOptions, setSdgOptions] = useState<Array<{ id: string; name: string; number: number; icon_url?: string }>>([]);
   const [educationalGoalOptions, setEducationalGoalOptions] = useState<Array<{ id: string; title: string; code: string; area: { name: string } }>>([]);
+  const [challengeOptions, setChallengeOptions] = useState<Array<{ id: string; name: string; type: { name: string } }>>([]);
 
   // Update local filters when props change
   useEffect(() => {
@@ -133,6 +135,12 @@ export function ActivityFilters({
         if (goalsResponse.ok) {
           const goalsData = await goalsResponse.json();
           setEducationalGoalOptions(goalsData.educational_goals || []);
+        }
+
+        const challengesResponse = await fetch('/api/taxonomies/challenges');
+        if (challengesResponse.ok) {
+          const challengesData = await challengesResponse.json();
+          setChallengeOptions(challengesData.challenges || []);
         }
       } catch (error) {
         log.error('Error fetching filter options', error as Error);
@@ -171,6 +179,7 @@ export function ActivityFilters({
       activityType: [],
       sdgs: [],
       educationalGoals: [],
+      challenges: [],
       durationMin: '',
       durationMax: '',
       durationOperator: '>=',
@@ -297,6 +306,18 @@ export function ActivityFilters({
                    {educationalGoalOptions.find(o => o.id === goalId)?.title || ''}
                    <button
                      onClick={() => handleMultiSelectChange('educationalGoals', goalId, false)}
+                     className="ml-1 hover:text-destructive"
+                   >
+                     <X className="w-3 h-3" />
+                   </button>
+                 </Badge>
+               ))}
+
+               {filters.challenges.map((challengeId) => (
+                 <Badge key={challengeId} variant="secondary" className="gap-1 bg-primary/10 text-primary border-primary/20">
+                   {challengeOptions.find((option) => option.id === challengeId)?.name || ''}
+                   <button
+                     onClick={() => handleMultiSelectChange('challenges', challengeId, false)}
                      className="ml-1 hover:text-destructive"
                    >
                      <X className="w-3 h-3" />
@@ -601,6 +622,32 @@ export function ActivityFilters({
                    ))}
                  </div>
               </div>
+
+              <div>
+                <label className="text-sm font-medium mb-3 block flex items-center gap-2">
+                  <BookOpen className="w-4 h-4" />
+                  {t('activities.challenges')}
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-64 overflow-y-auto">
+                  {challengeOptions.map((option) => (
+                    <label key={option.id} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={localFilters.challenges.includes(option.id)}
+                        onChange={(e) => handleMultiSelectChange('challenges', option.id, e.target.checked)}
+                        className="rounded border-gray-300"
+                      />
+                      <span className="text-sm">
+                        {option.name}
+                        <br />
+                        <span className="text-xs text-muted-foreground">
+                          {option.type?.name}
+                        </span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
         </CardContent>
@@ -641,6 +688,20 @@ export function ActivityFilters({
                   </option>
                 ))}
               </select>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">{t('activities.challenges')}</label>
+              {challengeOptions.map((option) => (
+                <label key={option.id} className="flex items-center space-x-2 min-h-11">
+                  <input
+                    type="checkbox"
+                    checked={localFilters.challenges.includes(option.id)}
+                    onChange={(e) => handleMultiSelectChange('challenges', option.id, e.target.checked)}
+                    className="rounded border-gray-300"
+                  />
+                  <span className="text-sm">{option.name}</span>
+                </label>
+              ))}
             </div>
             <Button className="w-full min-h-11" onClick={() => setSheetOpen(false)}>
               {t('common.apply')}

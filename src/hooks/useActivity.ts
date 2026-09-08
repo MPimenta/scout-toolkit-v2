@@ -43,6 +43,12 @@ interface Activity {
   updated_at: string;
   activity_type: ActivityType;
   educational_goals: EducationalGoal[];
+  challenges?: Array<{
+    id: string;
+    name: string;
+    description?: string;
+    type?: { id: string; name: string };
+  }>;
   sdgs: Sdg[];
 }
 

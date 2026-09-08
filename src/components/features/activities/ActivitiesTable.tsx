@@ -83,6 +83,12 @@ interface Activity {
   created_at: string;
   activity_type: ActivityType;
   educational_goals: EducationalGoal[];
+  challenges?: Array<{
+    id: string;
+    name: string;
+    description?: string;
+    type?: { id: string; name: string };
+  }>;
   sdgs: Sdg[];
 }
 
@@ -238,6 +244,24 @@ export function ActivitiesTable({
         ),
       },
       {
+        accessorKey: 'challenges',
+        header: t('activities.challengesShort'),
+        cell: ({ row }) => (
+          <div className="flex gap-1">
+            {(row.original.challenges ?? []).slice(0, 2).map((challenge) => (
+              <Badge key={challenge.id} variant="outline" className="text-xs">
+                {challenge.name}
+              </Badge>
+            ))}
+            {(row.original.challenges?.length ?? 0) > 2 && (
+              <Badge variant="outline" className="text-xs">
+                +{(row.original.challenges?.length ?? 0) - 2}
+              </Badge>
+            )}
+          </div>
+        ),
+      },
+      {
         id: 'actions',
         header: t('activities.actions'),
         cell: ({ row }) => (
@@ -300,6 +324,7 @@ export function ActivitiesTable({
       t('filters.age'),
       t('activities.csvSdg'),
       t('activities.goals'),
+      t('activities.challenges'),
     ];
 
     const csvContent = [
@@ -314,6 +339,7 @@ export function ActivitiesTable({
         enumLabel(t, 'ageGroup', activity.age_group),
         activity.sdgs.map(sdg => t('activities.sdgPrefix', { number: sdg.number })).join('; '),
         activity.educational_goals.map(goal => goal.title).join('; '),
+        (activity.challenges ?? []).map((challenge) => challenge.name).join('; '),
       ].join(','))
     ].join('\n');
 

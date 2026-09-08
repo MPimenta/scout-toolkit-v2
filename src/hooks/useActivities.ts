@@ -11,6 +11,7 @@ export interface FilterState {
   activityType: string[];
   sdgs: string[];
   educationalGoals: string[];
+  challenges: string[];
   durationMin: string;
   durationMax: string;
   durationOperator: string;
@@ -48,6 +49,7 @@ export interface ActivitiesResponse {
     created_at: string;
     activity_type: { id: string; name: string };
     educational_goals: Array<{ id: string; title: string; code: string }>;
+    challenges?: Array<{ id: string; name: string; type?: { id: string; name: string } }>;
     sdgs: Array<{ id: string; number: number; name: string; icon_url: string; icon: string }>;
   }>;
   pagination: PaginationInfo;
@@ -100,6 +102,7 @@ export function useActivities(options: UseActivitiesOptions) {
     activity_type: debouncedFilters.activityType.length > 0 ? debouncedFilters.activityType : undefined,
     sdgs: debouncedFilters.sdgs.length > 0 ? debouncedFilters.sdgs : undefined,
     educational_goals: debouncedFilters.educationalGoals.length > 0 ? debouncedFilters.educationalGoals : undefined,
+    challenges: debouncedFilters.challenges.length > 0 ? debouncedFilters.challenges : undefined,
     duration_min: debouncedFilters.durationMin || undefined,
     duration_max: debouncedFilters.durationMax || undefined,
     duration_operator: (debouncedFilters.durationOperator as '>=' | '<=' | '=' | '>' | '<') || undefined,

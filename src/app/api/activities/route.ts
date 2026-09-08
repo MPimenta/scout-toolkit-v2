@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/server';
-import { activities, activityTypes, educationalGoals, sdgs, activityEducationalGoals, activitySdgs } from '../../../../drizzle/schema';
+import { activities, activityTypes, educationalGoals, sdgs, activityEducationalGoals, activitySdgs, activityChallenges, challenges, challengeTypes } from '../../../../drizzle/schema';
 import { eq, and, inArray, desc, asc, sql } from 'drizzle-orm';
 import { auth } from '@/lib/auth/config';
 import { apiErrors } from '@/lib/errors';
-import { createActivity, parseActivityWrite } from '@/lib/activities/write';
+import { createActivity, parseActivityWrite, validateChallengeIds } from '@/lib/activities/write';
 
 /**
  * @swagger
@@ -82,6 +82,15 @@ import { createActivity, parseActivityWrite } from '@/lib/activities/write';
  *         style: form
  *         explode: false
  *         description: Filter by educational goal IDs
+ *       - in: query
+ *         name: challenges
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         style: form
+ *         explode: false
+ *         description: Filter by challenge IDs
  *       - in: query
  *         name: duration_min
  *         schema:
@@ -180,6 +189,7 @@ export async function GET(request: NextRequest) {
     const activityType = searchParams.get('activity_type')?.split(',') as string[] | undefined;
     const sdgIds = searchParams.get('sdgs')?.split(',') as string[] | undefined;
     const educationalGoalIds = searchParams.get('educational_goals')?.split(',') as string[] | undefined;
+    const challengeIds = searchParams.get('challenges')?.split(',').filter(Boolean) as string[] | undefined;
     const durationMin = searchParams.get('duration_min');
     const durationMax = searchParams.get('duration_max');
     const durationOperator = searchParams.get('duration_operator') as '>=' | '<=' | '=' | '>' | '<' | undefined;
@@ -287,6 +297,7 @@ export async function GET(request: NextRequest) {
             activity_type: activityType || undefined,
             sdgs: sdgIds || undefined,
             educational_goals: educationalGoalIds || undefined,
+            challenges: challengeIds || undefined,
             duration_min: durationMin || undefined,
             duration_max: durationMax || undefined,
             duration_operator: durationOperator || undefined,
@@ -346,6 +357,22 @@ export async function GET(request: NextRequest) {
       .leftJoin(educationalGoals, eq(activityEducationalGoals.goal_id, educationalGoals.id))
       .where(inArray(activityEducationalGoals.activity_id, activityIdList));
 
+    const allChallenges = await db
+      .select({
+        activity_id: activityChallenges.activity_id,
+        id: challenges.id,
+        name: challenges.name,
+        description: challenges.description,
+        type: {
+          id: challengeTypes.id,
+          name: challengeTypes.name,
+        },
+      })
+      .from(activityChallenges)
+      .leftJoin(challenges, eq(activityChallenges.challenge_id, challenges.id))
+      .leftJoin(challengeTypes, eq(challenges.type_id, challengeTypes.id))
+      .where(inArray(activityChallenges.activity_id, activityIdList));
+
     // Fetch all SDGs for these activities in one query
     const allSdgs = await db
       .select({
@@ -373,6 +400,22 @@ export async function GET(request: NextRequest) {
       return acc;
     }, {} as Record<string, Array<{ id: string; title: string; code: string }>>);
 
+    const challengesByActivity = allChallenges.reduce((acc, challenge) => {
+      if (!acc[challenge.activity_id]) acc[challenge.activity_id] = [];
+      if (challenge.id) {
+        acc[challenge.activity_id].push({
+          id: challenge.id,
+          name: challenge.name || '',
+          description: challenge.description || '',
+          type: {
+            id: challenge.type?.id || '',
+            name: challenge.type?.name || '',
+          },
+        });
+      }
+      return acc;
+    }, {} as Record<string, Array<{ id: string; name: string; description: string; type: { id: string; name: string } }>>);
+
     const sdgsByActivity = allSdgs.reduce((acc, sdg) => {
       if (!acc[sdg.activity_id]) acc[sdg.activity_id] = [];
       if (sdg.id) { // Only add if sdg.id is not null
@@ -391,6 +434,7 @@ export async function GET(request: NextRequest) {
     const activitiesWithDetails = activitiesData.map(activity => ({
       ...activity,
       educational_goals: goalsByActivity[activity.id] || [],
+      challenges: challengesByActivity[activity.id] || [],
       sdgs: sdgsByActivity[activity.id] || [],
     }));
 
@@ -406,6 +450,12 @@ export async function GET(request: NextRequest) {
     if (educationalGoalIds && educationalGoalIds.length > 0) {
       filteredActivities = filteredActivities.filter(activity => 
         activity.educational_goals.some(goal => goal.id && educationalGoalIds.includes(goal.id))
+      );
+    }
+
+    if (challengeIds && challengeIds.length > 0) {
+      filteredActivities = filteredActivities.filter((activity) =>
+        activity.challenges.some((challenge) => challenge.id && challengeIds.includes(challenge.id))
       );
     }
 
@@ -436,6 +486,7 @@ export async function GET(request: NextRequest) {
           activity_type: activityType || undefined,
           sdgs: sdgIds || undefined,
           educational_goals: educationalGoalIds || undefined,
+          challenges: challengeIds || undefined,
           duration_min: durationMin || undefined,
           duration_max: durationMax || undefined,
           duration_operator: durationOperator || undefined,
@@ -462,6 +513,8 @@ export async function POST(request: NextRequest) {
   if (typeof parsed === 'string') {
     return apiErrors.validation('body', parsed);
   }
+  const challengeError = await validateChallengeIds(parsed.challenge_ids ?? []);
+  if (challengeError) return apiErrors.validation('challenge_ids', challengeError);
 
   const activity = await createActivity(parsed, {
     createdBy: session.user.id,

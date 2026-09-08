@@ -106,6 +106,8 @@ async function createTestSchema() {
       )
     `;
 
+    await sql`ALTER TABLE sdgs ADD COLUMN IF NOT EXISTS icon text NOT NULL DEFAULT '🌱'`;
+
     // Educational areas table
     await sql`
       CREATE TABLE IF NOT EXISTS educational_areas (
@@ -126,6 +128,26 @@ async function createTestSchema() {
         description text,
         code text NOT NULL UNIQUE,
         area_id uuid REFERENCES educational_areas(id),
+        created_at timestamp DEFAULT now()
+      )
+    `;
+
+    await sql`ALTER TABLE educational_goals ADD COLUMN IF NOT EXISTS icon text NOT NULL DEFAULT '🎯'`;
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS challenge_types (
+        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+        name text NOT NULL UNIQUE,
+        created_at timestamp DEFAULT now()
+      )
+    `;
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS challenges (
+        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+        type_id uuid NOT NULL REFERENCES challenge_types(id) ON DELETE CASCADE,
+        name text NOT NULL UNIQUE,
+        description text NOT NULL,
         created_at timestamp DEFAULT now()
       )
     `;
@@ -178,6 +200,19 @@ async function createTestSchema() {
         PRIMARY KEY (activity_id, goal_id)
       )
     `;
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS activity_challenges (
+        activity_id uuid NOT NULL REFERENCES activities(id) ON DELETE CASCADE,
+        challenge_id uuid NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
+        PRIMARY KEY (activity_id, challenge_id)
+      )
+    `;
+
+    await sql`CREATE INDEX IF NOT EXISTS activity_challenges_activity_id_idx ON activity_challenges(activity_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS activity_challenges_challenge_id_idx ON activity_challenges(challenge_id)`;
+    await sql`CREATE UNIQUE INDEX IF NOT EXISTS challenge_types_name_unique ON challenge_types(name)`;
+    await sql`CREATE UNIQUE INDEX IF NOT EXISTS challenges_name_unique ON challenges(name)`;
 
     // Programs table
     await sql`
@@ -355,8 +390,11 @@ export async function resetTestDatabase() {
         'programs', 
         'activity_sdgs',
         'activity_educational_goals',
+        'activity_challenges',
         'activities',
         'activity_types',
+        'challenges',
+        'challenge_types',
         'educational_goals',
         'educational_areas',
         'sdgs',

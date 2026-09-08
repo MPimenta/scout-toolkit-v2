@@ -2217,6 +2217,26 @@ Default Portuguese chrome, optional English via a header control next to the use
 - [x] Catalogue and UGC body text stay as stored (Portuguese as authored)
 - [x] Existing Playwright suite stays green on the Portuguese default
 
+### Epic 18: Activity challenges
+
+Associate one or more **challenges** with an activity (alongside existing educational objectives). A challenge has an id, a name (for example “Completar 5 nós”), and a description (for example a set of 10 nós of which only 5 are required). Each challenge belongs to a **type** (id + name). Seed the seven types: Estilo de Vida Ativo e Saudável, Vida ao Ar Livre, Comunidade e Cidadania, Valores e Atitudes, Vivência Escotista, Técnicas Úteis, Criatividade — distinct from educational areas and from activity types. Show challenges next to objectives on the tile, table, and detail page. Filter with the same multi-select pattern as objectives.
+
+**Status:** Planned — validate OpenSpec, then apply
+**OpenSpec:** `openspec/changes/activity-challenges/`
+**Specs:** delta under that change (`activity-challenges`, `admin-taxonomies`, `admin-activities`)
+
+#### Story 18.1: Challenges catalogue, association, display, and filter
+**Priority:** High
+**Status:** Planned
+**OpenSpec:** `openspec/changes/activity-challenges/`
+**Acceptance Criteria:**
+- [ ] Challenge types and challenges are a catalogue distinct from educational areas/goals and from activity types
+- [ ] The seven challenge types and ten challenges are seeded and linked to the five demo activities (re-seed does not duplicate)
+- [ ] An activity can have zero or more challenges
+- [ ] Tile, table, and detail show challenges next to objectives
+- [ ] Catalogue filter is a multi-select (same control as objetivos educativos)
+- [ ] Admins can maintain challenge types and challenges
+
 ## Milestones
 
 ### Milestone 1: MVP Launch (Week 3)
@@ -2384,6 +2404,7 @@ npm run test:watch
 - **Epic 15**: Orgo event-from-program implemented and archived (✅ COMPLETED — 2026-09-06)
 - **Epic 16**: Preview environment — specced, not applied
 - **Epic 17**: English locale implemented and archived (✅ COMPLETED — 2026-09-06)
+- **Epic 18**: Activity challenges — specced in `openspec/changes/activity-challenges/`, not applied
 
 ### Testing Enforcement:
 **No epic can be marked complete without meeting all testing requirements.**

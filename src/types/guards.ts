@@ -170,7 +170,8 @@ export function isApiActivity(value: unknown): value is ApiActivity {
     isString(value.activity_type.id) &&
     isString(value.activity_type.name) &&
     isArray(value.educational_goals) &&
-    isArray(value.sdgs);
+    isArray(value.sdgs) &&
+    (!('challenges' in value) || isArray(value.challenges));
 }
 
 export function isApiProgram(value: unknown): value is ApiProgram {

@@ -44,22 +44,30 @@ const mockActivity = {
     name: 'Tipo de Atividade',
     description: 'Descrição do tipo',
   },
-  educational_goals: [
-    {
-      id: 'goal-1',
-      title: 'Objetivo 1',
-      description: 'Descrição do objetivo 1',
-      code: 'GOAL_1',
-      area: {
-        id: 'area-1',
-        name: 'Área 1',
-        description: 'Descrição da área 1',
-        icon: '🎯',
-        code: 'AREA_1',
+    educational_goals: [
+      {
+        id: 'goal-1',
+        title: 'Objetivo 1',
+        description: 'Descrição do objetivo 1',
+        code: 'GOAL_1',
+        area: {
+          id: 'area-1',
+          name: 'Área 1',
+          description: 'Descrição da área 1',
+          icon: '🎯',
+          code: 'AREA_1',
+        },
       },
-    },
-  ],
-  sdgs: [
+    ],
+    challenges: [
+      {
+        id: 'challenge-1',
+        name: 'Completar 5 nós',
+        description: 'Lista de 10 nós; basta completar 5',
+        type: { id: 'type-1', name: 'Técnicas Úteis' },
+      },
+    ],
+    sdgs: [
     {
       id: 'sdg-1',
       number: 1,
@@ -126,14 +134,14 @@ describe('ActivityDetail', () => {
     
     // Check badges
     expect(screen.getByText('60 min')).toBeInTheDocument();
-    expect(screen.getByText('Médio (6-15)')).toBeInTheDocument();
+    expect(screen.getByText('Médio (7-15)')).toBeInTheDocument();
     expect(screen.getByText('Médio')).toBeInTheDocument();
     expect(screen.getByText('Exterior')).toBeInTheDocument();
     expect(screen.getByText('Escoteiros (10-14)')).toBeInTheDocument();
     expect(screen.getByText('Tipo de Atividade')).toBeInTheDocument();
     
     // Check Add to Program button
-    expect(screen.getByText('Adicionar ao Programa')).toBeInTheDocument();
+    expect(screen.getByText('Adicionar ao programa')).toBeInTheDocument();
   });
 
   it('renders materials section', () => {
@@ -163,6 +171,34 @@ describe('ActivityDetail', () => {
     expect(screen.getByText('Área 1 • AREA_1')).toBeInTheDocument();
     // The icon is rendered as an SVG, not as text
     expect(screen.getByText('Objetivos Educativos')).toBeInTheDocument();
+  });
+
+  it('renders challenges immediately after objectives', () => {
+    mockUseActivity.mockReturnValue({
+      activity: mockActivity,
+      loading: false,
+      error: null,
+    });
+
+    render(<ActivityDetail activityId="test-id" />);
+
+    expect(screen.getByText('Desafios')).toBeInTheDocument();
+    expect(screen.getByText('Completar 5 nós')).toBeInTheDocument();
+    expect(screen.getByText('Lista de 10 nós; basta completar 5')).toBeInTheDocument();
+    expect(screen.getByText('Técnicas Úteis')).toBeInTheDocument();
+  });
+
+  it('omits the challenges section when the activity has none', () => {
+    mockUseActivity.mockReturnValue({
+      activity: { ...mockActivity, challenges: [] },
+      loading: false,
+      error: null,
+    });
+
+    render(<ActivityDetail activityId="test-id" />);
+
+    expect(screen.getByText('Objetivos Educativos')).toBeInTheDocument();
+    expect(screen.queryByText('Completar 5 nós')).not.toBeInTheDocument();
   });
 
   it('renders SDGs section when available', () => {
@@ -207,7 +243,7 @@ describe('ActivityDetail', () => {
     render(<ActivityDetail activityId="test-id" />);
     
     // The modal is only rendered when the button is clicked
-    expect(screen.getByText('Adicionar ao Programa')).toBeInTheDocument();
+    expect(screen.getByText('Adicionar ao programa')).toBeInTheDocument();
   });
 
   it('handles missing image gracefully', () => {
@@ -265,6 +301,6 @@ describe('ActivityDetail', () => {
     render(<ActivityDetail activityId="test-id" />);
     
     // The component renders empty elements for missing content but still shows the button
-    expect(screen.getByText('Adicionar ao Programa')).toBeInTheDocument();
+    expect(screen.getByText('Adicionar ao programa')).toBeInTheDocument();
   });
 });

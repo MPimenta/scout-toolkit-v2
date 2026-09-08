@@ -24,6 +24,29 @@ test.describe('Admin activities', () => {
       const typeId = typeBody.activity_types[0]?.id;
       if (!typeId) test.skip(true, 'No activity types available');
 
+      let challengeId = (
+        (await (await page.request.get('/api/taxonomies/challenges')).json()) as {
+          challenges: { id: string }[];
+        }
+      ).challenges[0]?.id;
+
+      if (!challengeId) {
+        const createdType = await page.request.post('/api/admin/taxonomies/challenge-types', {
+          data: { name: `Tipo desafio E2E ${Date.now()}` },
+        });
+        expect(createdType.status()).toBe(201);
+        const typeJson = (await createdType.json()) as { item: { id: string } };
+        const createdChallenge = await page.request.post('/api/admin/taxonomies/challenges', {
+          data: {
+            name: `Desafio E2E ${Date.now()}`,
+            description: 'Desafio para criar atividade',
+            type_id: typeJson.item.id,
+          },
+        });
+        expect(createdChallenge.status()).toBe(201);
+        challengeId = ((await createdChallenge.json()) as { item: { id: string } }).item.id;
+      }
+
       const name = `E2E atividade ${Date.now()}`;
       const created = await page.request.post('/api/admin/activities', {
         data: {
@@ -36,10 +59,20 @@ test.describe('Admin activities', () => {
           location: 'outside',
           age_group: 'scouts',
           activity_type_id: typeId,
+          challenge_ids: [challengeId],
         },
       });
       expect(created.status()).toBe(201);
       const activity = (await created.json()) as { activity: { id: string } };
+
+      const detail = await page.request.get(`/api/activities/${activity.activity.id}`);
+      expect(detail.ok()).toBeTruthy();
+      const detailBody = (await detail.json()) as { challenges: { id: string }[] };
+      expect(detailBody.challenges.some((item) => item.id === challengeId)).toBe(true);
+
+      await page.goto('/admin/atividades/nova');
+      await expect(page.getByText('Objetivos educativos')).toBeVisible();
+      await expect(page.getByRole('group', { name: 'Desafios' })).toBeVisible();
 
       await page.request.patch(`/api/admin/activities/${activity.activity.id}`, {
         data: { is_approved: false },

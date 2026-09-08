@@ -2,7 +2,7 @@ import { pgTable, text, timestamp, uuid, integer, boolean, primaryKey, index } f
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { activityTypes } from './taxonomies';
-import { educationalGoals } from './taxonomies';
+import { educationalGoals, challenges } from './taxonomies';
 import { sdgs } from './taxonomies';
 import { user } from './auth';
 
@@ -48,6 +48,15 @@ export const activityEducationalGoals = pgTable('activity_educational_goals', {
   goalIdx: index('activity_educational_goals_goal_id_idx').on(table.goal_id),
 }));
 
+export const activityChallenges = pgTable('activity_challenges', {
+  activity_id: uuid('activity_id').notNull().references(() => activities.id, { onDelete: 'cascade' }),
+  challenge_id: uuid('challenge_id').notNull().references(() => challenges.id, { onDelete: 'cascade' }),
+}, (table) => ({
+  pk: primaryKey(table.activity_id, table.challenge_id),
+  activityIdx: index('activity_challenges_activity_id_idx').on(table.activity_id),
+  challengeIdx: index('activity_challenges_challenge_id_idx').on(table.challenge_id),
+}));
+
 export const activitySdgs = pgTable('activity_sdgs', {
   activity_id: uuid('activity_id').notNull().references(() => activities.id, { onDelete: 'cascade' }),
   sdg_id: uuid('sdg_id').notNull().references(() => sdgs.id, { onDelete: 'cascade' }),
@@ -64,6 +73,9 @@ export const selectActivitySchema = createSelectSchema(activities);
 export const insertActivityEducationalGoalSchema = createInsertSchema(activityEducationalGoals);
 export const selectActivityEducationalGoalSchema = createSelectSchema(activityEducationalGoals);
 
+export const insertActivityChallengeSchema = createInsertSchema(activityChallenges);
+export const selectActivityChallengeSchema = createSelectSchema(activityChallenges);
+
 export const insertActivitySdgSchema = createInsertSchema(activitySdgs);
 export const selectActivitySdgSchema = createSelectSchema(activitySdgs);
 
@@ -72,5 +84,7 @@ export type Activity = z.infer<typeof selectActivitySchema>;
 export type NewActivity = z.infer<typeof insertActivitySchema>;
 export type ActivityEducationalGoal = z.infer<typeof selectActivityEducationalGoalSchema>;
 export type NewActivityEducationalGoal = z.infer<typeof insertActivityEducationalGoalSchema>;
+export type ActivityChallenge = z.infer<typeof selectActivityChallengeSchema>;
+export type NewActivityChallenge = z.infer<typeof insertActivityChallengeSchema>;
 export type ActivitySdg = z.infer<typeof selectActivitySdgSchema>;
 export type NewActivitySdg = z.infer<typeof insertActivitySdgSchema>;

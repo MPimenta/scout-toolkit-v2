@@ -40,6 +40,12 @@ export interface ApiActivity {
     title: string;
     code: string;
   }>;
+  challenges?: Array<{
+    id: string;
+    name: string;
+    description?: string;
+    type?: { id: string; name: string };
+  }>;
   sdgs: Array<{
     id: string;
     number: number;
@@ -132,6 +138,7 @@ export interface ApiFilterState {
   activityType?: string[];
   sdgs?: string[];
   educationalGoals?: string[];
+  challenges?: string[];
   durationMin?: number;
   durationMax?: number;
   durationOperator?: string;
@@ -155,6 +162,7 @@ export interface ApiActivitiesResponse {
       activity_type?: string[];
       sdgs?: string[];
       educational_goals?: string[];
+      challenges?: string[];
       duration_min?: string;
       duration_max?: string;
       duration_operator?: string;

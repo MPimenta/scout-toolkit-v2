@@ -29,6 +29,11 @@ const mockEducationalGoals = [
   },
 ];
 
+const mockChallenges = [
+  { id: 'c1', name: 'Completar 5 nós', type: { name: 'Técnicas Úteis' } },
+  { id: 'c2', name: 'Montar um abrigo simples', type: { name: 'Vida ao Ar Livre' } },
+];
+
 // Mock the ActivityFilters component props
 const mockFilters: FilterState = {
   search: '',
@@ -39,6 +44,7 @@ const mockFilters: FilterState = {
   activityType: [],
   sdgs: [],
   educationalGoals: [],
+  challenges: [],
   durationMin: '',
   durationMax: '',
   durationOperator: '>=',
@@ -61,6 +67,9 @@ describe('ActivityFilters', () => {
       }
       if (url.includes('/api/taxonomies/educational-goals')) {
         return { ok: true, json: async () => ({ educational_goals: mockEducationalGoals }) } as Response;
+      }
+      if (url.includes('/api/taxonomies/challenges')) {
+        return { ok: true, json: async () => ({ challenges: mockChallenges }) } as Response;
       }
       return { ok: false, json: async () => ({}) } as Response;
     });
@@ -305,6 +314,28 @@ describe('ActivityFilters', () => {
       expect(mockOnFiltersChange).toHaveBeenCalledWith({
         ...mockFilters,
         educationalGoals: ['1'],
+      });
+    });
+  });
+
+  it('handles challenges filter changes', async () => {
+    render(
+      <ActivityFilters
+        filters={mockFilters}
+        onFiltersChange={mockOnFiltersChange}
+        onClearFilters={mockOnClearFilters}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /expandir/i }));
+
+    const challengeBoxes = await screen.findAllByRole('checkbox', { name: /Completar 5 nós/ });
+    fireEvent.click(challengeBoxes[0]);
+
+    await waitFor(() => {
+      expect(mockOnFiltersChange).toHaveBeenCalledWith({
+        ...mockFilters,
+        challenges: ['c1'],
       });
     });
   });

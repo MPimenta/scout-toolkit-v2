@@ -35,6 +35,11 @@ const mockActivities = [
         code: 'SE1',
       },
     ],
+    challenges: [
+      { id: 'c1', name: 'Completar 5 nós' },
+      { id: 'c2', name: 'Montar um abrigo simples' },
+      { id: 'c3', name: 'Cuidar do espaço comum' },
+    ],
     sdgs: [
       {
         id: '1',
@@ -176,6 +181,36 @@ describe('ActivitiesTable', () => {
     );
 
     expect(screen.getByText('Trabalho em Equipa')).toBeInTheDocument();
+  });
+
+  it('shows two challenge badges and a remainder', () => {
+    render(
+      <ActivitiesTable
+        activities={mockActivities}
+        onViewActivity={mockOnViewActivity}
+        onEditActivity={mockOnEditActivity}
+        onDeleteActivity={mockOnDeleteActivity}
+      />
+    );
+
+    expect(screen.getByText('Completar 5 nós')).toBeInTheDocument();
+    expect(screen.getByText('Montar um abrigo simples')).toBeInTheDocument();
+    expect(screen.queryByText('Cuidar do espaço comum')).not.toBeInTheDocument();
+    expect(screen.getByText('+1')).toBeInTheDocument();
+  });
+
+  it('omits challenge badges when the activity has none', () => {
+    render(
+      <ActivitiesTable
+        activities={[{ ...mockActivities[0], challenges: [] }]}
+        onViewActivity={mockOnViewActivity}
+        onEditActivity={mockOnEditActivity}
+        onDeleteActivity={mockOnDeleteActivity}
+      />
+    );
+
+    expect(screen.getByText('Trabalho em Equipa')).toBeInTheDocument();
+    expect(screen.queryByText('Completar 5 nós')).not.toBeInTheDocument();
   });
 
   it('shows pagination information', () => {

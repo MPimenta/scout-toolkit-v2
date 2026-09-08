@@ -31,6 +31,20 @@ export const educationalGoals = pgTable('educational_goals', {
   created_at: timestamp('created_at').notNull().defaultNow(),
 });
 
+export const challengeTypes = pgTable('challenge_types', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull().unique(),
+  created_at: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const challenges = pgTable('challenges', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  type_id: uuid('type_id').notNull().references(() => challengeTypes.id, { onDelete: 'cascade' }),
+  name: text('name').notNull().unique(),
+  description: text('description').notNull(),
+  created_at: timestamp('created_at').notNull().defaultNow(),
+});
+
 // SDGs table
 export const sdgs = pgTable('sdgs', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -84,6 +98,12 @@ export const selectEducationalAreaSchema = createSelectSchema(educationalAreas);
 export const insertEducationalGoalSchema = createInsertSchema(educationalGoals);
 export const selectEducationalGoalSchema = createSelectSchema(educationalGoals);
 
+export const insertChallengeTypeSchema = createInsertSchema(challengeTypes);
+export const selectChallengeTypeSchema = createSelectSchema(challengeTypes);
+
+export const insertChallengeSchema = createInsertSchema(challenges);
+export const selectChallengeSchema = createSelectSchema(challenges);
+
 export const insertSdgSchema = createInsertSchema(sdgs);
 export const selectSdgSchema = createSelectSchema(sdgs);
 
@@ -106,6 +126,10 @@ export type EducationalArea = z.infer<typeof selectEducationalAreaSchema>;
 export type NewEducationalArea = z.infer<typeof insertEducationalAreaSchema>;
 export type EducationalGoal = z.infer<typeof selectEducationalGoalSchema>;
 export type NewEducationalGoal = z.infer<typeof insertEducationalGoalSchema>;
+export type ChallengeType = z.infer<typeof selectChallengeTypeSchema>;
+export type NewChallengeType = z.infer<typeof insertChallengeTypeSchema>;
+export type Challenge = z.infer<typeof selectChallengeSchema>;
+export type NewChallenge = z.infer<typeof insertChallengeSchema>;
 export type Sdg = z.infer<typeof selectSdgSchema>;
 export type NewSdg = z.infer<typeof insertSdgSchema>;
 export type GroupSize = z.infer<typeof selectGroupSizeSchema>;

@@ -29,6 +29,7 @@ test.describe('Activities filtering', () => {
     await expect(page.getByText('Localização')).toBeVisible();
     await expect(page.getByText('Faixa Etária')).toBeVisible();
     await expect(page.getByText('Objetivos de Desenvolvimento Sustentável (ODS)')).toBeVisible();
+    await expect(page.getByText('Desafios')).toBeVisible();
     await expect(page.getByText('Duração (minutos)')).toBeVisible();
 
     await page.getByRole('checkbox', { name: 'Pequeno (2-6)' }).check();

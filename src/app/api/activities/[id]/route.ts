@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/server';
-import { activities, activityTypes, educationalGoals, sdgs, activityEducationalGoals, activitySdgs, educationalAreas, user } from '../../../../../drizzle/schema';
+import { activities, activityTypes, educationalGoals, sdgs, activityEducationalGoals, activitySdgs, educationalAreas, activityChallenges, challenges, challengeTypes, user } from '../../../../../drizzle/schema';
 import { eq } from 'drizzle-orm';
 import { auth } from '@/lib/auth/config';
 import { getEffectiveRole } from '@/lib/auth/view-as';
@@ -11,7 +11,7 @@ import {
   withApiErrorHandler 
 } from '@/lib/errors';
 import { validateUUID } from '@/lib/errors/error-handler';
-import { parseActivityWrite, replaceRelations } from '@/lib/activities/write';
+import { parseActivityWrite, replaceRelations, validateChallengeIds } from '@/lib/activities/write';
 
 export const GET = withApiErrorHandler(async (
   _request: NextRequest,
@@ -95,6 +95,21 @@ export const GET = withApiErrorHandler(async (
       .leftJoin(educationalAreas, eq(educationalGoals.area_id, educationalAreas.id))
       .where(eq(activityEducationalGoals.activity_id, id));
 
+    const challengeData = await db
+      .select({
+        id: challenges.id,
+        name: challenges.name,
+        description: challenges.description,
+        type: {
+          id: challengeTypes.id,
+          name: challengeTypes.name,
+        },
+      })
+      .from(activityChallenges)
+      .leftJoin(challenges, eq(activityChallenges.challenge_id, challenges.id))
+      .leftJoin(challengeTypes, eq(challenges.type_id, challengeTypes.id))
+      .where(eq(activityChallenges.activity_id, id));
+
     // Fetch SDGs
     const sdgData = await db
       .select({
@@ -112,6 +127,7 @@ export const GET = withApiErrorHandler(async (
     const activityWithDetails = {
       ...activity,
       educational_goals: goals,
+      challenges: challengeData,
       sdgs: sdgData,
     };
 
@@ -136,6 +152,8 @@ export const PATCH = withApiErrorHandler(async (
 
   const parsed = parseActivityWrite(await request.json());
   if (typeof parsed === 'string') return apiErrors.validation('body', parsed);
+  const challengeError = await validateChallengeIds(parsed.challenge_ids ?? []);
+  if (challengeError) return apiErrors.validation('challenge_ids', challengeError);
 
   const [updated] = await db
     .update(activities)

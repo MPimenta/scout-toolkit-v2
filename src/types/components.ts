@@ -33,6 +33,12 @@ export interface ActivityCardProps extends BaseComponentProps {
       title: string;
       code: string;
     }>;
+    challenges?: Array<{
+      id: string;
+      name: string;
+      description?: string;
+      type?: { id: string; name: string };
+    }>;
     sdgs: Array<{
       id: string;
       number: number;
@@ -219,6 +225,7 @@ export interface FilterState {
   activityType: string[];
   sdgs: string[];
   educationalGoals: string[];
+  challenges: string[];
   durationMin: number;
   durationMax: number;
   durationOperator: string;

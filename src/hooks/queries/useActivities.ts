@@ -14,6 +14,7 @@ export interface ActivityFilters {
   activity_type?: string[];
   sdgs?: string[];
   educational_goals?: string[];
+  challenges?: string[];
   duration_min?: string;
   duration_max?: string;
   duration_operator?: '>=' | '<=' | '=' | '>' | '<';
@@ -47,6 +48,12 @@ export interface ActivityResponse {
       id: string;
       title: string;
       code: string;
+    }>;
+    challenges?: Array<{
+      id: string;
+      name: string;
+      description?: string;
+      type?: { id: string; name: string };
     }>;
     sdgs: Array<{
       id: string;

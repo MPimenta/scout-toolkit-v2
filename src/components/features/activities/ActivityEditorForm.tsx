@@ -1,10 +1,13 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { UploadButton } from '@/lib/uploadthing';
+
+type GoalOption = { id: string; title: string; area?: { name: string } };
+type ChallengeOption = { id: string; name: string; type?: { name: string } };
 
 export function ActivityEditorForm({
   action,
@@ -26,20 +29,37 @@ export function ActivityEditorForm({
     age_group: string;
     activity_type_id: string;
     image_url: string;
+    educational_goal_ids: string[];
+    challenge_ids: string[];
   }>;
   submitLabel: string;
 }) {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [imageUrl, setImageUrl] = useState(defaults?.image_url ?? '');
+  const [goals, setGoals] = useState<GoalOption[]>([]);
+  const [challenges, setChallenges] = useState<ChallengeOption[]>([]);
+  const [selectedGoals, setSelectedGoals] = useState<string[]>(defaults?.educational_goal_ids ?? []);
+  const [selectedChallenges, setSelectedChallenges] = useState<string[]>(defaults?.challenge_ids ?? []);
+
+  useEffect(() => {
+    fetch('/api/taxonomies/educational-goals')
+      .then((response) => response.json())
+      .then((data) => setGoals(data.educational_goals ?? []));
+    fetch('/api/taxonomies/challenges')
+      .then((response) => response.json())
+      .then((data) => setChallenges(data.challenges ?? []));
+  }, []);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
     setError(null);
     const form = new FormData(event.currentTarget);
-    const body: Record<string, FormDataEntryValue | number> = Object.fromEntries(form.entries());
+    const body: Record<string, FormDataEntryValue | number | string[]> = Object.fromEntries(form.entries());
     body.approximate_duration_minutes = Number(body.approximate_duration_minutes);
+    body.educational_goal_ids = selectedGoals;
+    body.challenge_ids = selectedChallenges;
     const response = await fetch(action, {
       method: defaults?.name ? 'PATCH' : 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -64,6 +84,52 @@ export function ActivityEditorForm({
       <Field name="location" label="Local" defaultValue={defaults?.location ?? 'outside'} />
       <Field name="age_group" label="Secção" defaultValue={defaults?.age_group ?? 'scouts'} />
       <Field name="activity_type_id" label="ID do tipo" defaultValue={defaults?.activity_type_id} />
+      <fieldset className="space-y-2">
+        <legend className="text-sm font-medium">Objetivos educativos</legend>
+        <div className="max-h-48 overflow-y-auto space-y-2 border rounded-md p-3">
+          {goals.map((goal) => (
+            <label key={goal.id} className="flex items-start gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={selectedGoals.includes(goal.id)}
+                onChange={(event) => {
+                  setSelectedGoals((current) =>
+                    event.target.checked ? [...current, goal.id] : current.filter((id) => id !== goal.id)
+                  );
+                }}
+              />
+              <span>
+                {goal.title}
+                {goal.area?.name ? <span className="block text-xs text-muted-foreground">{goal.area.name}</span> : null}
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      <fieldset className="space-y-2">
+        <legend className="text-sm font-medium">Desafios</legend>
+        <div className="max-h-48 overflow-y-auto space-y-2 border rounded-md p-3">
+          {challenges.map((challenge) => (
+            <label key={challenge.id} className="flex items-start gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={selectedChallenges.includes(challenge.id)}
+                onChange={(event) => {
+                  setSelectedChallenges((current) =>
+                    event.target.checked ? [...current, challenge.id] : current.filter((id) => id !== challenge.id)
+                  );
+                }}
+              />
+              <span>
+                {challenge.name}
+                {challenge.type?.name ? (
+                  <span className="block text-xs text-muted-foreground">{challenge.type.name}</span>
+                ) : null}
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
       <div className="space-y-1">
         <Label htmlFor="image_url">URL da imagem (HTTPS)</Label>
         <Input

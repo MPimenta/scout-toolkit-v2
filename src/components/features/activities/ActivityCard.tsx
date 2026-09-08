@@ -52,6 +52,12 @@ interface Activity {
   created_at: string;
   activity_type: ActivityType;
   educational_goals: EducationalGoal[];
+  challenges?: Array<{
+    id: string;
+    name: string;
+    description?: string;
+    type?: { id: string; name: string };
+  }>;
   sdgs: Sdg[];
 }
 
@@ -196,6 +202,24 @@ export function ActivityCard({ activity }: ActivityCardProps) {
                 {activity.educational_goals.length > 3 && (
                   <Badge variant="outline" className="text-xs">
                     +{activity.educational_goals.length - 3}
+                  </Badge>
+                )}
+              </div>
+            </div>
+          )}
+
+          {(activity.challenges?.length ?? 0) > 0 && (
+            <div>
+              <p className="text-xs font-medium text-muted-foreground mb-1">{t('activities.challengesColon')}</p>
+              <div className="flex flex-wrap gap-1">
+                {activity.challenges!.slice(0, 3).map((challenge) => (
+                  <Badge key={challenge.id} variant="outline" className="text-xs">
+                    {challenge.name}
+                  </Badge>
+                ))}
+                {activity.challenges!.length > 3 && (
+                  <Badge variant="outline" className="text-xs">
+                    +{activity.challenges!.length - 3}
                   </Badge>
                 )}
               </div>

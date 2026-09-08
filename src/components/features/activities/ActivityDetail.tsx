@@ -164,6 +164,36 @@ export function ActivityDetail({ activityId }: ActivityDetailProps) {
         </Card>
       )}
 
+      {activity.challenges && activity.challenges.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Target className="h-5 w-5" />
+              {t('activities.challenges')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {activity.challenges.map((challenge) => (
+                <div key={challenge.id} className="p-3 bg-muted/50 rounded-lg">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Badge variant="outline" className="text-xs">
+                      {challenge.type?.name}
+                    </Badge>
+                  </div>
+                  <h4 className="font-medium mb-1">{challenge.name}</h4>
+                  {challenge.description && (
+                    <p className="text-sm text-muted-foreground">
+                      {challenge.description}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* SDGs Section */}
       {activity.sdgs && activity.sdgs.length > 0 && (
         <Card>

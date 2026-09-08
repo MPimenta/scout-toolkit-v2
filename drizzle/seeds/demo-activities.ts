@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv';
 import { db } from '@/lib/db/server';
-import { activityTypes, educationalGoals, sdgs } from '../schema/taxonomies';
-import { activities, activityEducationalGoals, activitySdgs } from '../schema/activities';
+import { activityTypes, educationalGoals, sdgs, challenges } from '../schema/taxonomies';
+import { activities, activityEducationalGoals, activitySdgs, activityChallenges } from '../schema/activities';
 
 // Load environment variables
 dotenv.config({ path: '.env.local' });
@@ -21,6 +21,7 @@ const demoActivitiesData = [
     activity_type_name: 'Jogo',
     educational_goal_codes: ['SOCIAL_COMM', 'SOCIAL_TEAM'],
     sdg_numbers: [4, 5],
+    challenge_names: ['Apresentar-se com um gesto original', 'Jogar pelo menos 15 minutos em movimento'],
   },
   {
     name: 'Caça ao Tesouro',
@@ -34,6 +35,7 @@ const demoActivitiesData = [
     activity_type_name: 'Jogo',
     educational_goal_codes: ['TECHNICAL_ORIENTEERING', 'SOCIAL_TEAM', 'CREATIVITY_PROBLEM'],
     sdg_numbers: [4, 15],
+    challenge_names: ['Seguir um percurso com pistas', 'Resolver um código ou charada em equipa'],
   },
   {
     name: 'Reflexão do Dia',
@@ -47,6 +49,7 @@ const demoActivitiesData = [
     activity_type_name: 'Reflexão',
     educational_goal_codes: ['SOCIAL_EMPATHY', 'LEADERSHIP_DECISION'],
     sdg_numbers: [3, 4],
+    challenge_names: ['Partilhar uma reflexão do dia', 'Escutar o outro sem interromper'],
   },
   {
     name: 'Construção de Abrigo',
@@ -60,6 +63,7 @@ const demoActivitiesData = [
     activity_type_name: 'Técnica',
     educational_goal_codes: ['TECHNICAL_KNOTS', 'SOCIAL_TEAM', 'LEADERSHIP_RESPONSIBILITY'],
     sdg_numbers: [4, 15],
+    challenge_names: ['Completar 5 nós', 'Montar um abrigo simples'],
   },
   {
     name: 'Limpeza da Comunidade',
@@ -73,6 +77,7 @@ const demoActivitiesData = [
     activity_type_name: 'Serviço',
     educational_goal_codes: ['CITIZENSHIP_ENVIRONMENT', 'CITIZENSHIP_PARTICIPATION', 'SOCIAL_TEAM'],
     sdg_numbers: [11, 12, 15],
+    challenge_names: ['Recolher lixo numa ação de serviço', 'Cuidar do espaço comum'],
   },
 ];
 
@@ -93,19 +98,22 @@ export async function seedDemoActivities() {
         continue;
       }
 
-      // Insert activity
-      const [activity] = await db.insert(activities).values({
-        name: activityData.name,
-        description: activityData.description,
-        materials: activityData.materials,
-        approximate_duration_minutes: activityData.approximate_duration_minutes,
-        group_size: activityData.group_size,
-        effort_level: activityData.effort_level,
-        location: activityData.location,
-        age_group: activityData.age_group,
-        activity_type_id: activityType.id,
-        is_approved: true,
-      }).onConflictDoNothing().returning();
+      // Insert activity if it does not already exist by name
+      let [activity] = await db.select().from(activities).where(eq(activities.name, activityData.name)).limit(1);
+      if (!activity) {
+        [activity] = await db.insert(activities).values({
+          name: activityData.name,
+          description: activityData.description,
+          materials: activityData.materials,
+          approximate_duration_minutes: activityData.approximate_duration_minutes,
+          group_size: activityData.group_size,
+          effort_level: activityData.effort_level,
+          location: activityData.location,
+          age_group: activityData.age_group,
+          activity_type_id: activityType.id,
+          is_approved: true,
+        }).returning();
+      }
 
       if (activity) {
         // Link educational goals
@@ -136,6 +144,21 @@ export async function seedDemoActivities() {
             await db.insert(activitySdgs).values({
               activity_id: activity.id,
               sdg_id: sdg.id,
+            }).onConflictDoNothing();
+          }
+        }
+
+        for (const challengeName of activityData.challenge_names) {
+          const [challenge] = await db
+            .select()
+            .from(challenges)
+            .where(eq(challenges.name, challengeName))
+            .limit(1);
+
+          if (challenge) {
+            await db.insert(activityChallenges).values({
+              activity_id: activity.id,
+              challenge_id: challenge.id,
             }).onConflictDoNothing();
           }
         }

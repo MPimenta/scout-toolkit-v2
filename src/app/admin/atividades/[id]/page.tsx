@@ -33,6 +33,12 @@ export default function EditAdminActivityPage() {
           age_group: String(activity.age_group ?? 'scouts'),
           activity_type_id: String((activity.activity_type as { id?: string } | undefined)?.id ?? ''),
           image_url: String(activity.image_url ?? ''),
+          educational_goal_ids: Array.isArray(activity.educational_goals)
+            ? (activity.educational_goals as Array<{ id: string }>).map((goal) => goal.id)
+            : [],
+          challenge_ids: Array.isArray(activity.challenges)
+            ? (activity.challenges as Array<{ id: string }>).map((challenge) => challenge.id)
+            : [],
         }}
       />
     </div>

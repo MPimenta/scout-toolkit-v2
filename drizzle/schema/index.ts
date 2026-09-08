@@ -8,8 +8,8 @@ export * from './auth';
 
 // Export all tables for Drizzle
 import { users, userRoles } from './users';
-import { activityTypes, educationalAreas, educationalGoals, sdgs } from './taxonomies';
-import { activities, activityEducationalGoals, activitySdgs } from './activities';
+import { activityTypes, educationalAreas, educationalGoals, challengeTypes, challenges, sdgs } from './taxonomies';
+import { activities, activityEducationalGoals, activityChallenges, activitySdgs } from './activities';
 import { programs, programEntries } from './programs';
 import {
   reviews,
@@ -29,9 +29,12 @@ export const schema = {
   activityTypes,
   educationalAreas,
   educationalGoals,
+  challengeTypes,
+  challenges,
   sdgs,
   activities,
   activityEducationalGoals,
+  activityChallenges,
   activitySdgs,
   programs,
   programEntries,
