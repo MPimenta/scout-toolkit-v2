@@ -60,3 +60,6 @@ Thumbs.db
 
 # unpacked brand zip (source files live in public/brand)
 .tmp-brand-assets/
+
+# Claude Code (personal settings)
+.claude/settings.local.json
