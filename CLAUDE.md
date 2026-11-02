@@ -23,7 +23,7 @@ Platform for Escoteiros de Portugal leaders to browse activities, build programs
 ## Conventions
 
 - UI defaults to Portuguese. English is chrome only, chosen by a cookie switcher (no URL prefix). Strings live in `src/messages/pt.json` and `en.json`; update both.
-- Multilingual DB content is JSONB `{ "pt": "...", "en": "..." }`, with Portuguese as the default and English as the fallback.
+- Catalogue and user-generated content are stored as plain Portuguese `text` columns and shown as authored; only the UI chrome is translated.
 - Shared types go in `src/types/`; avoid `any` (use `unknown` + type guards in `src/types/guards.ts`).
 - Errors: use `src/lib/errors/` (API handler, logger, messages). User-facing error messages are in Portuguese. No stray `console.log`.
 - Brand colours come only from CSS variables in `src/app/globals.css`; do not invent new ones (see `docs/brand-handoff.md`). Primary buttons/links must meet WCAG 2.1 AA contrast.
