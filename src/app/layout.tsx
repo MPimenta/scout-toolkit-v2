@@ -9,6 +9,7 @@ import { getEnabledFeatures, isFeatureEnabled } from '@/lib/features';
 import { PWA_DARK_THEME_COLOR, PWA_THEME_COLOR } from '@/lib/pwa/manifest';
 import { AppShell } from '@/components/layout/AppShell';
 import { ReportLauncher } from '@/components/feedback/ReportLauncher';
+import { PwaRegistrar } from '@/components/pwa/PwaRegistrar';
 import { Toaster } from 'sonner';
 import { LOCALE_COOKIE, resolveLocale } from '@/lib/locale/catalog';
 import { VIEW_AS_COOKIE } from '@/lib/auth/view-as-cookie';
@@ -68,6 +69,7 @@ export default async function RootLayout({
                 <ViewAsProvider initialViewAs={viewAs}>
                   <AppShell>{children}</AppShell>
                   {enabled.has('issue-reports') && <ReportLauncher />}
+                  {enabled.has('pwa') && <PwaRegistrar />}
                   <Toaster />
                 </ViewAsProvider>
               </LocaleProvider>

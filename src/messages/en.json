@@ -492,6 +492,15 @@
     "error": "Could not send the report.",
     "rateLimit": "Too many reports. Try again later."
   },
+  "offline": {
+    "title": "No connection",
+    "body": "Could not reach the internet. Signing in, programs and exports need a connection.",
+    "retry": "Try again"
+  },
+  "pwa": {
+    "updateAvailable": "A new version is available",
+    "update": "Update"
+  },
   "errors": {
     "somethingWrong": "Something went wrong",
     "reload": "Reload page",

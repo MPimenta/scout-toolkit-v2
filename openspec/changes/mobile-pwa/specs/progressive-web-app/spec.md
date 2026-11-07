@@ -125,12 +125,12 @@ When a new service worker is waiting, the app SHALL tell the user that a new ver
 
 ### Requirement: Sign-out and kill switch clear the worker's data
 
-Signing out SHALL delete every cache the worker created. Turning the `pwa` flag off SHALL serve a worker at `/sw.js` that deletes all caches and unregisters itself, so installed clients return to a plain website.
+Signing out SHALL delete every cache the worker created. The worker MAY store the public offline page again on the next navigation, so a signed-out phone still has an offline page; that page is fetched without credentials and holds no user data. Turning the `pwa` flag off SHALL serve a worker at `/sw.js` that deletes all caches and unregisters itself, so installed clients return to a plain website.
 
 #### Scenario: Sign-out clears caches
 
 - **WHEN** a user signs out
-- **THEN** the service worker caches are empty
+- **THEN** the service worker caches are empty until the next navigation, when only the public offline page and the static files it needs are stored again
 
 #### Scenario: Kill switch
 

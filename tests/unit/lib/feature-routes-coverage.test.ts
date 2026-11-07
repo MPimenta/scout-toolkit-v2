@@ -29,6 +29,9 @@ const ALWAYS_ON = new Set([
   '/api/auth/x',
   '/api/e2e/session',
   '/api/health',
+  // pwa: reachable whatever the flag says, so a switched-off flag can retire the worker.
+  '/offline',
+  '/sw.js',
   '/api/uploads/activity-image',
   '/media/activity-images/x',
   // GET is the public catalogue; POST (a member proposal) is guarded in the handler.

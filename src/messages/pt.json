@@ -492,6 +492,15 @@
     "error": "Não foi possível enviar o reporte.",
     "rateLimit": "Demasiados reportes. Tenta mais tarde."
   },
+  "offline": {
+    "title": "Sem ligação",
+    "body": "Não foi possível ligar à internet. Entrar, os programas e as exportações precisam de ligação.",
+    "retry": "Tentar novamente"
+  },
+  "pwa": {
+    "updateAvailable": "Nova versão disponível",
+    "update": "Atualizar"
+  },
   "errors": {
     "somethingWrong": "Algo correu mal",
     "reload": "Recarregar página",
