@@ -8,11 +8,11 @@
 ## 2. Service worker and offline page
 
 - [ ] 2.1 Add `src/app/offline/page.tsx` in Portuguese with "Tentar novamente", PT/EN strings, no network dependency — verify the page passes axe and renders with the network cut
-- [ ] 2.2 Write `public/sw.js` with the allowlist rules (cache-first `/_next/static/` and `/brand/`, network-first navigations with offline fallback, everything else untouched), versioned cache and cleanup on activate — verify unit tests of the `shouldCache` predicate for `/api/`, `/auth/`, `/media/`, exports, non-GET and document requests
-- [ ] 2.3 Serve a self-unregistering, cache-clearing `/sw.js` when the flag is off — verify a returning client with a registered worker ends with no registration and no caches
+- [ ] 2.2 Write the worker source in `src/lib/pwa/sw-source.ts`, served as `/sw.js` by `src/app/sw.js/route.ts`, with the allowlist rules (cache-first `/_next/static/` and `/brand/`, network-first navigations with offline fallback, everything else untouched), versioned cache and cleanup on activate — verify unit tests of the `shouldCache` predicate for `/api/`, `/auth/`, `/media/`, exports, non-GET and document requests
+- [ ] 2.3 Have the same `/sw.js` handler serve a self-unregistering, cache-clearing worker when the flag is off — verify a returning client with a registered worker ends with no registration and no caches
 - [ ] 2.4 Add a client component that registers the worker in production only when the flag is on, and shows the "Atualizar" notice when a worker is waiting — verify the page is not reloaded automatically and accepting the notice activates the new version
 - [ ] 2.5 Clear all caches on sign-out — verify a Playwright case lists zero cache entries after sign-out
-- [ ] 2.6 Add headers in `next.config.mjs` for `/sw.js` (`no-cache`, `Service-Worker-Allowed`) and the manifest — verify with a header test on the built server and note the CSP `worker-src`/`manifest-src` additions for `security-testing`
+- [ ] 2.6 Add headers in `next.config.mjs` for the manifest (the `/sw.js` handler sets its own `no-cache` and `Service-Worker-Allowed`; verify them on the built server) — verify with a header test on the built server and note the CSP `worker-src`/`manifest-src` additions for `security-testing`
 
 ## 3. Install experience
 
