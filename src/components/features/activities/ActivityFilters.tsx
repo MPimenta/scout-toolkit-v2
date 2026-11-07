@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Search, Filter, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, Filter, ChevronDown, ChevronUp } from 'lucide-react';
 import { log } from '@/lib/errors';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useLocale } from '@/components/locale/LocaleProvider';
@@ -125,14 +125,6 @@ export function ActivityFilters({ filters, onFiltersChange, onClearFilters, resu
               <span className="ml-1">{isExpanded ? t('activities.collapse') : t('activities.expand')}</span>
             </Button>
           </div>
-          {active && (
-            <div className="pt-2">
-              <Button variant="link" size="sm" onClick={clear} className="h-auto p-0 text-sm">
-                <X className="mr-1 h-3 w-3" aria-hidden />
-                {t('common.clearFilters')}
-              </Button>
-            </div>
-          )}
         </CardHeader>
 
         {isExpanded && (
@@ -143,8 +135,8 @@ export function ActivityFilters({ filters, onFiltersChange, onClearFilters, resu
       </Card>
 
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetContent side="bottom" className="max-h-[92vh] overflow-y-auto">
-          <SheetHeader className="sticky top-0 z-10 space-y-3 bg-background pb-3">
+        <SheetContent side="bottom" className="max-h-[92vh] gap-0 overflow-y-auto p-0">
+          <SheetHeader className="sticky top-0 z-10 space-y-3 bg-background px-6 pb-3 pt-6">
             <SheetTitle>{t('filters.panelTitle')}</SheetTitle>
             <Input
               type="search"
@@ -155,8 +147,10 @@ export function ActivityFilters({ filters, onFiltersChange, onClearFilters, resu
               className="min-h-11"
             />
           </SheetHeader>
-          <FilterPanel filters={localFilters} onChange={change} types={types} sdgs={sdgs} goals={goals} compact />
-          <div className="sticky bottom-0 -mx-6 mt-4 flex gap-2 border-t bg-background px-6 py-3">
+          <div className="px-6 pt-4">
+            <FilterPanel filters={localFilters} onChange={change} types={types} sdgs={sdgs} goals={goals} compact />
+          </div>
+          <div className="sticky bottom-0 mt-4 flex gap-2 border-t bg-background px-6 py-3">
             {active && (
               <Button variant="outline" className="min-h-11" onClick={clear}>
                 {t('common.clearAll')}

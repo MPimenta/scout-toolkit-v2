@@ -397,6 +397,43 @@ describe('ActivityFilters', () => {
     expect(mockOnClearFilters).toHaveBeenCalled();
   });
 
+  it('offers a single clear control while filters are active', () => {
+    render(
+      <ActivityFilters
+        filters={{ ...mockFilters, search: 'jogo' }}
+        onFiltersChange={mockOnFiltersChange}
+        onClearFilters={mockOnClearFilters}
+      />
+    );
+
+    expect(screen.getAllByText('Limpar Todos')).toHaveLength(1);
+    expect(screen.queryByText('Limpar Filtros')).not.toBeInTheDocument();
+  });
+
+  it('opens the phone sheet with a 44 px close button and edge-to-edge sticky bars', async () => {
+    render(
+      <ActivityFilters
+        filters={{ ...mockFilters, search: 'jogo' }}
+        onFiltersChange={mockOnFiltersChange}
+        onClearFilters={mockOnClearFilters}
+        resultCount={7}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /filtros/i }));
+
+    const dialog = await screen.findByRole('dialog');
+    // No padding on the scroller, so scrolled content cannot show above or below the sticky bars.
+    expect(dialog.className).toMatch(/\bp-0\b/);
+    expect(dialog.className).not.toMatch(/\bp-6\b/);
+
+    const close = screen.getByRole('button', { name: 'Fechar' });
+    expect(close.className).toMatch(/\bh-11\b/);
+    expect(close.className).toMatch(/\bw-11\b/);
+
+    expect(screen.getByRole('button', { name: /^Ver 7 atividades$/ })).toBeInTheDocument();
+  });
+
   it('removes individual filters when X button is clicked', async () => {
     const filtersWithValues: FilterState = {
       ...mockFilters,

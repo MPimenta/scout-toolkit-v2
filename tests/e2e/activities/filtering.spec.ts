@@ -43,7 +43,7 @@ test.describe('Activities filtering', () => {
     await page.getByRole('checkbox', { name: 'Baixo' }).check();
     await expect(page.getByRole('button', { name: 'Remover filtro: Pequeno (2-6)' })).toBeVisible();
 
-    await page.getByRole('button', { name: 'Limpar Filtros' }).click();
+    await page.getByRole('button', { name: 'Limpar Todos' }).click();
     await expect(page.getByText('Pesquisa:')).toHaveCount(0);
     await expect(page.getByRole('checkbox', { name: 'Pequeno (2-6)' })).not.toBeChecked();
   });

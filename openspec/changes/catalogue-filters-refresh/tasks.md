@@ -36,6 +36,6 @@
 ## 6. Verification
 
 - [x] 6.1 Component tests for every section and an E2E case: choose a division pill, set a duration range, select an area, see the chips and the filtered list.
-- [ ] 6.2 Manual pass at 1440 px and 390 px, light and dark.
+- [x] 6.2 Manual pass at 1440 px and 390 px, light and dark (Playwright screenshots; fixed the phone sheet bleed, 44 px close target and duplicate clear control).
 - [x] 6.3 `npm run typecheck`, `npm run lint`, `npm run test:run`, `npm run test:e2e` all pass (79 passed, 32 skipped by design).
 - [ ] 6.4 `openspec validate catalogue-filters-refresh --strict`; archive after `activity-types-review` and `progress-matrix-objectives`.
