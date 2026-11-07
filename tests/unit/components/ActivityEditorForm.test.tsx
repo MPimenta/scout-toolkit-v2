@@ -2,8 +2,6 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActivityEditorForm, pruneObjectives } from '@/components/features/activities/ActivityEditorForm';
 
-vi.mock('@/lib/uploadthing', () => ({ UploadButton: () => <button type="button">Carregar imagem</button> }));
-
 const area = { id: 'a1', name: 'Social' };
 const general = { id: 'g1', code: '1S', title: 'Demonstrar competências de comunicação' };
 const taxonomies: Record<string, unknown> = {

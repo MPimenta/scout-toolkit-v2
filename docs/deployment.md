@@ -15,6 +15,16 @@ The root [README](../README.md) has the short path. This page is the hosted chec
 
 Do **not** add a `.env.preview` file. Next.js never loads it. Do not point `npm run test:run` or Playwright at Neon.
 
+## Azure (moving from Vercel and Neon)
+
+The hosting is moving to Azure App Service with the AEP's PostgreSQL server (openspec `migrate-hosting-to-azure`). Until the cutover is done, Vercel and Neon described below stay in use. What is in place for the move:
+
+- `Dockerfile` builds the app (Next.js standalone, with the Chromium that PDF export needs). Build it with `docker build -t kit-de-atividades .`.
+- `infra/` describes the Azure resources (Bicep) and the database, Key Vault and deploy-identity steps; see `infra/README.md`.
+- `.github/workflows/deploy.yml` builds the image, applies migrations, switches the Web App image and checks `/api/health`; `.github/workflows/usage-purge.yml` replaces the Vercel cron.
+- `scripts/ensure-hosted-db.mjs` runs when `ENSURE_HOSTED_DB=1` (or on Vercel until it is retired).
+- CI uses PostgreSQL 16, the version of the shared server. The local `docker-compose` database stays on 17 so existing data volumes keep working.
+
 ## Required environment variables
 
 Copy names from `.env.example`. Values for hosted deploys stay in the Vercel dashboard.
@@ -30,10 +40,7 @@ ORGO_CLIENT_ID=
 ORGO_CLIENT_SECRET=
 ORGO_API_TOKEN=                 # optional; program → eAEP event
 ADMIN_EMAILS=                   # comma-separated; promote on Orgo sign-in
-UPLOADTHING_SECRET=
-UPLOADTHING_APP_ID=
 NEXT_PUBLIC_APP_URL=
-NEXT_PUBLIC_UPLOADTHING_URL=https://uploadthing.com
 FEATURES=                       # non-MVP features to switch on; unset = all off
 CRON_SECRET=                    # bearer secret for the daily usage purge cron (flag usage-tracking)
 # E2E_LOGIN=1                   # test-only login; local Playwright/CI only, never on Vercel
@@ -157,8 +164,7 @@ GitHub Actions (`.github/workflows/test.yml`) runs on `main` and `master`: workf
 ## Dependencies and security
 
 - Run `npm audit --omit=dev` before a release. The target is no critical or high advisory in production dependencies.
-- `package.json` `overrides` pin two patched transitive packages inside their current majors:
-  - `effect` `^3.20.0`: UploadThing 7 depends on `effect` 3.17, which has a high advisory (GHSA-38f7-945m-qr2g). npm suggests downgrading UploadThing to v6 instead; don't.
+- `package.json` `overrides` pin a patched transitive package inside their current majors:
   - `postcss` `^8.5.32` under `next`: Next 15.5 bundles PostCSS 8.4.31, which has several advisories. Next 16 removes the need for this override.
   - Remove each override once the parent package ships the fix.
 - `xlsx` (SheetJS) is installed from SheetJS's own CDN (`https://cdn.sheetjs.com/xlsx-<version>/xlsx-<version>.tgz`). The npm registry copy stopped at 0.18.5 and has unfixed advisories. Dependabot cannot update a tarball URL, so check https://docs.sheetjs.com/docs/getting-started/installation/nodejs and bump it by hand.

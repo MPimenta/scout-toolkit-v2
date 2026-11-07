@@ -8,7 +8,7 @@ Platform for Escoteiros de Portugal leaders to browse activities, build programs
 - Auth.js v5 with eAEP/Orgo OAuth (`src/lib/auth/orgo-provider.ts`); roles in `src/lib/auth/roles.ts`, admin "view as member" in `src/lib/auth/view-as*.ts`
 - PostgreSQL + Drizzle (`drizzle/schema`, seeds in `drizzle/seeds`); Neon for Preview/Production on Vercel
 - TanStack Query for client data fetching (`src/hooks/queries`, `src/hooks/mutations`)
-- Zod for all input validation; UploadThing for images; SheetJS for Excel, Playwright for PDF
+- Zod for all input validation; Azure Blob Storage for images; SheetJS for Excel, Playwright for PDF
 - Vitest (unit + integration), Playwright (E2E)
 
 ## Commands

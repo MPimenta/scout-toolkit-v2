@@ -820,25 +820,29 @@ All answer 404 when the flag is off. No endpoint returns recorded events; only a
 
 ### Image Upload
 ```http
-POST /api/upload/image
+POST /api/uploads/activity-image
 ```
 
-**Request:** Multipart form data with image file
+Signed-in users only. **Request:** multipart form data with one `file` field.
 
-**Response:**
+**Response (201):**
 ```json
-{
-  "success": true,
-  "url": "https://uploadthing.com/f/abc123.jpg",
-  "filename": "activity-image.jpg",
-  "size": 1024000
-}
+{ "url": "/media/activity-images/0b9f3e6e-7c1a-4f0e-9a52-1f2d3c4b5a69.png" }
 ```
+
+Errors: 401 (guest), 400 (not a JPEG/PNG/WebP by content, or several files), 413 (over 5MB), 429 (rate limit), 503 (storage not configured). The returned address is stored as the activity's `image_url`.
+
+### Reading an image
+```http
+GET /media/activity-images/{name}
+```
+
+Public. Streams the stored image with its content type, `Cache-Control: public, max-age=31536000, immutable` and `X-Content-Type-Options: nosniff`. Names that do not match the generated pattern answer 404.
 
 ### Supported Formats
 - **Images:** JPEG, PNG, WebP
 - **Max size:** 5MB
-- **Max dimensions:** 2048x2048px
+
 
 ## Webhooks (Future)
 

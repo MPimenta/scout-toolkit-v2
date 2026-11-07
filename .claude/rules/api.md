@@ -12,4 +12,4 @@ paths:
   `{ "error": { "code": "ERROR_CODE", "message": "<Portuguese message>", "details": {} } }`
 - Success responses: `{ "data": ..., "pagination"?: ... }`. Paginate list endpoints.
 - Keep the OpenAPI docs (`src/lib/swagger`) in sync when changing endpoints.
-- Uploads (UploadThing, `src/app/api/uploadthing`): images only (JPEG/PNG/WebP), max 5MB, validated server-side.
+- Uploads (Azure Blob, `POST /api/uploads/activity-image`, served at `/media/activity-images/<name>`): images only (JPEG/PNG/WebP), max 5MB, validated server-side.

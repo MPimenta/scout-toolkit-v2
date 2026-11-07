@@ -29,7 +29,8 @@ const ALWAYS_ON = new Set([
   '/api/auth/x',
   '/api/e2e/session',
   '/api/health',
-  '/api/uploadthing',
+  '/api/uploads/activity-image',
+  '/media/activity-images/x',
   // GET is the public catalogue; POST (a member proposal) is guarded in the handler.
   '/api/activities',
   '/api/activities/x',

@@ -1,0 +1,43 @@
+name: Usage purge
+
+# Replaces the Vercel cron. Deletes usage events older than 13 months (openspec: usage-tracking).
+# Reads CRON_SECRET from Key Vault through the OIDC identity; a failing call fails the run, which GitHub e-mails.
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: aep-kit-preview
+            secret: kit-preview-cron-secret
+          - app: aep-kit
+            secret: kit-cron-secret
+    steps:
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Call the purge
+        run: |
+          VAULT_NAME=$(az keyvault list -g rg-kit-de-atividades --query '[0].name' -o tsv)
+          SECRET=$(az keyvault secret show --vault-name "$VAULT_NAME" -n "${{ matrix.secret }}" --query value -o tsv)
+          echo "::add-mask::$SECRET"
+          HOST=$(az webapp show -g rg-kit-de-atividades -n "${{ matrix.app }}" --query defaultHostName -o tsv)
+          code=$(curl -s -o response.json -w '%{http_code}' -H "Authorization: Bearer $SECRET" "https://$HOST/api/usage/purge")
+          cat response.json; echo
+          # 404 means usage tracking is off for this environment: nothing to purge.
+          [ "$code" = "200" ] || [ "$code" = "404" ]

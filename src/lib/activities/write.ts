@@ -1,5 +1,6 @@
 import { eq, inArray } from 'drizzle-orm';
 import { db } from '@/lib/db/server';
+import { MEDIA_PATH_PREFIX, STORED_IMAGE_NAME } from '@/lib/storage/image-type';
 import {
   activities,
   activityEducationalGoals,
@@ -134,9 +135,12 @@ export function parseActivityWrite(body: Record<string, unknown>): ActivityWrite
   if (!Number.isFinite(duration) || duration < 1) {
     return 'Duração inválida';
   }
-  if (typeof body['image_url'] === 'string' && body['image_url'].trim()) {
+  const imageValue = typeof body['image_url'] === 'string' ? body['image_url'].trim() : '';
+  const isStoredImage =
+    imageValue.startsWith(MEDIA_PATH_PREFIX) && STORED_IMAGE_NAME.test(imageValue.slice(MEDIA_PATH_PREFIX.length));
+  if (imageValue && !isStoredImage) {
     try {
-      const imageUrl = new URL(body['image_url']);
+      const imageUrl = new URL(imageValue);
       if (imageUrl.protocol !== 'https:') {
         return 'A imagem deve usar um URL HTTPS';
       }

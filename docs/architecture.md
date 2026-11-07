@@ -29,7 +29,7 @@ This document outlines the technical architecture, stack choices, and key design
 - **Hardcoded Portuguese content** - No translation system complexity
 
 ### File Storage & Media
-- **UploadThing** - File upload service with S3 backend
+- **Azure Blob Storage** - Private storage for uploaded activity images, served by the app
 - **Next.js Image** - Optimized image serving with fallbacks
 
 ### Search & Filtering
@@ -413,9 +413,9 @@ ORDER BY rank DESC, name;
 ## File Storage Strategy
 
 ### Image Upload Flow
-1. **Client:** UploadThing widget for file selection
-2. **UploadThing:** Processes and stores in S3
-3. **Database:** Stores URL and metadata
+1. **Client:** file input posts to `POST /api/uploads/activity-image`
+2. **Server:** checks session, type (by content) and size, stores in Azure Blob with a random name
+3. **Database:** Stores the relative address `/media/activity-images/<name>`
 4. **Serving:** Next.js Image component with optimization
 
 ### Image Requirements

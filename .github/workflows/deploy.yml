@@ -1,0 +1,156 @@
+name: Deploy
+
+# Builds the container image and deploys it to Azure App Service (openspec: migrate-hosting-to-azure).
+#   push to master        -> Production
+#   pull request          -> Preview (same-repository pull requests only)
+#   manual run            -> choose the target
+# Azure sign-in uses OIDC federation: no Azure password or secret is stored in GitHub. The IDs below are
+# not secrets; set them as repository variables. Require the "Test" workflow on pull requests before merging
+# to master (branch protection), so a push to master has already been tested.
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Where to deploy
+        type: choice
+        options: [preview, production]
+        default: preview
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: deploy-${{ github.event_name == 'pull_request' && 'preview' || (github.event.inputs.target || (github.ref == 'refs/heads/master' && 'production' || 'preview')) }}
+  cancel-in-progress: false
+
+env:
+  TARGET: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target || (github.ref == 'refs/heads/master' && 'production' || 'preview') }}
+  RESOURCE_GROUP: rg-kit-de-atividades
+  DB_SERVER: painelaep-pg
+  DB_RESOURCE_GROUP: rg-painel-regional
+
+jobs:
+  deploy:
+    # Fork pull requests cannot obtain an Azure token.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    environment: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target || (github.ref == 'refs/heads/master' && 'production' || 'preview') }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve names
+        run: |
+          if [ "$TARGET" = "production" ]; then
+            echo "APP=aep-kit" >> "$GITHUB_ENV"
+            echo "DB_SECRET=kit-migration-url" >> "$GITHUB_ENV"
+          else
+            echo "APP=aep-kit-preview" >> "$GITHUB_ENV"
+            echo "DB_SECRET=kit-preview-migration-url" >> "$GITHUB_ENV"
+          fi
+          echo "TAG=${GITHUB_SHA::12}" >> "$GITHUB_ENV"
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Look up registry, Key Vault and the running image
+        run: |
+          ACR_NAME=$(az acr list -g "$RESOURCE_GROUP" --query '[0].name' -o tsv)
+          VAULT_NAME=$(az keyvault list -g "$RESOURCE_GROUP" --query '[0].name' -o tsv)
+          PREVIOUS=$(az webapp config container show -g "$RESOURCE_GROUP" -n "$APP" --query "[?name=='DOCKER_CUSTOM_IMAGE_NAME'].value | [0]" -o tsv)
+          echo "ACR_NAME=$ACR_NAME" >> "$GITHUB_ENV"
+          echo "VAULT_NAME=$VAULT_NAME" >> "$GITHUB_ENV"
+          echo "IMAGE=$ACR_NAME.azurecr.io/kit:$TAG" >> "$GITHUB_ENV"
+          echo "PREVIOUS_IMAGE=${PREVIOUS#DOCKER|}" >> "$GITHUB_ENV"
+
+      - name: Build image
+        run: docker build -t "$IMAGE" .
+
+      - name: Smoke test (the browser used for PDF export starts inside the image)
+        run: |
+          docker run --rm --entrypoint node "$IMAGE" -e \
+            "require('playwright').chromium.launch().then(b => b.close()).then(() => console.log('chromium ok'))"
+
+      - name: Push image
+        run: |
+          az acr login -n "$ACR_NAME"
+          docker push "$IMAGE"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies for the database step
+        run: npm ci
+        env:
+          CI: '1'
+
+      - name: Open the database firewall for this runner only
+        run: |
+          IP=$(curl -fsS https://api.ipify.org)
+          echo "RUNNER_IP=$IP" >> "$GITHUB_ENV"
+          echo "RULE=gh-runner-${GITHUB_RUN_ID}" >> "$GITHUB_ENV"
+          az postgres flexible-server firewall-rule create -g "$DB_RESOURCE_GROUP" -n "$DB_SERVER" \
+            --rule-name "gh-runner-${GITHUB_RUN_ID}" --start-ip-address "$IP" --end-ip-address "$IP" -o none
+
+      - name: Apply migrations and reference data
+        env:
+          ENSURE_HOSTED_DB: '1'
+        run: |
+          DATABASE_URL=$(az keyvault secret show --vault-name "$VAULT_NAME" -n "$DB_SECRET" --query value -o tsv)
+          echo "::add-mask::$DATABASE_URL"
+          export DATABASE_URL
+          node scripts/ensure-hosted-db.mjs
+
+      - name: Close the database firewall
+        if: always()
+        run: |
+          az postgres flexible-server firewall-rule delete -g "$DB_RESOURCE_GROUP" -n "$DB_SERVER" \
+            --rule-name "gh-runner-${GITHUB_RUN_ID}" --yes -o none || true
+
+      - name: Switch the Web App to the new image
+        run: |
+          az webapp config container set -g "$RESOURCE_GROUP" -n "$APP" \
+            --container-image-name "$IMAGE" --container-registry-url "https://$ACR_NAME.azurecr.io" -o none
+          az webapp restart -g "$RESOURCE_GROUP" -n "$APP"
+
+      - name: Wait for the health check
+        id: health
+        run: |
+          HOST=$(az webapp show -g "$RESOURCE_GROUP" -n "$APP" --query defaultHostName -o tsv)
+          echo "host=$HOST" >> "$GITHUB_OUTPUT"
+          for i in $(seq 1 40); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "https://$HOST/api/health" || true)
+            echo "attempt $i: $code"
+            [ "$code" = "200" ] && exit 0
+            sleep 15
+          done
+          exit 1
+
+      - name: Roll back to the previous image
+        if: failure() && steps.health.outcome == 'failure' && env.PREVIOUS_IMAGE != ''
+        run: |
+          az webapp config container set -g "$RESOURCE_GROUP" -n "$APP" \
+            --container-image-name "$PREVIOUS_IMAGE" --container-registry-url "https://$ACR_NAME.azurecr.io" -o none
+          az webapp restart -g "$RESOURCE_GROUP" -n "$APP"
+
+      - name: Show the address on the pull request
+        if: github.event_name == 'pull_request' && success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo, issue_number: context.issue.number,
+              body: `Preview: https://${{ steps.health.outputs.host }} (image \`${process.env.TAG}\`)`,
+            });

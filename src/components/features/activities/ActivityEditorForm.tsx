@@ -1,11 +1,10 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { UploadButton } from '@/lib/uploadthing';
 import { useLocale } from '@/components/locale/LocaleProvider';
 import { enumLabel } from '@/lib/locale/labels';
 import { ObjectivePicker, type PickerGoal } from './ObjectivePicker';
@@ -124,7 +123,33 @@ export function ActivityEditorForm({
   const [busy, setBusy] = useState(false);
   const [step, setStep] = useState<Step>('basics');
   const [imageUrl, setImageUrl] = useState(defaults?.image_url ?? '');
+  const [uploading, setUploading] = useState(false);
   const { t } = useLocale();
+
+  async function handleImageFile(event: ChangeEvent<HTMLInputElement>) {
+    const input = event.target;
+    const file = input.files?.[0];
+    if (!file) return;
+    setError(null);
+    setUploading(true);
+    try {
+      const body = new FormData();
+      body.append('file', file);
+      const response = await fetch('/api/uploads/activity-image', { method: 'POST', body });
+      const payload = (await response.json().catch(() => null)) as { url?: string; error?: { message?: string } } | null;
+      if (!response.ok || !payload?.url) {
+        // Keep the previous image on failure.
+        setError(payload?.error?.message ?? 'Não foi possível carregar a imagem.');
+      } else {
+        setImageUrl(payload.url);
+      }
+    } catch {
+      setError('Não foi possível carregar a imagem.');
+    } finally {
+      setUploading(false);
+      input.value = '';
+    }
+  }
   const [groupSizes, setGroupSizes] = useState<string[]>(defaults?.group_sizes ?? ['medium']);
   const [locations, setLocations] = useState<string[]>(defaults?.locations ?? ['outside']);
   const [ageGroups, setAgeGroupsState] = useState<string[]>(defaults?.age_groups ?? ['scouts']);
@@ -291,15 +316,24 @@ export function ActivityEditorForm({
         <div className="space-y-1">
           <Label htmlFor="image_url">URL da imagem (HTTPS)</Label>
           <Input id="image_url" name="image_url" value={imageUrl} onChange={(event) => setImageUrl(event.target.value)} />
-          <UploadButton
-            endpoint="activityImage"
-            onClientUploadComplete={(files) => {
-              const uploaded = files[0]?.ufsUrl ?? files[0]?.url;
-              if (uploaded) setImageUrl(uploaded);
-            }}
-            onUploadError={(uploadError) => setError(uploadError.message)}
-            content={{ button: 'Carregar imagem' }}
-          />
+          <div className="space-y-1">
+            <Label htmlFor="image_file">Carregar imagem</Label>
+            <input
+              id="image_file"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              disabled={uploading}
+              onChange={handleImageFile}
+              className="block w-full text-sm file:mr-3 file:rounded-md file:border file:border-input file:bg-background file:px-3 file:py-2"
+            />
+            <p className="text-xs text-muted-foreground">
+              {uploading ? 'A carregar…' : 'JPEG, PNG ou WebP, até 5 MB.'}
+            </p>
+            {imageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={imageUrl} alt="Pré-visualização da imagem" className="mt-2 h-32 w-auto rounded-md border object-cover" />
+            ) : null}
+          </div>
         </div>
       </section>
 

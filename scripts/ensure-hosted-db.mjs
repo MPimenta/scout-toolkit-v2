@@ -1,4 +1,6 @@
-// Runs before `next build` on Vercel (Preview and Production).
+// Hosted database step for Preview and Production. The deploy workflow runs it (with
+// ENSURE_HOSTED_DB=1) before the new image is switched in; during the move from Vercel it
+// also still runs from `npm run build` there (the VERCEL variable).
 //
 // 1. If the database already has the app tables but no Drizzle migration history
 //    (it was created with `drizzle-kit push` before migrations were committed),
@@ -9,13 +11,13 @@
 // 3. Load the reference data (Matriz objectives and desafios) on every deploy; it is idempotent.
 // 4. Seed the catalogue if it is empty.
 //
-// Locally it does nothing unless ENSURE_HOSTED_DB_FORCE=1 (used to test this script).
+// Locally it does nothing unless ENSURE_HOSTED_DB=1 is set.
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import postgres from 'postgres';
 
-if (!process.env.VERCEL && process.env.ENSURE_HOSTED_DB_FORCE !== '1') {
+if (!process.env.VERCEL && process.env.ENSURE_HOSTED_DB !== '1') {
   process.exit(0);
 }
 
