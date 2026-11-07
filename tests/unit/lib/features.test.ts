@@ -21,9 +21,9 @@ describe('parseFeatures', () => {
     expect([...parseFeatures('public-programs')]).toEqual(['public-programs']);
   });
 
-  it('enables all ten flags with "all"', () => {
+  it('enables every flag with "all"', () => {
     const enabled = parseFeatures('all');
-    expect(enabled.size).toBe(10);
+    expect(enabled.size).toBe(FEATURE_FLAGS.length);
     expect([...enabled].sort()).toEqual([...FEATURE_FLAGS].sort());
   });
 
@@ -90,5 +90,19 @@ describe('isPathHidden', () => {
     expect(isPathHidden('/programs/public', parseFeatures(''))).toBe(true);
     expect(isPathHidden('/programs/public', parseFeatures('public-programs'))).toBe(false);
     expect(isPathHidden('/programs', parseFeatures(''))).toBe(false);
+  });
+});
+
+describe('pwa flag', () => {
+  it('is off when FEATURES is unset and on with FEATURES=pwa', () => {
+    vi.stubEnv('FEATURES', '');
+    expect(isFeatureEnabled('pwa')).toBe(false);
+    vi.stubEnv('FEATURES', 'pwa');
+    expect(isFeatureEnabled('pwa')).toBe(true);
+  });
+
+  it('owns the manifest route', () => {
+    expect(featureForPath('/manifest.webmanifest')).toBe('pwa');
+    expect(isPathHidden('/manifest.webmanifest', new Set())).toBe(true);
   });
 });

@@ -17,6 +17,7 @@ export const FEATURE_FLAGS = [
   'api-docs',
   'issue-reports',
   'usage-tracking',
+  'pwa',
 ] as const;
 
 export type FeatureFlag = (typeof FEATURE_FLAGS)[number];
@@ -79,6 +80,8 @@ export const FEATURE_ROUTES: ReadonlyArray<{ pattern: string; flag: FeatureFlag 
   { pattern: '/api/usage', flag: 'usage-tracking' },
   { pattern: '/api/admin/usage', flag: 'usage-tracking' },
   { pattern: '/admin/utilizacao', flag: 'usage-tracking' },
+  // pwa (the offline page and /sw.js stay always on so a switched-off flag can retire the worker)
+  { pattern: '/manifest.webmanifest', flag: 'pwa' },
 ];
 
 function segments(path: string): string[] {
