@@ -24,21 +24,23 @@ export interface ApiActivity {
   name: string;
   description: string;
   materials: string;
+  instructions?: string | null;
   approximate_duration_minutes: number;
-  group_size: string; // API returns string, not union type
+  group_sizes: string[]; // API returns strings, not union types
   effort_level: string; // API returns string, not union type
-  location: string; // API returns string, not union type
-  age_group: string; // API returns string, not union type
+  locations: string[];
+  age_groups: string[];
   image_url?: string;
   created_at: string;
-  activity_type: {
+  activity_types: Array<{
     id: string;
     name: string;
-  };
+  }>;
   educational_goals: Array<{
     id: string;
     title: string;
     code: string;
+    age_groups?: string[];
   }>;
   sdgs: Array<{
     id: string;
@@ -134,7 +136,6 @@ export interface ApiFilterState {
   educationalGoals?: string[];
   durationMin?: number;
   durationMax?: number;
-  durationOperator?: string;
   groupSize?: string[];
   effortLevel?: string[];
   location?: string[];
@@ -150,14 +151,15 @@ export interface ApiActivitiesResponse {
       search?: string;
       group_size?: string[];
       effort_level?: string[];
-      location?: string;
+      location?: string[];
       age_group?: string[];
       activity_type?: string[];
       sdgs?: string[];
       educational_goals?: string[];
+      educational_areas?: string[];
+      general_objectives?: string[];
       duration_min?: string;
       duration_max?: string;
-      duration_operator?: string;
     };
     available: {
       group_sizes: string[];

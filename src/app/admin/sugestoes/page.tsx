@@ -2,12 +2,20 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { parseCategoryValue } from '@/lib/suggestions/fields';
 
 interface Suggestion {
   id: string;
   activity_id: string;
   field: string;
   suggested_value: string;
+}
+
+/** Category suggestions are stored as JSON arrays; show them as a plain list. */
+function formatSuggestedValue(value: string): string {
+  if (!value.startsWith('[')) return value;
+  const list = parseCategoryValue(value);
+  return list.length > 0 ? list.join(', ') : value;
 }
 
 export default function AdminSuggestionsPage() {
@@ -29,8 +37,8 @@ export default function AdminSuggestionsPage() {
       <ul className="space-y-3">
         {items.map((item) => (
           <li key={item.id} className="border rounded-md p-3">
-            <p className="font-medium">{item.field}</p>
-            <p className="text-sm mb-3">{item.suggested_value}</p>
+            <p className="font-bold">{item.field}</p>
+            <p className="text-sm mb-3">{formatSuggestedValue(item.suggested_value)}</p>
             <div className="flex gap-2">
               <Button onClick={async () => {
                 await fetch(`/api/admin/suggestions/${item.id}/review`, {

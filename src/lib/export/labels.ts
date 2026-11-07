@@ -45,12 +45,29 @@ export const exportLabels = {
   activityName: 'Nome da Atividade',
   description: 'Descrição',
   materials: 'Materiais',
+  instructions: 'Instruções',
+  physicalRisk: 'Risco físico',
+  psychologicalRisk: 'Risco psicológico',
+  mitigation: 'Como reduzir',
+  objectivesByDivision: 'Objetivos por divisão',
+  howToObserve: 'Como observar',
+  challenges: 'Desafios',
+  source: 'Fonte',
+  riskLevels: { low: 'Baixo', medium: 'Médio', high: 'Alto' } as Record<string, string>,
   none: '—',
 };
 
 export function translateGroupSize(value: string | null | undefined): string {
   if (!value) return '';
   return GROUP_SIZE[value] ?? value;
+}
+
+/** Joins several translated values into one readable cell, e.g. "Interior, Exterior". */
+export function translateList(
+  values: readonly string[] | null | undefined,
+  translate: (value: string) => string
+): string {
+  return (values ?? []).map((value) => translate(value)).filter(Boolean).join(', ');
 }
 
 export function translateEffortLevel(value: string | null | undefined): string {

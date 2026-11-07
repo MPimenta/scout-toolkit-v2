@@ -5,6 +5,7 @@ interface EducationalGoal {
   title: string; // Now simple string after migration
   description?: string; // Now simple string after migration
   code: string;
+  age_groups?: string[];
   area: {
     id: string;
     name: string; // Now simple string after migration
@@ -20,6 +21,7 @@ interface Sdg {
   name: string; // Now simple string after migration
   description: string; // Now simple string after migration
   icon_url: string;
+  justification?: string | null;
 }
 
 interface ActivityType {
@@ -33,17 +35,34 @@ interface Activity {
   name: string; // Now simple string after migration
   description: string; // Now simple string after migration
   materials: string; // Now simple string after migration
+  instructions?: string | null;
   approximate_duration_minutes: number;
-  group_size: 'small' | 'medium' | 'large';
+  group_sizes: Array<'small' | 'medium' | 'large'>;
   effort_level: 'low' | 'medium' | 'high';
-  location: 'inside' | 'outside';
-  age_group: 'cub_scouts' | 'scouts' | 'adventurers' | 'rovers' | 'leaders';
+  locations: Array<'inside' | 'outside'>;
+  age_groups: Array<'cub_scouts' | 'scouts' | 'adventurers' | 'rovers' | 'leaders'>;
   image_url?: string;
   created_at: string;
   updated_at: string;
-  activity_type: ActivityType;
+  activity_types: ActivityType[];
   educational_goals: EducationalGoal[];
   sdgs: Sdg[];
+  physical_risk_level?: 'low' | 'medium' | 'high' | null;
+  physical_risk?: string | null;
+  physical_mitigation?: string | null;
+  psychological_risk_level?: 'low' | 'medium' | 'high' | null;
+  psychological_risk?: string | null;
+  psychological_mitigation?: string | null;
+  source_url?: string | null;
+  source?: { id: string; code: string; name: string; url: string | null; license: string | null } | null;
+  objectives?: Array<{
+    goal_id: string;
+    code: string;
+    title: string;
+    age_group: string;
+    behaviour: string | null;
+  }>;
+  challenges?: Array<{ id: string; code: string; title: string; age_group: string; type_code: string; type_name: string }>;
 }
 
 interface UseActivityReturn {

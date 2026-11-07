@@ -34,9 +34,31 @@ UPLOADTHING_SECRET=
 UPLOADTHING_APP_ID=
 NEXT_PUBLIC_APP_URL=
 NEXT_PUBLIC_UPLOADTHING_URL=https://uploadthing.com
+FEATURES=                       # non-MVP features to switch on; unset = all off
+CRON_SECRET=                    # bearer secret for the daily usage purge cron (flag usage-tracking)
+# E2E_LOGIN=1                   # test-only login; local Playwright/CI only, never on Vercel
 ```
 
-There is no Google OAuth. `ENABLE_USER_GENERATED_CONTENT` / `ENABLE_EDIT_SUGGESTIONS` feature flags are not used — those features are always on.
+There is no Google OAuth. The old `ENABLE_USER_GENERATED_CONTENT` / `ENABLE_EDIT_SUGGESTIONS` variables are not used.
+
+### Feature flags (`FEATURES`)
+
+Non-MVP features are off unless `FEATURES` lists them (comma-separated, or `all`). Off means hidden, not deleted: menu entries and buttons disappear, pages show the 404 page, APIs answer 404, and the data stays. See `src/lib/features.ts` for the exact routes.
+
+| Flag | Covers |
+| --- | --- |
+| `english-locale` | PT/EN switcher (off: Portuguese only) |
+| `public-programs` | Public gallery, "use as template", the public toggle |
+| `activity-proposals` | Propor atividade, As minhas propostas |
+| `edit-suggestions` | Suggestions, notifications, admin suggestion queue |
+| `review-discussion` | Votes, reactions, replies on reviews (stars + comment stay) |
+| `activities-table-view` | Mosaicos/Tabela toggle |
+| `admin-taxonomies` | Admin taxonomy pages |
+| `api-docs` | Swagger UI, OpenAPI JSON, `/api/metrics` |
+| `issue-reports` | Reportar button and the admin report queue |
+| `usage-tracking` | Records searches, activity views and additions to programs (anonymous visitor id; 13-month retention). `/privacy` explains it; `vercel.json` runs the daily purge at `/api/usage/purge`. Keep it off in Production until the AEP has confirmed the privacy wording. |
+
+Leave `FEATURES` unset on Preview and Production for the MVP. Changing it on Vercel needs a redeploy. CI runs the full suite with `FEATURES=all`.
 
 `ORGO_API_TOKEN` is minted in eAEP: **Settings → Developers → API Tokens** (at least `HR_LOCAL`). It never goes to the browser.
 
@@ -60,7 +82,7 @@ npm run playwright:install
 npm run dev
 ```
 
-Schema is **push**, not a migrations folder. `npm run db:migrate` is not the supported local path. After `npm run db:reset`, run `db:push` and `db:seed` again.
+Locally, `npm run db:push` is fine for your own throwaway database. Schema changes that ship are **migrations**: `npm run db:generate`, review the SQL, and commit it (see README, "Changing the schema"). After `npm run db:reset`, run `db:push` and `db:seed` again.
 
 `db:seed` writes taxonomies (SDGs, activity types, educational areas, group sizes, effort, locations, age groups) and demo activities. It uses whatever `DATABASE_URL` is in the environment. Locally that must be `scout_toolkit_dev`.
 
@@ -81,8 +103,10 @@ Prefer a stable alias (for example the git-branch host) over adding every unique
 
 On Vercel, `npm run build` runs `scripts/ensure-hosted-db.mjs`:
 
-- `drizzle-kit push --force` against that environment’s `DATABASE_URL`
-- `npm run db:seed` only if `activities` is empty
+- If the database has app tables but no migration history, it is compared with `0000_baseline`; a match is recorded as applied, a mismatch fails the deploy with the differences
+- `drizzle-kit migrate` applies committed migrations not yet applied (never `push --force`)
+- `npm run db:load-reference` on **every** deploy: loads the Matriz Progresso Pessoal (areas, educational paths, general and specific objectives, challenge types, *desafios* and their links). It is idempotent, only touches rows it owns (`is_managed`), and retires the old placeholder objectives
+- `npm run db:seed` only if `activities` is empty (it also runs the reference loader)
 
 A local `npm run build` skips that hook (`VERCEL` is unset). `/api/e2e/session` returns 404 on Preview because `NODE_ENV` is `production`.
 
@@ -112,7 +136,7 @@ Same `ORGO_ISSUER`. Different client id and secret per app.
 
 ## CI
 
-GitHub Actions (`.github/workflows/test.yml`) runs on `main` and `master`: workflow Postgres, `drizzle-kit push`, `npm run test:run`, Playwright Chromium. It does not deploy and does not write to Preview or Production.
+GitHub Actions (`.github/workflows/test.yml`) runs on `main` and `master`: workflow Postgres 17, `npm run typecheck`, `npm run test:run`, Playwright Chromium against `scout_toolkit_e2e` (its global setup pushes the schema and seeds). It does not deploy and does not write to Preview or Production.
 
 ## Health
 
@@ -126,6 +150,16 @@ GitHub Actions (`.github/workflows/test.yml`) runs on `main` and `master`: workf
 
 **Orgo callback error** — The Redirect URL on that Orgo app must match the host you opened, path `/api/auth/callback/orgo`.
 
-**Empty catalogue on a new Preview** — The build seeds only when `activities` is empty. If push failed, check the Vercel build log for `ensure-hosted-db`.
+**Empty catalogue on a new Preview** — The build seeds only when `activities` is empty. If the schema step failed, check the Vercel build log for `ensure-hosted-db` (a baseline mismatch lists the differing columns).
 
 **PDF export fails locally** — `npm run playwright:install` (this repo’s Playwright, not a global CLI).
+
+## Dependencies and security
+
+- Run `npm audit --omit=dev` before a release. The target is no critical or high advisory in production dependencies.
+- `package.json` `overrides` pin two patched transitive packages inside their current majors:
+  - `effect` `^3.20.0`: UploadThing 7 depends on `effect` 3.17, which has a high advisory (GHSA-38f7-945m-qr2g). npm suggests downgrading UploadThing to v6 instead; don't.
+  - `postcss` `^8.5.32` under `next`: Next 15.5 bundles PostCSS 8.4.31, which has several advisories. Next 16 removes the need for this override.
+  - Remove each override once the parent package ships the fix.
+- `xlsx` (SheetJS) is installed from SheetJS's own CDN (`https://cdn.sheetjs.com/xlsx-<version>/xlsx-<version>.tgz`). The npm registry copy stopped at 0.18.5 and has unfixed advisories. Dependabot cannot update a tarball URL, so check https://docs.sheetjs.com/docs/getting-started/installation/nodejs and bump it by hand.
+- Major upgrades (Next 16, Tailwind 4, Vitest 5, ESLint 10, TypeScript 7) are planned separately; Dependabot ignores them (`.github/dependabot.yml`).

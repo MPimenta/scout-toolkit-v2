@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth/config';
 import { db } from '@/lib/db/server';
-import { programs, programEntries, activities, user, activityTypes } from '../../../../../drizzle/schema';
+import { programs, programEntries, activities, user } from '../../../../../drizzle/schema';
 import { eq, and, asc } from 'drizzle-orm';
 import { 
   apiErrors, 
@@ -11,14 +11,17 @@ import {
 } from '@/lib/errors';
 import { validateUUID } from '@/lib/errors/error-handler';
 import { isE2EOrgoStub, isOrgoWriteConfigured } from '@/lib/orgo/config';
-import { ensureOrgoProgramColumns } from '@/lib/orgo/ensure-columns';
+import { z } from 'zod';
+import { loadActivityCategories } from '@/lib/activities/categories';
+import { recalculateProgramSchedule } from '@/lib/programs/recalculate';
+import { computeSchedule, timeToMinutes } from '@/lib/programs/schedule';
+import { isOrgoPending } from '@/lib/orgo/claim';
 
 export const GET = withApiErrorHandler(async (
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) => {
   logApiRequest('GET', '/api/programs/[id]');
-  await ensureOrgoProgramColumns();
   
   // Check authentication
   const session = await auth();
@@ -58,8 +61,13 @@ export const GET = withApiErrorHandler(async (
     }
 
     const { user_id: _userId, user_name: _userName, ...programFields } = programRow;
+    // While an Orgo event is being created the stored uuid is a claim marker, not an event.
+    const orgoPending = isOrgoPending(programFields.orgo_event_uuid);
     const programData = {
       ...programFields,
+      orgo_event_uuid: orgoPending ? null : programFields.orgo_event_uuid,
+      orgo_event_url: orgoPending ? null : programFields.orgo_event_url,
+      orgo_event_pending: orgoPending,
       orgo_write_configured: isOrgoWriteConfigured() || isE2EOrgoStub(session.user.email),
       user: {
         id: programRow.user_id ?? session.user.id,
@@ -80,19 +88,25 @@ export const GET = withApiErrorHandler(async (
         activity_id: activities.id,
         activity_name: activities.name,
         activity_duration: activities.approximate_duration_minutes,
-        activity_group_size: activities.group_size,
         activity_effort_level: activities.effort_level,
-        activity_location: activities.location,
-        activity_type_name: activityTypes.name
       })
       .from(programEntries)
       .leftJoin(activities, eq(programEntries.activity_id, activities.id))
-      .leftJoin(activityTypes, eq(activities.activity_type_id, activityTypes.id))
       .where(eq(programEntries.program_id, programId))
       .orderBy(asc(programEntries.position));
 
+    const categoriesByActivity = await loadActivityCategories(
+      entries.map((entry) => entry.activity_id).filter((id): id is string => Boolean(id))
+    );
+
+    // Times and the total always come from the shared schedule calculation.
+    const schedule = computeSchedule(
+      programData.start_time,
+      entries.map((entry) => ({ ...entry, activity_duration_minutes: entry.activity_duration }))
+    );
+
     // Transform the flat structure to the nested structure expected by the interface
-    const transformedEntries = entries.map(entry => ({
+    const transformedEntries = schedule.entries.map(entry => ({
       id: entry.id,
       position: entry.position,
       start_time: entry.start_time,
@@ -104,24 +118,15 @@ export const GET = withApiErrorHandler(async (
         id: entry.activity_id,
         name: entry.activity_name || '',
         approximate_duration_minutes: entry.activity_duration || 0,
-        group_size: entry.activity_group_size || '',
+        group_sizes: categoriesByActivity.get(entry.activity_id)?.group_sizes ?? [],
         effort_level: entry.activity_effort_level || '',
-        location: entry.activity_location || '',
-        activity_type: {
-          name: entry.activity_type_name || ''
-        }
+        locations: categoriesByActivity.get(entry.activity_id)?.locations ?? [],
+        age_groups: categoriesByActivity.get(entry.activity_id)?.age_groups ?? [],
+        activity_types: categoriesByActivity.get(entry.activity_id)?.activity_types ?? [],
       } : null
     }));
 
-    // Calculate summary statistics
-    const totalDuration = transformedEntries.reduce((total, entry) => {
-      if (entry.entry_type === 'activity' && entry.activity) {
-        return total + (entry.activity.approximate_duration_minutes || 0);
-      } else if (entry.entry_type === 'custom') {
-        return total + (entry.custom_duration_minutes || 0);
-      }
-      return total;
-    }, 0);
+    const totalDuration = schedule.total_minutes;
 
     // For now, we'll skip the complex educational goals and SDGs queries
     // and focus on the core functionality. This can be enhanced later.
@@ -154,6 +159,13 @@ export const GET = withApiErrorHandler(async (
     return response;
 });
 
+const updateProgramSchema = z.object({
+  name: z.string().trim().min(1).max(200),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional().or(z.literal('')),
+  start_time: z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/),
+  is_public: z.boolean().optional(),
+});
+
 export const PUT = withApiErrorHandler(async (
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -174,13 +186,14 @@ export const PUT = withApiErrorHandler(async (
     return apiErrors.validation('id', 'ID do programa inválido');
   }
   
-  const body = await request.json();
-  const { name, date, start_time, is_public } = body;
-
-  // Validate required fields
-  if (!name || !start_time) {
-    return apiErrors.validation('name, start_time', 'Nome e hora de início são obrigatórios');
+  const parsed = updateProgramSchema.safeParse(await request.json().catch(() => null));
+  if (!parsed.success) {
+    return apiErrors.validation(
+      parsed.error.issues[0]?.path.join('.') || 'name, start_time',
+      'Nome e hora de início são obrigatórios'
+    );
   }
+  const { name, date, start_time, is_public } = parsed.data;
 
     // Check if program exists and belongs to user
     const [existingProgram] = await db
@@ -195,18 +208,24 @@ export const PUT = withApiErrorHandler(async (
       return apiErrors.notFound('programa', programId);
     }
 
-    // Update program
-    const [updatedProgram] = await db
-      .update(programs)
-      .set({
-        name,
-        date: date || null,
-        start_time,
-        is_public,
-        updated_at: new Date()
-      })
-      .where(eq(programs.id, programId))
-      .returning();
+    // Update program; a new start time moves every entry, so recalculate in the same transaction.
+    const updatedProgram = await db.transaction(async (tx) => {
+      const [row] = await tx
+        .update(programs)
+        .set({
+          name,
+          date: date || null,
+          start_time,
+          ...(is_public === undefined ? {} : { is_public }),
+          updated_at: new Date(),
+        })
+        .where(eq(programs.id, programId))
+        .returning();
+      if (timeToMinutes(existingProgram.start_time) !== timeToMinutes(start_time)) {
+        await recalculateProgramSchedule(programId, tx);
+      }
+      return row;
+    });
 
     const response = NextResponse.json({
       success: true,

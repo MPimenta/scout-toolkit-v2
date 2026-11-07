@@ -2,55 +2,114 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Design tokens for Kit de Atividades.
+ *
+ * Source of truth for values: src/lib/design/tokens.ts (a test pins this file to it).
+ * Rules and Brand Book page references: docs/design-system.md.
+ * Colours are HSL triplets so Tailwind can apply opacity: hsl(var(--token) / 0.5).
+ */
 @layer base {
   :root {
+    /* Surfaces and text (Branco, Texto, Fundo claro, Texto secundário) */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 200 56.3% 18.8%; /* #15394B Texto */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 200 56.3% 18.8%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 200 56.3% 18.8%;
 
-    /* 2026 AEP marca associativa — Pantone/HEX from the Canva brand book */
-    --primary: 180 100% 32%; /* #00A5A5 Pantone 7716 C */
-    --primary-foreground: 222.2 84% 4.9%; /* dark on teal ~6.9:1 */
-    --secondary: 217 76% 34%; /* #154697 Pantone 2945 C */
-    --secondary-foreground: 210 40% 98%;
+    /* Primary action: Azul AEP, Pantone 2945 C (Brand Book pp. 28-30) */
+    --primary: 217 76% 34%; /* #154697 */
+    --primary-foreground: 0 0% 100%;
 
-    --muted: 180 47% 93%; /* #E6F6F6 verde muito claro */
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 180 100% 32%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    /* Quiet surface role: Azul muito claro with Azul AEP text */
+    --secondary: 218.8 58.6% 94.3%; /* #E8EEF9 */
+    --secondary-foreground: 217 76% 34%;
+
+    --muted: 168 21.7% 95.5%; /* #F1F6F5 Fundo claro */
+    --muted-foreground: 203.6 17.1% 37.8%; /* #506471 Texto secundário */
+
+    /* Accent: Verde-água AEP, Pantone 7716 C. Text on it is near-black. */
+    --accent: 180 100% 32%; /* #00A5A5 */
+    --accent-foreground: 222.9 84% 4.9%; /* #020817 Quase preto */
+
+    --destructive: 0 72% 45%; /* #C62828 */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 186 16.7% 88.2%; /* #DCE5E6 Linha */
+    --input: 186 16.7% 88.2%;
     --ring: 180 100% 32%;
-    --radius: 0.5rem;
+
+    /* Extra brand variants (public site values where the Brand Book differs) */
+    --blue-dark: 218 77.1% 25.7%; /* #0F3474 Azul escuro */
+    --blue-tint: 218.8 58.6% 94.3%; /* #E8EEF9 Azul muito claro */
+    --teal-dark: 181.4 100% 25.1%; /* #007D80 Verde-água escuro */
+    --teal-light: 180 57.9% 47.5%; /* #33BFBF Verde-água claro, decorative only */
+    --teal-tint: 180 47.1% 93.3%; /* #E6F6F6 Verde-água muito claro */
+    --near-black: 222.9 84% 4.9%; /* #020817 */
+
+    /* Division colours (Regulamento do Programa para Jovens v1.2, by Pantone) */
+    --division-cub-scouts: 49.2 100% 50%; /* #FFD100 Pantone 109 */
+    --division-cub-scouts-foreground: 200 56.3% 18.8%;
+    --division-scouts: 147.7 100% 25.9%; /* #00843D Pantone 348 */
+    --division-scouts-foreground: 0 0% 100%;
+    --division-adventurers: 221.5 98.1% 20.8%; /* #012169 Pantone 280 */
+    --division-adventurers-foreground: 0 0% 100%;
+    --division-rovers: 355.9 85.5% 56.9%; /* #EF3340 Pantone 032 */
+    --division-rovers-foreground: 222.9 84% 4.9%; /* white is only 4.02:1 */
+    --division-leaders: 0 0% 100%; /* Chefia: white */
+    --division-leaders-foreground: 200 56.3% 18.8%;
+    --division-leaders-border: 203.6 17.1% 37.8%;
+    --division-outline: transparent;
+
+    /* Shape, elevation, motion */
+    --radius: 0.25rem; /* 4 px for controls, cards, chips and callouts */
+    --radius-panel: 1.5rem; /* hero and illustration containers only */
+    --shadow-card-hover: 0 12px 28px rgba(21, 57, 75, 0.14);
+    --shadow-menu: 0 10px 24px rgba(21, 57, 75, 0.14);
+    --shadow-callout: 0 12px 30px rgba(21, 70, 151, 0.22);
+    --duration-ui: 180ms;
+    --gutter: clamp(1rem, 4vw, 2rem);
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    /* Dark theme is an app extension (the Brand Book defines none). */
+    --background: 200 55% 9%;
+    --foreground: 168 21.7% 95.5%;
+    --card: 200 50% 12%;
+    --card-foreground: 168 21.7% 95.5%;
+    --popover: 200 50% 12%;
+    --popover-foreground: 168 21.7% 95.5%;
 
-    --primary: 180 100% 32%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217 76% 34%;
-    --secondary-foreground: 210 40% 98%;
+    --primary: 217 80% 74%;
+    --primary-foreground: 222.9 84% 4.9%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --secondary: 217 45% 22%;
+    --secondary-foreground: 218.8 58.6% 94.3%;
+
+    --muted: 200 40% 16%;
+    --muted-foreground: 200 20% 72%;
+
     --accent: 180 100% 32%;
-    --accent-foreground: 222.2 84% 4.9%;
+    --accent-foreground: 222.9 84% 4.9%;
+
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 200 30% 24%;
+    --input: 200 30% 24%;
     --ring: 180 100% 32%;
+
+    --blue-dark: 218 77.1% 25.7%;
+    --blue-tint: 217 45% 22%;
+    --teal-dark: 181.4 100% 25.1%;
+    --teal-light: 180 57.9% 47.5%;
+    --teal-tint: 180 40% 16%;
+    --near-black: 222.9 84% 4.9%;
+
+    /* Division fills stay the same; a light outline keeps dark fills visible. */
+    --division-outline: hsl(0 0% 100% / 0.6);
   }
 }
 
@@ -59,6 +118,101 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background font-sans text-foreground;
+    line-height: 1.6;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold text-foreground;
+    line-height: 1.15;
+  }
+
+  /* Focus: 3 px Verde-água, white on blue bands (Brand Book contrast rules). */
+  :focus-visible {
+    outline: 3px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+  .on-blue :focus-visible {
+    outline-color: hsl(0 0% 100%);
+  }
+
+  /* Text links are Azul AEP; teal is never a small-text link colour on white. */
+  .link-emphasis {
+    @apply font-bold text-primary underline decoration-accent decoration-2 underline-offset-4;
+    transition: color var(--duration-ui) ease;
+  }
+  .link-emphasis:hover {
+    @apply text-teal-dark;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .card-lift:hover {
+    transform: none !important;
+  }
+}
+
+@layer components {
+  /* Interactive cards lift 3 px and gain the card shadow on hover (reduced-motion safe). */
+  .card-lift {
+    transition:
+      transform var(--duration-ui) ease,
+      box-shadow var(--duration-ui) ease,
+      border-color var(--duration-ui) ease;
+  }
+  .card-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card-hover);
+  }
+}
+
+@layer components {
+  /* Two-handle duration slider: two native range inputs stacked on one track. */
+  .range-dual input[type='range'] {
+    position: absolute;
+    inset-inline: 0;
+    width: 100%;
+    height: 2.25rem;
+    margin: 0;
+    background: transparent;
+    appearance: none;
+    pointer-events: none;
+  }
+  .range-dual input[type='range']::-webkit-slider-thumb {
+    pointer-events: auto;
+    appearance: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 9999px;
+    border: 3px solid hsl(var(--background));
+    background: hsl(var(--primary));
+    box-shadow: 0 0 0 1px hsl(var(--primary));
+    cursor: pointer;
+  }
+  .range-dual input[type='range']::-moz-range-thumb {
+    pointer-events: auto;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 9999px;
+    border: 3px solid hsl(var(--background));
+    background: hsl(var(--primary));
+    box-shadow: 0 0 0 1px hsl(var(--primary));
+    cursor: pointer;
+  }
+  .range-dual input[type='range']::-webkit-slider-runnable-track,
+  .range-dual input[type='range']::-moz-range-track {
+    background: transparent;
   }
 }

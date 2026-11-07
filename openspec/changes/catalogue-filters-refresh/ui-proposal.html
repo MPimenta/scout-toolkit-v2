@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proposta de interface: filtros do catálogo</title>
+<style>
+/* Tokens copied from src/app/globals.css (light theme). Review aid, not app code. */
+:root{
+  --bg:0 0% 100%; --fg:200 56.3% 18.8%; --primary:217 76% 34%; --secondary:218.8 58.6% 94.3%;
+  --muted:168 21.7% 95.5%; --muted-fg:203.6 17.1% 37.8%; --accent:180 100% 32%; --near-black:222.9 84% 4.9%;
+  --border:186 16.7% 88.2%; --teal-dark:181.4 100% 25.1%; --teal-tint:180 47.1% 93.3%;
+  --d-cub:49.2 100% 50%; --d-cub-fg:200 56.3% 18.8%; --d-sc:147.7 100% 25.9%; --d-adv:221.5 98.1% 20.8%; --d-rov:355.9 85.5% 56.9%;
+  --gutter:clamp(1rem,4vw,2rem);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;line-height:1.5;color:hsl(var(--fg));background:hsl(var(--bg))}
+.note{background:hsl(var(--teal-tint));border-left:6px solid hsl(var(--accent));padding:.75rem var(--gutter);font-size:.875rem}
+.wrap{max-width:1100px;margin:0 auto;padding:1.25rem var(--gutter) 3rem}
+h1{font-size:1.75rem;margin:0 0 .75rem}
+.panel{border:1px solid hsl(var(--border));border-top:3px solid hsl(var(--accent));border-radius:4px;padding:1rem 1.25rem}
+.head{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.search{width:100%;border:1px solid hsl(var(--border));border-radius:4px;padding:.6rem .8rem;font:inherit;min-height:44px;margin:.6rem 0 1rem}
+h2{font-size:.9375rem;margin:0 0 .5rem;display:flex;align-items:center;gap:.4rem}
+h2 svg{width:16px;height:16px;color:hsl(var(--muted-fg))}
+.sec{margin:1.1rem 0}
+.pills{display:flex;flex-wrap:wrap;gap:.5rem}
+.pill{display:inline-flex;align-items:center;gap:.45rem;min-height:44px;padding:.2rem .85rem;border-radius:4px;border:1px solid hsl(var(--border));background:#fff;color:hsl(var(--fg));font:700 .8125rem Arial;cursor:pointer}
+.pill .sw{width:14px;height:14px;border:1px solid hsl(var(--muted-fg));border-radius:2px}
+.pill[aria-pressed=true]{border-color:transparent;box-shadow:0 0 0 3px hsl(var(--accent))}
+.pill[aria-pressed=true] .sw{display:none}
+.pill .ck{display:none;width:14px;height:14px}
+.pill[aria-pressed=true] .ck{display:inline}
+.c-cub .sw{background:hsl(var(--d-cub))}.c-sc .sw{background:hsl(var(--d-sc))}.c-adv .sw{background:hsl(var(--d-adv))}.c-rov .sw{background:hsl(var(--d-rov))}.c-lead .sw{background:#fff}
+.c-cub[aria-pressed=true]{background:hsl(var(--d-cub));color:hsl(var(--d-cub-fg))}
+.c-sc[aria-pressed=true]{background:hsl(var(--d-sc));color:#fff}
+.c-adv[aria-pressed=true]{background:hsl(var(--d-adv));color:#fff}
+.c-rov[aria-pressed=true]{background:hsl(var(--d-rov));color:hsl(var(--near-black))}
+.c-lead[aria-pressed=true]{background:#fff;color:hsl(var(--fg));border:1px solid hsl(var(--muted-fg))}
+.grid4{display:grid;gap:1rem;grid-template-columns:1fr}
+@media(min-width:900px){.grid4{grid-template-columns:1fr 1fr 1fr 1.6fr}}
+label.opt{display:flex;align-items:center;gap:.5rem;min-height:32px;font-size:.9375rem}
+.small{font-size:.8125rem;color:hsl(var(--muted-fg))}
+.range{position:relative;height:36px;margin:.4rem 0}
+.range input[type=range]{position:absolute;left:0;right:0;width:100%;pointer-events:none;-webkit-appearance:none;background:none;height:36px;margin:0}
+.range input[type=range]::-webkit-slider-thumb{pointer-events:auto;-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:hsl(var(--primary));border:3px solid #fff;box-shadow:0 0 0 1px hsl(var(--primary));cursor:pointer}
+.range .track{position:absolute;left:0;right:0;top:16px;height:4px;background:hsl(var(--border));border-radius:2px}
+.range .fill{position:absolute;top:16px;height:4px;background:hsl(var(--primary));border-radius:2px}
+.fields{display:flex;gap:.5rem;align-items:center}
+.fields input{width:72px;border:1px solid hsl(var(--border));border-radius:4px;padding:.45rem;font:inherit;min-height:44px}
+.read{font-weight:700;color:hsl(var(--primary))}
+.group{margin:.6rem 0}.group b{display:inline-block;min-width:64px;font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:hsl(var(--teal-dark))}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.5rem 0}
+.chip{display:inline-flex;align-items:center;gap:.35rem;border:1px solid hsl(var(--border));border-radius:4px;padding:.15rem .5rem;font-size:.8125rem;font-weight:700;background:hsl(var(--secondary))}
+.chip svg{width:14px;height:14px;color:hsl(var(--muted-fg))}
+.code{display:inline-flex;border-radius:4px;padding:.05rem .45rem;font-size:.75rem;font-weight:700;margin-right:.35rem}
+.code.sc{background:hsl(var(--d-sc));color:#fff}.code.adv{background:hsl(var(--d-adv));color:#fff}.code.rov{background:hsl(var(--d-rov));color:hsl(var(--near-black))}.code.cub{background:hsl(var(--d-cub));color:hsl(var(--d-cub-fg))}
+details.area{border-top:1px solid hsl(var(--border));padding:.15rem 0}
+details.area>summary{cursor:pointer;display:flex;align-items:center;gap:.6rem;min-height:44px;font-weight:700;list-style:none}
+details.area>summary .n{font-weight:400;color:hsl(var(--muted-fg));font-size:.8125rem}
+.gen{margin:.15rem 0 .15rem 1.6rem}
+.gen .gh{display:flex;gap:.5rem;align-items:flex-start;font-size:.9rem;font-weight:700;min-height:32px}
+.leaf{margin-left:1.6rem;display:flex;gap:.5rem;align-items:flex-start;min-height:32px;font-size:.9375rem}
+input[type=checkbox]{width:18px;height:18px;margin-top:2px}
+.foot{display:flex;gap:.6rem;justify-content:flex-end;margin-top:1rem}
+.btn{border-radius:4px;border:1px solid hsl(var(--primary));padding:.6rem 1.1rem;font:700 .9375rem Arial;min-height:44px;background:#fff;color:hsl(var(--primary));cursor:pointer}
+.btn.p{background:hsl(var(--primary));color:#fff}
+:focus-visible{outline:3px solid hsl(var(--accent));outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="note"><strong>Proposta de interface (para revisão, não é código da aplicação).</strong> Clique nas pills, mova a duração e marque áreas/objetivos para ver os estados (ligado, parcial, desligado). Dados de exemplo.</div>
+<main class="wrap">
+<h1>Atividades</h1>
+<section class="panel" aria-label="Filtros">
+  <div class="head"><strong>FILTROS</strong><span><button class="btn" id="clear">Limpar</button> <button class="btn">Recolher</button></span></div>
+  <input class="search" placeholder="Pesquisar atividades por nome, descrição ou materiais…" aria-label="Pesquisar">
+  <div class="chips" id="chips" aria-label="Filtros ativos"></div>
+
+  <div class="sec"><h2>Faixa etária</h2>
+    <div class="pills" id="age">
+      <button class="pill c-cub" aria-pressed="false"><span class="sw"></span><svg class="ck" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M3 8.5 6.5 12 13 4"/></svg>Lobitos (6-10)</button>
+      <button class="pill c-sc" aria-pressed="true"><span class="sw"></span><svg class="ck" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M3 8.5 6.5 12 13 4"/></svg>Escoteiros (10-14)</button>
+      <button class="pill c-adv" aria-pressed="false"><span class="sw"></span><svg class="ck" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M3 8.5 6.5 12 13 4"/></svg>Exploradores (14-17)</button>
+      <button class="pill c-rov" aria-pressed="false"><span class="sw"></span><svg class="ck" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M3 8.5 6.5 12 13 4"/></svg>Caminheiros (17-21)</button>
+      <button class="pill c-lead" aria-pressed="false"><span class="sw"></span><svg class="ck" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M3 8.5 6.5 12 13 4"/></svg>Dirigentes (21+)</button>
+    </div>
+  </div>
+
+  <div class="grid4 sec">
+    <div><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg>Grupo</h2>
+      <label class="opt"><input type="checkbox"> Pequeno (2-6)</label><label class="opt"><input type="checkbox" checked> Médio (7-15)</label><label class="opt"><input type="checkbox"> Grande (16+)</label></div>
+    <div><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>Esforço</h2>
+      <label class="opt"><input type="checkbox"> Baixo</label><label class="opt"><input type="checkbox"> Médio</label><label class="opt"><input type="checkbox"> Alto</label></div>
+    <div><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Local</h2>
+      <label class="opt"><input type="checkbox"> Interior</label><label class="opt"><input type="checkbox" checked> Exterior</label></div>
+    <div><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Duração <span class="read" id="read" style="margin-left:auto"></span></h2>
+      <div class="range"><div class="track"></div><div class="fill" id="fill"></div>
+        <input type="range" id="lo" min="0" max="8" step="1" value="2" aria-label="Duração mínima (passos)">
+        <input type="range" id="hi" min="0" max="8" step="1" value="5" aria-label="Duração máxima (passos)"></div>
+      <div class="small" style="display:flex;justify-content:space-between"><span>5</span><span>10</span><span>15</span><span>20</span><span>30</span><span>45</span><span>60</span><span>90</span><span>120+</span></div>
+      <div class="fields" style="margin-top:.5rem"><input id="min" inputmode="numeric" aria-label="Mínimo (min)"> <span>–</span> <input id="max" inputmode="numeric" aria-label="Máximo (min)"> <span class="small">min</span></div>
+    </div>
+  </div>
+
+  <div class="sec"><h2>Tipo</h2>
+    <div class="group"><b>Formato</b> <label class="opt" style="display:inline-flex;margin-right:1rem"><input type="checkbox"> Jogo (70)</label><label class="opt" style="display:inline-flex;margin-right:1rem"><input type="checkbox"> Desafio (25)</label><label class="opt" style="display:inline-flex;margin-right:1rem"><input type="checkbox"> Quebra-Gelo (14)</label><label class="opt" style="display:inline-flex"><input type="checkbox"> Aventura (7)</label></div>
+    <div class="group"><b>Foco</b> <label class="opt" style="display:inline-flex;margin-right:1rem"><input type="checkbox"> Cooperação (34)</label><label class="opt" style="display:inline-flex;margin-right:1rem"><input type="checkbox"> Técnica (21)</label><label class="opt" style="display:inline-flex;margin-right:1rem"><input type="checkbox"> Reflexão (7)</label><label class="opt" style="display:inline-flex;margin-right:1rem"><input type="checkbox"> Liderança (7)</label><label class="opt" style="display:inline-flex"><input type="checkbox"> Criatividade (6)</label></div>
+    <div class="small">Serviço não aparece: ainda não tem atividades.</div>
+  </div>
+
+  <div class="sec"><h2>Objetivos educativos</h2>
+    <input class="search" style="margin-top:0" placeholder="Pesquisar objetivo (código ou texto)…" aria-label="Pesquisar objetivo">
+    <div id="tree">
+      <details class="area"><summary><input type="checkbox" data-n="F" aria-label="Físico"> Físico <span class="n">8 objetivos</span></summary>
+        <div class="gen"><div class="gh"><input type="checkbox" data-n="F" data-p="F"> 4F Manter hábitos saudáveis…</div>
+          <label class="leaf"><input type="checkbox" data-p="F"><span><span class="code sc">4F.1.2</span>Relacionar a alimentação com a saúde</span></label>
+          <label class="leaf"><input type="checkbox" data-p="F"><span><span class="code sc">4F.3.2</span>Relacionar a prática de atividade física com a saúde</span></label></div></details>
+      <details class="area" open><summary><input type="checkbox" data-n="S" aria-label="Social"> Social <span class="n">11 objetivos · <span id="cs">0</span> selecionados</span></summary>
+        <div class="gen"><div class="gh"><input type="checkbox" data-n="S" data-p="S"> 4S Liderar e participar de forma ativa e eficaz…</div>
+          <label class="leaf"><input type="checkbox" data-p="S"><span><span class="code sc">4S.1.2</span>Expressar apreço pelo trabalho dos outros</span></label>
+          <label class="leaf"><input type="checkbox" data-p="S"><span><span class="code adv">4S.2.2-3</span><span class="code sc">4S.2.2-3</span>Liderar equipas em projetos</span></label></div></details>
+      <details class="area"><summary><input type="checkbox" data-n="A" aria-label="Afetivo"> Afetivo <span class="n">5 objetivos</span></summary><div class="gen small">…</div></details>
+      <details class="area"><summary><input type="checkbox" data-n="C" aria-label="Carácter"> Carácter <span class="n">9 objetivos</span></summary><div class="gen small">…</div></details>
+      <details class="area"><summary><input type="checkbox" data-n="E" aria-label="Espiritual"> Espiritual <span class="n">8 objetivos</span></summary><div class="gen small">…</div></details>
+      <details class="area"><summary><input type="checkbox" data-n="I" aria-label="Intelectual"> Intelectual <span class="n">6 objetivos</span></summary><div class="gen small">…</div></details>
+    </div>
+  </div>
+  <div class="foot"><button class="btn">Limpar</button><button class="btn p" id="apply">Ver 23 atividades</button></div>
+</section>
+<h2 style="margin-top:1.5rem">Cartão (proposta)</h2>
+<article style="max-width:420px;border:1px solid hsl(var(--border));border-top:3px solid hsl(var(--accent));border-radius:4px;overflow:hidden">
+  <div style="aspect-ratio:4/3;background:linear-gradient(135deg,hsl(var(--secondary)),hsl(var(--teal-tint)));display:grid;place-items:center;color:hsl(var(--muted-fg));font-size:.875rem">ilustração 4:3</div>
+  <div style="padding:1rem 1.25rem">
+    <p style="margin:0;font:700 .7rem Arial;letter-spacing:.12em;text-transform:uppercase;color:hsl(var(--teal-dark))">Jogo · Cooperação</p>
+    <h3 style="margin:.25rem 0 .4rem;font-size:1.125rem">A Cauda do Dragão</h3>
+    <p class="small" style="margin:0 0 .6rem">Jogo de corrida e agilidade em que duas filas tentam roubar o lenço…</p>
+    <div style="display:flex;flex-wrap:wrap;gap:.35rem 1rem;font-size:.9rem;margin-bottom:.6rem">
+      <span style="display:inline-flex;gap:.35rem;align-items:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(var(--muted-fg))" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>15 min</span>
+      <span style="display:inline-flex;gap:.35rem;align-items:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(var(--muted-fg))" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Médio, Grande</span>
+      <span style="display:inline-flex;gap:.35rem;align-items:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(var(--muted-fg))" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>Alto</span>
+      <span style="display:inline-flex;gap:.35rem;align-items:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(var(--muted-fg))" stroke-width="2" stroke-linecap="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Exterior</span>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.5rem">
+      <span class="code cub" style="padding:.15rem .55rem;margin:0">Lobitos</span><span class="code sc" style="padding:.15rem .55rem;margin:0">Escoteiros</span><span class="code adv" style="padding:.15rem .55rem;margin:0">Exploradores</span>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:.35rem"><span class="code cub" style="margin:0">8S.2.1</span><span class="code cub" style="margin:0">5F.1</span><span class="code adv" style="margin:0">5F.3-4</span><span class="chip" style="font-weight:400">+6</span></div>
+  </div>
+</article>
+<p class="small">Em telemóvel o mesmo conteúdo abre numa folha, numa só coluna, com a pesquisa e os botões fixos. Todos os valores desta página são exemplos.</p>
+</main>
+<script>
+const STOPS=[5,10,15,20,30,45,60,90,120];
+const lo=document.getElementById('lo'),hi=document.getElementById('hi'),read=document.getElementById('read'),fill=document.getElementById('fill'),min=document.getElementById('min'),max=document.getElementById('max'),chips=document.getElementById('chips');
+function icon(p){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">'+p+'</svg>'}
+function dur(){let a=+lo.value,b=+hi.value;if(a>b){[a,b]=[b,a];lo.value=a;hi.value=b}
+  const full=a===0&&b===8;const A=STOPS[a],B=STOPS[b];
+  read.textContent=full?'Qualquer duração':(a===0?'≤'+B+' min':(b===8?'≥'+A+' min':A+'–'+B+' min'));
+  min.value=a===0?'':A;max.value=b===8?'':B;
+  fill.style.left=(a/8*100)+'%';fill.style.right=(100-b/8*100)+'%';draw()}
+function draw(){const out=[];
+  document.querySelectorAll('#age .pill[aria-pressed=true]').forEach(p=>out.push('<span class="chip">'+p.textContent+'</span>'));
+  if(!(+lo.value===0&&+hi.value===8))out.push('<span class="chip">'+icon('<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>')+read.textContent+'</span>');
+  document.querySelectorAll('input[data-n][aria-label]:checked').forEach(c=>out.push('<span class="chip">'+c.getAttribute('aria-label')+' ✕</span>'));
+  chips.innerHTML=out.join('')}
+lo.oninput=hi.oninput=dur;
+function fromField(){const near=v=>{let b=0,d=1e9;STOPS.forEach((s,i)=>{const x=Math.abs(s-v);if(x<d){d=x;b=i}});return b};
+  const mv=min.value,xv=max.value;
+  if(mv)lo.value=near(+mv);else lo.value=0;if(xv)hi.value=near(+xv);else hi.value=8;dur();
+  // typed values are kept as typed; the slider shows the nearest stop
+  min.value=mv;max.value=xv;if(mv||xv){read.textContent=mv&&xv?mv+'–'+xv+' min':(mv?'≥'+mv+' min':'≤'+xv+' min');draw()}}
+min.onchange=max.onchange=fromField;
+document.querySelectorAll('#age .pill').forEach(p=>p.onclick=()=>{p.setAttribute('aria-pressed',p.getAttribute('aria-pressed')==='true'?'false':'true');draw()});
+document.getElementById('clear').onclick=()=>{document.querySelectorAll('#age .pill').forEach(p=>p.setAttribute('aria-pressed','false'));lo.value=0;hi.value=8;document.querySelectorAll('#tree input').forEach(c=>{c.checked=false;c.indeterminate=false});dur()};
+// tri-state tree: area checkbox in the summary, general checkbox, leaves
+document.querySelectorAll('#tree details').forEach(d=>{
+  const area=d.querySelector('summary input'),kids=[...d.querySelectorAll('.gen input')];
+  area.onclick=e=>{e.stopPropagation();kids.forEach(k=>{k.checked=false});area.indeterminate=false;count();draw()};
+  kids.forEach(k=>k.onchange=()=>{ // selecting below clears the parent selection; parent shows partial
+    if(k.checked){area.checked=false}
+    const n=kids.filter(x=>x.checked).length;area.indeterminate=n>0&&!area.checked;count();draw()});
+  const gen=d.querySelector('.gh input');
+  if(gen)gen.onchange=()=>{const leaves=[...d.querySelectorAll('.leaf input')];leaves.forEach(l=>l.checked=false);const n=kids.filter(x=>x.checked).length;area.checked=false;area.indeterminate=n>0;count();draw()};
+});
+function count(){document.getElementById('cs').textContent=document.querySelectorAll('#tree details[open] .gen input:checked').length}
+dur();
+</script>
+</body>
+</html>

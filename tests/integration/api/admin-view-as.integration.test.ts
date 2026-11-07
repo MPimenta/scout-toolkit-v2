@@ -1,5 +1,4 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { NextRequest } from 'next/server';
 import { GET } from '@/app/api/admin/stats/route';
 import { withTestDatabase } from '../../helpers/database';
 import { requireLocalTestDatabase } from '../../helpers/local-test-db';
@@ -46,7 +45,7 @@ describe('Admin view-as on /api/admin/stats', () => {
     mockAuth.mockResolvedValue({
       user: { id: ADMIN_ID, role: 'admin', email: 'admin-viewas@escoteiros.pt', name: 'Admin' },
     });
-    const response = await GET(new NextRequest('http://localhost:3000/api/admin/stats'));
+    const response = await GET();
     expect(response.status).toBe(200);
   });
 
@@ -57,7 +56,7 @@ describe('Admin view-as on /api/admin/stats', () => {
     mockCookie.mockImplementation((name: string) => (
       name === 'kit-view-as' ? { value: 'member' } : undefined
     ));
-    const response = await GET(new NextRequest('http://localhost:3000/api/admin/stats'));
+    const response = await GET();
     expect(response.status).toBe(403);
   });
 
@@ -68,7 +67,7 @@ describe('Admin view-as on /api/admin/stats', () => {
     mockCookie.mockImplementation((name: string) => (
       name === 'kit-view-as' ? { value: 'admin' } : undefined
     ));
-    const response = await GET(new NextRequest('http://localhost:3000/api/admin/stats'));
+    const response = await GET();
     expect(response.status).toBe(403);
   });
 });

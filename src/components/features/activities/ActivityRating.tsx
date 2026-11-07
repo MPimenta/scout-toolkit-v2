@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import Link from 'next/link';
 import type { PublicReply, ReactionKey, VoteValue } from '@/lib/ratings';
 import { ReviewPost } from './ReviewPost';
+import { useFeature } from '@/components/providers/FeaturesProvider';
 import { withDiscussionDefaults, type ReviewPost as ReviewPostType } from './discussion';
 
 interface ActivityRatingProps {
@@ -33,6 +34,7 @@ function formatAverage(average: number): string {
 
 export function ActivityRating({ activityId }: ActivityRatingProps) {
   const { data: session } = useSession();
+  const showDiscussion = useFeature('review-discussion');
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -227,7 +229,7 @@ export function ActivityRating({ activityId }: ActivityRatingProps) {
       >
         <Star
           className={`h-5 w-5 ${
-            index < value ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+            index < value ? 'fill-accent text-accent' : 'text-border'
           }`}
         />
       </button>
@@ -237,7 +239,7 @@ export function ActivityRating({ activityId }: ActivityRatingProps) {
   const canWrite = Boolean(session?.user);
   const summary = (
     <div className="flex items-baseline gap-2">
-      <h3 className="text-lg font-semibold text-foreground">Avaliações</h3>
+      <h3 className="text-lg font-bold text-foreground">Avaliações</h3>
       <p className="text-sm text-muted-foreground">
         Média {formatAverage(average)} ({count} {count === 1 ? 'avaliação' : 'avaliações'})
       </p>
@@ -253,20 +255,20 @@ export function ActivityRating({ activityId }: ActivityRatingProps) {
           <CardContent className="pt-6">
             <div className="space-y-4">
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">
-                  Avalie esta atividade
+                <label className="mb-2 block text-sm font-bold text-foreground">
+                  Avalia esta atividade
                 </label>
                 <div className="flex gap-1">{renderStars(rating, true)}</div>
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-foreground">
+                <label className="mb-2 block text-sm font-bold text-foreground">
                   Comentário (opcional)
                 </label>
                 <Textarea
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
-                  placeholder="Partilhe a sua experiência com esta atividade..."
+                  placeholder="Partilha a tua experiência com esta atividade..."
                   rows={3}
                 />
               </div>
@@ -279,6 +281,11 @@ export function ActivityRating({ activityId }: ActivityRatingProps) {
                 <Send className="h-4 w-4" />
                 {isSubmitting ? 'A enviar...' : 'Enviar Avaliação'}
               </Button>
+              {rating === 0 && (
+                <p className="text-sm text-muted-foreground" role="note">
+                  Escolhe de 1 a 5 estrelas para poderes enviar a avaliação.
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -286,17 +293,17 @@ export function ActivityRating({ activityId }: ActivityRatingProps) {
         <div className="py-8 text-center">
           <MessageSquare className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
           <p className="mb-4 text-muted-foreground">
-            Inicie sessão para avaliar esta atividade
+            Inicia sessão para avaliar esta atividade
           </p>
           <Button variant="outline" asChild>
-            <Link href="/auth/signin">Iniciar Sessão</Link>
+            <Link href="/auth/signin">Entrar com o eAEP</Link>
           </Button>
         </div>
       )}
 
       {ratings.length > 0 && (
         <div className="space-y-4">
-          <h4 className="text-base font-semibold text-foreground">
+          <h4 className="text-base font-bold text-foreground">
             Avaliações ({ratings.length})
           </h4>
 
@@ -313,6 +320,7 @@ export function ActivityRating({ activityId }: ActivityRatingProps) {
               onEditReply={handleEditReply}
               onDeleteReply={handleDeleteReply}
               loadReplies={loadReplies}
+              discussion={showDiscussion}
             />
           ))}
         </div>
@@ -321,7 +329,7 @@ export function ActivityRating({ activityId }: ActivityRatingProps) {
       {!isLoading && ratings.length === 0 && (
         <div className="py-8 text-center text-muted-foreground">
           <MessageSquare className="mx-auto mb-4 h-12 w-12" />
-          <p>Seja o primeiro a avaliar esta atividade!</p>
+          <p>Sê o primeiro a avaliar esta atividade!</p>
         </div>
       )}
     </div>

@@ -4,6 +4,8 @@ import { SessionProvider } from '@/components/providers/SessionProvider';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { LocaleProvider } from '@/components/locale/LocaleProvider';
 import { ViewAsProvider } from '@/components/auth/ViewAsProvider';
+import { FeaturesProvider } from '@/components/providers/FeaturesProvider';
+import { getEnabledFeatures } from '@/lib/features';
 import { AppShell } from '@/components/layout/AppShell';
 import { ReportLauncher } from '@/components/feedback/ReportLauncher';
 import { Toaster } from 'sonner';
@@ -26,23 +28,29 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const cookieStore = await cookies();
-  const locale = resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  const enabled = getEnabledFeatures();
+  // With english-locale off, chrome is Portuguese whatever the stored cookie says.
+  const locale = enabled.has('english-locale')
+    ? resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value)
+    : resolveLocale('pt');
   const viewAs = cookieStore.get(VIEW_AS_COOKIE)?.value ?? null;
 
   return (
     <html lang={locale}>
       <body className="font-sans">
-        <SessionProvider>
-          <QueryProvider>
-            <LocaleProvider initialLocale={locale}>
-              <ViewAsProvider initialViewAs={viewAs}>
-                <AppShell>{children}</AppShell>
-                <ReportLauncher />
-                <Toaster />
-              </ViewAsProvider>
-            </LocaleProvider>
-          </QueryProvider>
-        </SessionProvider>
+        <FeaturesProvider enabled={[...enabled]}>
+          <SessionProvider>
+            <QueryProvider>
+              <LocaleProvider initialLocale={locale}>
+                <ViewAsProvider initialViewAs={viewAs}>
+                  <AppShell>{children}</AppShell>
+                  {enabled.has('issue-reports') && <ReportLauncher />}
+                  <Toaster />
+                </ViewAsProvider>
+              </LocaleProvider>
+            </QueryProvider>
+          </SessionProvider>
+        </FeaturesProvider>
       </body>
     </html>
   );

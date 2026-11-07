@@ -19,15 +19,15 @@ const mockActivities = [
     name: 'Atividade de Teste',
     description: 'Descrição de teste',
     approximate_duration_minutes: 60,
-    group_size: 'medium' as const,
+    group_sizes: ['medium' as const],
     effort_level: 'medium' as const,
-    location: 'outside' as const,
-    age_group: 'scouts' as const,
+    locations: ['outside' as const],
+    age_groups: ['scouts' as const],
     created_at: '2024-01-01T00:00:00Z',
-    activity_type: {
+    activity_types: [{
       id: '1',
       name: 'Jogo',
-    },
+    }],
     educational_goals: [
       {
         id: '1',
@@ -138,7 +138,7 @@ describe('ActivitiesTable', () => {
     expect(screen.getByText('Exterior')).toBeInTheDocument();
   });
 
-  it('displays correct age group text', () => {
+  it('shows age groups as division pills with the full wording as name', () => {
     render(
       <ActivitiesTable 
         activities={mockActivities}
@@ -148,7 +148,7 @@ describe('ActivitiesTable', () => {
       />
     );
 
-    expect(screen.getByText('Escoteiros (10-14)')).toBeInTheDocument();
+    expect(screen.getByLabelText('Escoteiros (10-14)')).toHaveTextContent('Escoteiros');
   });
 
   it('displays SDG information', () => {

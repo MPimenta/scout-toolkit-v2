@@ -6,9 +6,10 @@ test.describe('Programs as guest', () => {
     await page.goto('/programs');
     await expect(page.getByRole('heading', { name: 'Criador de Programas' })).toBeVisible();
     await expect(page.getByText('Cronogramas Inteligentes', { exact: true })).toBeVisible();
-    await expect(page.getByText('Gestão de Atividades', { exact: true })).toBeVisible();
-    await expect(page.getByText('Objetivos Educativos', { exact: true })).toBeVisible();
     await expect(page.getByText('Exportação Profissional', { exact: true })).toBeVisible();
+    await expect(page.getByText('Do programa para o eAEP', { exact: true })).toBeVisible();
+    // Templates and sharing are not promised while public-programs is off.
+    await expect(page.getByText('Templates Reutilizáveis')).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Entrar' }).first()).toBeVisible();
   });
 });
@@ -39,7 +40,8 @@ test.describe('Programs when signed in', () => {
       await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
       await expect(page.getByText('Programa Privado')).toBeVisible();
 
-      await page.getByRole('button', { name: 'Eliminar' }).click();
+      await page.getByRole('button', { name: 'Mais ações' }).click();
+      await page.getByRole('menuitem', { name: 'Eliminar' }).click();
       await expect(page.getByText(/tem a certeza/i)).toBeVisible();
       await page.getByRole('button', { name: 'Eliminar Programa' }).click();
       await expect(page).toHaveURL(/\/programs\/?$/);
@@ -60,7 +62,7 @@ test.describe('Programs when signed in', () => {
       await page.goto('/programs');
       await page.getByRole('button', { name: /novo programa|criar primeiro programa/i }).first().click();
       await page.getByLabel('Nome do Programa *').fill('Não gravar');
-      await page.getByRole('button', { name: 'Cancelar' }).click();
+      await page.getByRole('button', { name: 'Cancelar', exact: true }).click();
       await expect(page.getByText('Criar Novo Programa')).toHaveCount(0);
       await expect(page.getByText('Não gravar')).toHaveCount(0);
     } finally {

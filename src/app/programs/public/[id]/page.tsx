@@ -73,7 +73,7 @@ export default function PublicProgramPreviewPage() {
       <ol className="space-y-3 mb-8">
         {program.entries.map((entry) => (
           <li key={entry.id} className="border rounded-md p-3">
-            <p className="font-medium">
+            <p className="font-bold">
               {entry.entry_type === 'activity'
                 ? entry.activity_name
                 : entry.custom_title}
@@ -91,7 +91,7 @@ export default function PublicProgramPreviewPage() {
         </form>
       ) : (
         <Link className="text-primary underline" href={`/auth/signin?callbackUrl=/programs/public/${program.id}`}>
-          Inicie sessão para usar como modelo
+          Inicia sessão para usar como modelo
         </Link>
       )}
     </div>

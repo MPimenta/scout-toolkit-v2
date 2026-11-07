@@ -34,6 +34,35 @@ test.describe('Create Orgo event dialog', () => {
     }
   });
 
+  test('creating the event shows a success view with a link, and the page then links to it', async ({ page }) => {
+    expect((await signInE2E(page.request, { name: 'Chefe Sucesso' })).ok()).toBeTruthy();
+    const created = await page.request.post('/api/programs', {
+      data: { name: `E2E Orgo OK ${Date.now()}`, date: '2026-07-12', start_time: '09:00', is_public: false },
+    });
+    const programId = ((await created.json()) as { program: { id: string } }).program.id;
+
+    try {
+      await page.goto(`/programs/${programId}`);
+      await page.getByRole('button', { name: 'Criar evento no eAEP' }).click();
+      // Dates read in pt-PT whatever the browser language (12/07/2026 is a Sunday).
+      await expect(page.getByText(/domingo, 12\/07\/2026/).first()).toBeVisible();
+
+      await page.getByLabel('Unidade Orgo').click();
+      await page.getByRole('option').first().click();
+      await page.getByRole('button', { name: 'Criar no eAEP' }).click();
+
+      await expect(page.getByRole('heading', { name: 'Evento criado no eAEP' })).toBeVisible();
+      const link = page.getByRole('link', { name: 'Abrir evento no eAEP' });
+      await expect(link).toHaveAttribute('href', new RegExp(`/events/e2e-${programId}$`));
+
+      await page.getByRole('button', { name: 'Fechar' }).first().click();
+      await expect(page.getByRole('link', { name: 'Ver evento no eAEP' })).toBeVisible();
+    } finally {
+      await page.request.delete(`/api/programs/${programId}`).catch(() => undefined);
+      await signOutE2E(page.request);
+    }
+  });
+
   test('guest does not see the create control', async ({ page }) => {
     await page.goto('/programs');
     await expect(page.getByRole('button', { name: 'Criar evento no eAEP' })).toHaveCount(0);

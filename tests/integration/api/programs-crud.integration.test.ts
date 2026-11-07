@@ -1,9 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
 import { drizzle } from 'drizzle-orm/postgres-js';
-import { programs, programEntries, user } from '../../../drizzle/schema/index';
-import { eq } from 'drizzle-orm';
-import { withTestDatabase, createTestUser, createTestActivity, createTestProgram } from '../../helpers/database';
-import { sql } from 'drizzle-orm';
+import { programs, user } from '../../../drizzle/schema/index';
+import { withTestDatabase } from '../../helpers/database';
 import { GET } from '../../../src/app/api/programs/[id]/route';
 import { NextRequest } from 'next/server';
 import { requireLocalTestDatabase } from '../../helpers/local-test-db';
@@ -25,7 +23,6 @@ vi.mock('@/lib/auth/config', () => ({
 describe('Programs CRUD', () => {
   let db: ReturnType<typeof drizzle>;
   let cleanup: () => Promise<void>;
-  let testUserId: string;
 
   beforeAll(async () => {
     requireLocalTestDatabase();
@@ -33,13 +30,12 @@ describe('Programs CRUD', () => {
     db = setup.db;
     cleanup = setup.cleanup;
     
-    const [testUser] = await db.insert(user).values({
+    await db.insert(user).values({
       id: '550e8400-e29b-41d4-a716-446655440000', // Proper UUID
       name: 'Test User',
       email: 'test@escoteiros.pt',
       image: 'https://example.com/test.jpg'
     }).returning();
-    testUserId = testUser.id;
   });
 
   afterAll(async () => {
@@ -55,13 +51,12 @@ describe('Programs CRUD', () => {
     await rawSql`TRUNCATE TABLE "user" CASCADE`;
     
     // Recreate test user after truncate
-    const [testUser] = await db.insert(user).values({
+    await db.insert(user).values({
       id: '550e8400-e29b-41d4-a716-446655440000', // Proper UUID
       name: 'Test User',
       email: 'test@escoteiros.pt',
       image: 'https://example.com/test.jpg'
     }).returning();
-    testUserId = testUser.id;
   });
 
   it('returns 404 for program owned by different user', async () => {

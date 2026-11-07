@@ -20,15 +20,10 @@ import {
   isActivity,
   isProgram,
   isProgramEntry,
-  isActivityType,
-  isEducationalGoal,
-  isSdg,
-  isReview,
   
   // API response type guards
   isApiActivity,
   isApiProgram,
-  isApiProgramEntry,
   
   // Error type guards
   isErrorCode,
@@ -37,11 +32,6 @@ import {
   // Array type guards
   isUserArray,
   isActivityArray,
-  isProgramArray,
-  isProgramEntryArray,
-  isApiActivityArray,
-  isApiProgramArray,
-  isApiProgramEntryArray,
 } from '@/types/guards';
 
 describe('Type Guards - Primitive Types', () => {
@@ -244,11 +234,11 @@ describe('Type Guards - Entity Types', () => {
         description: 'Test Description',
         materials: 'Test Materials',
         approximate_duration_minutes: 60,
-        group_size: 'small',
+        group_sizes: ['small'],
         effort_level: 'medium',
-        location: 'inside',
-        age_group: 'scouts',
-        activity_type_id: '456',
+        locations: ['inside'],
+        age_groups: ['scouts'],
+        activity_type_ids: ['456'],
         created_at: '2023-01-01T00:00:00Z',
         updated_at: '2023-01-01T00:00:00Z',
         is_approved: true,
@@ -318,15 +308,15 @@ describe('Type Guards - API Response Types', () => {
         description: 'Test Description',
         materials: 'Test Materials',
         approximate_duration_minutes: 60,
-        group_size: 'small',
+        group_sizes: ['small'],
         effort_level: 'medium',
-        location: 'inside',
-        age_group: 'scouts',
+        locations: ['inside'],
+        age_groups: ['scouts'],
         created_at: '2023-01-01T00:00:00Z',
-        activity_type: {
+        activity_types: [{
           id: '456',
           name: 'Test Type',
-        },
+        }],
         educational_goals: [],
         sdgs: [],
       };
@@ -447,11 +437,11 @@ describe('Type Guards - Array Types', () => {
           description: 'Description 1',
           materials: 'Materials 1',
           approximate_duration_minutes: 60,
-          group_size: 'small',
+          group_sizes: ['small'],
           effort_level: 'medium',
-          location: 'inside',
-          age_group: 'scouts',
-          activity_type_id: '456',
+          locations: ['inside'],
+          age_groups: ['scouts'],
+          activity_type_ids: ['456'],
           created_at: '2023-01-01T00:00:00Z',
           updated_at: '2023-01-01T00:00:00Z',
           is_approved: true,

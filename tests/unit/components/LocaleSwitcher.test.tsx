@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import { renderWithFeatures as render } from '../../helpers/render-with-features';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { LocaleProvider } from '@/components/locale/LocaleProvider';
@@ -36,5 +37,17 @@ describe('LocaleSwitcher', () => {
     expect(cluster).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Entrar' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Abrir menu' })).toBeInTheDocument();
+  });
+
+  it('is not in the header while english-locale is off', () => {
+    render(
+      <LocaleProvider initialLocale="pt">
+        <Header />
+      </LocaleProvider>,
+      { features: [] }
+    );
+    expect(screen.queryByRole('group', { name: 'Idioma' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Entrar' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Programas públicos' })).not.toBeInTheDocument();
   });
 });

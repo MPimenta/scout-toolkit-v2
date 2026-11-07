@@ -17,12 +17,17 @@ type OrgoUserRow = {
   email?: string;
 };
 
-type OrgoUserRoleRow = {
+export type OrgoUserRoleRow = {
   unit?: string | { id?: number | string; name?: string; '@id'?: string };
+  /** Orgo permission level for the unit, e.g. "EVENT_LOCAL" or "ADMIN_LOCAL"; "USER" is a plain member. */
+  localCenterPermission?: string | null;
+  isAdmin?: boolean | null;
   dateEnded?: string | null;
+  [key: string]: unknown;
 };
 
-const EVENT_CREATE_HINTS = ['EVENT_', 'ADMIN_'];
+/** Permission prefixes that allow creating events in a unit. */
+const EVENT_CREATE_PREFIXES = ['EVENT_', 'ADMIN_'];
 
 function hydraMembers<T>(body: HydraCollection<T> | T[] | null | undefined): T[] {
   if (Array.isArray(body)) return body;
@@ -60,16 +65,26 @@ function unitFromRole(role: OrgoUserRoleRow): OrgoUnitOption | null {
   return { iri, name: unit.name || String(id) };
 }
 
-function roleAllowsEventCreate(role: OrgoUserRoleRow): boolean {
-  const text = JSON.stringify(role);
-  return EVENT_CREATE_HINTS.some((hint) => text.includes(hint)) || text.includes('"isAdmin":true');
+/**
+ * True when the role grants event creation: an explicit admin flag, or a
+ * *Permission field (e.g. localCenterPermission) whose value starts with EVENT_ or ADMIN_.
+ * Reads named fields only, never the serialized role.
+ */
+export function roleAllowsEventCreate(role: OrgoUserRoleRow): boolean {
+  if (role.isAdmin === true) return true;
+  return Object.entries(role).some(
+    ([key, value]) =>
+      key.endsWith('Permission') &&
+      typeof value === 'string' &&
+      EVENT_CREATE_PREFIXES.some((prefix) => value.toUpperCase().startsWith(prefix))
+  );
 }
 
+/** Units of active roles that grant event creation. No fallback to other roles. */
 export function filterEventCreateUnits(roles: OrgoUserRoleRow[]): OrgoUnitOption[] {
-  const eligible = roles.filter(roleAllowsEventCreate);
-  const source = eligible.length > 0 ? eligible : roles;
   const seen = new Map<string, OrgoUnitOption>();
-  for (const role of source) {
+  for (const role of roles) {
+    if (role.dateEnded || !roleAllowsEventCreate(role)) continue;
     const unit = unitFromRole(role);
     if (unit) seen.set(unit.iri, unit);
   }
@@ -80,7 +95,9 @@ export async function findOrgoUserId(email: string): Promise<string | null> {
   const response = await orgoFetch(`/api/v1/users?email=${encodeURIComponent(email)}&itemsPerPage=5`);
   if (!response.ok) return null;
   const body = (await response.json()) as HydraCollection<OrgoUserRow>;
-  const match = hydraMembers(body).find((row) => row.email?.toLowerCase() === email.toLowerCase()) ?? hydraMembers(body)[0];
+  // Exact, case-insensitive email match only: never act on another person's Orgo identity.
+  const wanted = email.trim().toLowerCase();
+  const match = hydraMembers(body).find((row) => row.email?.trim().toLowerCase() === wanted);
   if (!match) return null;
   if (match['@id']) return match['@id'];
   if (match.id != null) return `/api/v1/users/${match.id}`;

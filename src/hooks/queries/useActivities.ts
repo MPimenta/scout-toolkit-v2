@@ -9,14 +9,15 @@ export interface ActivityFilters {
   search?: string;
   group_size?: string[];
   effort_level?: string[];
-  location?: string;
+  location?: string[];
   age_group?: string[];
   activity_type?: string[];
   sdgs?: string[];
   educational_goals?: string[];
+  educational_areas?: string[];
+  general_objectives?: string[];
   duration_min?: string;
   duration_max?: string;
-  duration_operator?: '>=' | '<=' | '=' | '>' | '<';
   page?: number;
   limit?: number;
   sort?: 'name' | 'duration' | 'created_at';
@@ -33,16 +34,16 @@ export interface ActivityResponse {
     description: string;
     materials: string;
     approximate_duration_minutes: number;
-    group_size: string;
+    group_sizes: string[];
     effort_level: string;
-    location: string;
-    age_group: string;
+    locations: string[];
+    age_groups: string[];
     image_url?: string;
     created_at: string;
-    activity_type: {
+    activity_types: Array<{
       id: string;
       name: string;
-    };
+    }>;
     educational_goals: Array<{
       id: string;
       title: string;

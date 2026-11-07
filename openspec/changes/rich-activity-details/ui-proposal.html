@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proposta de interface: detalhe da atividade</title>
+<style>
+/* Tokens copied from src/app/globals.css (light theme). This file is a review aid, not app code. */
+:root{
+  --bg:0 0% 100%; --fg:200 56.3% 18.8%; --primary:217 76% 34%; --primary-fg:0 0% 100%;
+  --secondary:218.8 58.6% 94.3%; --muted:168 21.7% 95.5%; --muted-fg:203.6 17.1% 37.8%;
+  --accent:180 100% 32%; --near-black:222.9 84% 4.9%; --border:186 16.7% 88.2%;
+  --blue-dark:218 77.1% 25.7%; --teal-dark:181.4 100% 25.1%; --teal-tint:180 47.1% 93.3%; --destructive:0 72% 45%;
+  --d-cub:49.2 100% 50%; --d-cub-fg:200 56.3% 18.8%; --d-scouts:147.7 100% 25.9%; --d-adv:221.5 98.1% 20.8%; --d-rov:355.9 85.5% 56.9%;
+  --radius:4px; --gutter:clamp(1rem,4vw,2rem);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;line-height:1.6;color:hsl(var(--fg));background:hsl(var(--bg))}
+h1,h2,h3{line-height:1.15;margin:0}
+a{color:hsl(var(--primary));font-weight:700}
+.note{background:hsl(var(--teal-tint));border-left:6px solid hsl(var(--accent));padding:.75rem var(--gutter);font-size:.875rem}
+.topbar{background:hsl(var(--primary));color:#fff;font-size:.75rem}
+.topbar div{max-width:1200px;margin:0 auto;padding:.4rem var(--gutter);display:flex;gap:1.5rem}
+header.site{border-bottom:1px solid hsl(var(--border));padding:.75rem var(--gutter);font-weight:700}
+.wrap{max-width:1200px;margin:0 auto;padding:1.5rem var(--gutter) 3rem}
+.eyebrow{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:hsl(var(--teal-dark));margin:0 0 .25rem}
+.hero{display:grid;gap:1.25rem;grid-template-columns:1fr}
+.hero .img{aspect-ratio:4/3;background:linear-gradient(135deg,hsl(var(--secondary)),hsl(var(--teal-tint)));border-radius:var(--radius);display:grid;place-items:center;color:hsl(var(--muted-fg));font-size:.875rem}
+.facts{display:flex;flex-wrap:wrap;gap:.5rem 1.25rem;margin:.75rem 0;font-size:.9375rem}
+.pill{display:inline-flex;align-items:center;border:1px solid transparent;border-radius:var(--radius);padding:.1rem .5rem;font-size:.75rem;font-weight:700}
+.p-cub{background:hsl(var(--d-cub));color:hsl(var(--d-cub-fg))}
+.p-sc{background:hsl(var(--d-scouts));color:#fff}
+.p-adv{background:hsl(var(--d-adv));color:#fff}
+.p-rov{background:hsl(var(--d-rov));color:hsl(var(--near-black))}
+.btn{display:inline-block;border:0;border-radius:var(--radius);padding:.7em 1.3em;font:700 .9375rem Arial;background:hsl(var(--primary));color:#fff;cursor:pointer;min-height:44px}
+.btn.out{background:#fff;color:hsl(var(--primary));border:1px solid hsl(var(--primary))}
+.layout{display:block;margin-top:1.5rem;max-width:900px}
+.card{background:#fff;border:1px solid hsl(var(--border));border-top:3px solid hsl(var(--accent));border-radius:var(--radius);padding:1.25rem}
+.card h2{font-size:1.25rem;margin-bottom:.75rem}
+.stack>*+*{margin-top:1.25rem}
+ol.steps{padding-left:1.25rem;margin:.5rem 0}
+.sec-title{font-size:1rem;margin:1rem 0 .25rem;color:hsl(var(--primary))}
+.risks{display:grid;gap:1rem;grid-template-columns:1fr}
+.risk{border:1px solid hsl(var(--border));border-radius:var(--radius);padding:1rem}
+.level{display:inline-flex;align-items:center;gap:.4rem;font-weight:700;font-size:.8125rem;border-radius:var(--radius);padding:.15rem .6rem;border:1px solid hsl(var(--border))}
+.level.med{background:hsl(var(--secondary));color:hsl(var(--primary));border-color:hsl(var(--primary))}
+.level.hi{background:hsl(var(--destructive));color:#fff}
+.bars{display:inline-flex;gap:2px;align-items:flex-end;height:12px}.bars i{width:4px;background:currentColor;display:block}
+.bars i:nth-child(1){height:5px}.bars i:nth-child(2){height:8px}.bars i:nth-child(3){height:12px;opacity:.25}
+.lab{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:hsl(var(--muted-fg));margin:.75rem 0 .1rem}
+.tabs{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.75rem}
+.tab{border:2px solid transparent;background:none;padding:.15rem;border-radius:var(--radius);cursor:pointer}
+.tab[aria-selected=true]{border-color:hsl(var(--accent))}
+.tab .pill{font-size:.8125rem;padding:.3rem .75rem}
+.obj{border-top:1px solid hsl(var(--border));padding:.75rem 0}
+.obj .how{margin:.25rem 0 0;font-size:.9375rem}.obj .how b{color:hsl(var(--teal-dark))}
+.sdgs{display:grid;gap:1rem;grid-template-columns:1fr}
+.sdg{display:grid;grid-template-columns:64px 1fr;gap:.75rem}.sdg .ico{width:64px;height:64px;border-radius:var(--radius);object-fit:contain;display:block}
+.chal{border-top:1px solid hsl(var(--border));padding:.6rem 0;display:flex;gap:.6rem;align-items:flex-start;flex-wrap:wrap}
+.code{font-weight:700;border:1px solid hsl(var(--border));border-radius:var(--radius);padding:0 .4rem;font-size:.8125rem}
+.small{font-size:.8125rem;color:hsl(var(--muted-fg))}
+details.sec{border:1px solid hsl(var(--border));border-top:3px solid hsl(var(--accent));border-radius:var(--radius);padding:0 1.25rem}
+details.sec summary{cursor:pointer;font-weight:700;font-size:1.25rem;padding:1rem 0;min-height:44px}
+:focus-visible{outline:3px solid hsl(var(--accent));outline-offset:2px}
+@media (min-width:1024px){
+  .hero{grid-template-columns:360px 1fr;align-items:start}
+  .risks{grid-template-columns:1fr 1fr}
+  .sdgs{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="note">
+  <strong>Proposta de interface (para revisão, não é código da aplicação).</strong>
+  Exemplo: primeira atividade da folha <em>atividades_v2</em> ("Jogo da bandeira"). Redimensione a janela:
+  uma só coluna, com os dois cartões de risco lado a lado a partir de 1024 px. A segurança está sempre aberta; objetivos, ODS e desafios recolhem em telemóvel.
+</div>
+<div class="topbar"><div><span>eAEP ↗</span><span>Site oficial ↗</span><span>Centros Escotistas ↗</span><span>Loja oficial ↗</span></div></div>
+<header class="site">Escoteiros de Portugal &nbsp;·&nbsp; Atividades &nbsp;·&nbsp; Programas &nbsp;·&nbsp; Sobre</header>
+
+<main class="wrap">
+  <section class="hero" aria-labelledby="t">
+    <div class="img" role="img" aria-label="Imagem da atividade (4:3)">imagem 4:3</div>
+    <div>
+      <p class="eyebrow">Jogo</p>
+      <h1 id="t" style="font-size:clamp(1.5rem,4vw,2rem)">Jogo da bandeira</h1>
+      <p class="small" style="margin:.25rem 0 0">Fonte: <a href="#fonte">Online Scout Manager ↗</a> · © Online Youth Manager Ltd</p>
+      <div class="facts" aria-label="Resumo">
+        <span>⏱ 30 min</span><span>👥 Médio (7-15)</span><span>↗ Esforço baixo</span><span>⌂ Exterior</span>
+      </div>
+      <p style="margin:0 0 .75rem"><span class="pill p-cub" aria-label="Lobitos">Lobitos (6-10)</span></p>
+      <p style="margin:0"><button class="btn">Adicionar ao programa</button> <button class="btn out">Sugerir alteração</button></p>
+    </div>
+  </section>
+
+  <div class="layout">
+    <div class="stack">
+      <section class="card"><h2>Em resumo</h2>
+        <p style="margin:0">Duas equipas defendem a sua bandeira e tentam capturar a do adversário, sem serem apanhadas. Exige estratégia, divisão de papéis e entreajuda, porque os apanhados podem ser libertados por um colega.</p>
+      </section>
+
+      <section class="card"><h2>Materiais</h2><p style="margin:0">Duas bandeiras ou lenços, cones para marcar o campo.</p></section>
+
+      <section class="card"><h2>Como se faz</h2>
+        <h3 class="sec-title">Preparação</h3>
+        <p style="margin:0">Marcar o campo (cerca de 30 x 20 m) com cones e uma linha central. Colocar uma bandeira a 5 m do fundo de cada lado e marcar uma "prisão" junto a cada bandeira. Dividir em duas equipas equilibradas e explicar as regras.</p>
+        <h3 class="sec-title">Desenvolvimento</h3>
+        <ol class="steps">
+          <li>Cada equipa fica no seu lado, com a bandeira atrás.</li>
+          <li>Ao sinal, tentam atravessar a linha central, tocar na bandeira adversária e voltar ao seu lado sem serem tocados.</li>
+          <li>Quem for tocado no campo adversário vai para a prisão; um colega pode libertá-lo com um toque.</li>
+          <li>Quem leva a bandeira para o seu lado sem ser tocado ganha o ponto.</li>
+          <li>Jogar 2 a 3 rondas de 10 minutos, trocando de lado e de estratégia.</li>
+        </ol>
+        <h3 class="sec-title">Fecho e debriefing</h3>
+        <p style="margin:0">Sentar em roda 5 minutos: que estratégia usámos? Quem teve funções específicas? Como nos sentimos quando fomos apanhados? Como incluímos quem corria menos?</p>
+      </section>
+
+      <section class="card" aria-labelledby="seg"><h2 id="seg">Segurança</h2>
+        <div class="risks">
+          <div class="risk">
+            <strong>Risco físico</strong>
+            <p style="margin:.4rem 0"><span class="level med"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span> Médio</span></p>
+            <p class="lab">O que pode correr mal</p><p style="margin:0">Corridas e apanhadas com risco de colisões, quedas e puxões.</p>
+            <p class="lab">Como reduzir</p><p style="margin:0">Campo delimitado e livre de buracos e pedras; só se apanha com um toque leve (nunca agarrar); calçado fechado; zona neutra a meio; equipas equilibradas por idade e tamanho.</p>
+          </div>
+          <div class="risk">
+            <strong>Risco psicológico</strong>
+            <p style="margin:.4rem 0"><span class="level"><span class="bars" aria-hidden="true"><i></i><i style="opacity:.25"></i><i style="opacity:.25"></i></span> Baixo</span></p>
+            <p class="lab">O que pode correr mal</p><p style="margin:0">Quem é apanhado primeiro pode sentir-se excluído; pode haver tensão entre equipas.</p>
+            <p class="lab">Como reduzir</p><p style="margin:0">Apanhados vão para a "prisão" mas podem ser libertados, para ninguém ficar muito tempo parado; equipas equilibradas para evitar tensão e exclusão.</p>
+          </div>
+        </div>
+      </section>
+
+      <details class="sec" open>
+        <summary>Objetivos e como observar</summary>
+        <p class="small" style="margin-top:0">Para mais do que uma divisão, um separador por divisão. Aqui: só Lobitos, por isso um título simples. Em "1,2,3 Gesto" (cinco divisões) vê-se o separador abaixo.</p>
+        <div class="tabs" role="tablist" aria-label="Divisões">
+          <button class="tab" role="tab" aria-selected="true" data-tab="cub"><span class="pill p-cub">Lobitos</span></button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="sc"><span class="pill p-sc">Tribo de Escoteiros</span></button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="adv"><span class="pill p-adv">Tribo de Exploradores</span></button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="rov"><span class="pill p-rov">Clã</span></button>
+        </div>
+        <div data-panel="cub">
+          <div class="obj"><span class="pill p-cub" aria-label="Lobitos: 4E.1.1">4E.1.1</span> Participar em momentos de partilha
+            <p class="how"><b>Como observar:</b> aceita fazer parte da equipa e partilha a bandeira, a vez e o espaço sem ser preciso insistir.</p></div>
+          <div class="obj"><span class="pill p-cub" aria-label="Lobitos: 4S.2.1">4S.2.1</span> Liderar a execução de tarefas
+            <p class="how"><b>Como observar:</b> diz aos colegas o que fazer numa tarefa simples ("tu guardas, eu corro").</p></div>
+          <div class="obj"><span class="pill p-cub" aria-label="Lobitos: 5F.1">5F.1</span> Explorar os seus sentidos e competências motoras
+            <p class="how"><b>Como observar:</b> corre, trava e muda de direção com controlo; usa a vista e o ouvido para fugir ou libertar.</p></div>
+        </div>
+        <div data-panel="sc" hidden><div class="obj"><span class="pill p-sc">5I.2</span> Demonstrar criatividade na implementação de diferentes estratégias…<p class="how"><b>Como observar:</b> experimenta vários gestos e muda quando o ritmo se complica.</p></div></div>
+        <div data-panel="adv" hidden><div class="obj"><span class="pill p-adv">5I.3-4</span> Demonstrar criatividade e capacidade de adaptação na resolução coletiva de problemas<p class="how"><b>Como observar:</b> propõe ao par um sistema de gestos e escolhem juntos o que resulta.</p></div></div>
+        <div data-panel="rov" hidden><div class="obj"><span class="pill p-rov">5I.3-4</span> Demonstrar criatividade e capacidade de adaptação na resolução coletiva de problemas<p class="how"><b>Como observar:</b> cria e adapta gestos com o par, aceitando as ideias dele.</p></div>
+          <p class="small">Dirigentes usam a referência dos objetivos de Caminheiros.</p></div>
+      </details>
+
+      <details class="sec" open>
+        <summary>ODS e porquê</summary>
+        <div class="sdgs" style="padding-bottom:1rem">
+          <div class="sdg"><img class="ico" src="../../../public/sdg-icons/sdg-3.png" alt="ODS 3: Saúde de Qualidade" width="64" height="64"><div><strong>Saúde de Qualidade</strong><p style="margin:.25rem 0 0">O jogo obriga a correr, esquivar e planear a defesa ao ar livre, o que mantém o corpo ativo e ensina a respeitar limites de segurança no contacto.</p></div></div>
+          <div class="sdg"><img class="ico" src="../../../public/sdg-icons/sdg-17.png" alt="ODS 17: Parcerias para a Implementação dos Objetivos" width="64" height="64"><div><strong>Parcerias para a Implementação dos Objetivos</strong><p style="margin:.25rem 0 0">Só se vence libertando os colegas apanhados e protegendo a bandeira em equipa; ninguém ganha sozinho.</p></div></div>
+        </div>
+      </details>
+
+      <details class="sec" open>
+        <summary>Desafios</summary>
+        <p class="small" style="margin-top:0">Formas opcionais de reconhecer progresso no Programa de Jovens.</p>
+        <div style="padding-bottom:1rem">
+          <div class="chal"><span class="code">EVAS-B</span><span class="pill p-sc">Escoteiros</span><span>Participa em 3 jogos de sentidos e motricidade.</span></div>
+          <div class="chal"><span class="code">CC-A</span><span class="pill p-cub">Lobitos</span><span>Partilha algo com a tua Divisão.</span></div>
+        </div>
+      </details>
+
+      <section class="card"><h2>Avaliações</h2><p class="small" style="margin:0">(bloco existente, sem alterações)</p></section>
+    </div>
+
+  </div>
+</main>
+<script>
+  document.querySelectorAll('.tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      document.querySelectorAll('.tab').forEach(function (t) { t.setAttribute('aria-selected', t === tab ? 'true' : 'false'); });
+      document.querySelectorAll('[data-panel]').forEach(function (p) { p.hidden = p.getAttribute('data-panel') !== tab.getAttribute('data-tab'); });
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { NextRequest } from 'next/server';
 
 const mockAuth = vi.fn();
 const mockRequireAdminApi = vi.fn();
@@ -32,10 +31,6 @@ vi.mock('@/lib/db/server', () => {
   };
 });
 
-function requestFor() {
-  return new NextRequest('http://localhost:3000/api/admin/stats');
-}
-
 describe('Admin stats API', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -45,7 +40,7 @@ describe('Admin stats API', () => {
     const { apiErrors } = await import('@/lib/errors');
     mockRequireAdminApi.mockResolvedValue({ error: apiErrors.unauthorized() });
     const { GET } = await import('@/app/api/admin/stats/route');
-    const response = await GET(requestFor());
+    const response = await GET();
     expect(response.status).toBe(401);
   });
 
@@ -53,7 +48,7 @@ describe('Admin stats API', () => {
     const { apiErrors } = await import('@/lib/errors');
     mockRequireAdminApi.mockResolvedValue({ error: apiErrors.forbidden() });
     const { GET } = await import('@/app/api/admin/stats/route');
-    const response = await GET(requestFor());
+    const response = await GET();
     expect(response.status).toBe(403);
   });
 
@@ -62,7 +57,7 @@ describe('Admin stats API', () => {
       user: { id: 'admin-1', role: 'admin', email: 'ana@escoteiros.pt', name: 'Ana' },
     });
     const { GET } = await import('@/app/api/admin/stats/route');
-    const response = await GET(requestFor());
+    const response = await GET();
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({
       activities: 0,

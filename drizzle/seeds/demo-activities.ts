@@ -1,25 +1,34 @@
 import * as dotenv from 'dotenv';
 import { db } from '@/lib/db/server';
-import { activityTypes, educationalGoals, sdgs } from '../schema/taxonomies';
-import { activities, activityEducationalGoals, activitySdgs } from '../schema/activities';
+import { activityTypes, educationalGoalAgeGroups, educationalGoals, sdgs } from '../schema/taxonomies';
+import {
+  activities,
+  activityEducationalGoals,
+  activitySdgs,
+  activityGroupSizes,
+  activityLocations,
+  activityAgeGroups,
+  activityActivityTypes,
+} from '../schema/activities';
 
 // Load environment variables
 dotenv.config({ path: '.env.local' });
 import { eq } from 'drizzle-orm';
 
-// Demo activities for testing
+// Demo activities for testing. Objectives are Matriz codes and always belong to one of the
+// activity's age groups; several activities are multi-valued (group sizes, age groups, objectives).
 const demoActivitiesData = [
   {
     name: 'Jogo do Nome e Gesto',
     description: 'Um jogo divertido onde cada pessoa diz o seu nome acompanhado de um gesto. Os outros repetem o nome e o gesto de todos os que já se apresentaram antes de se apresentarem a si próprios.',
     materials: 'Nenhum material necessário',
     approximate_duration_minutes: 15,
-    group_size: 'medium' as const,
+    group_sizes: ['medium' as const, 'large' as const],
     effort_level: 'low' as const,
-    location: 'inside' as const,
-    age_group: 'cub_scouts' as const,
+    locations: ['inside' as const, 'outside' as const],
+    age_groups: ['cub_scouts' as const, 'scouts' as const],
     activity_type_name: 'Jogo',
-    educational_goal_codes: ['SOCIAL_COMM', 'SOCIAL_TEAM'],
+    educational_goal_codes: ['1S.1', '1S.2', '1A.2'],
     sdg_numbers: [4, 5],
   },
   {
@@ -27,12 +36,12 @@ const demoActivitiesData = [
     description: 'Uma caça ao tesouro com pistas que levam os participantes a descobrir um tesouro escondido. As pistas podem incluir charadas, códigos ou orientações.',
     materials: 'Pistas, tesouro (doces ou pequenos prémios), papel e lápis',
     approximate_duration_minutes: 45,
-    group_size: 'large' as const,
+    group_sizes: ['large' as const, 'medium' as const],
     effort_level: 'medium' as const,
-    location: 'outside' as const,
-    age_group: 'scouts' as const,
+    locations: ['outside' as const],
+    age_groups: ['scouts' as const, 'adventurers' as const],
     activity_type_name: 'Jogo',
-    educational_goal_codes: ['TECHNICAL_ORIENTEERING', 'SOCIAL_TEAM', 'CREATIVITY_PROBLEM'],
+    educational_goal_codes: ['5I.2', '5I.3-4', '4S.2.2-3'],
     sdg_numbers: [4, 15],
   },
   {
@@ -40,12 +49,12 @@ const demoActivitiesData = [
     description: 'Uma atividade de reflexão onde os participantes partilham os momentos mais importantes do dia, o que aprenderam e como se sentiram.',
     materials: 'Vela (opcional para criar ambiente), perguntas de reflexão',
     approximate_duration_minutes: 20,
-    group_size: 'small' as const,
+    group_sizes: ['small' as const],
     effort_level: 'low' as const,
-    location: 'inside' as const,
-    age_group: 'adventurers' as const,
+    locations: ['inside' as const],
+    age_groups: ['adventurers' as const, 'rovers' as const],
     activity_type_name: 'Reflexão',
-    educational_goal_codes: ['SOCIAL_EMPATHY', 'LEADERSHIP_DECISION'],
+    educational_goal_codes: ['7E.3', '7E.4', '3A.3-4'],
     sdg_numbers: [3, 4],
   },
   {
@@ -53,12 +62,12 @@ const demoActivitiesData = [
     description: 'Os participantes constroem um abrigo usando materiais naturais encontrados na natureza. Aprende-se sobre técnicas de construção e trabalho em equipa.',
     materials: 'Cordas, ramos, folhas, ferramentas básicas (se disponíveis)',
     approximate_duration_minutes: 90,
-    group_size: 'medium' as const,
+    group_sizes: ['medium' as const, 'large' as const],
     effort_level: 'high' as const,
-    location: 'outside' as const,
-    age_group: 'rovers' as const,
+    locations: ['outside' as const],
+    age_groups: ['adventurers' as const, 'rovers' as const],
     activity_type_name: 'Técnica',
-    educational_goal_codes: ['TECHNICAL_KNOTS', 'SOCIAL_TEAM', 'LEADERSHIP_RESPONSIBILITY'],
+    educational_goal_codes: ['3F.3-4', '4F.4.3-4', '4S.1.3-4'],
     sdg_numbers: [4, 15],
   },
   {
@@ -66,12 +75,12 @@ const demoActivitiesData = [
     description: 'Uma atividade de serviço onde os participantes limpam uma área da comunidade, recolhendo lixo e promovendo a consciência ambiental.',
     materials: 'Sacos de lixo, luvas, pinças (opcional)',
     approximate_duration_minutes: 60,
-    group_size: 'large' as const,
+    group_sizes: ['large' as const],
     effort_level: 'medium' as const,
-    location: 'outside' as const,
-    age_group: 'scouts' as const,
+    locations: ['outside' as const],
+    age_groups: ['scouts' as const],
     activity_type_name: 'Serviço',
-    educational_goal_codes: ['CITIZENSHIP_ENVIRONMENT', 'CITIZENSHIP_PARTICIPATION', 'SOCIAL_TEAM'],
+    educational_goal_codes: ['6S.2', '7S.1.2', '5S.2'],
     sdg_numbers: [11, 12, 15],
   },
 ];
@@ -99,15 +108,25 @@ export async function seedDemoActivities() {
         description: activityData.description,
         materials: activityData.materials,
         approximate_duration_minutes: activityData.approximate_duration_minutes,
-        group_size: activityData.group_size,
         effort_level: activityData.effort_level,
-        location: activityData.location,
-        age_group: activityData.age_group,
-        activity_type_id: activityType.id,
         is_approved: true,
       }).onConflictDoNothing().returning();
 
       if (activity) {
+        await db.insert(activityGroupSizes).values(
+          activityData.group_sizes.map((group_size) => ({ activity_id: activity.id, group_size }))
+        );
+        await db.insert(activityLocations).values(
+          activityData.locations.map((location) => ({ activity_id: activity.id, location }))
+        );
+        await db.insert(activityAgeGroups).values(
+          activityData.age_groups.map((age_group) => ({ activity_id: activity.id, age_group }))
+        );
+        await db.insert(activityActivityTypes).values({
+          activity_id: activity.id,
+          activity_type_id: activityType.id,
+        });
+
         // Link educational goals
         for (const goalCode of activityData.educational_goal_codes) {
           const [goal] = await db
@@ -117,10 +136,17 @@ export async function seedDemoActivities() {
             .limit(1);
 
           if (goal) {
-            await db.insert(activityEducationalGoals).values({
-              activity_id: activity.id,
-              goal_id: goal.id,
-            }).onConflictDoNothing();
+            // One row per division of the activity the objective belongs to.
+            const own = await db
+              .select({ age_group: educationalGoalAgeGroups.age_group })
+              .from(educationalGoalAgeGroups)
+              .where(eq(educationalGoalAgeGroups.goal_id, goal.id));
+            const shared = activityData.age_groups.filter((group) => own.some((row) => row.age_group === group));
+            if (shared.length > 0) {
+              await db.insert(activityEducationalGoals).values(
+                shared.map((age_group) => ({ activity_id: activity.id, goal_id: goal.id, age_group }))
+              ).onConflictDoNothing();
+            }
           }
         }
 

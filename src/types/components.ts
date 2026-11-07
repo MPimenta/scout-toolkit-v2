@@ -1,3 +1,4 @@
+import type { FilterState } from '@/lib/activities/filters';
 // Component Props Types
 // These types define the props for React components
 
@@ -17,17 +18,18 @@ export interface ActivityCardProps extends BaseComponentProps {
     name: string;
     description: string;
     materials: string;
+    instructions?: string | null;
     approximate_duration_minutes: number;
-    group_size: string;
+    group_sizes: string[];
     effort_level: string;
-    location: string;
-    age_group: string;
+    locations: string[];
+    age_groups: string[];
     image_url?: string;
     created_at: string;
-    activity_type: {
+    activity_types: Array<{
       id: string;
       name: string;
-    };
+    }>;
     educational_goals: Array<{
       id: string;
       title: string;
@@ -83,10 +85,10 @@ export interface ProgramSummaryProps extends BaseComponentProps {
         id: string;
         name: string;
         approximate_duration_minutes: number;
-        group_size: string;
+        group_sizes: string[];
         effort_level: string;
-        location: string;
-        age_group: string;
+        locations: string[];
+        age_groups: string[];
         educational_goals: Array<{
           id: string;
           title: string;
@@ -123,11 +125,12 @@ export interface ProgramScheduleTableProps extends BaseComponentProps {
         name: string;
         description: string;
         materials: string;
+        instructions?: string | null;
         approximate_duration_minutes: number;
-        group_size: string;
+        group_sizes: string[];
         effort_level: string;
-        location: string;
-        age_group: string;
+        locations: string[];
+        age_groups: string[];
         educational_goals: Array<{
           id: string;
           title: string;
@@ -213,20 +216,8 @@ export interface ProgramFormProps extends BaseComponentProps {
   isLoading?: boolean;
 }
 
-// Filter state type
-export interface FilterState {
-  search: string;
-  activityType: string[];
-  sdgs: string[];
-  educationalGoals: string[];
-  durationMin: number;
-  durationMax: number;
-  durationOperator: string;
-  groupSize: string[];
-  effortLevel: string[];
-  location: string[];
-  ageGroup: string[];
-}
+// Filter state type (single definition in src/lib/activities/filters.ts)
+export type { FilterState } from '@/lib/activities/filters';
 
 // Utility types
 export type ClassNameValue = ClassValue;

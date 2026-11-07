@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/server';
-import { activities, activityTypes, educationalGoals, sdgs, activityEducationalGoals, activitySdgs } from '../../../../drizzle/schema';
-import { eq, and, inArray, desc, asc, sql } from 'drizzle-orm';
+import { activities, educationalGoals, sdgs, activityEducationalGoals, activitySdgs } from '../../../../drizzle/schema';
+import { eq, and, or, inArray, desc, asc, sql, ilike, exists, gte, lte } from 'drizzle-orm';
+import { z } from 'zod';
 import { auth } from '@/lib/auth/config';
-import { apiErrors } from '@/lib/errors';
-import { createActivity, parseActivityWrite } from '@/lib/activities/write';
+import { apiErrors, handleApiError } from '@/lib/errors';
+import { loadGoalAgeGroups } from '@/lib/activities/goals';
+import { createActivity, parseActivityWrite, verifyActivityExtras, verifyActivityGoals, verifyActivityTypes } from '@/lib/activities/write';
+import { categoryConditions, loadActivityCategories } from '@/lib/activities/categories';
+import { AGE_GROUP_VALUES, GROUP_SIZE_VALUES, LOCATION_VALUES } from '@/lib/activities/category-values';
+import { featureOffResponse } from '@/lib/feature-gate';
 
 /**
  * @swagger
@@ -42,9 +47,13 @@ import { createActivity, parseActivityWrite } from '@/lib/activities/write';
  *       - in: query
  *         name: location
  *         schema:
- *           type: string
- *           enum: [inside, outside]
- *         description: Filter by location type
+ *           type: array
+ *           items:
+ *             type: string
+ *             enum: [inside, outside]
+ *         style: form
+ *         explode: false
+ *         description: Filter by location (activities matching any selected value)
  *       - in: query
  *         name: age_group
  *         schema:
@@ -81,25 +90,37 @@ import { createActivity, parseActivityWrite } from '@/lib/activities/write';
  *             type: string
  *         style: form
  *         explode: false
- *         description: Filter by educational goal IDs
+ *         description: Filter by specific objective IDs (matches any selected objective)
+ *       - in: query
+ *         name: general_objectives
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         style: form
+ *         explode: false
+ *         description: Filter by general objective IDs (any objective under them)
+ *       - in: query
+ *         name: educational_areas
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         style: form
+ *         explode: false
+ *         description: Filter by educational area IDs (any objective in them). Combined with the objective filters by OR
  *       - in: query
  *         name: duration_min
  *         schema:
  *           type: integer
- *           minimum: 1
- *         description: Minimum duration in minutes
+ *           minimum: 0
+ *         description: Minimum duration in minutes (inclusive)
  *       - in: query
  *         name: duration_max
  *         schema:
  *           type: integer
- *           minimum: 1
- *         description: Maximum duration in minutes
- *       - in: query
- *         name: duration_operator
- *         schema:
- *           type: string
- *           enum: ['>=', '<=', '=', '>', '<']
- *         description: Duration comparison operator
+ *           minimum: 0
+ *         description: Maximum duration in minutes (inclusive)
  *       - in: query
  *         name: page
  *         schema:
@@ -167,86 +188,137 @@ import { createActivity, parseActivityWrite } from '@/lib/activities/write';
  *         $ref: '#/components/responses/InternalServerError'
  */
 
+/** Comma-separated query value -> validated list (absent stays undefined). */
+const list = <T extends z.ZodTypeAny>(item: T) =>
+  z.preprocess(
+    (value) =>
+      typeof value === 'string' ? value.split(',').map((v) => v.trim()).filter(Boolean) : value,
+    z.array(item).min(1).optional()
+  );
+
+const catalogueQuerySchema = z.object({
+  search: z.string().trim().max(200).optional().transform((v) => v || undefined),
+  group_size: list(z.enum(GROUP_SIZE_VALUES)),
+  effort_level: list(z.enum(['low', 'medium', 'high'])),
+  location: list(z.enum(LOCATION_VALUES)),
+  age_group: list(z.enum(AGE_GROUP_VALUES)),
+  activity_type: list(z.string().uuid()),
+  sdgs: list(z.string().uuid()),
+  // Objective filters: an activity matches when it is linked to ANY objective selected by id,
+  // under a selected general objective, or under a selected area.
+  educational_goals: list(z.string().uuid()),
+  educational_areas: list(z.string().uuid()),
+  general_objectives: list(z.string().uuid()),
+  // Both bounds are inclusive and either may be omitted.
+  duration_min: z.coerce.number().int().min(0).optional(),
+  duration_max: z.coerce.number().int().min(0).optional(),
+  // Deprecated: accepted and ignored (the catalogue no longer sends it).
+  duration_operator: z.string().optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  // Larger requests are capped at 100 (as before), not rejected.
+  limit: z.coerce.number().int().min(1).transform((n) => Math.min(n, 100)).default(20),
+  sort: z.enum(['name', 'duration', 'created_at']).optional(),
+  order: z.enum(['asc', 'desc']).optional(),
+});
+
+function parseCatalogueQuery(searchParams: URLSearchParams) {
+  const raw: Record<string, string> = {};
+  for (const key of Object.keys(catalogueQuerySchema.shape)) {
+    const value = searchParams.get(key);
+    if (value !== null && value !== '') raw[key] = value;
+  }
+  return catalogueQuerySchema.safeParse(raw);
+}
+
+/** Escapes LIKE wildcards so "50%" searches for the literal text. */
+function escapeLike(value: string): string {
+  return value.replace(/[\\%_]/g, (char) => '\\' + char);
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     
-    // Extract query parameters
-    const search = searchParams.get('search');
-    const groupSize = searchParams.get('group_size')?.split(',') as ('small' | 'medium' | 'large')[] | undefined;
-    const effortLevel = searchParams.get('effort_level')?.split(',') as ('low' | 'medium' | 'high')[] | undefined;
-    const location = searchParams.get('location') as 'inside' | 'outside' | null;
-    const ageGroup = searchParams.get('age_group')?.split(',') as ('cub_scouts' | 'scouts' | 'adventurers' | 'rovers' | 'leaders')[] | undefined;
-    const activityType = searchParams.get('activity_type')?.split(',') as string[] | undefined;
-    const sdgIds = searchParams.get('sdgs')?.split(',') as string[] | undefined;
-    const educationalGoalIds = searchParams.get('educational_goals')?.split(',') as string[] | undefined;
-    const durationMin = searchParams.get('duration_min');
-    const durationMax = searchParams.get('duration_max');
-    const durationOperator = searchParams.get('duration_operator') as '>=' | '<=' | '=' | '>' | '<' | undefined;
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100); // Cap at 100 for performance
-    const sort = searchParams.get('sort') as 'name' | 'duration' | 'created_at' | undefined;
-    const order = searchParams.get('order') as 'asc' | 'desc' | undefined;
+    const parsed = parseCatalogueQuery(searchParams);
+    if (!parsed.success) {
+      const field = String(parsed.error.issues[0]?.path[0] ?? 'query');
+      return apiErrors.validation(field, 'Parâmetro de pesquisa inválido: ' + field);
+    }
+    const {
+      search,
+      group_size: groupSize,
+      effort_level: effortLevel,
+      location,
+      age_group: ageGroup,
+      activity_type: activityType,
+      sdgs: sdgIds,
+      educational_goals: educationalGoalIds,
+      educational_areas: educationalAreaIds,
+      general_objectives: generalObjectiveIds,
+      duration_min: durationMin,
+      duration_max: durationMax,
+      page,
+      limit,
+      sort,
+      order,
+    } = parsed.data;
 
-    // Build where conditions
+    // Build where conditions. Every filter runs in SQL before counting and paginating.
     const whereConditions = [eq(activities.is_approved, true)];
 
-    // Text search using simple ILIKE with optimized pattern matching
-    if (search && search.trim()) {
-      const searchTerm = search.trim();
-      // Use a more efficient search pattern - avoid leading wildcards when possible
-      const searchPattern = searchTerm.includes(' ') ? `%${searchTerm}%` : `${searchTerm}%`;
+    // Text search: the term anywhere in name, description or materials, ignoring case.
+    if (search) {
+      const pattern = '%' + escapeLike(search) + '%';
       whereConditions.push(
-        sql`(${activities.name}::text ILIKE ${searchPattern} OR ${activities.description}::text ILIKE ${searchPattern} OR ${activities.materials}::text ILIKE ${searchPattern})`
+        or(
+          ilike(activities.name, pattern),
+          ilike(activities.description, pattern),
+          ilike(activities.materials, pattern)
+        )!
       );
     }
 
-    // Filter by group size
-    if (groupSize && groupSize.length > 0) {
-      whereConditions.push(inArray(activities.group_size, groupSize));
+    if (effortLevel) whereConditions.push(inArray(activities.effort_level, effortLevel));
+    whereConditions.push(
+      ...categoryConditions({
+        groupSizes: groupSize,
+        locations: location,
+        ageGroups: ageGroup,
+        activityTypeIds: activityType,
+      })
+    );
+
+    if (sdgIds) {
+      whereConditions.push(
+        exists(
+          db
+            .select({ one: sql`1` })
+            .from(activitySdgs)
+            .where(and(eq(activitySdgs.activity_id, activities.id), inArray(activitySdgs.sdg_id, sdgIds)))
+        )
+      );
+    }
+    if (educationalGoalIds || educationalAreaIds || generalObjectiveIds) {
+      const objectiveMatch = or(
+        educationalGoalIds ? inArray(educationalGoals.id, educationalGoalIds) : undefined,
+        educationalAreaIds ? inArray(educationalGoals.area_id, educationalAreaIds) : undefined,
+        generalObjectiveIds ? inArray(educationalGoals.general_objective_id, generalObjectiveIds) : undefined
+      )!;
+      whereConditions.push(
+        exists(
+          db
+            .select({ one: sql`1` })
+            .from(activityEducationalGoals)
+            .innerJoin(educationalGoals, eq(activityEducationalGoals.goal_id, educationalGoals.id))
+            .where(and(eq(activityEducationalGoals.activity_id, activities.id), objectiveMatch))
+        )
+      );
     }
 
-    // Filter by effort level
-    if (effortLevel && effortLevel.length > 0) {
-      whereConditions.push(inArray(activities.effort_level, effortLevel));
-    }
-
-    // Filter by location
-    if (location) {
-      whereConditions.push(eq(activities.location, location));
-    }
-
-    // Filter by age group
-    if (ageGroup && ageGroup.length > 0) {
-      whereConditions.push(inArray(activities.age_group, ageGroup));
-    }
-
-    // Filter by activity type
-    if (activityType && activityType.length > 0) {
-      whereConditions.push(inArray(activities.activity_type_id, activityType));
-    }
-
-    // Filter by duration
-    if (durationMin || durationMax) {
-      if (durationMin && durationMax) {
-        // Range filter: min <= duration <= max
-        whereConditions.push(
-          sql`${activities.approximate_duration_minutes} >= ${parseInt(durationMin!)} AND ${activities.approximate_duration_minutes} <= ${parseInt(durationMax!)}`
-        );
-      } else if (durationMin) {
-        // Min filter
-        const operator = durationOperator || '>=';
-        whereConditions.push(
-          sql`${activities.approximate_duration_minutes} ${operator} ${parseInt(durationMin!)}`
-        );
-      } else if (durationMax) {
-        // Max filter
-        const operator = durationOperator || '<=';
-        whereConditions.push(
-          sql`${activities.approximate_duration_minutes} ${operator} ${parseInt(durationMax!)}`
-        );
-      }
-    }
+    // Duration: inclusive bounds, either may be omitted.
+    const duration = activities.approximate_duration_minutes;
+    if (durationMin !== undefined) whereConditions.push(gte(duration, durationMin));
+    if (durationMax !== undefined) whereConditions.push(lte(duration, durationMax));
 
     // Build order by clause
     let orderByClause;
@@ -287,9 +359,10 @@ export async function GET(request: NextRequest) {
             activity_type: activityType || undefined,
             sdgs: sdgIds || undefined,
             educational_goals: educationalGoalIds || undefined,
+            educational_areas: educationalAreaIds || undefined,
+            general_objectives: generalObjectiveIds || undefined,
             duration_min: durationMin || undefined,
             duration_max: durationMax || undefined,
-            duration_operator: durationOperator || undefined,
           },
           available: {
             group_sizes: [],
@@ -306,7 +379,7 @@ export async function GET(request: NextRequest) {
 
     // Get total count for pagination
     const totalCount = await db
-      .select({ count: sql<number>`count(*)` })
+      .select({ count: sql<number>`count(*)::int` })
       .from(activities)
       .where(and(...whereConditions));
 
@@ -318,19 +391,11 @@ export async function GET(request: NextRequest) {
         description: activities.description,
         materials: activities.materials,
         approximate_duration_minutes: activities.approximate_duration_minutes,
-        group_size: activities.group_size,
         effort_level: activities.effort_level,
-        location: activities.location,
-        age_group: activities.age_group,
         image_url: activities.image_url,
         created_at: activities.created_at,
-        activity_type: {
-          id: activityTypes.id,
-          name: activityTypes.name,
-        },
       })
       .from(activities)
-      .leftJoin(activityTypes, eq(activities.activity_type_id, activityTypes.id))
       .where(inArray(activities.id, activityIdList))
       .orderBy(orderByClause);
 
@@ -345,6 +410,8 @@ export async function GET(request: NextRequest) {
       .from(activityEducationalGoals)
       .leftJoin(educationalGoals, eq(activityEducationalGoals.goal_id, educationalGoals.id))
       .where(inArray(activityEducationalGoals.activity_id, activityIdList));
+
+    const goalAgeGroups = await loadGoalAgeGroups(allEducationalGoals.flatMap((g) => (g.id ? [g.id] : [])));
 
     // Fetch all SDGs for these activities in one query
     const allSdgs = await db
@@ -363,15 +430,17 @@ export async function GET(request: NextRequest) {
     // Group the related data by activity ID
     const goalsByActivity = allEducationalGoals.reduce((acc, goal) => {
       if (!acc[goal.activity_id]) acc[goal.activity_id] = [];
-      if (goal.id) { // Only add if goal.id is not null
+      // A goal linked for two divisions is listed once.
+      if (goal.id && !acc[goal.activity_id].some((existing) => existing.id === goal.id)) {
         acc[goal.activity_id].push({
           id: goal.id,
           title: goal.title || '',
           code: goal.code || '',
+          age_groups: goalAgeGroups.get(goal.id) ?? [],
         });
       }
       return acc;
-    }, {} as Record<string, Array<{ id: string; title: string; code: string }>>);
+    }, {} as Record<string, Array<{ id: string; title: string; code: string; age_groups: string[] }>>);
 
     const sdgsByActivity = allSdgs.reduce((acc, sdg) => {
       if (!acc[sdg.activity_id]) acc[sdg.activity_id] = [];
@@ -387,35 +456,28 @@ export async function GET(request: NextRequest) {
       return acc;
     }, {} as Record<string, Array<{ id: string; number: number; name: string; icon_url: string; icon: string }>>);
 
+    const categoriesByActivity = await loadActivityCategories(activityIdList);
+
     // Combine all data
     const activitiesWithDetails = activitiesData.map(activity => ({
       ...activity,
+      group_sizes: categoriesByActivity.get(activity.id)!.group_sizes,
+      locations: categoriesByActivity.get(activity.id)!.locations,
+      age_groups: categoriesByActivity.get(activity.id)!.age_groups,
+      activity_types: categoriesByActivity.get(activity.id)!.activity_types,
       educational_goals: goalsByActivity[activity.id] || [],
       sdgs: sdgsByActivity[activity.id] || [],
     }));
 
-    // Apply client-side filtering for SDGs and educational goals if provided
-    let filteredActivities = activitiesWithDetails;
-    
-    if (sdgIds && sdgIds.length > 0) {
-      filteredActivities = filteredActivities.filter(activity => 
-        activity.sdgs.some(sdg => sdg.id && sdgIds.includes(sdg.id))
-      );
-    }
-
-    if (educationalGoalIds && educationalGoalIds.length > 0) {
-      filteredActivities = filteredActivities.filter(activity => 
-        activity.educational_goals.some(goal => goal.id && educationalGoalIds.includes(goal.id))
-      );
-    }
+    const filteredActivities = activitiesWithDetails;
 
     // Get available filter options for the current result set
     const availableFilters = {
-      group_sizes: [...new Set(filteredActivities.map(a => a.group_size))],
+      group_sizes: [...new Set(filteredActivities.flatMap(a => a.group_sizes))],
       effort_levels: [...new Set(filteredActivities.map(a => a.effort_level))],
-      locations: [...new Set(filteredActivities.map(a => a.location))],
-      age_groups: [...new Set(filteredActivities.map(a => a.age_group))],
-      activity_types: [...new Set(filteredActivities.map(a => a.activity_type?.id).filter(Boolean))],
+      locations: [...new Set(filteredActivities.flatMap(a => a.locations))],
+      age_groups: [...new Set(filteredActivities.flatMap(a => a.age_groups))],
+      activity_types: [...new Set(filteredActivities.flatMap(a => a.activity_types.map(t => t.id)))],
     };
 
     return NextResponse.json({
@@ -436,23 +498,24 @@ export async function GET(request: NextRequest) {
           activity_type: activityType || undefined,
           sdgs: sdgIds || undefined,
           educational_goals: educationalGoalIds || undefined,
+            educational_areas: educationalAreaIds || undefined,
+            general_objectives: generalObjectiveIds || undefined,
           duration_min: durationMin || undefined,
           duration_max: durationMax || undefined,
-          duration_operator: durationOperator || undefined,
         },
         available: availableFilters,
       },
     });
   } catch (error) {
-    console.error('Error fetching activities:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch activities', details: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Error fetching activities:');
   }
 }
 
 export async function POST(request: NextRequest) {
+  // Creating an activity here is a member proposal; admins use /api/admin/activities.
+  const hidden = featureOffResponse('activity-proposals');
+  if (hidden) return hidden;
+
   const session = await auth();
   if (!session?.user?.id) {
     return apiErrors.unauthorized();
@@ -462,6 +525,15 @@ export async function POST(request: NextRequest) {
   if (typeof parsed === 'string') {
     return apiErrors.validation('body', parsed);
   }
+
+  const typeError = await verifyActivityTypes(parsed);
+  if (typeError) return apiErrors.validation('body', typeError);
+
+  const goalError = await verifyActivityGoals(parsed);
+  if (goalError) return apiErrors.validation('body', goalError);
+
+  const extrasError = await verifyActivityExtras(parsed);
+  if (extrasError) return apiErrors.validation('body', extrasError);
 
   const activity = await createActivity(parsed, {
     createdBy: session.user.id,

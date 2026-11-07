@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { ProgramSummary } from '@/components/features/programs/ProgramSummary';
-import { ProgramEntry } from '../../../../drizzle/schema/programs';
+import { ProgramEntry } from '../../../drizzle/schema/programs';
 import { ActivitiesResponse } from '@/hooks/useActivities';
 
 // Mock the IconDisplay component
@@ -20,19 +20,17 @@ describe('ProgramSummary', () => {
       description: 'Test description',
       materials: 'Test materials',
       approximate_duration_minutes: 30,
-      group_size: 'medium',
+      group_sizes: ['medium'],
       effort_level: 'low',
-      location: 'outside',
-      age_group: 'scouts',
+      locations: ['outside'],
+      age_groups: ['scouts'],
       created_at: '2024-01-01T00:00:00Z',
-      activity_type: { id: 'type-1', name: 'Game' },
+      activity_types: [{ id: 'type-1', name: 'Game' }],
       educational_goals: [
         {
           id: 'goal-1',
           title: 'Teamwork',
           code: 'TW',
-          icon: '🤝',
-          area: { id: 'area-1', name: 'Social Skills', code: 'SS' }
         }
       ],
       sdgs: [
@@ -51,19 +49,17 @@ describe('ProgramSummary', () => {
       description: 'Test description 2',
       materials: 'Test materials 2',
       approximate_duration_minutes: 45,
-      group_size: 'large',
+      group_sizes: ['large'],
       effort_level: 'high',
-      location: 'inside',
-      age_group: 'cub_scouts',
+      locations: ['inside'],
+      age_groups: ['cub_scouts'],
       created_at: '2024-01-01T00:00:00Z',
-      activity_type: { id: 'type-2', name: 'Craft' },
+      activity_types: [{ id: 'type-2', name: 'Craft' }],
       educational_goals: [
         {
           id: 'goal-2',
           title: 'Creativity',
           code: 'CR',
-          icon: '🎨',
-          area: { id: 'area-2', name: 'Artistic', code: 'AR' }
         }
       ],
       sdgs: [

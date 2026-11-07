@@ -29,12 +29,13 @@ test.describe('User-generated activities', () => {
           name,
           description: 'Proposta de teste',
           materials: 'Nada',
+          instructions: 'Passo 1\nPasso 2',
           approximate_duration_minutes: 15,
-          group_size: 'small',
+          group_sizes: ['small'],
           effort_level: 'low',
-          location: 'outside',
-          age_group: 'scouts',
-          activity_type_id: typeId,
+          locations: ['outside'],
+          age_groups: ['scouts'],
+          activity_type_ids: [typeId],
         },
       });
       expect(created.status()).toBe(201);
@@ -60,6 +61,8 @@ test.describe('User-generated activities', () => {
 
       const published = await page.request.get(`/api/activities/${activity.activity.id}`);
       expect(published.ok()).toBeTruthy();
+      const detail = (await published.json()) as { instructions: string | null };
+      expect(detail.instructions).toBe('Passo 1\nPasso 2');
     } finally {
       await page.request.delete('/api/e2e/session');
     }

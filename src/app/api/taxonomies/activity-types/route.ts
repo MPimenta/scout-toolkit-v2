@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/server';
 import { activityTypes } from '../../../../../drizzle/schema';
+import { handleApiError } from '@/lib/errors';
 
 export async function GET() {
   try {
@@ -15,10 +16,6 @@ export async function GET() {
 
     return NextResponse.json({ activity_types: types });
   } catch (error) {
-    console.error('Error fetching activity types:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch activity types' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Error fetching activity types:');
   }
 }

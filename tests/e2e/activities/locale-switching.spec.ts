@@ -7,7 +7,7 @@ test.describe('Locale switcher', () => {
     await page.goto('/activities');
     await expect(page).toHaveURL(/\/activities$/);
     await expect(page.getByRole('heading', { name: 'Atividades' })).toBeVisible();
-    await expect(page.getByText('Explore centenas de atividades para todas as idades e objetivos educativos.')).toBeVisible();
+    await expect(page.getByText('Explora centenas de atividades para todas as idades e objetivos educativos.')).toBeVisible();
     await expect(page.getByRole('group', { name: 'Idioma' })).toBeVisible();
 
     await page.getByRole('group', { name: 'Idioma' }).getByRole('button', { name: 'EN', exact: true }).click();

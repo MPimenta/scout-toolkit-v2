@@ -1,10 +1,11 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { insertActivities } from '../../helpers/activity-categories'
 import { NextRequest } from 'next/server';
 import { eq } from 'drizzle-orm';
 import { resetTestDatabase, setupTestDatabase, teardownTestDatabase } from '../../setup';
 import { requireLocalTestDatabase } from '../../helpers/local-test-db';
 import { getBoundTestDb } from '../../helpers/bound-test-db';
-import { activities, activityTypes, programs, user } from '../../../drizzle/schema';
+import { activityTypes, programs, user } from '../../../drizzle/schema';
 
 vi.mock('@/lib/db/server', async () => {
   const { getBoundTestDb } = await import('../../helpers/bound-test-db');
@@ -40,6 +41,8 @@ describe('Testing strategy SQL cases', () => {
   });
 
   afterAll(async () => {
+    // Leave the shared test DB empty for the next file (files run one at a time).
+    await resetTestDatabase();
     await teardownTestDatabase();
   });
 
@@ -124,16 +127,16 @@ describe('Testing strategy SQL cases', () => {
       name: 'Jogo',
       description: 'Jogos',
     });
-    await db.insert(activities).values({
+    await insertActivities(db, {
       id: ACTIVITY_ID,
       name: 'Jogo da bandeira',
       description: 'Uma atividade',
       materials: 'Bandeira',
       approximate_duration_minutes: 30,
-      group_size: 'medium',
+      group_sizes: ['medium'],
       effort_level: 'low',
-      location: 'outside',
-      age_group: 'scouts',
+      locations: ['outside'],
+      age_groups: ['scouts'],
       activity_type_id: TYPE_ID,
       is_approved: true,
     });
@@ -164,16 +167,16 @@ describe('Testing strategy SQL cases', () => {
       id: TYPE_ID,
       name: 'Jogo',
     });
-    await db.insert(activities).values({
+    await insertActivities(db, {
       id: UNAPPROVED_ID,
       name: 'Proposta nova',
       description: 'Ainda por aprovar',
       materials: 'Nada',
       approximate_duration_minutes: 20,
-      group_size: 'small',
+      group_sizes: ['small'],
       effort_level: 'low',
-      location: 'inside',
-      age_group: 'scouts',
+      locations: ['inside'],
+      age_groups: ['scouts'],
       activity_type_id: TYPE_ID,
       created_by: AUTHOR_ID,
       is_approved: false,

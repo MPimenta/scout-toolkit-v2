@@ -1,4 +1,5 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { renderWithFeatures as render } from '../../helpers/render-with-features';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { EditProgramModal } from '@/components/features/programs/EditProgramModal';
 import { useProgramMutations } from '@/hooks/useProgramMutations';

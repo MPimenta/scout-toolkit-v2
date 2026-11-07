@@ -14,10 +14,10 @@ describe('useActivity', () => {
     description: { pt: 'Descrição da atividade', en: 'Activity description' },
     materials: { pt: 'Materiais', en: 'Materials' },
     approximate_duration_minutes: 60,
-    group_size: 'medium',
+    group_sizes: ['medium'],
     effort_level: 'medium',
-    location: 'outside',
-    age_group: 'scouts',
+    locations: ['outside'],
+    age_groups: ['scouts'],
     image_url: 'https://example.com/test.jpg',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
@@ -144,7 +144,7 @@ describe('useActivity', () => {
       json: async () => {
         throw new Error('Invalid JSON');
       },
-    } as Response);
+    } as unknown as Response);
 
     const { result } = renderHook(() => useActivity('test-id'));
 

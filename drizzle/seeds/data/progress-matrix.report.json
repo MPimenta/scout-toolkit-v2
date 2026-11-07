@@ -1,0 +1,50 @@
+{
+  "totals": {
+    "areas": 6,
+    "paths": 20,
+    "generalObjectives": 40,
+    "specificObjectives": 174,
+    "sharedObjectives": 13,
+    "challengeTypes": 7,
+    "challenges": 112,
+    "links": 286,
+    "challengesLinkingOtherStages": 33
+  },
+  "regulamento": {
+    "codesInRegulamento": 176,
+    "onlyInRegulamento": [
+      "2C.3",
+      "2C.4",
+      "7C.3"
+    ],
+    "onlyInWorkbook": [
+      "2C.3-4"
+    ],
+    "mergedInRegulamento": [
+      "4F.2.3-4",
+      "6C.2-3"
+    ],
+    "textDiffers": [
+      {
+        "code": "4A.2",
+        "workbook": "Gerir as suas emoções.",
+        "regulamento": "Reconhecer diferentes relações afetivas,"
+      },
+      {
+        "code": "4I.2",
+        "workbook": "Resolver problemas simples através da experimentação e dedução.",
+        "regulamento": "Identificar e resolver problemas simples através da"
+      }
+    ],
+    "verbatimRepeats": [
+      {
+        "codes": [
+          "3A.2",
+          "4A.2"
+        ],
+        "text": "reconhecer diferentes relacoes afetivas"
+      }
+    ],
+    "generalObjectiveDiffers": []
+  }
+}

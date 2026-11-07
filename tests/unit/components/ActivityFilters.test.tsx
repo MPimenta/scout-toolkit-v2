@@ -17,15 +17,21 @@ const mockSdgs = [
 ];
 
 const mockEducationalGoals = [
-  { 
-    id: '1', 
+  {
+    id: '1',
+    code: '4S.1',
     title: 'SE1: Trabalho em Equipa',
-    area: { name: 'Social' }
+    age_groups: ['scouts'],
+    area: { id: 'a-social', name: 'Social' },
+    general_objective: { id: 'g-4s', code: '4S', title: 'Cooperar' },
   },
-  { 
-    id: '2', 
+  {
+    id: '2',
+    code: '4S.2',
     title: 'SE2: Liderança',
-    area: { name: 'Social' }
+    age_groups: ['scouts'],
+    area: { id: 'a-social', name: 'Social' },
+    general_objective: { id: 'g-4s', code: '4S', title: 'Cooperar' },
   },
 ];
 
@@ -34,14 +40,15 @@ const mockFilters: FilterState = {
   search: '',
   groupSize: [],
   effortLevel: [],
-  location: '',
+  location: [],
   ageGroup: [],
   activityType: [],
   sdgs: [],
   educationalGoals: [],
+  educationalAreas: [],
+  generalObjectives: [],
   durationMin: '',
   durationMax: '',
-  durationOperator: '>=',
 };
 
 const mockOnFiltersChange = vi.fn();
@@ -76,7 +83,7 @@ describe('ActivityFilters', () => {
     );
 
     // Check that the main filter section is rendered
-    expect(screen.getByText('Filtros de Atividades')).toBeInTheDocument();
+    expect(screen.queryByText('Filtros de Atividades')).not.toBeInTheDocument(); // search is the header now
     expect(screen.getByPlaceholderText('Pesquisar atividades por nome, descrição ou materiais...')).toBeInTheDocument();
 
     // Expand the advanced filters to see all filter sections
@@ -172,13 +179,12 @@ describe('ActivityFilters', () => {
     const expandButton = screen.getByRole('button', { name: /expandir/i });
     fireEvent.click(expandButton);
 
-    const locationSelect = screen.getByDisplayValue('Todas');
-    fireEvent.change(locationSelect, { target: { value: 'outside' } });
+    fireEvent.click(screen.getByLabelText('Exterior'));
 
     await waitFor(() => {
       expect(mockOnFiltersChange).toHaveBeenCalledWith({
         ...mockFilters,
-        location: 'outside',
+        location: ['outside'],
       });
     });
   });
@@ -196,8 +202,9 @@ describe('ActivityFilters', () => {
     const expandButton = screen.getByRole('button', { name: /expandir/i });
     fireEvent.click(expandButton);
 
-    const scoutsCheckbox = screen.getByLabelText('Escoteiros (10-14)');
-    fireEvent.click(scoutsCheckbox);
+    const scoutsToggle = screen.getByRole('button', { name: 'Escoteiros (10-14)' });
+    expect(scoutsToggle).toHaveAttribute('aria-pressed', 'false');
+    fireEvent.click(scoutsToggle);
 
     await waitFor(() => {
       expect(mockOnFiltersChange).toHaveBeenCalledWith({
@@ -251,7 +258,7 @@ describe('ActivityFilters', () => {
 
     // Check that advanced filters are now visible
     expect(screen.getByText('Objetivos de Desenvolvimento Sustentável (ODS)')).toBeInTheDocument();
-    expect(screen.getByText('Objetivos Educativos')).toBeInTheDocument();
+    expect(screen.getByText('Objetivos educativos')).toBeInTheDocument();
     expect(screen.getByText('Duração (minutos)')).toBeInTheDocument();
   });
 
@@ -292,13 +299,8 @@ describe('ActivityFilters', () => {
     const expandButton = screen.getByRole('button', { name: /expandir/i });
     fireEvent.click(expandButton);
 
-    // Wait for the educational goals to load
-    await waitFor(() => {
-      expect(screen.getByText('SE1: Trabalho em Equipa')).toBeInTheDocument();
-    });
-
-    // Find and click an educational goal checkbox
-    const teamworkCheckbox = screen.getByLabelText(/SE1: Trabalho em Equipa/);
+    // The tree opens an area to show its objectives
+    const teamworkCheckbox = await screen.findByLabelText(/4S.1 SE1: Trabalho em Equipa/);
     fireEvent.click(teamworkCheckbox);
 
     await waitFor(() => {
@@ -323,7 +325,7 @@ describe('ActivityFilters', () => {
     fireEvent.click(expandButton);
 
     // Change duration min value
-    const durationMinInput = screen.getByPlaceholderText('30');
+    const durationMinInput = screen.getByLabelText('Mínimo (minutos)');
     fireEvent.change(durationMinInput, { target: { value: '45' } });
 
     await waitFor(() => {
@@ -340,7 +342,7 @@ describe('ActivityFilters', () => {
       search: 'jogo',
       groupSize: ['small'],
       effortLevel: ['medium'],
-      location: 'outside',
+      location: ['outside'],
       ageGroup: ['scouts'],
       activityType: ['1'],
       sdgs: ['1'],
@@ -364,14 +366,14 @@ describe('ActivityFilters', () => {
 
     // Check that active filters are displayed
     expect(screen.getByText('Pesquisa: jogo')).toBeInTheDocument();
-    expect(screen.getByText('Grupo: Pequeno (2-6)')).toBeInTheDocument();
-    expect(screen.getByText('Esforço: Médio')).toBeInTheDocument();
-    expect(screen.getByText('Local: Exterior')).toBeInTheDocument();
-    expect(screen.getByText('Idade: Escoteiros (10-14)')).toBeInTheDocument();
+    expect(screen.getByText('Pequeno (2-6)')).toBeInTheDocument();
+    expect(screen.getByText('Médio')).toBeInTheDocument();
+    expect(screen.getByText('Exterior')).toBeInTheDocument();
+    expect(screen.getByText('Escoteiros (10-14)')).toBeInTheDocument();
     expect(screen.getByText('Tipo: Jogo')).toBeInTheDocument();
     expect(screen.getByText('ODS 1: Erradicar a Pobreza')).toBeInTheDocument();
-    expect(screen.getByText('SE1: Trabalho em Equipa')).toBeInTheDocument();
-    expect(screen.getByText('Duração: 30 - 60 min')).toBeInTheDocument();
+    expect(await screen.findByText('4S.1')).toBeInTheDocument();
+    expect(screen.getByText('30–60 min')).toBeInTheDocument();
   });
 
   it('calls onClearFilters when clear all button is clicked', () => {
@@ -411,7 +413,7 @@ describe('ActivityFilters', () => {
     );
 
     // Click the X button on the search filter
-    const searchFilterBadge = screen.getByText('Pesquisa: jogo').closest('div');
+    const searchFilterBadge = screen.getByText('Pesquisa: jogo').closest('li');
     const searchFilterX = searchFilterBadge?.querySelector('button');
     if (searchFilterX) {
       fireEvent.click(searchFilterX);

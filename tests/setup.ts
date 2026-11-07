@@ -148,16 +148,48 @@ async function createTestSchema() {
         description text NOT NULL,
         materials text NOT NULL,
         approximate_duration_minutes integer NOT NULL,
-        group_size text NOT NULL,
         effort_level text NOT NULL,
-        location text NOT NULL,
-        age_group text NOT NULL,
-        activity_type_id uuid REFERENCES activity_types(id),
         image_url text,
         created_by uuid REFERENCES "user"(id),
         is_approved boolean DEFAULT true,
         created_at timestamp DEFAULT now(),
         updated_at timestamp DEFAULT now()
+      )
+    `;
+
+    // Single-valued category columns were replaced by the link tables below.
+    await sql`ALTER TABLE activities DROP COLUMN IF EXISTS group_size`;
+    await sql`ALTER TABLE activities DROP COLUMN IF EXISTS location`;
+    await sql`ALTER TABLE activities DROP COLUMN IF EXISTS age_group`;
+    await sql`ALTER TABLE activities DROP COLUMN IF EXISTS activity_type_id`;
+
+    // Multi-valued category link tables
+    await sql`
+      CREATE TABLE IF NOT EXISTS activity_group_sizes (
+        activity_id uuid NOT NULL REFERENCES activities(id) ON DELETE CASCADE,
+        group_size text NOT NULL,
+        PRIMARY KEY (activity_id, group_size)
+      )
+    `;
+    await sql`
+      CREATE TABLE IF NOT EXISTS activity_locations (
+        activity_id uuid NOT NULL REFERENCES activities(id) ON DELETE CASCADE,
+        location text NOT NULL,
+        PRIMARY KEY (activity_id, location)
+      )
+    `;
+    await sql`
+      CREATE TABLE IF NOT EXISTS activity_age_groups (
+        activity_id uuid NOT NULL REFERENCES activities(id) ON DELETE CASCADE,
+        age_group text NOT NULL,
+        PRIMARY KEY (activity_id, age_group)
+      )
+    `;
+    await sql`
+      CREATE TABLE IF NOT EXISTS activity_activity_types (
+        activity_id uuid NOT NULL REFERENCES activities(id) ON DELETE CASCADE,
+        activity_type_id uuid NOT NULL REFERENCES activity_types(id) ON DELETE RESTRICT,
+        PRIMARY KEY (activity_id, activity_type_id)
       )
     `;
 
@@ -175,9 +207,57 @@ async function createTestSchema() {
       CREATE TABLE IF NOT EXISTS activity_educational_goals (
         activity_id uuid REFERENCES activities(id) ON DELETE CASCADE,
         goal_id uuid REFERENCES educational_goals(id) ON DELETE CASCADE,
-        PRIMARY KEY (activity_id, goal_id)
+        age_group text NOT NULL,
+        observable_behaviour text,
+        PRIMARY KEY (activity_id, goal_id, age_group)
       )
     `;
+    // Older test databases have the two-column key: move them to the per-division shape.
+    await sql`ALTER TABLE activity_educational_goals ADD COLUMN IF NOT EXISTS age_group text`;
+    await sql`ALTER TABLE activity_educational_goals ADD COLUMN IF NOT EXISTS observable_behaviour text`;
+    await sql.unsafe(`
+      DO $$ BEGIN
+        IF EXISTS (
+          SELECT 1 FROM pg_constraint
+          WHERE conname = 'activity_educational_goals_pkey'
+            AND conrelid = 'activity_educational_goals'::regclass
+            AND array_length(conkey, 1) = 2
+        ) THEN
+          ALTER TABLE activity_educational_goals DROP CONSTRAINT activity_educational_goals_pkey;
+          DELETE FROM activity_educational_goals WHERE age_group IS NULL;
+          ALTER TABLE activity_educational_goals ALTER COLUMN age_group SET NOT NULL;
+          ALTER TABLE activity_educational_goals ADD PRIMARY KEY (activity_id, goal_id, age_group);
+        END IF;
+      END $$
+    `);
+
+    // Sources, risk analysis, SDG justification and desafios of activities
+    await sql`
+      CREATE TABLE IF NOT EXISTS activity_sources (
+        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+        code text NOT NULL UNIQUE,
+        name text NOT NULL,
+        url text,
+        license text,
+        access text,
+        language text,
+        is_managed boolean NOT NULL DEFAULT false,
+        created_at timestamp NOT NULL DEFAULT now()
+      )
+    `;
+    for (const column of [
+      'physical_risk_level text',
+      'physical_risk text',
+      'physical_mitigation text',
+      'psychological_risk_level text',
+      'psychological_risk text',
+      'psychological_mitigation text',
+      'source_url text',
+    ]) {
+      await sql.unsafe(`ALTER TABLE activities ADD COLUMN IF NOT EXISTS ${column}`);
+    }
+    await sql`ALTER TABLE activities ADD COLUMN IF NOT EXISTS source_id uuid REFERENCES activity_sources(id) ON DELETE SET NULL`;
+    await sql`ALTER TABLE activity_sdgs ADD COLUMN IF NOT EXISTS justification text`;
 
     // Programs table
     await sql`
@@ -201,6 +281,82 @@ async function createTestSchema() {
     await sql`ALTER TABLE programs ADD COLUMN IF NOT EXISTS source_author_name text`;
     await sql`ALTER TABLE programs ADD COLUMN IF NOT EXISTS orgo_event_uuid text`;
     await sql`ALTER TABLE programs ADD COLUMN IF NOT EXISTS orgo_event_url text`;
+    // Columns the app schema has that this hand-written test schema lacked.
+    await sql`ALTER TABLE sdgs ADD COLUMN IF NOT EXISTS icon text`;
+    await sql`ALTER TABLE educational_goals ADD COLUMN IF NOT EXISTS icon text`;
+
+    // Matriz Progresso Pessoal tables (mirrors drizzle/schema/taxonomies.ts)
+    await sql`ALTER TABLE educational_areas ADD COLUMN IF NOT EXISTS position integer NOT NULL DEFAULT 0`;
+    await sql`ALTER TABLE educational_areas ADD COLUMN IF NOT EXISTS is_managed boolean NOT NULL DEFAULT false`;
+    await sql`
+      CREATE TABLE IF NOT EXISTS educational_paths (
+        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+        area_id uuid NOT NULL REFERENCES educational_areas(id) ON DELETE CASCADE,
+        code text NOT NULL UNIQUE,
+        name text NOT NULL,
+        position integer NOT NULL DEFAULT 0,
+        is_managed boolean NOT NULL DEFAULT false,
+        created_at timestamp NOT NULL DEFAULT now()
+      )
+    `;
+    await sql`
+      CREATE TABLE IF NOT EXISTS general_objectives (
+        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+        area_id uuid NOT NULL REFERENCES educational_areas(id) ON DELETE CASCADE,
+        path_id uuid REFERENCES educational_paths(id) ON DELETE SET NULL,
+        code text NOT NULL UNIQUE,
+        title text NOT NULL,
+        position integer NOT NULL DEFAULT 0,
+        is_managed boolean NOT NULL DEFAULT false,
+        created_at timestamp NOT NULL DEFAULT now()
+      )
+    `;
+    await sql`ALTER TABLE educational_goals ADD COLUMN IF NOT EXISTS general_objective_id uuid REFERENCES general_objectives(id) ON DELETE SET NULL`;
+    await sql`ALTER TABLE educational_goals ADD COLUMN IF NOT EXISTS position integer NOT NULL DEFAULT 0`;
+    await sql`ALTER TABLE educational_goals ADD COLUMN IF NOT EXISTS is_managed boolean NOT NULL DEFAULT false`;
+    await sql`
+      CREATE TABLE IF NOT EXISTS educational_goal_age_groups (
+        goal_id uuid NOT NULL REFERENCES educational_goals(id) ON DELETE CASCADE,
+        age_group text NOT NULL,
+        PRIMARY KEY (goal_id, age_group)
+      )
+    `;
+    await sql`
+      CREATE TABLE IF NOT EXISTS challenge_types (
+        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+        code text NOT NULL UNIQUE,
+        name text NOT NULL,
+        position integer NOT NULL DEFAULT 0,
+        is_managed boolean NOT NULL DEFAULT false,
+        created_at timestamp NOT NULL DEFAULT now()
+      )
+    `;
+    await sql`
+      CREATE TABLE IF NOT EXISTS challenges (
+        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+        code text NOT NULL UNIQUE,
+        type_id uuid NOT NULL REFERENCES challenge_types(id) ON DELETE CASCADE,
+        age_group text NOT NULL,
+        position integer NOT NULL DEFAULT 0,
+        title text NOT NULL,
+        is_managed boolean NOT NULL DEFAULT false,
+        created_at timestamp NOT NULL DEFAULT now()
+      )
+    `;
+    await sql`
+      CREATE TABLE IF NOT EXISTS challenge_goals (
+        challenge_id uuid NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
+        goal_id uuid NOT NULL REFERENCES educational_goals(id) ON DELETE CASCADE,
+        PRIMARY KEY (challenge_id, goal_id)
+      )
+    `;
+    await sql`
+      CREATE TABLE IF NOT EXISTS activity_challenges (
+        activity_id uuid NOT NULL REFERENCES activities(id) ON DELETE CASCADE,
+        challenge_id uuid NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
+        PRIMARY KEY (activity_id, challenge_id)
+      )
+    `;
 
     // Program entries table
     await sql`
@@ -321,6 +477,19 @@ async function createTestSchema() {
       )
     `;
 
+    await sql`
+      CREATE TABLE IF NOT EXISTS usage_events (
+        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+        type text NOT NULL,
+        occurred_at timestamptz NOT NULL DEFAULT now(),
+        visitor_id uuid NOT NULL,
+        user_id uuid REFERENCES "user"(id) ON DELETE SET NULL,
+        activity_id uuid REFERENCES activities(id) ON DELETE CASCADE,
+        program_id uuid REFERENCES programs(id) ON DELETE SET NULL,
+        payload jsonb
+      )
+    `;
+
     console.log('Test schema created successfully')
   } catch (error) {
     console.error('Failed to create test schema:', error)
@@ -344,6 +513,7 @@ export async function resetTestDatabase() {
       // Truncate all tables in reverse dependency order using raw SQL
       const tables = [
         'reply_reactions',
+        'usage_events',
         'issue_reports',
         'review_replies',
         'review_reactions',
@@ -354,10 +524,22 @@ export async function resetTestDatabase() {
         'program_entries',
         'programs', 
         'activity_sdgs',
+        'activity_challenges',
         'activity_educational_goals',
+        'activity_group_sizes',
+        'activity_locations',
+        'activity_age_groups',
+        'activity_activity_types',
         'activities',
+        'activity_sources',
         'activity_types',
+        'challenge_goals',
+        'challenges',
+        'challenge_types',
+        'educational_goal_age_groups',
         'educational_goals',
+        'general_objectives',
+        'educational_paths',
         'educational_areas',
         'sdgs',
         'verificationToken',

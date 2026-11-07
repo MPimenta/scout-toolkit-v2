@@ -27,10 +27,10 @@ const sampleProgram: ProgramForExport = {
         description: 'Jogo de perseguição',
         materials: 'Bandeiras',
         approximate_duration_minutes: 45,
-        group_size: 'medium',
+        group_sizes: ['medium'],
         effort_level: 'high',
-        location: 'outside',
-        activityType: { name: 'Jogo' },
+        locations: ['outside'],
+        activityTypes: [{ name: 'Jogo' }],
         educationalGoals: [{ code: 'F1', title: 'Cooperação' }],
         sdgs: [{ number: 4, name: 'Educação de qualidade' }],
       },
@@ -59,5 +59,25 @@ describe('generateProgramPDFHTML', () => {
 
     expect(html).not.toContain('<script>alert(1)</script>');
     expect(html).toContain('Acampamento &lt;script&gt;alert(1)&lt;/script&gt;');
+  });
+});
+
+describe('generateProgramPDFHTML instructions', () => {
+  const entry = sampleProgram.entries[0];
+  const withInstructions = (instructions: string | null) =>
+    generateProgramPDFHTML({
+      ...sampleProgram,
+      entries: [{ ...entry, activity: { ...entry.activity!, instructions } }],
+    });
+
+  it('shows escaped instructions for the activity', () => {
+    const html = withInstructions('Passo 1\nPasso <2>');
+    expect(html).toContain('Instruções:');
+    expect(html).toContain('Passo 1\nPasso &lt;2&gt;');
+    expect(html).not.toContain('Passo <2>');
+  });
+
+  it('omits the block when there are no instructions', () => {
+    expect(withInstructions(null)).not.toContain('Instruções:');
   });
 });

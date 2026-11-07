@@ -33,7 +33,7 @@ export default function MyActivitiesPage() {
         <ul className="space-y-3">
           {items.map((item) => (
             <li key={item.id} className="border rounded-md p-3 flex justify-between gap-3">
-              <Link href={`/activities/${item.id}`} className="font-medium underline">
+              <Link href={`/activities/${item.id}`} className="font-bold underline">
                 {item.name}
               </Link>
               <span className="text-sm text-muted-foreground">

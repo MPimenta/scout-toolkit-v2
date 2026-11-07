@@ -126,10 +126,11 @@ GET /api/activities?search=game&group_size=medium&effort_level=low&duration_min=
 - `age_group` (string[]) - Filter by age group
 - `activity_type` (string[]) - Filter by activity type
 - `sdgs` (string[]) - Filter by SDG IDs
-- `educational_goals` (string[]) - Filter by educational goal IDs
-- `duration_min` (number) - Minimum duration in minutes
-- `duration_max` (number) - Maximum duration in minutes
-- `duration_operator` (string) - Duration comparison: >, <, =, >=, <=
+- `educational_goals` (string[]) - Specific objective IDs
+- `educational_areas` (string[]) - Educational area IDs (any objective in the area)
+- `general_objectives` (string[]) - General objective IDs (any objective under them). The three objective filters combine with OR.
+- `duration_min` (number) - Minimum duration in minutes (inclusive)
+- `duration_max` (number) - Maximum duration in minutes (inclusive). Either bound may be omitted; `duration_operator` is accepted and ignored.
 - `page` (number) - Page number (default: 1)
 - `limit` (number) - Items per page (default: 20)
 - `view` (string) - View type: tiles, table (default: tiles)
@@ -787,6 +788,15 @@ GET /api/taxonomies/sdgs
 - `409` - Conflict
 - `422` - Validation Error
 - `500` - Internal Server Error
+
+## Usage tracking (flag `usage-tracking`)
+
+All answer 404 when the flag is off. No endpoint returns recorded events; only administrators read them, server-side.
+
+- `POST /api/usage/events` - record a `search` (`text`, `filters`, `result_count`) or `activity_view` (`activity_id`) event. Answers `204`; bots, Global Privacy Control, Do Not Track and the opt-out cookie are skipped silently. `400` for invalid events (Portuguese message), `429` above 60 events per minute per visitor. `program_add` is recorded by the server when `POST /api/programs/{id}/entries` creates an activity entry, never accepted here.
+- `POST /api/usage/opt-out` / `DELETE /api/usage/opt-out` - turn recording off (removes the visitor cookie) or back on for this browser.
+- `GET /api/admin/usage/summary?period=7d|30d|90d|13m&division=<age group>` - admin only (401/403 otherwise): totals, daily evolution, top activities viewed and added to programs with conversion, top searches, searches without results, searches per division and most active users by name. Powers `/admin/utilizacao`.
+- `GET /api/usage/purge` - deletes events older than 13 months; needs `Authorization: Bearer $CRON_SECRET`; run daily by the Vercel cron in `vercel.json`.
 
 ## Rate Limiting
 

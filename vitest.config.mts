@@ -11,6 +11,9 @@ const rootDir = path.dirname(fileURLToPath(import.meta.url))
 process.env.DATABASE_URL =
   'postgresql://test_user:test_password@localhost:5432/scout_toolkit_test'
 
+// Existing suites exercise every feature; flag-off tests stub FEATURES themselves.
+process.env.FEATURES ??= 'all'
+
 export default defineConfig({
   plugins: [react()],
   define: {

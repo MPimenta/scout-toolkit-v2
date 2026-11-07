@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
+import { describe, it, expect, beforeAll } from 'vitest'
 import { db } from '@/lib/db/server'
 import { sql } from 'drizzle-orm'
 import { requireLocalTestDatabase } from '../../helpers/local-test-db'

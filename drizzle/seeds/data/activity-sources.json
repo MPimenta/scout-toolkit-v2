@@ -1,0 +1,254 @@
+{
+  "version": 1,
+  "source": "Folha de atividades, separador \"fontes\" (apenas metadados)",
+  "sources": [
+    {
+      "code": "OSM",
+      "name": "Online Scout Manager",
+      "url": "https://www.onlinescoutmanager.co.uk/programme.php?action=view&id=32501",
+      "license": "© Online Youth Manager Ltd",
+      "access": "aberto",
+      "language": "en"
+    },
+    {
+      "code": "SCOUTNET",
+      "name": "Scoutnet",
+      "url": "https://home.scoutnet.de/~hiesfeld/books/games/index.htm",
+      "license": "Sem nota; Baden-Powell (m. 1941), provável domínio público",
+      "access": "aberto",
+      "language": "en"
+    },
+    {
+      "code": "SCOUTSUK",
+      "name": "Scouts.org.uk",
+      "url": "https://www.scouts.org.uk/activities/?category=Game&cost=Free&time=up%20to%2010",
+      "license": "Não indicada; © The Scout Association",
+      "access": "aberto (listagem só via pesquisa; fichas legíveis uma a uma)",
+      "language": "en"
+    },
+    {
+      "code": "JOGOS320",
+      "name": "Slideshare",
+      "url": "https://www.slideshare.net/slideshow/320-jogos-escoteiros/52143798",
+      "license": "Documento autoriza reprodução e distribuição eletrónica",
+      "access": "pago (sem acesso)",
+      "language": "pt-BR"
+    },
+    {
+      "code": "TROOPLEADER",
+      "name": "TroopLeader",
+      "url": "https://troopleader.scouting.org/activities/troop-games/",
+      "license": "Não indicada; conteúdo institucional",
+      "access": "aberto (listagem difícil de ler)",
+      "language": "en"
+    },
+    {
+      "code": "LIBSTRUCT",
+      "name": "Liberating Structures",
+      "url": "https://www.liberatingstructures.com/structures-overview-1",
+      "license": "CC BY-SA 4.0",
+      "access": "aberto",
+      "language": "en"
+    },
+    {
+      "code": "ASANA",
+      "name": "Asana",
+      "url": "https://asana.com/resources/team-building-games",
+      "license": "© Asana, Inc.",
+      "access": "aberto",
+      "language": "en"
+    },
+    {
+      "code": "HYPERISLAND",
+      "name": "Hyper Island",
+      "url": "https://hyperisland.com/en/toolbox-request-access",
+      "license": "Termos não lidos",
+      "access": "registo gratuito",
+      "language": "en"
+    },
+    {
+      "code": "WACKYSCOUTER",
+      "name": "Wackyscouter",
+      "url": "https://wackyscouter.org/p/5591/43/Animal_Themed_Games.html",
+      "license": "Reprodução permitida para uso escotista",
+      "access": "aberto",
+      "language": "en"
+    },
+    {
+      "code": "BOYSCOUTTRAIL",
+      "name": "Boyscouttrail",
+      "url": "https://www.boyscouttrail.com/",
+      "license": "Uso livre para ajudar jovens (sem licença formal)",
+      "access": "aberto",
+      "language": "en"
+    },
+    {
+      "code": "GAMESTORMING",
+      "name": "Gamestorming",
+      "url": "https://gamestorming.com/",
+      "license": "Não indicada",
+      "access": "aberto",
+      "language": "en"
+    },
+    {
+      "code": "PLAY14",
+      "name": "#play14",
+      "url": "https://play14.org/games",
+      "license": "Não indicada na listagem",
+      "access": "aberto",
+      "language": "en"
+    },
+    {
+      "code": "PESSOAL",
+      "name": "Experiência pessoal",
+      "url": null,
+      "license": null,
+      "access": null,
+      "language": "pt-PT"
+    },
+    {
+      "code": "DROPIN",
+      "name": "Drop in project",
+      "url": null,
+      "license": null,
+      "access": null,
+      "language": null
+    },
+    {
+      "code": "CIMTTM",
+      "name": "CIM Terras de Trás-os-Montes: 36 Jogos Tradicionais",
+      "url": "https://www.cim-ttm.pt/cimttm/uploads/document/file/285/36_jogos_tradicionais_nas_ttm.pdf",
+      "license": "Sem termos indicados; publicação institucional com a Federação Portuguesa de Jogos Tradicionais",
+      "access": "aberto (PDF)",
+      "language": "pt-PT"
+    },
+    {
+      "code": "GUT28983",
+      "name": "Project Gutenberg: How Girls Can Help Their Country (J. G. Low, 1917)",
+      "url": "https://www.gutenberg.org/ebooks/28983",
+      "license": "Domínio público (Project Gutenberg)",
+      "access": "aberto",
+      "language": "en"
+    },
+    {
+      "code": "MIR2022",
+      "name": "Campeonato de Jogos Tradicionais 2022 (livro de regulamentos)",
+      "url": "https://www.visitmirandela.com/cmmirandela/uploads/writer_file/document/2284/livro_campeonato_jogos_tradicionais_2022.pdf",
+      "license": "Sem termos indicados; regulamento institucional",
+      "access": "aberto (PDF)",
+      "language": "pt-PT"
+    },
+    {
+      "code": "BCT2006",
+      "name": "Brincar com Tradição: Jogos Tradicionais para Crianças (CM São Brás de Alportel, 2006)",
+      "url": "https://aeaveiro.pt/biblioteca/download/842/Brincar%20com%20tradicoes%20_%20jogos%20t%20-%20Patricia%20Pereira.pdf",
+      "license": "Sem termos indicados; publicação municipal em biblioteca escolar pública",
+      "access": "aberto (PDF)",
+      "language": "pt-PT"
+    },
+    {
+      "code": "GUT52506",
+      "name": "Project Gutenberg: Scouting for Girls (Baden-Powell, ed. J. Low, 1918)",
+      "url": "https://www.gutenberg.org/ebooks/52506",
+      "license": "Domínio público (Project Gutenberg)",
+      "access": "aberto",
+      "language": "en"
+    },
+    {
+      "code": "GUT25660",
+      "name": "Project Gutenberg: Games for the Playground, Home, School and Gymnasium (J. H. Bancroft, 1909)",
+      "url": "https://www.gutenberg.org/ebooks/25660",
+      "license": "Domínio público (Project Gutenberg)",
+      "access": "aberto",
+      "language": "en"
+    },
+    {
+      "code": "GUT65993",
+      "name": "Project Gutenberg: Scouting for Boys (Baden-Powell, 1908, partes I-II)",
+      "url": "https://www.gutenberg.org/ebooks/65993",
+      "license": "Domínio público (Project Gutenberg)",
+      "access": "aberto",
+      "language": "en"
+    },
+    {
+      "code": "BSA1910",
+      "name": "Boy Scouts of America: Official Handbook (Seton, 1910), parte IV: Os Jogos",
+      "url": "https://thewoodcraft.org/wiki/index.php/Boy_Scouts_of_America_%e2%80%93_Official_Handbook,_1910_(book)",
+      "license": "Domínio público (1910; transcrição thewoodcraft.org)",
+      "access": "aberto",
+      "language": "en"
+    },
+    {
+      "code": "BBR1931",
+      "name": "The Birch Bark Roll of Woodcraft (Seton, 1931), secção de atividades",
+      "url": "https://thewoodcraft.org/wiki/index.php/The_Birch_Bark_Roll_of_Woodcraft_%e2%80%93_Activities_section,_1931_(book)",
+      "license": "Domínio público na UE (E. T. Seton, †1946)",
+      "access": "aberto",
+      "language": "en"
+    },
+    {
+      "code": "BOW1912",
+      "name": "The Book of Woodcraft (Seton, 1912), cap. XI Jogos para o Acampamento e atividades de interior",
+      "url": "https://bookdome.com/outdoors/camping/Woodcraft-Book/XI-Games-For-The-Camp.html",
+      "license": "Domínio público na UE (E. T. Seton, †1946; transcrição bookdome.com)",
+      "access": "aberto",
+      "language": "en"
+    },
+    {
+      "code": "GUT45762",
+      "name": "Project Gutenberg: Games and Songs of American Children (W. W. Newell, 1883)",
+      "url": "https://www.gutenberg.org/ebooks/45762",
+      "license": "Domínio público na UE (W. W. Newell, †1907)",
+      "access": "aberto",
+      "language": "en"
+    },
+    {
+      "code": "GUT41727",
+      "name": "Project Gutenberg: The Traditional Games of England, Scotland, and Ireland, vol. I (A. B. Gomme, 1894)",
+      "url": "https://www.gutenberg.org/ebooks/41727",
+      "license": "Domínio público na UE (Alice B. Gomme, †1938)",
+      "access": "aberto",
+      "language": "en"
+    },
+    {
+      "code": "GUT41728",
+      "name": "Project Gutenberg: The Traditional Games of England, Scotland, and Ireland, vol. II (A. B. Gomme, 1898)",
+      "url": "https://www.gutenberg.org/ebooks/41728",
+      "license": "Domínio público na UE (Alice B. Gomme, †1938)",
+      "access": "aberto",
+      "language": "en"
+    },
+    {
+      "code": "GUT49137",
+      "name": "Project Gutenberg: Cassell's Book of In-door Amusements, Card Games, and Fireside Fun (c. 1881)",
+      "url": "https://www.gutenberg.org/ebooks/49137",
+      "license": "Domínio público na UE (obra coletiva sem autores identificados, c. 1881)",
+      "access": "aberto",
+      "language": "en"
+    },
+    {
+      "code": "GUT13022",
+      "name": "Project Gutenberg: My Book of Indoor Games, Clarence Squareman (1916)",
+      "url": "https://www.gutenberg.org/ebooks/13022",
+      "license": "Domínio público na UE (obra pseudónima de 1916, autor nunca identificado)",
+      "access": "aberto",
+      "language": "en"
+    },
+    {
+      "code": "GUT44215",
+      "name": "Project Gutenberg: The Book of Camp-Lore and Woodcraft (Dan Beard, 1920)",
+      "url": "https://www.gutenberg.org/ebooks/44215",
+      "license": "Domínio público na UE (Dan Beard, †1941)",
+      "access": "aberto",
+      "language": "en"
+    },
+    {
+      "code": "GUT52051",
+      "name": "Project Gutenberg: The American Girl's Handy Book (Lina e Adelia B. Beard, 1887)",
+      "url": "https://www.gutenberg.org/ebooks/52051",
+      "license": "Domínio público na UE (Lina Beard †1951; Adelia B. Beard †1920)",
+      "access": "aberto",
+      "language": "en"
+    }
+  ]
+}

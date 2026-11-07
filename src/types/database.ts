@@ -25,12 +25,13 @@ export interface Activity {
   name: string;
   description: string;
   materials: string;
+  instructions?: string | null;
   approximate_duration_minutes: number;
-  group_size: GroupSize;
+  group_sizes: GroupSize[];
   effort_level: EffortLevel;
-  location: Location;
-  age_group: AgeGroup;
-  activity_type_id: string;
+  locations: Location[];
+  age_groups: AgeGroup[];
+  activity_type_ids: string[];
   image_url?: string;
   created_at: string;
   updated_at: string;

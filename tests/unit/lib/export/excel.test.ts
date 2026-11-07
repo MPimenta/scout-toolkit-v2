@@ -30,10 +30,10 @@ const sampleProgram: ProgramForExport = {
         description: 'Jogo de perseguição',
         materials: 'Bandeiras',
         approximate_duration_minutes: 45,
-        group_size: 'medium',
+        group_sizes: ['medium'],
         effort_level: 'high',
-        location: 'outside',
-        activityType: { name: 'Jogo' },
+        locations: ['outside'],
+        activityTypes: [{ name: 'Jogo' }],
         educationalGoals: [{ code: 'F1', title: 'Cooperação' }],
         sdgs: [{ number: 4, name: 'Educação de qualidade' }],
       },
@@ -91,8 +91,8 @@ describe('buildProgramExcelWorkbook', () => {
       header: 1,
     });
     expect(details[1][0]).toBe('Jogo da Bandeira');
-    expect(details[1][7]).toBe('F1 Cooperação');
-    expect(details[1][8]).toBe('ODS 4: Educação de qualidade');
+    expect(details[1][8]).toBe('F1 Cooperação');
+    expect(details[1][9]).toBe('ODS 4: Educação de qualidade');
   });
 
   it('omits the activity details sheet when there are no activities', () => {
@@ -130,6 +130,31 @@ describe('buildProgramExcelWorkbook', () => {
 
     expect(summary.some((row) => row[0] === 'Objetivos Educativos')).toBe(true);
     expect(summary.some((row) => row[1] === '—')).toBe(true);
+  });
+});
+
+describe('instructions in Excel', () => {
+  const base = sampleProgram.entries[0].activity!;
+  const detailRows = (instructions: string | null) => {
+    const program = {
+      ...sampleProgram,
+      entries: [{ ...sampleProgram.entries[0], activity: { ...base, instructions } }],
+    };
+    const workbook = readWorkbook(buildProgramExcelWorkbook(program).buffer);
+    return XLSX.utils.sheet_to_json<string[]>(workbook.Sheets[exportLabels.detailsSheet], { header: 1 });
+  };
+
+  it('adds an Instruções column after Materiais', () => {
+    const rows = detailRows('Passo 1\nPasso 2');
+    const col = rows[0].indexOf(exportLabels.instructions);
+    expect(col).toBe(rows[0].indexOf(exportLabels.materials) + 1);
+    expect(rows[1][col]).toBe('Passo 1\nPasso 2');
+  });
+
+  it('leaves the cell empty when there are no instructions', () => {
+    const rows = detailRows(null);
+    const col = rows[0].indexOf(exportLabels.instructions);
+    expect(rows[1][col] ?? '').toBe('');
   });
 });
 

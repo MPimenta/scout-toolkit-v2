@@ -36,11 +36,15 @@ Working specs live in `openspec/specs/`. The epic log is `docs/planning.md`.
 
 ### Prerequisites
 
-- Node.js 20
+- Node.js 24 LTS (pinned in `.nvmrc`; `engines` allows 22.12+). Use a version manager that reads `.nvmrc`, such as [fnm](https://github.com/Schniz/fnm) (`fnm use`) or [Volta](https://volta.sh/). Nodist is unmaintained and does not read `.nvmrc`.
 - Docker Desktop (Compose)
 - An eAEP / Orgo OAuth app (for sign-in)
 - UploadThing keys (only needed to upload images)
-- Playwright Chromium for PDF export: `npm run playwright:install`
+- Playwright Chromium (PDF export and e2e). `npm install` fetches it automatically; run `npm run playwright:install` if it is missing.
+
+Feature flags: non-MVP features are off unless `FEATURES` lists them (e.g. `FEATURES=all` locally to see everything). See `docs/deployment.md`, "Feature flags".
+
+Hosting: set the Vercel project's Node.js version to **24.x** (Project → Settings → Build and Deployment). This is a dashboard setting, not in the repo.
 
 ### Install and seed
 
@@ -54,7 +58,7 @@ npm run setup:db
 `setup:db` will:
 
 1. Create `.env.local` if it is missing (defaults for Docker Postgres)
-2. Start Compose (`scout_toolkit_dev` + `scout_toolkit_test`)
+2. Start Compose (Postgres 17 with `scout_toolkit_dev`, `scout_toolkit_e2e` for Playwright, and `scout_toolkit_test` for SQL-integration)
 3. Apply the Drizzle schema with `drizzle-kit push`
 4. Seed taxonomies and demo activities (`npm run db:seed`)
 
@@ -96,13 +100,24 @@ npm run db:stop
 npm run db:reset           # wipe the Docker volume, then start again (re-run db:push + db:seed)
 ```
 
+Upgrading from an older checkout: the local image is now Postgres 17 (assumed to match Neon; confirm with `select version()` on the Neon database and change the image if it differs), and Compose creates `scout_toolkit_e2e`. An existing Postgres 15 volume will not start on 17, so run `npm run db:reset` once (or `pg_dump` your dev data first and restore it after), then `npm run db:push` and `npm run db:seed`.
+
 `db:seed` reads `DATABASE_URL` from `.env.local`. Point it only at `scout_toolkit_dev` locally. Never seed `scout_toolkit_test` this way, and never point `npm run test:run` at Neon.
 
 ## Deploying (Vercel + Neon)
 
 There is no `.env.preview` file. Next.js never loads one. Hosted values live in the Vercel dashboard.
 
-`npm run build` on Vercel runs `scripts/ensure-hosted-db.mjs`: `drizzle-kit push --force`, then `db:seed` **only if** the `activities` table is empty. A local `npm run build` skips that (no `VERCEL` env).
+`npm run build` on Vercel runs `scripts/ensure-hosted-db.mjs`: it applies the committed migrations in `drizzle/migrations/` (`drizzle-kit migrate`), then runs `db:seed` **only if** the `activities` table is empty. It never force-pushes the schema. A local `npm run build` skips that (no `VERCEL` env).
+
+### Changing the schema
+
+1. Edit `drizzle/schema/*`.
+2. `npm run db:generate` creates a new SQL file in `drizzle/migrations/`.
+3. Review the SQL (look for drops and renames), then commit it with the schema change.
+4. Locally, `npm run db:push` or `npm run db:migrate` updates your dev database. Preview and Production apply the migration on their next deploy.
+
+A hosted database created before migrations existed is checked against the baseline (`0000_baseline`) on its first deploy. If it matches, the baseline is recorded as applied; if not, the deploy fails and lists the differences.
 
 ### Preview
 
@@ -148,7 +163,7 @@ npm run test:run           # unit + SQL-integration; fails if scout_toolkit_test
 npx playwright test        # default: Chromium (+ Mobile Chrome when you touch layout)
 ```
 
-SQL-integration tests use only `postgresql://test_user:test_password@localhost:5432/scout_toolkit_test`. CI uses workflow Postgres (`.github/workflows/test.yml`). `/api/e2e/session` is 404 on Preview and Production.
+SQL-integration tests use only `postgresql://test_user:test_password@localhost:5432/scout_toolkit_test`. CI uses workflow Postgres (`.github/workflows/test.yml`). `/api/e2e/session` only answers when `E2E_LOGIN=1` and `NODE_ENV` is not `production` (Playwright and CI set it); it is 404 on Preview and Production.
 
 ## Main routes
 

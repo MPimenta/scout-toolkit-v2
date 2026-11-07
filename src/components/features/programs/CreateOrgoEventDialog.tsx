@@ -41,6 +41,28 @@ function toDateTimeLocal(value: string | null): string {
   return value.length === 19 ? value.slice(0, 16) : value;
 }
 
+/** "2026-11-14T09:30" -> "sábado, 14/11/2026, 09:30" (always pt-PT, whatever the browser language). */
+export function formatOrgoDateTime(value: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(value);
+  if (!match) return '';
+  const [, y, mo, d, h, mi] = match;
+  const date = new Date(
+    Number(y),
+    Number(mo) - 1,
+    Number(d),
+    Number(h),
+    Number(mi)
+  );
+  return date.toLocaleString('pt-PT', {
+    weekday: 'long',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
 function fromDateTimeLocal(value: string): string {
   return value.length === 16 ? `${value}:00` : value;
 }
@@ -55,7 +77,11 @@ export function CreateOrgoEventDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   program: ProgramForDialog;
-  entries: Array<{ end_time: string; custom_title?: string | null; activity?: { name?: string } | null }>;
+  entries: Array<{
+    end_time: string;
+    custom_title?: string | null;
+    activity?: { name?: string } | null;
+  }>;
   onCreated?: () => void;
 }) {
   const { t } = useLocale();
@@ -83,9 +109,14 @@ export function CreateOrgoEventDialog({
   const [unitsError, setUnitsError] = useState<string | null>(null);
   const [loadingUnits, setLoadingUnits] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [created, setCreated] = useState<{
+    url: string;
+    warning?: string;
+  } | null>(null);
 
   useEffect(() => {
     if (!open) return;
+    setCreated(null);
     setBegin(defaults.begin);
     setEnd(defaults.end);
     setLocation('');
@@ -142,102 +173,190 @@ export function CreateOrgoEventDialog({
           timezone,
         }),
       });
-      const body = (await response.json()) as { error?: { message?: string } };
+      const body = (await response.json()) as {
+        error?: { message?: string };
+        orgo_event_url?: string;
+        warning?: string;
+      };
       if (!response.ok) {
         toast.error(body.error?.message || t('orgo.createError'));
         return;
       }
-      toast.success(t('orgo.createSuccess'));
-      onOpenChange(false);
-      onCreated?.();
+      // Stay open on a success view with the link; the page refreshes when it closes.
+      setCreated({
+        url: body.orgo_event_url ?? '',
+        ...(body.warning ? { warning: body.warning } : {}),
+      });
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!next && created) onCreated?.();
+        onOpenChange(next);
+      }}
+    >
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t('orgo.title')}</DialogTitle>
-          <DialogDescription>
-            {t('orgo.lead')}
-          </DialogDescription>
-        </DialogHeader>
+        {created ? (
+          <>
+            <DialogHeader>
+              <DialogTitle>{t('orgo.successTitle')}</DialogTitle>
+              <DialogDescription>{t('orgo.successLead')}</DialogDescription>
+            </DialogHeader>
+            {created.warning ? (
+              <p
+                role="alert"
+                className="rounded-md border border-accent bg-teal-tint p-3 text-sm text-foreground"
+              >
+                {created.warning}
+              </p>
+            ) : null}
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  onCreated?.();
+                  onOpenChange(false);
+                }}
+              >
+                {t('common.close')}
+              </Button>
+              {created.url ? (
+                <Button asChild>
+                  <a href={created.url} target="_blank" rel="noreferrer">
+                    {t('orgo.openEvent')}
+                  </a>
+                </Button>
+              ) : null}
+            </DialogFooter>
+          </>
+        ) : (
+          <>
+            <DialogHeader>
+              <DialogTitle>{t('orgo.title')}</DialogTitle>
+              <DialogDescription>{t('orgo.lead')}</DialogDescription>
+            </DialogHeader>
 
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="orgo-name">{t('orgo.name')}</Label>
-            <Input id="orgo-name" value={program.name} readOnly />
-          </div>
-          <div>
-            <Label htmlFor="orgo-begin">{t('orgo.start')}</Label>
-            <Input
-              id="orgo-begin"
-              type="datetime-local"
-              value={begin}
-              onChange={(event) => setBegin(event.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <Label htmlFor="orgo-end">{t('orgo.end')}</Label>
-            <Input
-              id="orgo-end"
-              type="datetime-local"
-              value={end}
-              onChange={(event) => setEnd(event.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <Label htmlFor="orgo-location">{t('orgo.location')}</Label>
-            <Input
-              id="orgo-location"
-              value={location}
-              onChange={(event) => setLocation(event.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="orgo-unit">{t('orgo.unit')}</Label>
-            <Select value={unit} onValueChange={setUnit} disabled={loadingUnits || units.length === 0}>
-              <SelectTrigger id="orgo-unit" aria-label={t('orgo.unit')}>
-                <SelectValue placeholder={loadingUnits ? t('orgo.loadingUnits') : t('orgo.chooseUnit')} />
-              </SelectTrigger>
-              <SelectContent>
-                {units.map((option) => (
-                  <SelectItem key={option.iri} value={option.iri}>
-                    {option.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {unitsError ? <p className="text-sm text-destructive mt-1">{unitsError}</p> : null}
-          </div>
-          <div>
-            <Label htmlFor="orgo-capacity">{t('orgo.capacity')}</Label>
-            <Input
-              id="orgo-capacity"
-              type="number"
-              min={1}
-              value={capacity}
-              onChange={(event) => setCapacity(event.target.value)}
-            />
-          </div>
-          <div className="flex items-center justify-between gap-2">
-            <Label htmlFor="orgo-publish">{t('orgo.publish')}</Label>
-            <Switch id="orgo-publish" checked={publish} onCheckedChange={setPublish} />
-          </div>
-        </div>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="orgo-name">{t('orgo.name')}</Label>
+                <Input id="orgo-name" value={program.name} readOnly />
+              </div>
+              <div>
+                <Label htmlFor="orgo-begin">{t('orgo.start')}</Label>
+                <Input
+                  id="orgo-begin"
+                  type="datetime-local"
+                  value={begin}
+                  onChange={(event) => setBegin(event.target.value)}
+                  required
+                  lang="pt-PT"
+                  aria-describedby="orgo-begin-text"
+                />
+                <p
+                  id="orgo-begin-text"
+                  className="mt-1 text-sm text-muted-foreground"
+                >
+                  {formatOrgoDateTime(begin)}
+                </p>
+              </div>
+              <div>
+                <Label htmlFor="orgo-end">{t('orgo.end')}</Label>
+                <Input
+                  id="orgo-end"
+                  type="datetime-local"
+                  value={end}
+                  onChange={(event) => setEnd(event.target.value)}
+                  required
+                  lang="pt-PT"
+                  aria-describedby="orgo-end-text"
+                />
+                <p
+                  id="orgo-end-text"
+                  className="mt-1 text-sm text-muted-foreground"
+                >
+                  {formatOrgoDateTime(end)}
+                </p>
+              </div>
+              <div>
+                <Label htmlFor="orgo-location">{t('orgo.location')}</Label>
+                <Input
+                  id="orgo-location"
+                  value={location}
+                  onChange={(event) => setLocation(event.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="orgo-unit">{t('orgo.unit')}</Label>
+                <Select
+                  value={unit}
+                  onValueChange={setUnit}
+                  disabled={loadingUnits || units.length === 0}
+                >
+                  <SelectTrigger id="orgo-unit" aria-label={t('orgo.unit')}>
+                    <SelectValue
+                      placeholder={
+                        loadingUnits
+                          ? t('orgo.loadingUnits')
+                          : t('orgo.chooseUnit')
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {units.map((option) => (
+                      <SelectItem key={option.iri} value={option.iri}>
+                        {option.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {unitsError ? (
+                  <p className="mt-1 text-sm text-destructive">{unitsError}</p>
+                ) : null}
+              </div>
+              <div>
+                <Label htmlFor="orgo-capacity">{t('orgo.capacity')}</Label>
+                <Input
+                  id="orgo-capacity"
+                  type="number"
+                  min={1}
+                  value={capacity}
+                  onChange={(event) => setCapacity(event.target.value)}
+                />
+              </div>
+              <div className="flex items-center justify-between gap-2">
+                <Label htmlFor="orgo-publish">{t('orgo.publish')}</Label>
+                <Switch
+                  id="orgo-publish"
+                  checked={publish}
+                  onCheckedChange={setPublish}
+                />
+              </div>
+            </div>
 
-        <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-            {t('common.cancel')}
-          </Button>
-          <Button type="button" onClick={handleSubmit} disabled={!canSubmit}>
-            {submitting ? t('orgo.creating') : t('orgo.createButton')}
-          </Button>
-        </DialogFooter>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
+                {t('common.cancel')}
+              </Button>
+              <Button
+                type="button"
+                onClick={handleSubmit}
+                disabled={!canSubmit}
+              >
+                {submitting ? t('orgo.creating') : t('orgo.createButton')}
+              </Button>
+            </DialogFooter>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );

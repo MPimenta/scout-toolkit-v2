@@ -113,25 +113,37 @@ const swaggerOptions: swaggerJSDoc.Options = {
               type: 'integer',
               description: 'Duration of the activity in minutes',
             },
-            group_size: {
-              type: 'string',
-              enum: ['individual', 'small', 'medium', 'large'],
-              description: 'Recommended group size for the activity',
+            group_sizes: {
+              type: 'array',
+              minItems: 1,
+              items: { type: 'string', enum: ['small', 'medium', 'large'] },
+              description: 'Recommended group sizes (one or more)',
             },
             effort_level: {
               type: 'string',
               enum: ['low', 'medium', 'high'],
               description: 'Physical effort level required',
             },
-            location: {
-              type: 'string',
-              enum: ['indoor', 'outdoor', 'both'],
-              description: 'Location type for the activity',
+            locations: {
+              type: 'array',
+              minItems: 1,
+              items: { type: 'string', enum: ['inside', 'outside'] },
+              description: 'Locations where the activity can run (one or more)',
             },
-            age_group: {
-              type: 'string',
-              enum: ['cub', 'scout', 'explorer', 'all'],
-              description: 'Target age group for the activity',
+            age_groups: {
+              type: 'array',
+              minItems: 1,
+              items: { type: 'string', enum: ['cub_scouts', 'scouts', 'adventurers', 'rovers', 'leaders'] },
+              description: 'Target age groups (one or more)',
+            },
+            activity_types: {
+              type: 'array',
+              minItems: 1,
+              items: {
+                type: 'object',
+                properties: { id: { type: 'string', format: 'uuid' }, name: { type: 'string' } },
+              },
+              description: 'Activity types (one or more)',
             },
             educational_goals: {
               type: 'array',

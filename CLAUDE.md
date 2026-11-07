@@ -18,7 +18,12 @@ Platform for Escoteiros de Portugal leaders to browse activities, build programs
 - `npm run test:run` – Vitest once (`npm test` is watch mode)
 - `npm run test:e2e` – Playwright
 - `npm run db:start` – local Postgres via docker-compose
+- `npm run typecheck` – `tsc --noEmit` over app and tests
 - `npm run db:generate | db:push | db:migrate | db:seed` – **ask before running any of these**
+
+Schema changes ship as committed migrations: edit `drizzle/schema`, `npm run db:generate`, review the SQL, commit it. Vercel builds apply them with `drizzle-kit migrate` (`scripts/ensure-hosted-db.mjs`), never `push --force`. `db:push` is only for local throwaway databases.
+
+Playwright uses its own database (`scout_toolkit_e2e`) and port (3200); it never touches `scout_toolkit_dev`.
 
 ## Conventions
 
@@ -27,13 +32,14 @@ Platform for Escoteiros de Portugal leaders to browse activities, build programs
 - Shared types go in `src/types/`; avoid `any` (use `unknown` + type guards in `src/types/guards.ts`).
 - Errors: use `src/lib/errors/` (API handler, logger, messages). User-facing error messages are in Portuguese. No stray `console.log`.
 - Brand colours come only from CSS variables in `src/app/globals.css`; do not invent new ones (see `docs/brand-handoff.md`). Primary buttons/links must meet WCAG 2.1 AA contrast.
+- Feature flags: non-MVP features sit behind `FEATURES` (`src/lib/features.ts`). Hide UI with `useFeature(flag)`; routes are blocked in `src/middleware.ts` (Next ignores a root-level `middleware.ts` when `src/` exists, at least in dev) via `FEATURE_ROUTES`; method-specific endpoints use `featureOffResponse(flag)`. A new route must be classified or `tests/unit/lib/feature-routes-coverage.test.ts` fails.
 - Naming: components PascalCase, functions camelCase, constants UPPER_SNAKE_CASE, DB tables snake_case.
 
 ## Specs and planning
 
 - OpenSpec is the working spec for new changes: `openspec/specs/`, `openspec/changes/`, context in `openspec/config.yaml`. Use the `/opsx:*` commands (propose, explore, apply, update, sync, archive).
 - `docs/planning.md` is the historical epic log and roadmap. Don't duplicate full task lists in both places.
-- The OpenSpec CLI wants Node >= 20.19; this machine may be on 20.10.
+- Node 24 LTS is pinned in `.nvmrc` (the OpenSpec CLI needs Node >= 20.19).
 
 ## Testing
 

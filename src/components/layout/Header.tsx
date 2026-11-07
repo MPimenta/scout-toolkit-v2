@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { Menu } from 'lucide-react';
 import { useSession } from 'next-auth/react';
@@ -9,6 +10,7 @@ import { SignInButton } from '@/components/auth/SignInButton';
 import { LocaleSwitcher } from '@/components/locale/LocaleSwitcher';
 import { useLocale } from '@/components/locale/LocaleProvider';
 import { useViewAs } from '@/components/auth/ViewAsProvider';
+import { useFeature } from '@/components/providers/FeaturesProvider';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -18,23 +20,33 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 
+/** Current when the path is the link or below it, unless a longer link matches better. */
+function isCurrent(pathname: string, href: string, all: string[]): boolean {
+  const matches = (h: string) => pathname === h || pathname.startsWith(h + '/');
+  if (!matches(href)) return false;
+  return !all.some((other) => other.length > href.length && matches(other));
+}
+
 export function Header() {
   const [open, setOpen] = useState(false);
   const { data: session } = useSession();
+  const pathname = usePathname() ?? '';
   const { t } = useLocale();
   const { effectiveIsAdmin } = useViewAs();
   const isAdmin = effectiveIsAdmin && Boolean(session?.user);
+  const showPublicPrograms = useFeature('public-programs');
+  const showLocaleSwitcher = useFeature('english-locale');
 
   const links = [
     { href: '/activities', label: t('nav.activities') },
     { href: '/programs', label: t('nav.programs') },
-    { href: '/programs/public', label: t('nav.publicPrograms') },
+    ...(showPublicPrograms ? [{ href: '/programs/public', label: t('nav.publicPrograms') }] : []),
     { href: '/about', label: t('nav.about') },
     ...(isAdmin ? [{ href: '/admin', label: t('nav.admin') }] : []),
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background">
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center min-h-11">
           <Image
@@ -49,19 +61,25 @@ export function Header() {
         </Link>
 
         <nav className="hidden md:flex items-center space-x-6">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium transition-colors hover:text-secondary"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {links.map((link) => {
+            const current = isCurrent(pathname, link.href, links.map((l) => l.href));
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={current ? 'page' : undefined}
+                className={`border-b-[3px] py-1 text-sm font-bold transition-colors hover:border-accent hover:text-primary ${
+                  current ? 'border-accent text-primary' : 'border-transparent'
+                }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="flex items-center gap-2">
-          <LocaleSwitcher />
+          {showLocaleSwitcher && <LocaleSwitcher />}
           <SignInButton />
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
@@ -83,7 +101,7 @@ export function Header() {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className="min-h-11 flex items-center px-3 rounded-md text-base font-medium hover:bg-muted"
+                    className="min-h-11 flex items-center px-3 rounded-md text-base font-bold hover:bg-muted"
                     onClick={() => setOpen(false)}
                   >
                     {link.label}

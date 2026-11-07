@@ -57,7 +57,7 @@ export function ReplyThread({
           </Avatar>
           <div className="min-w-0 flex-1 space-y-2">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm font-medium text-foreground">{reply.userName}</span>
+              <span className="text-sm font-bold text-foreground">{reply.userName}</span>
               <span className="text-xs text-muted-foreground">
                 {new Date(reply.createdAt).toLocaleDateString('pt-PT')}
               </span>
@@ -100,7 +100,7 @@ export function ReplyThread({
               {canWrite && (
                 <button
                   type="button"
-                  className="text-secondary hover:underline"
+                  className="text-primary hover:underline"
                   onClick={() => startReplyTo(reply)}
                 >
                   Responder
@@ -110,7 +110,7 @@ export function ReplyThread({
                 <>
                   <button
                     type="button"
-                    className="text-secondary hover:underline"
+                    className="text-primary hover:underline"
                     onClick={() => {
                       setEditingId(reply.id);
                       setEditBody(reply.body);
@@ -146,8 +146,8 @@ export function ReplyThread({
         </div>
       ) : (
         <p className="text-sm text-muted-foreground">
-          <Link href="/auth/signin" className="text-secondary hover:underline">
-            Inicie sessão
+          <Link href="/auth/signin" className="text-primary hover:underline">
+            Inicia sessão
           </Link>{' '}
           para responder
         </p>

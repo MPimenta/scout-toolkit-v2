@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useLocale } from '@/components/locale/LocaleProvider';
+import { useFeature } from '@/components/providers/FeaturesProvider';
 
 interface AdminStats {
   activities: number;
@@ -25,6 +26,11 @@ const EMPTY_STATS: AdminStats = {
 
 export default function AdminPage() {
   const { t } = useLocale();
+  const showPublicPrograms = useFeature('public-programs');
+  const showSuggestions = useFeature('edit-suggestions');
+  const showReports = useFeature('issue-reports');
+  const showTaxonomies = useFeature('admin-taxonomies');
+  const showUsage = useFeature('usage-tracking');
   const [stats, setStats] = useState<AdminStats>(EMPTY_STATS);
   const [error, setError] = useState<string | null>(null);
 
@@ -61,27 +67,38 @@ export default function AdminPage() {
         <StatCard title={t('admin.activities')} value={stats.activities} />
         <StatCard title={t('admin.pending')} value={stats.pending_activities} />
         <StatCard title={t('admin.users')} value={stats.users} />
-        <StatCard title={t('nav.publicPrograms')} value={stats.public_programs} />
-        <StatCard title={t('admin.suggestions')} value={stats.pending_suggestions} />
-        <StatCard title={t('admin.openReports')} value={stats.pending_reports} />
+        {showPublicPrograms && <StatCard title={t('nav.publicPrograms')} value={stats.public_programs} />}
+        {showSuggestions && <StatCard title={t('admin.suggestions')} value={stats.pending_suggestions} />}
+        {showReports && <StatCard title={t('admin.openReports')} value={stats.pending_reports} />}
       </div>
 
       <nav className="flex flex-col sm:flex-row gap-3">
         <Link className="text-primary underline" href="/admin/atividades">
           {t('admin.activities')}
         </Link>
-        <Link className="text-primary underline" href="/admin/taxonomias">
-          {t('admin.taxonomies')}
-        </Link>
+        {showTaxonomies && (
+          <Link className="text-primary underline" href="/admin/taxonomias">
+            {t('admin.taxonomies')}
+          </Link>
+        )}
         <Link className="text-primary underline" href="/admin/utilizadores">
           {t('admin.users')}
         </Link>
-        <Link className="text-primary underline" href="/admin/sugestoes">
-          {t('admin.suggestions')}
-        </Link>
-        <Link className="text-primary underline" href="/admin/reportes">
-          {t('admin.reports')}
-        </Link>
+        {showSuggestions && (
+          <Link className="text-primary underline" href="/admin/sugestoes">
+            {t('admin.suggestions')}
+          </Link>
+        )}
+        {showUsage && (
+          <Link className="text-primary underline" href="/admin/utilizacao">
+            {t('usageAnalytics.title')}
+          </Link>
+        )}
+        {showReports && (
+          <Link className="text-primary underline" href="/admin/reportes">
+            {t('admin.reports')}
+          </Link>
+        )}
       </nav>
     </div>
   );
@@ -94,7 +111,7 @@ function StatCard({ title, value }: { title: string; value: number }) {
         <CardTitle className="text-base">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-3xl font-semibold">{value}</p>
+        <p className="text-3xl font-bold">{value}</p>
       </CardContent>
     </Card>
   );

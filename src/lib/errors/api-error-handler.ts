@@ -31,6 +31,36 @@ const ERROR_STATUS_MAP: Record<ErrorCode, number> = {
   TIMEOUT_ERROR: 504,
 };
 
+/** Message sent to clients in production for unexpected errors. */
+export const GENERIC_INTERNAL_MESSAGE = 'Ocorreu um erro inesperado. Tenta novamente.';
+
+/** Detail keys that are safe to send to clients in production. */
+const SAFE_DETAIL_KEYS = ['field', 'fields', 'resource', 'id', 'issues'] as const;
+
+// Bracket access on purpose: tests can stub NODE_ENV, and Next keeps it a runtime read on the server.
+function isProductionRuntime(): boolean {
+  return process.env['NODE_ENV'] === 'production';
+}
+
+/**
+ * Removes internal details (SQL, stack traces, original error names) from an error
+ * before it is sent to a client. Outside production everything is kept for debugging.
+ */
+export function toClientError(error: AppError): ApiErrorResponse['error'] {
+  if (!isProductionRuntime()) {
+    return { code: error.code, message: error.message, details: error.details };
+  }
+  const safeDetails: Record<string, unknown> = {};
+  for (const key of SAFE_DETAIL_KEYS) {
+    if (error.details && key in error.details) safeDetails[key] = error.details[key];
+  }
+  return {
+    code: error.code,
+    message: error.message,
+    ...(Object.keys(safeDetails).length > 0 ? { details: safeDetails } : {}),
+  };
+}
+
 /**
  * Creates a standardized API error response with appropriate HTTP status code
  * @param error - The AppError object to convert to API response
@@ -43,13 +73,7 @@ export function createApiErrorResponse(
 ): NextResponse<ApiErrorResponse> {
   const status = statusCode || ERROR_STATUS_MAP[error.code] || 500;
   
-  const response: ApiErrorResponse = {
-    error: {
-      code: error.code,
-      message: error.message,
-      details: error.details,
-    },
-  };
+  const response: ApiErrorResponse = { error: toClientError(error) };
 
   return NextResponse.json(response, { status });
 }
@@ -67,14 +91,18 @@ export function handleApiError(
   additionalDetails?: Record<string, unknown>
 ): NextResponse<ApiErrorResponse> {
   const appError = handleError(error, context, additionalDetails);
-  
-  // Log API error
+
+  // Log the full error server-side; the client only gets a safe version.
   apiLogger.error('API', context, new Error(appError.message), {
     code: appError.code,
     details: appError.details,
     ...additionalDetails,
   });
 
+  if (isProductionRuntime() && appError.code === 'INTERNAL_ERROR') {
+    // Unexpected errors carry internal text (e.g. "Failed query: select ..."): never expose it.
+    return createApiErrorResponse({ ...appError, message: GENERIC_INTERNAL_MESSAGE, details: undefined });
+  }
   return createApiErrorResponse(appError);
 }
 

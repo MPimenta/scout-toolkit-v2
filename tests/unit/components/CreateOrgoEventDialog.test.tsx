@@ -71,7 +71,7 @@ describe('CreateOrgoEventDialog', () => {
       />
     );
 
-    expect(await screen.findByText('Não tem unidades Orgo onde possa criar eventos.')).toBeInTheDocument();
+    expect(await screen.findByText('Não tens unidades Orgo onde possas criar eventos.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Criar no eAEP' })).toBeDisabled();
   });
 

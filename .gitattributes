@@ -1,0 +1,3 @@
+# Migration hashes must be identical on Windows checkouts and on Vercel (Linux).
+drizzle/migrations/*.sql text eol=lf
+drizzle/migrations/meta/*.json text eol=lf

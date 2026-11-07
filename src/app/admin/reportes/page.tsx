@@ -49,7 +49,7 @@ export default function AdminReportsPage() {
         <ul className="space-y-3">
           {items.map((item) => (
             <li key={item.id} className="border rounded-md p-3">
-              <p className="font-medium">
+              <p className="font-bold">
                 {item.kind} · {item.path}
               </p>
               <p className="text-sm mb-2">{item.message}</p>

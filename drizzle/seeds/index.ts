@@ -1,13 +1,14 @@
 // Database connection is handled by individual seed files
 import { seedSDGs } from './sdgs.js';
 import { seedActivityTypes } from './activity-types.js';
-import { seedEducationalAreas } from './educational-areas.js';
 import { seedGroupSizes } from './group-sizes.js';
 import { seedEffortLevels } from './effort-levels.js';
 import { seedLocations } from './locations.js';
 import { seedAgeGroups } from './age-groups.js';
 import { seedDemoActivities } from './demo-activities.js';
-import { client } from '@/lib/db/server';
+import { client, db } from '@/lib/db/server';
+import { applyProgressMatrix } from '@/lib/reference-data/progress-matrix';
+import { applyActivitySources } from '@/lib/reference-data/activity-sources';
 
 async function main() {
   console.log('🌱 Starting database seeding...');
@@ -15,7 +16,9 @@ async function main() {
   try {
     await seedSDGs();
     await seedActivityTypes();
-    await seedEducationalAreas();
+    // Areas, paths, objectives and desafios come from the Matriz dataset (idempotent).
+    await applyProgressMatrix(db);
+    await applyActivitySources(db);
     await seedGroupSizes();
     await seedEffortLevels();
     await seedLocations();

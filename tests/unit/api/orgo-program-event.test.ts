@@ -4,6 +4,7 @@ import { NextRequest } from 'next/server';
 const mockAuth = vi.fn();
 const mockSelect = vi.fn();
 const mockUpdate = vi.fn();
+const mockSet = vi.fn();
 const mockListUnits = vi.fn();
 const mockCreate = vi.fn();
 const mockPublish = vi.fn();
@@ -69,11 +70,15 @@ describe('Orgo program event API', () => {
     mockSelect.mockReturnValue({
       from: () => ({
         where: async () => [programRow()],
+        // program entries for the event description
+        leftJoin: () => ({ where: () => ({ orderBy: async () => [] }) }),
       }),
     });
     mockUpdate.mockReturnValue({
-      set: () => ({
-        where: async () => [],
+      set: (values: unknown) => ({
+        _record: mockSet(values),
+        // awaited directly (store/release) or with .returning() (the atomic claim)
+        where: () => Object.assign(Promise.resolve([]), { returning: async () => [{ id: PROGRAM_ID }] }),
       }),
     });
     mockListUnits.mockResolvedValue([{ iri: '/api/v1/units/123', name: 'Agrupamento 123' }]);
@@ -103,16 +108,6 @@ describe('Orgo program event API', () => {
   });
 
   it('creates an event without ticketing and persists the uuid', async () => {
-    let entryCall = 0;
-    mockSelect.mockImplementation(() => ({
-      from: () => ({
-        where: async () => {
-          entryCall += 1;
-          return entryCall === 1 ? [programRow()] : [];
-        },
-      }),
-    }));
-
     const { POST } = await import('@/app/api/programs/[id]/orgo/route');
     const response = await POST(
       orgoRequest('POST', {
@@ -125,7 +120,8 @@ describe('Orgo program event API', () => {
     );
     expect(response.status).toBe(201);
     expect(mockCreate).toHaveBeenCalledWith(expect.objectContaining({ hasEventTicketing: false }));
-    expect(mockUpdate).toHaveBeenCalled();
+    // claim, then store the real event
+    expect(mockSet).toHaveBeenLastCalledWith(expect.objectContaining({ orgo_event_uuid: 'evt-1' }));
   });
 
   it('leaves the program unlinked when Orgo returns 4xx', async () => {
@@ -143,7 +139,9 @@ describe('Orgo program event API', () => {
     expect(response.status).toBe(502);
     const body = await response.json();
     expect(body.error.message).toMatch(/eAEP/i);
-    expect(mockUpdate).not.toHaveBeenCalled();
+    // The claim is released: the program ends up without an Orgo link.
+    expect(mockSet).toHaveBeenLastCalledWith(expect.objectContaining({ orgo_event_uuid: null, orgo_event_url: null }));
+    expect(mockSet).not.toHaveBeenCalledWith(expect.objectContaining({ orgo_event_url: expect.any(String) }));
   });
 
   it('returns 400 when the user has no event-create units', async () => {

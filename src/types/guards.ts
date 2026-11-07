@@ -47,6 +47,10 @@ export function isArray(value: unknown): value is unknown[] {
 }
 
 // Union type guards
+export function isArrayOf<T>(value: unknown, guard: (item: unknown) => item is T): value is T[] {
+  return Array.isArray(value) && value.length > 0 && value.every(guard);
+}
+
 export function isAgeGroup(value: unknown): value is AgeGroup {
   return isString(value) && ['cub_scouts', 'scouts', 'adventurers', 'rovers', 'leaders'].includes(value);
 }
@@ -88,12 +92,13 @@ export function isActivity(value: unknown): value is Activity {
     isString(value['name']) &&
     isString(value['description']) &&
     isString(value['materials']) &&
+    (value['instructions'] == null || isString(value['instructions'])) &&
     isNumber(value['approximate_duration_minutes']) &&
-    isGroupSize(value['group_size']) &&
+    isArrayOf(value['group_sizes'], isGroupSize) &&
     isEffortLevel(value['effort_level']) &&
-    isLocation(value['location']) &&
-    isAgeGroup(value['age_group']) &&
-    isString(value['activity_type_id']) &&
+    isArrayOf(value['locations'], isLocation) &&
+    isArrayOf(value['age_groups'], isAgeGroup) &&
+    isArrayOf(value['activity_type_ids'], isString) &&
     isString(value['created_at']) &&
     isString(value['updated_at']) &&
     isBoolean(value['is_approved']);
@@ -160,15 +165,15 @@ export function isApiActivity(value: unknown): value is ApiActivity {
     isString(value.name) &&
     isString(value.description) &&
     isString(value.materials) &&
+    (value.instructions == null || isString(value.instructions)) &&
     isNumber(value.approximate_duration_minutes) &&
-    isGroupSize(value.group_size) &&
+    isArrayOf(value.group_sizes, isGroupSize) &&
     isEffortLevel(value.effort_level) &&
-    isLocation(value.location) &&
-    isAgeGroup(value.age_group) &&
+    isArrayOf(value.locations, isLocation) &&
+    isArrayOf(value.age_groups, isAgeGroup) &&
     isString(value.created_at) &&
-    isObject(value.activity_type) &&
-    isString(value.activity_type.id) &&
-    isString(value.activity_type.name) &&
+    isArrayOf(value.activity_types, (t): t is { id: string; name: string } =>
+      isObject(t) && isString(t.id) && isString(t.name)) &&
     isArray(value.educational_goals) &&
     isArray(value.sdgs);
 }

@@ -53,3 +53,34 @@ npm run test:coverage
 ```
 
 Install this project's Chromium with `npm run playwright:install` (PDF export and Playwright share it).
+
+## Reference data (Matriz objectives)
+
+`npm run db:load-reference` loads the Matriz Progresso Pessoal from the committed `drizzle/seeds/data/progress-matrix.json` into whatever `DATABASE_URL` points at. `db:seed`, the Vercel deploy hook and the Playwright global setup run it too, so every environment starts with the same 6 areas, 20 educational paths, 40 general objectives, 174 specific objectives, 7 challenge types, 112 *desafios* and 286 links. Run it twice and the second run changes nothing.
+
+To regenerate the dataset (only when the Matriz changes), put the workbook and the Regulamento PDF under the git-ignored `data/` folder and run `npx tsx scripts/build-progress-matrix.ts data/<workbook>.xlsx data/<regulamento>.pdf`. It needs `pdftotext` (poppler) on the machine and writes `progress-matrix.json` plus `progress-matrix.report.json` (differences between the two sources).
+
+## Loading the activities baseline
+
+`scripts/load-baseline-activities.ts` loads an exported snapshot of the curated activities sheet (the `atividades` tab, CSV or XLSX) into the catalogue. The snapshot lives under `data/`, which is git-ignored: some sources in the sheet are copyrighted, so it is never committed.
+
+```bash
+# plan and report only; reads taxonomies, writes nothing but the JSON report
+npm run db:load-baseline -- data/atividades.csv --dry-run
+
+# add ~200 activities (balanced by source and section, repeatable with --seed)
+npm run db:load-baseline -- data/atividades.csv --limit 200
+
+# replace the whole catalogue (refuses while programs use activities, unless --force)
+npm run db:load-baseline -- data/atividades.csv --replace
+```
+
+The script refuses any `DATABASE_URL` that is not `localhost`/`127.0.0.1`. Without `--dry-run` it changes data, so run it deliberately.
+
+To load a snapshot into the test database, point `DATABASE_URL` at `scout_toolkit_test` for that one command:
+
+```bash
+DATABASE_URL=postgresql://test_user:test_password@localhost:5432/scout_toolkit_test npm run db:load-baseline -- data/atividades.csv
+```
+
+Activity types and SDGs must already exist (the loader never creates taxonomies). Cells with several values (`Grupo`, `Local`, `Tipo`, `Divisão`) become lists. The automated tests use a small synthetic sample, `tests/fixtures/baseline-sample.csv`.

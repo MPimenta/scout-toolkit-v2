@@ -3,6 +3,14 @@ import { ActivityRating } from '@/components/features/activities/ActivityRating'
 import { useSession } from 'next-auth/react';
 import { emptyReactionCounts } from '@/lib/ratings';
 import { vi } from 'vitest';
+import type { ReactElement } from 'react';
+import { FeaturesProvider } from '@/components/providers/FeaturesProvider';
+import type { FeatureFlag } from '@/lib/features';
+
+/** Renders with votes, reactions and replies on, unless flags say otherwise. */
+function renderRating(ui: ReactElement, flags: FeatureFlag[] = ['review-discussion']) {
+  return render(<FeaturesProvider enabled={flags}>{ui}</FeaturesProvider>);
+}
 
 vi.mock('next-auth/react');
 vi.mock('sonner', () => ({
@@ -141,10 +149,10 @@ describe('ActivityRating', () => {
     it('shows login prompt and public average', async () => {
       mockUseSession.mockReturnValue(mockUnauthenticatedSession);
 
-      render(<ActivityRating activityId="test-activity" />);
+      renderRating(<ActivityRating activityId="test-activity" />);
 
-      expect(screen.getByText('Inicie sessão para avaliar esta atividade')).toBeInTheDocument();
-      expect(screen.getByText('Iniciar Sessão')).toBeInTheDocument();
+      expect(screen.getByText('Inicia sessão para avaliar esta atividade')).toBeInTheDocument();
+      expect(screen.getByText('Entrar com o eAEP')).toBeInTheDocument();
       await waitFor(() => {
         expect(screen.getByText(/Média/)).toBeInTheDocument();
       });
@@ -157,16 +165,16 @@ describe('ActivityRating', () => {
     });
 
     it('renders rating form', async () => {
-      render(<ActivityRating activityId="test-activity" />);
+      renderRating(<ActivityRating activityId="test-activity" />);
 
-      expect(screen.getByText('Avalie esta atividade')).toBeInTheDocument();
+      expect(screen.getByText('Avalia esta atividade')).toBeInTheDocument();
       expect(screen.getByText('Comentário (opcional)')).toBeInTheDocument();
       expect(screen.getByText('Enviar Avaliação')).toBeInTheDocument();
       await waitFor(() => expect(mockFetch).toHaveBeenCalled());
     });
 
     it('displays 5 interactive stars', () => {
-      render(<ActivityRating activityId="test-activity" />);
+      renderRating(<ActivityRating activityId="test-activity" />);
 
       const stars = screen.getAllByRole('button').filter((button) =>
         button.querySelector('svg[class*="lucide-star"]')
@@ -180,33 +188,33 @@ describe('ActivityRating', () => {
     });
 
     it('allows user to select rating by clicking stars', () => {
-      render(<ActivityRating activityId="test-activity" />);
+      renderRating(<ActivityRating activityId="test-activity" />);
 
       const stars = screen.getAllByLabelText(/estrelas?$/);
       fireEvent.click(stars[2]);
 
       stars.slice(0, 3).forEach((star) => {
-        expect(star.querySelector('svg')).toHaveClass('fill-yellow-400', 'text-yellow-400');
+        expect(star.querySelector('svg')).toHaveClass('fill-accent', 'text-accent');
       });
     });
 
     it('allows user to type comment', () => {
-      render(<ActivityRating activityId="test-activity" />);
+      renderRating(<ActivityRating activityId="test-activity" />);
 
-      const commentTextarea = screen.getByPlaceholderText('Partilhe a sua experiência com esta atividade...');
+      const commentTextarea = screen.getByPlaceholderText('Partilha a tua experiência com esta atividade...');
       fireEvent.change(commentTextarea, { target: { value: 'Great activity!' } });
 
       expect(commentTextarea).toHaveValue('Great activity!');
     });
 
     it('disables submit button when no rating is selected', () => {
-      render(<ActivityRating activityId="test-activity" />);
+      renderRating(<ActivityRating activityId="test-activity" />);
 
       expect(screen.getByText('Enviar Avaliação')).toBeDisabled();
     });
 
     it('enables submit button when rating is selected', () => {
-      render(<ActivityRating activityId="test-activity" />);
+      renderRating(<ActivityRating activityId="test-activity" />);
 
       fireEvent.click(screen.getAllByLabelText(/estrelas?$/)[2]);
 
@@ -214,13 +222,13 @@ describe('ActivityRating', () => {
     });
 
     it('submits rating successfully', async () => {
-      render(<ActivityRating activityId="test-activity" />);
+      renderRating(<ActivityRating activityId="test-activity" />);
 
       await waitFor(() => {
-        expect(screen.getByText('Seja o primeiro a avaliar esta atividade!')).toBeInTheDocument();
+        expect(screen.getByText('Sê o primeiro a avaliar esta atividade!')).toBeInTheDocument();
       });
 
-      const commentTextarea = screen.getByPlaceholderText('Partilhe a sua experiência com esta atividade...');
+      const commentTextarea = screen.getByPlaceholderText('Partilha a tua experiência com esta atividade...');
       fireEvent.click(screen.getAllByLabelText(/estrelas?$/)[3]);
       fireEvent.change(commentTextarea, { target: { value: 'Excellent activity!' } });
       fireEvent.click(screen.getByText('Enviar Avaliação'));
@@ -235,7 +243,7 @@ describe('ActivityRating', () => {
     it('shows existing ratings loaded from the API', async () => {
       storedReviews = [sampleReview()];
 
-      render(<ActivityRating activityId="test-activity" />);
+      renderRating(<ActivityRating activityId="test-activity" />);
 
       await waitFor(() => {
         expect(screen.getByText('Avaliações (1)')).toBeInTheDocument();
@@ -247,7 +255,7 @@ describe('ActivityRating', () => {
     it('displays rating date in Portuguese format', async () => {
       storedReviews = [sampleReview()];
 
-      render(<ActivityRating activityId="test-activity" />);
+      renderRating(<ActivityRating activityId="test-activity" />);
 
       await waitFor(() => {
         expect(screen.getByText(/\d{1,2}\/\d{1,2}\/2024/)).toBeInTheDocument();
@@ -255,10 +263,10 @@ describe('ActivityRating', () => {
     });
 
     it('upserts a second submit from the same user', async () => {
-      render(<ActivityRating activityId="test-activity" />);
+      renderRating(<ActivityRating activityId="test-activity" />);
 
       await waitFor(() => {
-        expect(screen.getByText('Seja o primeiro a avaliar esta atividade!')).toBeInTheDocument();
+        expect(screen.getByText('Sê o primeiro a avaliar esta atividade!')).toBeInTheDocument();
       });
 
       fireEvent.click(screen.getAllByLabelText(/estrelas?$/)[3]);
@@ -278,7 +286,7 @@ describe('ActivityRating', () => {
 
     it('renders a review as a post with votes, reactions, and a collapsed thread', async () => {
       storedReviews = [sampleReview({ replyCount: 3 })];
-      render(<ActivityRating activityId="test-activity" />);
+      renderRating(<ActivityRating activityId="test-activity" />);
 
       await waitFor(() => {
         expect(screen.getByLabelText('Voto positivo')).toBeInTheDocument();
@@ -290,7 +298,7 @@ describe('ActivityRating', () => {
 
     it('loads replies oldest-first when the thread is expanded', async () => {
       storedReviews = [sampleReview({ replyCount: 1 })];
-      render(<ActivityRating activityId="test-activity" />);
+      renderRating(<ActivityRating activityId="test-activity" />);
 
       await waitFor(() => {
         expect(screen.getByText('1 resposta')).toBeInTheDocument();
@@ -304,7 +312,7 @@ describe('ActivityRating', () => {
 
     it('lets the author reply in the expanded thread', async () => {
       storedReviews = [sampleReview({ replyCount: 1 })];
-      render(<ActivityRating activityId="test-activity" />);
+      renderRating(<ActivityRating activityId="test-activity" />);
 
       await waitFor(() => {
         expect(screen.getByText('1 resposta')).toBeInTheDocument();
@@ -332,13 +340,27 @@ describe('ActivityRating', () => {
     it('shows counts without write controls on a review post', async () => {
       mockUseSession.mockReturnValue(mockUnauthenticatedSession);
       storedReviews = [sampleReview({ replyCount: 2 })];
-      render(<ActivityRating activityId="test-activity" />);
+      renderRating(<ActivityRating activityId="test-activity" />);
 
       await waitFor(() => {
         expect(screen.getByText('2 respostas')).toBeInTheDocument();
         expect(screen.getByLabelText('Gosto')).toBeDisabled();
         expect(screen.getByLabelText('Voto positivo')).toBeDisabled();
       });
+    });
+  });
+
+  describe('with review-discussion off', () => {
+    it('shows stars, comment, author and date without vote, reaction or reply controls', async () => {
+      mockUseSession.mockReturnValue(mockSession);
+      storedReviews = [sampleReview({ replyCount: 2, score: 3 })];
+      renderRating(<ActivityRating activityId="test-activity-id" />, []);
+
+      expect(await screen.findByText('Chefe Ana')).toBeInTheDocument();
+      expect(screen.getByText('Excelente')).toBeInTheDocument();
+      expect(screen.getByText('15/01/2024')).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Voto positivo' })).not.toBeInTheDocument();
+      expect(screen.queryByText('2 respostas')).not.toBeInTheDocument();
     });
   });
 });

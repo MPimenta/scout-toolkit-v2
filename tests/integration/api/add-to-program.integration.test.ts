@@ -2,9 +2,9 @@ import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vites
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { POST } from '@/app/api/programs/[id]/entries/route';
 import { NextRequest } from 'next/server';
-import { withTestDatabase, createTestUser, createTestProgram, createTestActivity } from '../../helpers/database';
+import { withTestDatabase, createTestActivity } from '../../helpers/database';
 import { auth } from '@/lib/auth/config';
-import { user, programs, activities, programEntries } from '../../../drizzle/schema';
+import { user, programs, programEntries } from '../../../drizzle/schema';
 import { eq } from 'drizzle-orm';
 import { requireLocalTestDatabase } from '../../helpers/local-test-db';
 
@@ -96,9 +96,11 @@ describe('Add to Program Integration Tests', () => {
       expect(data.entry).toBeDefined();
       expect(data.entry.entry_type).toBe('activity');
       expect(data.entry.activity_id).toBe(testActivityId);
-      expect(data.entry.position).toBe(1);
-      expect(data.entry.start_time).toBe('09:00:00');
-      expect(data.entry.end_time).toBe('09:30:00');
+      // The server places it last (an empty program -> position 0) and ignores client times:
+      // the program starts at 09:00 and the activity lasts 30 minutes.
+      expect(data.entry.position).toBe(0);
+      expect(data.entry.start_time).toBe('09:00');
+      expect(data.entry.end_time).toBe('09:30');
     });
 
     it('should add custom block to program successfully', async () => {
@@ -127,7 +129,8 @@ describe('Add to Program Integration Tests', () => {
       expect(data.entry.entry_type).toBe('custom');
       expect(data.entry.custom_title).toBe('Break');
       expect(data.entry.custom_duration_minutes).toBe(15);
-      expect(data.entry.position).toBe(1);
+      expect(data.entry.position).toBe(0);
+      expect(data.entry.end_time).toBe('09:15');
     });
 
     it('should return 401 for unauthenticated user', async () => {
@@ -154,7 +157,7 @@ describe('Add to Program Integration Tests', () => {
       const data = await response.json();
 
       expect(response.status).toBe(401);
-      expect(data.error).toBe('Unauthorized');
+      expect(data.error.code).toBe('AUTHENTICATION_ERROR');
     });
 
     it('should return 404 for non-existent program', async () => {
@@ -179,14 +182,13 @@ describe('Add to Program Integration Tests', () => {
       const data = await response.json();
 
       expect(response.status).toBe(404);
-      expect(data.error).toBe('Program not found or access denied');
+      expect(data.error.code).toBe('NOT_FOUND');
     });
 
     it('should return 400 for missing required fields', async () => {
+      // Position and times are optional (the server computes them); the activity is not.
       const requestBody = {
         entry_type: 'activity',
-        activity_id: testActivityId,
-        // Missing position, start_time, end_time
       };
 
       const request = new NextRequest(`http://localhost:3000/api/programs/${testProgramId}/entries`, {
@@ -201,7 +203,7 @@ describe('Add to Program Integration Tests', () => {
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.error).toBe('Position, start_time, end_time, and entry_type are required');
+      expect(data.error.code).toBe('VALIDATION_ERROR');
     });
 
     it('should return 404 for program owned by different user', async () => {
@@ -243,7 +245,7 @@ describe('Add to Program Integration Tests', () => {
       const data = await response.json();
 
       expect(response.status).toBe(404);
-      expect(data.error).toBe('Program not found or access denied');
+      expect(data.error.code).toBe('NOT_FOUND');
     });
   });
 });

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Search, Calendar, Users, BookOpen } from 'lucide-react';
+import { Ring, Rhombus } from '@/components/ui/motifs';
 import { useLocale } from '@/components/locale/LocaleProvider';
 
 export default function HomePage() {
@@ -11,9 +12,11 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <section className="py-20 text-center">
+      <section className="relative overflow-hidden py-20 text-center">
+        <Ring className="pointer-events-none absolute -left-8 top-8 h-32 w-32 opacity-20" />
+        <Rhombus outline className="pointer-events-none absolute -right-6 bottom-6 h-28 w-28 text-accent opacity-30" />
         <div className="container mx-auto px-4">
-          <h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-6xl">
+          <h1 className="mb-6 text-display font-bold sm:text-hero">
             <span className="text-primary">{t('productName')}</span>
           </h1>
           <p className="mb-8 text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -30,7 +33,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-16 bg-muted/50">
+      <section className="py-16 bg-muted">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">
             {t('home.featuresTitle')}

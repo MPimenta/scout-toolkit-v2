@@ -1,4 +1,4 @@
-import type { ProgramForExport } from './types';
+import type { ProgramExportActivity, ProgramForExport } from './types';
 import {
   exportLabels,
   formatExportDate,
@@ -7,8 +7,43 @@ import {
   translateEffortLevel,
   translateGroupSize,
   translateLocation,
+  translateList,
 } from './labels';
 import { getUniqueEducationalGoals, getUniqueSdgs } from './excel';
+
+/** Safety first: risks with their mitigation, then objectives per division with behaviours. */
+function activityExtrasHtml(activity: ProgramExportActivity): string {
+  const risk = (label: string, info?: { level: string | null; risk: string | null; mitigation: string | null }) => {
+    if (!info || (!info.level && !info.risk && !info.mitigation)) return '';
+    const level = info.level ? exportLabels.riskLevels[info.level] ?? info.level : '';
+    return `<div class="activity-instructions"><strong>${label}${level ? ` (${escapeHtml(level)})` : ''}:</strong> ${escapeHtml(info.risk ?? '')}${
+      info.mitigation ? ` <em>${exportLabels.mitigation}:</em> ${escapeHtml(info.mitigation)}` : ''
+    }</div>`;
+  };
+  const objectives = (activity.objectives ?? [])
+    .map(
+      (row) =>
+        `<li><strong>${escapeHtml(row.age_group)} ${escapeHtml(row.code)}</strong> ${escapeHtml(row.title)}${
+          row.behaviour ? ` <em>${exportLabels.howToObserve}:</em> ${escapeHtml(row.behaviour)}` : ''
+        }</li>`
+    )
+    .join('');
+  const challenges = (activity.challenges ?? [])
+    .map((challenge) => `<li><strong>${escapeHtml(challenge.code)}</strong> ${escapeHtml(challenge.title)}</li>`)
+    .join('');
+  const source = activity.source
+    ? `<div class="activity-instructions"><strong>${exportLabels.source}:</strong> ${escapeHtml(activity.source.name)}${
+        activity.source.license ? ` · ${escapeHtml(activity.source.license)}` : ''
+      }</div>`
+    : '';
+  return [
+    risk(exportLabels.physicalRisk, activity.physicalRisk),
+    risk(exportLabels.psychologicalRisk, activity.psychologicalRisk),
+    objectives ? `<div class="activity-instructions"><strong>${exportLabels.objectivesByDivision}:</strong><ul>${objectives}</ul></div>` : '',
+    challenges ? `<div class="activity-instructions"><strong>${exportLabels.challenges}:</strong><ul>${challenges}</ul></div>` : '',
+    source,
+  ].join('');
+}
 
 function escapeHtml(value: string): string {
   return value
@@ -130,6 +165,7 @@ export function generateProgramPDFHTML(program: ProgramForExport): string {
         .entry-type.activity { background: #dbeafe; color: #1e40af; }
         .entry-type.custom { background: #fef3c7; color: #92400e; }
         .activity-details { margin-top: 4px; font-size: 10px; color: #6b7280; }
+        .activity-instructions { margin-top: 4px; font-size: 10px; color: #6b7280; white-space: pre-line; }
         .summary-section { margin-top: 30px; page-break-inside: avoid; }
         .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px; }
         .summary-card {
@@ -218,6 +254,10 @@ export function generateProgramPDFHTML(program: ProgramForExport): string {
                     ${entry.entry_type === 'activity' && entry.activity?.description ? `
                       <div class="activity-details">${escapeHtml(entry.activity.description)}</div>
                     ` : ''}
+                    ${entry.entry_type === 'activity' && entry.activity?.instructions ? `
+                      <div class="activity-instructions"><strong>${exportLabels.instructions}:</strong> ${escapeHtml(entry.activity.instructions)}</div>
+                    ` : ''}
+                    ${entry.entry_type === 'activity' && entry.activity ? activityExtrasHtml(entry.activity) : ''}
                   </td>
                   <td>
                     <span class="entry-type ${entry.entry_type}">
@@ -233,9 +273,9 @@ export function generateProgramPDFHTML(program: ProgramForExport): string {
                   <td>
                     ${entry.entry_type === 'activity' && entry.activity ? `
                       <div class="activity-details">
-                        ${entry.activity.group_size ? `Grupo: ${escapeHtml(translateGroupSize(entry.activity.group_size))}<br>` : ''}
+                        ${entry.activity.group_sizes.length ? `Grupo: ${escapeHtml(translateList(entry.activity.group_sizes, translateGroupSize))}<br>` : ''}
                         ${entry.activity.effort_level ? `Esforço: ${escapeHtml(translateEffortLevel(entry.activity.effort_level))}<br>` : ''}
-                        ${entry.activity.location ? `Local: ${escapeHtml(translateLocation(entry.activity.location))}` : ''}
+                        ${entry.activity.locations.length ? `Local: ${escapeHtml(translateList(entry.activity.locations, translateLocation))}` : ''}
                       </div>
                     ` : ''}
                   </td>

@@ -7,6 +7,7 @@
 
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/server';
+import { handleApiError } from '@/lib/errors';
 
 /**
  * @swagger
@@ -158,20 +159,6 @@ export async function GET() {
     });
     
   } catch (error) {
-    console.error('Metrics collection failed:', error);
-    
-    return NextResponse.json(
-      {
-        error: 'Failed to collect metrics',
-        timestamp: new Date().toISOString(),
-      },
-      {
-        status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-        },
-      }
-    );
+    return handleApiError(error, 'Metrics collection failed:');
   }
 }

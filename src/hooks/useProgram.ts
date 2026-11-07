@@ -14,12 +14,13 @@ export interface ProgramEntry {
     id: string;
     name: string;
     approximate_duration_minutes: number;
-    group_size: string;
+    group_sizes: string[];
     effort_level: string;
-    location: string;
-    activity_type: {
+    locations: string[];
+    age_groups?: string[];
+    activity_types: Array<{
       name: string;
-    };
+    }>;
   } | null;
 }
 

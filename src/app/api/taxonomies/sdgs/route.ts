@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db/server';
 import { sdgs } from '../../../../../drizzle/schema';
+import { handleApiError } from '@/lib/errors';
 
 export async function GET() {
   try {
@@ -17,10 +18,6 @@ export async function GET() {
 
     return NextResponse.json({ sdgs: sdgData });
   } catch (error) {
-    console.error('Error fetching SDGs:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch SDGs' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Error fetching SDGs:');
   }
 }

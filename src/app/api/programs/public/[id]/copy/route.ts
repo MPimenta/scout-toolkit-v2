@@ -6,7 +6,6 @@ import { programEntries, programs } from '../../../../../../../drizzle/schema';
 import { apiErrors, withApiErrorHandler } from '@/lib/errors';
 import { validateUUID } from '@/lib/errors/error-handler';
 import { getPublicProgram } from '@/lib/programs/public';
-import { ensureOrgoProgramColumns } from '@/lib/orgo/ensure-columns';
 
 export const POST = withApiErrorHandler(async (
   _request: NextRequest,
@@ -27,7 +26,6 @@ export const POST = withApiErrorHandler(async (
     return apiErrors.notFound('programa', id);
   }
 
-  await ensureOrgoProgramColumns();
 
   const [copied] = await db
     .insert(programs)

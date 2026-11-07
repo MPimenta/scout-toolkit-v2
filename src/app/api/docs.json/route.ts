@@ -7,6 +7,7 @@
 
 import { NextResponse } from 'next/server';
 import { swaggerSpec } from '@/lib/swagger/config';
+import { handleApiError } from '@/lib/errors';
 
 /**
  * GET /api/docs.json
@@ -22,10 +23,6 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error('Error generating OpenAPI spec:', error);
-    return NextResponse.json(
-      { error: 'Failed to generate API specification' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Error generating OpenAPI spec:');
   }
 }

@@ -66,7 +66,7 @@ export function ProgramSummary({
       {/* Program Overview */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium flex items-center gap-2">
+          <CardTitle className="text-sm font-bold flex items-center gap-2">
             <Activity className="h-4 w-4" />
             Resumo do Programa
           </CardTitle>
@@ -90,7 +90,7 @@ export function ProgramSummary({
       {/* Educational Goals */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium flex items-center gap-2">
+          <CardTitle className="text-sm font-bold flex items-center gap-2">
             <Target className="h-4 w-4" />
             Objetivos Educativos
           </CardTitle>
@@ -119,7 +119,7 @@ export function ProgramSummary({
       {/* SDGs */}
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-medium flex items-center gap-2">
+          <CardTitle className="text-sm font-bold flex items-center gap-2">
             <Globe className="h-4 w-4" />
             ODS (Objetivos de Desenvolvimento Sustentável)
           </CardTitle>

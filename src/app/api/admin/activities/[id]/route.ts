@@ -5,7 +5,7 @@ import { activities } from '../../../../../../drizzle/schema';
 import { requireAdminApi } from '@/lib/auth/utils';
 import { apiErrors, withApiErrorHandler } from '@/lib/errors';
 import { validateUUID } from '@/lib/errors/error-handler';
-import { activityIsReferenced, parseActivityWrite, replaceRelations } from '@/lib/activities/write';
+import { activityIsReferenced, parseActivityWrite, updateActivity, verifyActivityExtras, verifyActivityGoals, verifyActivityTypes } from '@/lib/activities/write';
 
 export const PATCH = withApiErrorHandler(async (
   request: NextRequest,
@@ -31,25 +31,17 @@ export const PATCH = withApiErrorHandler(async (
   const parsed = parseActivityWrite(body);
   if (typeof parsed === 'string') return apiErrors.validation('body', parsed);
 
-  const [updated] = await db
-    .update(activities)
-    .set({
-      name: parsed.name,
-      description: parsed.description,
-      materials: parsed.materials,
-      approximate_duration_minutes: parsed.approximate_duration_minutes,
-      group_size: parsed.group_size,
-      effort_level: parsed.effort_level,
-      location: parsed.location,
-      age_group: parsed.age_group,
-      activity_type_id: parsed.activity_type_id,
-      image_url: parsed.image_url,
-      updated_at: new Date(),
-    })
-    .where(eq(activities.id, id))
-    .returning();
+  const typeError = await verifyActivityTypes(parsed);
+  if (typeError) return apiErrors.validation('body', typeError);
+
+  const goalError = await verifyActivityGoals(parsed);
+  if (goalError) return apiErrors.validation('body', goalError);
+
+  const extrasError = await verifyActivityExtras(parsed);
+  if (extrasError) return apiErrors.validation('body', extrasError);
+
+  const updated = await updateActivity(id, parsed);
   if (!updated) return apiErrors.notFound('atividade', id);
-  await replaceRelations(id, parsed);
   return NextResponse.json({ activity: updated });
 });
 

@@ -1,20 +1,9 @@
 import { useState, useEffect } from 'react';
 import { log } from '@/lib/errors';
+import type { FilterState } from '@/lib/activities/filters';
 import { useActivities as useTanStackActivities, ActivityFilters as TanStackActivityFilters } from '@/hooks/queries/useActivities';
 
-export interface FilterState {
-  search: string;
-  groupSize: string[];
-  effortLevel: string[];
-  location: string;
-  ageGroup: string[];
-  activityType: string[];
-  sdgs: string[];
-  educationalGoals: string[];
-  durationMin: string;
-  durationMax: string;
-  durationOperator: string;
-}
+export type { FilterState } from '@/lib/activities/filters';
 
 export interface PaginationInfo {
   page: number;
@@ -41,12 +30,12 @@ export interface ActivitiesResponse {
     description: string;
     materials: string;
     approximate_duration_minutes: number;
-    group_size: string;
+    group_sizes: string[];
     effort_level: string;
-    location: string;
-    age_group: string;
+    locations: string[];
+    age_groups: string[];
     created_at: string;
-    activity_type: { id: string; name: string };
+    activity_types: Array<{ id: string; name: string }>;
     educational_goals: Array<{ id: string; title: string; code: string }>;
     sdgs: Array<{ id: string; number: number; name: string; icon_url: string; icon: string }>;
   }>;
@@ -95,14 +84,15 @@ export function useActivities(options: UseActivitiesOptions) {
     search: debouncedFilters.search || undefined,
     group_size: debouncedFilters.groupSize.length > 0 ? debouncedFilters.groupSize : undefined,
     effort_level: debouncedFilters.effortLevel.length > 0 ? debouncedFilters.effortLevel : undefined,
-    location: debouncedFilters.location || undefined,
+    location: debouncedFilters.location.length > 0 ? debouncedFilters.location : undefined,
     age_group: debouncedFilters.ageGroup.length > 0 ? debouncedFilters.ageGroup : undefined,
     activity_type: debouncedFilters.activityType.length > 0 ? debouncedFilters.activityType : undefined,
     sdgs: debouncedFilters.sdgs.length > 0 ? debouncedFilters.sdgs : undefined,
     educational_goals: debouncedFilters.educationalGoals.length > 0 ? debouncedFilters.educationalGoals : undefined,
+    educational_areas: debouncedFilters.educationalAreas.length > 0 ? debouncedFilters.educationalAreas : undefined,
+    general_objectives: debouncedFilters.generalObjectives.length > 0 ? debouncedFilters.generalObjectives : undefined,
     duration_min: debouncedFilters.durationMin || undefined,
     duration_max: debouncedFilters.durationMax || undefined,
-    duration_operator: (debouncedFilters.durationOperator as '>=' | '<=' | '=' | '>' | '<') || undefined,
     page,
     limit,
     sort,

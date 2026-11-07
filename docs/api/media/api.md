@@ -126,10 +126,11 @@ GET /api/activities?search=game&group_size=medium&effort_level=low&duration_min=
 - `age_group` (string[]) - Filter by age group
 - `activity_type` (string[]) - Filter by activity type
 - `sdgs` (string[]) - Filter by SDG IDs
-- `educational_goals` (string[]) - Filter by educational goal IDs
-- `duration_min` (number) - Minimum duration in minutes
-- `duration_max` (number) - Maximum duration in minutes
-- `duration_operator` (string) - Duration comparison: >, <, =, >=, <=
+- `educational_goals` (string[]) - Specific objective IDs
+- `educational_areas` (string[]) - Educational area IDs (any objective in the area)
+- `general_objectives` (string[]) - General objective IDs (any objective under them). The three objective filters combine with OR.
+- `duration_min` (number) - Minimum duration in minutes (inclusive)
+- `duration_max` (number) - Maximum duration in minutes (inclusive). Either bound may be omitted; `duration_operator` is accepted and ignored.
 - `page` (number) - Page number (default: 1)
 - `limit` (number) - Items per page (default: 20)
 - `view` (string) - View type: tiles, table (default: tiles)

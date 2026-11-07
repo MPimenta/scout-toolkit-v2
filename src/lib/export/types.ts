@@ -6,6 +6,20 @@ export type ProgramExportGoal = {
 export type ProgramExportSdg = {
   number: number;
   name: string;
+  justification?: string | null;
+};
+
+export type ProgramExportRisk = {
+  level: string | null;
+  risk: string | null;
+  mitigation: string | null;
+};
+
+export type ProgramExportObjective = {
+  code: string;
+  title: string;
+  age_group: string;
+  behaviour: string | null;
 };
 
 export type ProgramExportActivity = {
@@ -13,13 +27,20 @@ export type ProgramExportActivity = {
   name: string | null;
   description: string | null;
   materials: string | null;
+  instructions?: string | null;
   approximate_duration_minutes: number | null;
-  group_size: string | null;
+  group_sizes: string[];
   effort_level: string | null;
-  location: string | null;
-  activityType: { name: string | null };
+  locations: string[];
+  activityTypes: Array<{ name: string }>;
   educationalGoals: ProgramExportGoal[];
   sdgs: ProgramExportSdg[];
+  /** Safety first: risks with their mitigation, then objectives per division with behaviours. */
+  physicalRisk?: ProgramExportRisk;
+  psychologicalRisk?: ProgramExportRisk;
+  objectives?: ProgramExportObjective[];
+  challenges?: Array<{ code: string; title: string }>;
+  source?: { name: string; url: string | null; license: string | null } | null;
 };
 
 export type ProgramExportEntry = {

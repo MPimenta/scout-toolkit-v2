@@ -72,10 +72,10 @@ export function ProgramCard({ program, onDelete }: ProgramCardProps) {
 
   return (
     <>
-      <Card className="h-full flex flex-col hover:shadow-md transition-shadow">
+      <Card className="h-full flex flex-col card-lift">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
-            <CardTitle className="text-lg font-semibold line-clamp-2">
+            <CardTitle className="text-lg font-bold line-clamp-2">
               {program.name}
             </CardTitle>
             <div className="flex gap-1">

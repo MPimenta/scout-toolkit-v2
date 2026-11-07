@@ -2,9 +2,17 @@
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Edit, Trash2, ChevronDown, ChevronRight } from 'lucide-react';
+import {
+  GripVertical,
+  Edit,
+  Trash2,
+  ChevronDown,
+  ChevronRight,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { IconDisplay } from '@/components/ui/IconDisplay';
+import { Badge } from '@/components/ui/badge';
+import { useLocale } from '@/components/locale/LocaleProvider';
+import { enumLabel, enumLabelList } from '@/lib/locale/labels';
 import { ProgramEntry } from '../../../../drizzle/schema/programs';
 import { ActivitiesResponse } from '@/hooks/useActivities';
 import { useState } from 'react';
@@ -20,64 +28,6 @@ interface ProgramScheduleRowProps {
   onEdit: (entry: ProgramEntry) => void;
   onDelete: (entryId: string) => void;
 }
-
-/**
- * Helper function to get group size icon
- * @param groupSize - The group size string
- * @returns The corresponding emoji icon
- */
-const getGroupSizeIcon = (groupSize: string) => {
-  const iconMap: Record<string, string> = {
-    'Pequeno (4-8)': '👥',
-    'Médio (8-12)': '👨‍👩‍👧‍👦',
-    'Grande (12+)': '👥',
-  };
-  return iconMap[groupSize] || '👥';
-};
-
-/**
- * Helper function to get effort level icon
- * @param effortLevel - The effort level string
- * @returns The corresponding emoji icon
- */
-const getEffortLevelIcon = (effortLevel: string) => {
-  const iconMap: Record<string, string> = {
-    'Baixo': '🟢',
-    'Médio': '🟡',
-    'Alto': '🔴',
-  };
-  return iconMap[effortLevel] || '🟡';
-};
-
-/**
- * Helper function to get location icon
- * @param location - The location string
- * @returns The corresponding emoji icon
- */
-const getLocationIcon = (location: string) => {
-  const iconMap: Record<string, string> = {
-    'Interior': '🏠',
-    'Exterior': '🌳',
-    'Misto': '🏕️',
-  };
-  return iconMap[location] || '🌳';
-};
-
-/**
- * Helper function to get age group icon
- * @param ageGroup - The age group string
- * @returns The corresponding emoji icon
- */
-const getAgeGroupIcon = (ageGroup: string) => {
-  const iconMap: Record<string, string> = {
-    'Lobitos': '🦁',
-    'Exploradores': '🌍',
-    'Pioneiros': '🏔️',
-    'Caminheiros': '🎯',
-    'Dirigentes': '👨‍🏫',
-  };
-  return iconMap[ageGroup] || '🌍';
-};
 
 /**
  * ProgramScheduleRow component for displaying individual program schedule entries
@@ -99,7 +49,8 @@ export function ProgramScheduleRow({
   onDelete,
 }: ProgramScheduleRowProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  
+  const { t } = useLocale();
+
   const {
     attributes,
     listeners,
@@ -117,7 +68,7 @@ export function ProgramScheduleRow({
   const formatDuration = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
-    
+
     if (hours > 0 && mins > 0) {
       return `${hours}h ${mins}m`;
     } else if (hours > 0) {
@@ -146,7 +97,9 @@ export function ProgramScheduleRow({
   };
 
   const getEntryType = () => {
-    return entry.entry_type === 'activity' ? 'Atividade' : 'Bloco Personalizado';
+    return entry.entry_type === 'activity'
+      ? 'Atividade'
+      : 'Bloco Personalizado';
   };
 
   return (
@@ -155,195 +108,165 @@ export function ProgramScheduleRow({
         ref={setNodeRef}
         style={style}
         className={cn(
-          'border-b hover:bg-muted/50 transition-colors',
+          'border-b transition-colors hover:bg-muted/50',
           isDragging ? 'opacity-50 shadow-lg' : ''
         )}
       >
-      {/* Start Time */}
-      <td className="px-4 py-3 text-sm font-medium text-muted-foreground">
-        {startTime}
-      </td>
-      
-      {/* End Time */}
-      <td className="px-4 py-3 text-sm font-medium text-muted-foreground">
-        {endTime}
-      </td>
-      
-      {/* Name */}
-      <td className="px-4 py-3 text-sm font-medium">
-        {getEntryName()}
-      </td>
-      
-      {/* Type */}
-      <td className="px-4 py-3 text-sm text-muted-foreground">
-        {getEntryType()}
-      </td>
-      
-      {/* Group Size */}
-      <td className="px-4 py-3 text-sm">
-        {activity ? (
-          <span 
-            title={activity.group_size}
-            className="text-lg"
-          >
-            {getGroupSizeIcon(activity.group_size)}
-          </span>
-        ) : (
-          <span className="text-muted-foreground">-</span>
-        )}
-      </td>
-      
-      {/* Effort Level */}
-      <td className="px-4 py-3 text-sm">
-        {activity ? (
-          <span 
-            title={activity.effort_level}
-            className="text-lg"
-          >
-            {getEffortLevelIcon(activity.effort_level)}
-          </span>
-        ) : (
-          <span className="text-muted-foreground">-</span>
-        )}
-      </td>
-      
-      {/* Location */}
-      <td className="px-4 py-3 text-sm">
-        {activity ? (
-          <span 
-            title={activity.location}
-            className="text-lg"
-          >
-            {getLocationIcon(activity.location)}
-          </span>
-        ) : (
-          <span className="text-muted-foreground">-</span>
-        )}
-      </td>
-      
-      {/* Age Group */}
-      <td className="px-4 py-3 text-sm">
-        {activity ? (
-          <span 
-            title={activity.age_group}
-            className="text-lg"
-          >
-            {getAgeGroupIcon(activity.age_group)}
-          </span>
-        ) : (
-          <span className="text-muted-foreground">-</span>
-        )}
-      </td>
-      
-      {/* Duration */}
-      <td className="px-4 py-3 text-sm font-medium">
-        {getDuration()}
-      </td>
-      
-      {/* Goals */}
-      <td className="px-4 py-3 text-sm">
-        {activity && activity.educational_goals && activity.educational_goals.length > 0 ? (
-          <IconDisplay 
-            icon="🎯" 
-            text={activity.educational_goals.map(goal => goal.title).join(', ')} 
-            className="text-muted-foreground"
-          />
-        ) : (
-          <span className="text-muted-foreground">-</span>
-        )}
-      </td>
-      
-      {/* SDGs */}
-      <td className="px-4 py-3 text-sm">
-        {activity && activity.sdgs && activity.sdgs.length > 0 ? (
-          <div className="flex flex-wrap gap-1">
-            {activity.sdgs.map(sdg => (
-              <div
-                key={sdg.id}
-                className="w-6 h-6 rounded-md flex items-center justify-center shadow-sm border border-gray-200 bg-white overflow-hidden"
-                title={`SDG ${sdg.number}: ${sdg.name}`}
-              >
-                {sdg.icon_url ? (
-                  <img
-                    src={sdg.icon_url}
-                    alt={`SDG ${sdg.number}`}
-                    className="w-full h-full object-contain"
-                  />
-                ) : (
-                  <span className="text-lg">🌱</span>
-                )}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <span className="text-muted-foreground">-</span>
-        )}
-      </td>
-      
-      {/* Actions */}
-      <td className="px-4 py-3">
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0 cursor-grab active:cursor-grabbing"
-            {...attributes}
-            {...listeners}
-          >
-            <GripVertical className="h-4 w-4" />
-          </Button>
-          
-          {activity && (
+        {/* Start Time */}
+        <td className="px-4 py-3 text-sm font-bold text-muted-foreground">
+          {startTime}
+        </td>
+
+        {/* End Time */}
+        <td className="px-4 py-3 text-sm font-bold text-muted-foreground">
+          {endTime}
+        </td>
+
+        {/* Name */}
+        <td className="px-4 py-3 text-sm font-bold">
+          {getEntryName()}
+          {entry.entry_type === 'custom' && (
+            <span className="ml-2 text-xs font-normal text-muted-foreground">
+              {getEntryType()}
+            </span>
+          )}
+        </td>
+
+        {/* Duration */}
+        <td className="px-4 py-3 text-sm font-bold">{getDuration()}</td>
+
+        {/* Actions */}
+        <td className="px-4 py-3">
+          <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 w-8 p-0"
-              onClick={() => setIsExpanded(!isExpanded)}
-              title={isExpanded ? "Ocultar detalhes" : "Mostrar detalhes"}
+              className="h-8 w-8 cursor-grab p-0 active:cursor-grabbing"
+              aria-label="Arrastar para reordenar"
+              {...attributes}
+              {...listeners}
             >
-              {isExpanded ? (
-                <ChevronDown className="h-4 w-4" />
-              ) : (
-                <ChevronRight className="h-4 w-4" />
-              )}
+              <GripVertical className="h-4 w-4" />
             </Button>
-          )}
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={() => onEdit(entry)}
-          >
-            <Edit className="h-4 w-4" />
-          </Button>
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-            aria-label="Eliminar entrada"
-            onClick={() => onDelete(entry.id)}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      </td>
+
+            {activity && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0"
+                onClick={() => setIsExpanded(!isExpanded)}
+                aria-expanded={isExpanded}
+                aria-label={
+                  isExpanded ? 'Ocultar detalhes' : 'Mostrar detalhes'
+                }
+                title={isExpanded ? 'Ocultar detalhes' : 'Mostrar detalhes'}
+              >
+                {isExpanded ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+              </Button>
+            )}
+
+            {entry.entry_type === 'custom' && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0"
+                aria-label="Editar bloco"
+                title="Editar bloco"
+                onClick={() => onEdit(entry)}
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+            )}
+
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+              aria-label="Eliminar entrada"
+              onClick={() => onDelete(entry.id)}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        </td>
       </tr>
       {isExpanded && activity && (
         <tr className="border-b bg-muted/30">
-          <td colSpan={12} className="px-4 py-3">
-            <div className="space-y-3 animate-in slide-in-from-top-2 duration-200">
+          <td colSpan={5} className="px-4 py-3">
+            <div className="space-y-3 duration-200 animate-in slide-in-from-top-2">
+              <dl className="flex flex-wrap gap-x-6 gap-y-1 text-sm">
+                <div className="flex gap-1">
+                  <dt className="text-muted-foreground">Tipo:</dt>
+                  <dd>{activity.activity_types.map((type) => type.name).join(', ')}</dd>
+                </div>
+                <div className="flex gap-1">
+                  <dt className="text-muted-foreground">Grupo:</dt>
+                  <dd>{enumLabelList(t, 'groupSize', activity.group_sizes)}</dd>
+                </div>
+                <div className="flex gap-1">
+                  <dt className="text-muted-foreground">Esforço:</dt>
+                  <dd>{enumLabel(t, 'effort', activity.effort_level)}</dd>
+                </div>
+                <div className="flex gap-1">
+                  <dt className="text-muted-foreground">Local:</dt>
+                  <dd>{enumLabelList(t, 'location', activity.locations)}</dd>
+                </div>
+                <div className="flex gap-1">
+                  <dt className="text-muted-foreground">Idade:</dt>
+                  <dd>{enumLabelList(t, 'ageGroup', activity.age_groups)}</dd>
+                </div>
+              </dl>
+              {activity.educational_goals &&
+                activity.educational_goals.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {activity.educational_goals.map((goal) => (
+                      <Badge
+                        key={goal.id}
+                        variant="outline"
+                        className="text-xs font-normal"
+                      >
+                        {goal.title}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              {activity.sdgs && activity.sdgs.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {activity.sdgs.map((sdg) => (
+                    <div
+                      key={sdg.id}
+                      className="flex h-6 w-6 items-center justify-center overflow-hidden rounded-md border border-border bg-white"
+                      title={`ODS ${sdg.number}: ${sdg.name}`}
+                    >
+                      {sdg.icon_url ? (
+                        <img
+                          src={sdg.icon_url}
+                          alt={`ODS ${sdg.number}`}
+                          className="h-full w-full object-contain"
+                        />
+                      ) : (
+                        <span className="text-xs font-bold">{sdg.number}</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
               <div>
-                <h4 className="font-medium text-sm mb-2">Descrição</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">
+                <h4 className="mb-2 text-sm font-bold">Descrição</h4>
+                <p className="text-sm leading-relaxed text-muted-foreground">
                   {activity.description || 'Nenhuma descrição disponível.'}
                 </p>
               </div>
               {activity.materials && (
                 <div>
-                  <h4 className="font-medium text-sm mb-2">Materiais Necessários</h4>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                  <h4 className="mb-2 text-sm font-bold">
+                    Materiais Necessários
+                  </h4>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
                     {activity.materials}
                   </p>
                 </div>

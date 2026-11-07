@@ -10,6 +10,7 @@ import { ActivitiesResponse } from '@/hooks/useActivities';
 import { useAllActivities } from '@/hooks/useActivities';
 import { Search, Filter, Clock, MapPin, Users, Target } from 'lucide-react';
 import { useLocale } from '@/components/locale/LocaleProvider';
+import { enumLabel, enumLabelList } from '@/lib/locale/labels';
 
 /**
  * Props for the AddActivityModal component
@@ -44,8 +45,8 @@ export function AddActivityModal({ open, onClose, onAdd, programId: _programId }
             const matchesSearch = activity.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                              activity.description.toLowerCase().includes(searchTerm.toLowerCase());
       
-      const matchesType = selectedType === 'all' || activity.activity_type.name === selectedType;
-      const matchesLocation = selectedLocation === 'all' || activity.location === selectedLocation;
+      const matchesType = selectedType === 'all' || activity.activity_types.some((type) => type.name === selectedType);
+      const matchesLocation = selectedLocation === 'all' || activity.locations.includes(selectedLocation);
 
       return matchesSearch && matchesType && matchesLocation;
     });
@@ -53,13 +54,13 @@ export function AddActivityModal({ open, onClose, onAdd, programId: _programId }
 
   const activityTypes = useMemo(() => {
     if (!activities) return [];
-    const types = [...new Set(activities.map(a => a.activity_type?.name).filter(Boolean))];
+    const types = [...new Set(activities.flatMap(a => a.activity_types.map(type => type.name)))];
     return types.sort();
   }, [activities]);
 
   const locations = useMemo(() => {
     if (!activities) return [];
-    const locs = [...new Set(activities.map(a => a.location).filter(Boolean))];
+    const locs = [...new Set(activities.flatMap(a => a.locations))];
     return locs.sort();
   }, [activities]);
 
@@ -120,7 +121,7 @@ export function AddActivityModal({ open, onClose, onAdd, programId: _programId }
                   <SelectContent>
                     <SelectItem value="all">{t('programs.allLocations')}</SelectItem>
                     {locations.map(location => (
-                      <SelectItem key={location} value={location}>{location}</SelectItem>
+                      <SelectItem key={location} value={location}>{enumLabel(t, 'location', location)}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -137,7 +138,7 @@ export function AddActivityModal({ open, onClose, onAdd, programId: _programId }
             ) : filteredActivities.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <Filter className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p className="text-lg font-medium">{t('programs.noActivities')}</p>
+                <p className="text-lg font-bold">{t('programs.noActivities')}</p>
                 <p className="text-sm">{t('programs.adjustFilters')}</p>
               </div>
             ) : (
@@ -149,7 +150,7 @@ export function AddActivityModal({ open, onClose, onAdd, programId: _programId }
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1 space-y-2">
-                                                <h3 className="font-semibold text-lg">{activity.name}</h3>
+                                                <h3 className="font-bold text-lg">{activity.name}</h3>
                       <p className="text-sm text-muted-foreground line-clamp-2">
                         {activity.description}
                       </p>
@@ -160,16 +161,16 @@ export function AddActivityModal({ open, onClose, onAdd, programId: _programId }
                           <span>{formatDuration(activity.approximate_duration_minutes || 30)}</span>
                         </div>
                         
-                        {activity.location && (
+                        {activity.locations.length > 0 && (
                           <div className="flex items-center gap-1">
                             <MapPin className="w-4 h-4" />
-                            <span>{activity.location}</span>
+                            <span>{enumLabelList(t, 'location', activity.locations)}</span>
                           </div>
                         )}
                         
                                                     <div className="flex items-center gap-1">
                               <Users className="w-4 h-4" />
-                              <span>{activity.group_size} group</span>
+                              <span>{enumLabelList(t, 'groupSize', activity.group_sizes)}</span>
                             </div>
                       </div>
 
