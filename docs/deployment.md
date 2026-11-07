@@ -65,7 +65,9 @@ Non-MVP features are off unless `FEATURES` lists them (comma-separated, or `all`
 | `issue-reports` | Reportar button and the admin report queue |
 | `usage-tracking` | Records searches, activity views and additions to programs (anonymous visitor id; 13-month retention). `/privacy` explains it; `vercel.json` runs the daily purge at `/api/usage/purge`. Keep it off in Production until the AEP has confirmed the privacy wording. |
 
-Leave `FEATURES` unset on Preview and Production for the MVP. Changing it on Vercel needs a redeploy. CI runs the full suite with `FEATURES=all`.
+**`pwa`** (installable app, service worker, offline page; openspec `mobile-pwa`) is on for the Azure Preview only. To roll it back, set `FEATURES` on the Web App without `pwa` (for example `az webapp config appsettings set -g rg-kit-de-atividades -n aep-kit-preview --settings FEATURES=usage-tracking`): `/sw.js` then serves a worker that deletes its caches and unregisters itself on each phone's next visit, and the manifest and install entries disappear. To try it locally, build for production (the worker is not registered under `npm run dev`) with `FEATURES=pwa` and open it on `localhost`.
+
+Leave `FEATURES` unset on Production for the MVP; on Vercel Preview it stays unset too. Changing it on Vercel needs a redeploy. CI runs the full suite with `FEATURES=all`.
 
 `ORGO_API_TOKEN` is minted in eAEP: **Settings → Developers → API Tokens** (at least `HR_LOCAL`). It never goes to the browser.
 

@@ -155,7 +155,7 @@ Names used by the app (values for Azure are in Key Vault or the Web App settings
 | `ORGO_ISSUER` | `https://eaep.escoteiros.pt` |
 | `ORGO_CLIENT_ID` / `ORGO_CLIENT_SECRET` | One Orgo app per environment |
 | `ADMIN_EMAILS` | Comma-separated eAEP emails to promote on sign-in |
-| `FEATURES` | Flags to switch on (Preview: `usage-tracking`) |
+| `FEATURES` | Flags to switch on (Preview: `usage-tracking,pwa`) |
 | `CRON_SECRET` | Bearer secret for the daily usage purge |
 | `AZURE_STORAGE_ACCOUNT` | Image storage account name (managed identity, no key); locally `AZURE_STORAGE_CONNECTION_STRING` for Azurite |
 | `ORGO_API_TOKEN` | Optional; program → eAEP event |

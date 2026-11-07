@@ -37,7 +37,7 @@ param integrationSubnetPrefix string = '10.20.3.0/26'
 param placeholderImage string = 'mcr.microsoft.com/appsvc/staticsite:latest'
 
 @description('Feature flags per environment (FEATURES). Production stays empty until the privacy wording is confirmed.')
-param previewFeatures string = 'usage-tracking'
+param previewFeatures string = 'usage-tracking,pwa'
 param productionFeatures string = ''
 
 var environments = [

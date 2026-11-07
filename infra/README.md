@@ -7,7 +7,7 @@ Describes where Kit de Atividades runs on Azure (openspec change `migrate-hostin
 | Resource group | `rg-kit-de-atividades` | North Europe, same region as the AEP's database and network |
 | App Service plan | `kit-plan` | Linux B2 |
 | Web App, Production | `aep-kit` | `https://aep-kit.azurewebsites.net` until a domain is chosen |
-| Web App, Preview | `aep-kit-preview` | `FEATURES=usage-tracking` |
+| Web App, Preview | `aep-kit-preview` | `FEATURES=usage-tracking,pwa` |
 | Container Registry | `aepkit` | Basic; Web Apps pull with their managed identity |
 | Key Vault | `aepkit-kv` | RBAC, purge protection on |
 | Integration subnet | `kit-apps` in `painelaep-vnet` | `10.20.3.0/26`, delegated to `Microsoft.Web/serverFarms` |
