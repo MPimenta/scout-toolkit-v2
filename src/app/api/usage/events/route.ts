@@ -12,7 +12,7 @@ import { isEmptySearch, usageEventBodySchema } from '@/lib/usage/schemas';
  * @swagger
  * /api/usage/events:
  *   post:
- *     summary: Record a usage event (search or activity_view)
+ *     summary: Record a usage event (search, activity_view or app_launch)
  *     description: Behind the usage-tracking flag. Answers 204 whether or not the event was stored
  *       (bots, privacy signals and opt-out are silently skipped). program_add is recorded by the server only.
  *     tags: [Usage]
@@ -62,6 +62,8 @@ export async function POST(request: NextRequest) {
           result_count: event.result_count,
         },
       });
+    } else if (event.type === 'app_launch') {
+      await recordUsageEvent({ type: 'app_launch', visitorId: visitor.id, userId });
     } else {
       if (!(await activityExists(event.activity_id))) {
         return apiErrors.validation('activity_id', 'Atividade desconhecida');

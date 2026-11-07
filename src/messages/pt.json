@@ -154,6 +154,7 @@
     "eventSearch": "as pesquisas que fazes (texto, filtros e número de resultados);",
     "eventView": "as atividades cujos detalhes abres;",
     "eventProgram": "as atividades que adicionas a programas.",
+    "usageLaunch": "Se instalares a aplicação no telemóvel, registamos também cada vez que a abres.",
     "usageCookie": "Usamos um identificador aleatório num cookie nosso, sem partilha com terceiros, que dura cerca de 13 meses. Se entrares na tua conta, os eventos deste browser ficam ligados a ela.",
     "usageNever": "Não guardamos o teu endereço IP, o navegador que usas nem a página de onde vieste.",
     "usageWho": "Só os administradores da plataforma veem estes dados, e podem ver o nome de quem iniciou sessão.",
@@ -496,6 +497,15 @@
     "title": "Sem ligação",
     "body": "Não foi possível ligar à internet. Entrar, os programas e as exportações precisam de ligação.",
     "retry": "Tentar novamente"
+  },
+  "install": {
+    "action": "Instalar aplicação",
+    "lead": "Usa o Kit de Atividades como uma aplicação no telemóvel, com ícone no ecrã principal.",
+    "iosLead": "Para adicionares o Kit de Atividades ao ecrã principal do iPhone ou iPad:",
+    "iosStep1": "Toca em Partilhar, na barra do Safari.",
+    "iosStep2": "Escolhe «Adicionar ao ecrã principal».",
+    "iosStep3": "Toca em Adicionar.",
+    "close": "Fechar"
   },
   "pwa": {
     "updateAvailable": "Nova versão disponível",

@@ -119,7 +119,7 @@ The system SHALL NOT record events from requests that identify themselves as cra
 
 ### Requirement: Collection is validated server-side
 
-The events endpoint SHALL accept only `search` and `activity_view` events, validate every field with a schema, bound text length (200 characters for search text), reject unknown activity ids, and answer with Portuguese error messages. It SHALL be rate-limited per visitor, and a failure to record SHALL NOT break the page the visitor is using.
+The events endpoint SHALL accept only `search`, `activity_view` and `app_launch` events (the last one from the installed app, see the `mobile-pwa` change), validate every field with a schema, bound text length (200 characters for search text), reject unknown activity ids, and answer with Portuguese error messages. It SHALL be rate-limited per visitor, and a failure to record SHALL NOT break the page the visitor is using.
 
 #### Scenario: Invalid payload
 

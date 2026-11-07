@@ -101,6 +101,26 @@ describe('Usage tracking', () => {
     expect(row).toMatchObject({ visitor_id: VISITOR, user_id: USER_ID });
   });
 
+  it('stores an app launch with the visitor and user ids and nothing else', async () => {
+    const response = await postEvent(event({ type: 'app_launch' }));
+    expect(response.status).toBe(204);
+    expect(response.headers.get('set-cookie')).toContain('visitor_id=');
+    const [row] = await all();
+    expect(row).toMatchObject({ type: 'app_launch', user_id: null, activity_id: null, program_id: null, payload: null });
+
+    mockAuth.mockResolvedValue({ user: { id: USER_ID } });
+    await postEvent(event({ type: 'app_launch' }, { cookie: `visitor_id=${VISITOR}` }));
+    expect((await all()).map((e) => e.user_id)).toContain(USER_ID);
+  });
+
+  it('does not store an app launch from a bot or when the flag is off', async () => {
+    await postEvent(event({ type: 'app_launch' }, { 'user-agent': 'Googlebot/2.1' }));
+    vi.stubEnv('FEATURES', '');
+    const off = await postEvent(event({ type: 'app_launch' }));
+    expect(off.status).toBe(404);
+    expect(await all()).toHaveLength(0);
+  });
+
   it('does not store an empty search', async () => {
     await postEvent(event({ type: 'search', text: '  ', filters: {}, result_count: 20 }));
     expect(await all()).toHaveLength(0);

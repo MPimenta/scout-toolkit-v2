@@ -2,9 +2,12 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useLocale } from '@/components/locale/LocaleProvider';
+import { InstallEntry } from '@/components/pwa/InstallEntry';
+import { useInstall } from '@/components/pwa/InstallProvider';
 
 export default function AboutPage() {
   const { t } = useLocale();
+  const { mode: installMode } = useInstall();
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -56,6 +59,18 @@ export default function AboutPage() {
           </CardContent>
         </Card>
       </div>
+
+      {installMode && (
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle>{t('install.action')}</CardTitle>
+            <CardDescription>{t('install.lead')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <InstallEntry variant="button" />
+          </CardContent>
+        </Card>
+      )}
 
       <Card className="mt-8">
         <CardHeader>

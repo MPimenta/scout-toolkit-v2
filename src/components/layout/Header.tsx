@@ -11,6 +11,7 @@ import { LocaleSwitcher } from '@/components/locale/LocaleSwitcher';
 import { useLocale } from '@/components/locale/LocaleProvider';
 import { useViewAs } from '@/components/auth/ViewAsProvider';
 import { useFeature } from '@/components/providers/FeaturesProvider';
+import { InstallEntry } from '@/components/pwa/InstallEntry';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -107,6 +108,7 @@ export function Header() {
                     {link.label}
                   </Link>
                 ))}
+                <InstallEntry variant="menu" onActivate={() => setOpen(false)} />
               </nav>
             </SheetContent>
           </Sheet>

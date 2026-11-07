@@ -10,6 +10,7 @@ import { PWA_DARK_THEME_COLOR, PWA_THEME_COLOR } from '@/lib/pwa/manifest';
 import { AppShell } from '@/components/layout/AppShell';
 import { ReportLauncher } from '@/components/feedback/ReportLauncher';
 import { PwaRegistrar } from '@/components/pwa/PwaRegistrar';
+import { InstallProvider } from '@/components/pwa/InstallProvider';
 import { Toaster } from 'sonner';
 import { LOCALE_COOKIE, resolveLocale } from '@/lib/locale/catalog';
 import { VIEW_AS_COOKIE } from '@/lib/auth/view-as-cookie';
@@ -67,10 +68,12 @@ export default async function RootLayout({
             <QueryProvider>
               <LocaleProvider initialLocale={locale}>
                 <ViewAsProvider initialViewAs={viewAs}>
-                  <AppShell>{children}</AppShell>
-                  {enabled.has('issue-reports') && <ReportLauncher />}
-                  {enabled.has('pwa') && <PwaRegistrar />}
-                  <Toaster />
+                  <InstallProvider>
+                    <AppShell>{children}</AppShell>
+                    {enabled.has('issue-reports') && <ReportLauncher />}
+                    {enabled.has('pwa') && <PwaRegistrar />}
+                    <Toaster />
+                  </InstallProvider>
                 </ViewAsProvider>
               </LocaleProvider>
             </QueryProvider>

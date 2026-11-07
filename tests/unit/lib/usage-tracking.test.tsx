@@ -5,7 +5,13 @@ import { isBotUserAgent, shouldRecord } from '@/lib/usage/guard';
 import { isEmptySearch, usageEventBodySchema } from '@/lib/usage/schemas';
 import { allowUsageEvent, resetUsageRateLimit, USAGE_EVENTS_PER_MINUTE } from '@/lib/usage/rate-limit';
 import { isVisitorId } from '@/lib/usage/visitor';
-import { SEARCH_SETTLE_MS, useTrackActivityView, useTrackSearch } from '@/hooks/useUsageTracking';
+import {
+  APP_LAUNCH_KEY,
+  SEARCH_SETTLE_MS,
+  useTrackActivityView,
+  useTrackAppLaunch,
+  useTrackSearch,
+} from '@/hooks/useUsageTracking';
 import { EMPTY_FILTERS } from '@/lib/activities/filters';
 import PrivacyPage from '@/app/privacy/page';
 import { FeaturesProvider } from '@/components/providers/FeaturesProvider';
@@ -38,7 +44,13 @@ describe('shouldRecord', () => {
 });
 
 describe('event schemas', () => {
-  it('accepts search and activity_view only', () => {
+  it('accepts app_launch from the browser, with nothing else', () => {
+    const parsed = usageEventBodySchema.safeParse({ type: 'app_launch', activity_id: 'x', note: 'extra' });
+    expect(parsed.success).toBe(true);
+    expect(parsed.data).toEqual({ type: 'app_launch' });
+  });
+
+  it('accepts search, activity_view and app_launch only', () => {
     expect(usageEventBodySchema.safeParse({ type: 'search', text: 'a', filters: {}, result_count: 3 }).success).toBe(true);
     expect(
       usageEventBodySchema.safeParse({ type: 'activity_view', activity_id: '550e8400-e29b-41d4-a716-446655440603' }).success
@@ -148,6 +160,73 @@ describe('tracking hooks', () => {
   });
 });
 
+describe('app launch hook', () => {
+  const fetchMock = vi.fn(async (_url: string, _init?: RequestInit) => ({ ok: true }) as Response);
+  const wrapper = (flags: Array<'usage-tracking' | 'pwa'>) =>
+    ({ children }: { children: React.ReactNode }) => <FeaturesProvider enabled={flags}>{children}</FeaturesProvider>;
+  const both: Array<'usage-tracking' | 'pwa'> = ['usage-tracking', 'pwa'];
+  const sent = () => fetchMock.mock.calls.map((call) => JSON.parse(String(call[1]?.body)));
+  const standalone = (matches: boolean) => {
+    window.matchMedia = vi.fn().mockImplementation(() => ({ matches })) as unknown as typeof window.matchMedia;
+  };
+
+  beforeEach(() => {
+    vi.stubGlobal('fetch', fetchMock);
+    fetchMock.mockClear();
+    window.sessionStorage.clear();
+    window.history.pushState({}, '', '/home');
+    standalone(false);
+  });
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    window.history.pushState({}, '', '/');
+  });
+
+  it('records a launch from the launch URL (?source=pwa)', () => {
+    window.history.pushState({}, '', '/home?source=pwa');
+    renderHook(() => useTrackAppLaunch(), { wrapper: wrapper(both) });
+    expect(sent()).toEqual([{ type: 'app_launch' }]);
+  });
+
+  it('records a launch when the app runs standalone', () => {
+    standalone(true);
+    renderHook(() => useTrackAppLaunch(), { wrapper: wrapper(both) });
+    expect(sent()).toEqual([{ type: 'app_launch' }]);
+  });
+
+  it('records nothing in an ordinary browser tab', () => {
+    renderHook(() => useTrackAppLaunch(), { wrapper: wrapper(both) });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('records one launch per session, not per reload or remount', () => {
+    window.history.pushState({}, '', '/home?source=pwa');
+    renderHook(() => useTrackAppLaunch(), { wrapper: wrapper(both) });
+    renderHook(() => useTrackAppLaunch(), { wrapper: wrapper(both) });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(window.sessionStorage.getItem(APP_LAUNCH_KEY)).toBe('1');
+  });
+
+  it.each([
+    ['usage-tracking is off', ['pwa']],
+    ['pwa is off', ['usage-tracking']],
+  ] as const)('records nothing when %s', (_name, flags) => {
+    window.history.pushState({}, '', '/home?source=pwa');
+    renderHook(() => useTrackAppLaunch(), { wrapper: wrapper([...flags]) });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('still records when session storage is blocked', () => {
+    window.history.pushState({}, '', '/home?source=pwa');
+    const blocked = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('blocked');
+    });
+    renderHook(() => useTrackAppLaunch(), { wrapper: wrapper(both) });
+    blocked.mockRestore();
+    expect(sent()).toEqual([{ type: 'app_launch' }]);
+  });
+});
+
 describe('privacy page', () => {
   afterEach(() => vi.unstubAllGlobals());
 
@@ -164,6 +243,15 @@ describe('privacy page', () => {
     expect(screen.getByText(/adicionas a programas/)).toBeInTheDocument();
     expect(screen.getByText(/apagados ao fim de 13 meses/)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'geral@escoteiros.pt' })).toHaveAttribute('href', 'mailto:geral@escoteiros.pt');
+  });
+
+  it('mentions app launches only when the pwa flag is on', () => {
+    const launch = /Se instalares a aplicação no telemóvel, registamos também cada vez que a abres/;
+    const { unmount } = renderWithFeatures(<PrivacyPage />, { features: ['usage-tracking'] });
+    expect(screen.queryByText(launch)).not.toBeInTheDocument();
+    unmount();
+    renderWithFeatures(<PrivacyPage />, { features: ['usage-tracking', 'pwa'] });
+    expect(screen.getByText(launch)).toBeInTheDocument();
   });
 
   it('turns recording off and back on', async () => {

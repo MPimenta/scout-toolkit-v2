@@ -154,6 +154,7 @@
     "eventSearch": "the searches you run (text, filters and number of results);",
     "eventView": "the activities whose details you open;",
     "eventProgram": "the activities you add to programs.",
+    "usageLaunch": "If you install the app on your phone, we also record each time you open it.",
     "usageCookie": "We use a random identifier in our own cookie, not shared with third parties, that lasts about 13 months. If you sign in, the events from this browser are linked to your account.",
     "usageNever": "We do not store your IP address, your browser or the page you came from.",
     "usageWho": "Only platform administrators see this data, and they can see the name of signed-in users.",
@@ -496,6 +497,15 @@
     "title": "No connection",
     "body": "Could not reach the internet. Signing in, programs and exports need a connection.",
     "retry": "Try again"
+  },
+  "install": {
+    "action": "Install app",
+    "lead": "Use Kit de Atividades as an app on your phone, with an icon on your home screen.",
+    "iosLead": "To add Kit de Atividades to the home screen of your iPhone or iPad:",
+    "iosStep1": "Tap Share in the Safari toolbar.",
+    "iosStep2": "Choose “Add to Home Screen”.",
+    "iosStep3": "Tap Add.",
+    "close": "Close"
   },
   "pwa": {
     "updateAvailable": "A new version is available",

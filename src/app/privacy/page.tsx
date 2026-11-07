@@ -11,6 +11,7 @@ const CONTACT = 'geral@escoteiros.pt';
 export default function PrivacyPage() {
   const { t } = useLocale();
   const tracking = useFeature('usage-tracking');
+  const pwa = useFeature('pwa');
   const [optedOut, setOptedOut] = useState<boolean | null>(null);
   const [failed, setFailed] = useState(false);
 
@@ -60,6 +61,7 @@ export default function PrivacyPage() {
                   <li>{t('privacy.eventView')}</li>
                   <li>{t('privacy.eventProgram')}</li>
                 </ul>
+                {pwa && <p>{t('privacy.usageLaunch')}</p>}
                 <p>{t('privacy.usageCookie')}</p>
                 <p>{t('privacy.usageNever')}</p>
                 <p>{t('privacy.usageWho')}</p>

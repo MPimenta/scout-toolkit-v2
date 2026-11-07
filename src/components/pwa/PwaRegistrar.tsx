@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { useLocale } from '@/components/locale/LocaleProvider';
+import { useTrackAppLaunch } from '@/hooks/useUsageTracking';
 
 /**
  * Registers the service worker (production only, rendered when the pwa flag is on)
@@ -11,6 +12,7 @@ import { useLocale } from '@/components/locale/LocaleProvider';
  */
 export function PwaRegistrar() {
   const { t } = useLocale();
+  useTrackAppLaunch();
 
   useEffect(() => {
     if (process.env.NODE_ENV !== 'production' || !('serviceWorker' in navigator)) return;

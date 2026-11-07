@@ -3,7 +3,7 @@ import { activities } from './activities';
 import { user } from './auth';
 import { programs } from './programs';
 
-export const USAGE_EVENT_TYPES = ['search', 'activity_view', 'program_add'] as const;
+export const USAGE_EVENT_TYPES = ['search', 'activity_view', 'program_add', 'app_launch'] as const;
 export type UsageEventType = (typeof USAGE_EVENT_TYPES)[number];
 
 /**
@@ -21,7 +21,7 @@ export const usageEvents = pgTable(
     user_id: uuid('user_id').references(() => user.id, { onDelete: 'set null' }),
     activity_id: uuid('activity_id').references(() => activities.id, { onDelete: 'cascade' }),
     program_id: uuid('program_id').references(() => programs.id, { onDelete: 'set null' }),
-    /** search: { text, filters, divisions, result_count } */
+    /** search: { text, filters, divisions, result_count }. app_launch (installed app opened) has no payload. */
     payload: jsonb('payload').$type<Record<string, unknown>>(),
   },
   (table) => [

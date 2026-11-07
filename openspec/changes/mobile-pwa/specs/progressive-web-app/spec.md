@@ -151,6 +151,30 @@ The `pwa` flag SHALL control manifest, worker registration and install entries. 
 - **WHEN** the route coverage test runs
 - **THEN** it passes with the new manifest and offline routes
 
+### Requirement: Launches of the installed app are recorded
+
+When the `pwa` and `usage-tracking` flags are both on, the app SHALL record one `app_launch` usage event per browsing session when it runs in standalone display mode or is opened from its launch URL (`/home?source=pwa`, set by the manifest's `start_url` and shortcuts). The event SHALL carry no data beyond the visitor and user ids that every usage event has, SHALL follow the same rules as other usage events (bots, privacy signals, opt-out, rate limit), and a failure to record SHALL NOT affect the page. The privacy notice SHALL say that launches are recorded when the `pwa` flag is on.
+
+#### Scenario: Opening the installed app
+
+- **WHEN** a user opens the installed app from the home screen
+- **THEN** one `app_launch` event is stored
+
+#### Scenario: Reload within the session
+
+- **WHEN** the user reloads or resumes the app in the same session
+- **THEN** no second event is stored
+
+#### Scenario: Ordinary browser tab
+
+- **WHEN** a user visits the site in a normal browser tab without the launch URL
+- **THEN** no `app_launch` event is stored
+
+#### Scenario: Flags off
+
+- **WHEN** either the `pwa` or the `usage-tracking` flag is off
+- **THEN** no `app_launch` event is sent
+
 ### Requirement: Installability and caching rules are checked automatically
 
 CI SHALL run unit tests for manifest content and token-derived colours, and Playwright checks on a production build for: no installability errors, worker registration, the offline page when the network is cut, and absence of private data in caches. The checks SHALL fail the build on regression.

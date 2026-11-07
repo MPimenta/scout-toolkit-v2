@@ -16,7 +16,7 @@ The system SHALL serve a public page at `/privacy`, in Portuguese by default, li
 #### Scenario: Content
 
 - **WHEN** the page is read
-- **THEN** it names the three recorded events, the 13-month retention and the contact for data requests
+- **THEN** it names the three recorded events (and, when the installed app is enabled, that app launches are recorded), the 13-month retention and the contact for data requests
 
 ### Requirement: Page follows the tracking flag
 

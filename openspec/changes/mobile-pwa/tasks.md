@@ -16,9 +16,10 @@
 
 ## 3. Install experience
 
-- [ ] 3.1 Add an install hook (captures `beforeinstallprompt`, detects standalone and iOS Safari) — verify unit tests for each state
-- [ ] 3.2 Add "Instalar aplicação" to the phone menu and the About page with an iOS instructions dialog, remembered dismissal and PT/EN strings (copy approved by the maintainer) — verify it is hidden in standalone mode, never opens on load, and the dialog closes with Escape
-- [ ] 3.3 Tag installed launches via `?source=pwa` for `usage-tracking` — verify the parameter does not break the home redirect or caching
+- [x] 3.1 Add an install hook (captures `beforeinstallprompt`, detects standalone and iOS Safari) — verify unit tests for each state
+- [x] 3.2 Add "Instalar aplicação" to the phone menu and the About page with an iOS instructions dialog, remembered dismissal and PT/EN strings (copy approved by the maintainer) — verify it is hidden in standalone mode, never opens on load, and the dialog closes with Escape (implemented and checked in Chromium with an iPhone Safari user agent; install copy approved by the maintainer)
+- [x] 3.3 Tag installed launches via `?source=pwa` for `usage-tracking` — verify the parameter does not break the home redirect or caching (the launch URLs carry the tag and the pages answer 200 with it; recording is task 3.4)
+- [x] 3.4 Record an `app_launch` usage event once per session for launches from the installed app or `?source=pwa`, and say so in the privacy notice — verify unit tests for the hook, an integration test that stores the event (and not for bots or with a flag off), and the privacy page text
 
 ## 4. Standalone polish
 

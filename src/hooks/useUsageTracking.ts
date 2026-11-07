@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { useFeature } from '@/components/providers/FeaturesProvider';
 import { EMPTY_FILTERS, hasActiveFilters, type FilterState } from '@/lib/activities/filters';
+import { isStandalone } from '@/lib/pwa/install';
 
 /** Settle time before a search counts as one search, not one per keystroke. */
 export const SEARCH_SETTLE_MS = 800;
@@ -61,4 +62,32 @@ export function useTrackActivityView(activityId: string | undefined) {
     sent.current = activityId;
     send({ type: 'activity_view', activity_id: activityId });
   }, [enabled, activityId]);
+}
+
+/** Remembers, for this browsing session, that the launch was already recorded. */
+export const APP_LAUNCH_KEY = 'kit-app-launch-recorded';
+
+/**
+ * Records one `app_launch` per browsing session when the app runs installed (standalone) or
+ * was opened from its launch URL (`?source=pwa`, set by the manifest's start_url and
+ * shortcuts). Needs both the usage-tracking and pwa flags. A reload or resume inside the
+ * same session is not a new launch.
+ */
+export function useTrackAppLaunch() {
+  const tracking = useFeature('usage-tracking');
+  const pwa = useFeature('pwa');
+  const enabled = tracking && pwa;
+
+  useEffect(() => {
+    if (!enabled) return;
+    const fromLaunchUrl = new URLSearchParams(window.location.search).get('source') === 'pwa';
+    if (!fromLaunchUrl && !isStandalone(window)) return;
+    try {
+      if (window.sessionStorage.getItem(APP_LAUNCH_KEY)) return;
+      window.sessionStorage.setItem(APP_LAUNCH_KEY, '1');
+    } catch {
+      // No session storage: record once per page load rather than not at all.
+    }
+    send({ type: 'app_launch' });
+  }, [enabled]);
 }

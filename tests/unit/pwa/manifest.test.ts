@@ -8,6 +8,7 @@ import {
   buildManifest,
 } from '@/lib/pwa/manifest';
 import { GET } from '@/app/manifest.webmanifest/route';
+import { featureForPath } from '@/lib/features';
 
 const css = readFileSync(join(process.cwd(), 'src', 'app', 'globals.css'), 'utf8');
 
@@ -58,6 +59,15 @@ describe('buildManifest', () => {
     ]);
     for (const icon of icons) {
       expect(existsSync(join(process.cwd(), 'public', icon.src))).toBe(true);
+    }
+  });
+
+  it('tags every launch URL with source=pwa, on routes that are always available', () => {
+    const launchUrls = [manifest.start_url!, ...(manifest.shortcuts ?? []).map((s) => s.url)];
+    for (const launch of launchUrls) {
+      const url = new URL(launch, 'https://kit.test');
+      expect(url.searchParams.get('source')).toBe('pwa');
+      expect(featureForPath(url.pathname)).toBeNull();
     }
   });
 

@@ -20,7 +20,7 @@ export const searchFiltersSchema = z
 
 export type SearchFilters = z.infer<typeof searchFiltersSchema>;
 
-/** Only these two types may come from the browser; program_add is recorded by the server. */
+/** Only these types may come from the browser; program_add is recorded by the server. */
 export const usageEventBodySchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('search'),
@@ -32,6 +32,8 @@ export const usageEventBodySchema = z.discriminatedUnion('type', [
     type: z.literal('activity_view'),
     activity_id: z.string().uuid(),
   }),
+  // The installed app was opened (openspec: mobile-pwa). Carries nothing else.
+  z.object({ type: z.literal('app_launch') }),
 ]);
 
 export type UsageEventBody = z.infer<typeof usageEventBodySchema>;
