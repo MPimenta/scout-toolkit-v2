@@ -7,7 +7,7 @@ export function Footer() {
   const { t } = useLocale();
 
   return (
-    <footer className="on-blue border-t bg-blue-dark text-primary-foreground">
+    <footer className="on-blue border-t bg-blue-dark pb-[var(--safe-bottom)] text-primary-foreground">
       <div className="container flex flex-col items-center justify-between gap-4 py-10 md:h-24 md:flex-row md:py-0">
         <div className="flex flex-col items-center gap-4 px-8 md:flex-row md:gap-2 md:px-0">
           <p className="text-center text-sm leading-loose text-primary-foreground md:text-left">

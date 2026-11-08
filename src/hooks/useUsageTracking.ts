@@ -32,9 +32,16 @@ function searchBody(filters: FilterState, resultCount: number) {
  * for an empty search, while loading, for page changes (only filters and text count), or when
  * the same search was just recorded.
  */
-export function useTrackSearch(filters: FilterState, resultCount: number | undefined, loading: boolean) {
+export function useTrackSearch(
+  filters: FilterState,
+  resultCount: number | undefined,
+  loading: boolean,
+  /** A search restored from the session, not run by the visitor now: it is not recorded again. */
+  restored: FilterState | null = null
+) {
   const enabled = useFeature('usage-tracking');
   const last = useRef<string>('');
+  const skippedRestored = useRef(false);
 
   useEffect(() => {
     if (!enabled || loading || resultCount === undefined) return;
@@ -44,12 +51,17 @@ export function useTrackSearch(filters: FilterState, resultCount: number | undef
     }
     const key = JSON.stringify(filters);
     if (key === last.current) return;
+    if (restored && !skippedRestored.current && key === JSON.stringify(restored)) {
+      skippedRestored.current = true;
+      last.current = key;
+      return;
+    }
     const timer = setTimeout(() => {
       last.current = key;
       send(searchBody(filters, resultCount));
     }, SEARCH_SETTLE_MS);
     return () => clearTimeout(timer);
-  }, [enabled, loading, resultCount, filters]);
+  }, [enabled, loading, resultCount, filters, restored]);
 }
 
 /** Records one `activity_view` when the detail page of an activity is shown. */

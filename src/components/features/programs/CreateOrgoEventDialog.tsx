@@ -228,7 +228,7 @@ export function CreateOrgoEventDialog({
               </Button>
               {created.url ? (
                 <Button asChild>
-                  <a href={created.url} target="_blank" rel="noreferrer">
+                  <a href={created.url} target="_blank" rel="noopener noreferrer">
                     {t('orgo.openEvent')}
                   </a>
                 </Button>

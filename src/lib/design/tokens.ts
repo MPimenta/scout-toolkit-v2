@@ -69,6 +69,10 @@ export const OTHER_TOKENS = {
     'shadow-callout': '0 12px 30px rgba(21, 70, 151, 0.22)',
     'duration-ui': '180ms',
     gutter: 'clamp(1rem, 4vw, 2rem)',
+    'safe-top': 'env(safe-area-inset-top, 0px)',
+    'safe-right': 'env(safe-area-inset-right, 0px)',
+    'safe-bottom': 'env(safe-area-inset-bottom, 0px)',
+    'safe-left': 'env(safe-area-inset-left, 0px)',
     'division-outline': 'transparent',
   },
   dark: {

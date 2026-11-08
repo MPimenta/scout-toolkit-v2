@@ -71,6 +71,14 @@
     --shadow-callout: 0 12px 30px rgba(21, 70, 151, 0.22);
     --duration-ui: 180ms;
     --gutter: clamp(1rem, 4vw, 2rem);
+
+    /* Device safe areas (notch, rounded corners, home indicator): 0 unless the page is drawn edge to
+       edge (viewport-fit=cover, set with the pwa flag). Components read these instead of env(), so a
+       test can simulate an inset by overriding them. */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
   }
 
   .dark {
@@ -214,5 +222,13 @@
   .range-dual input[type='range']::-webkit-slider-runnable-track,
   .range-dual input[type='range']::-moz-range-track {
     background: transparent;
+  }
+}
+
+/* Landscape notches: keep content off the sides. Fixed elements add --safe-* themselves. */
+@layer base {
+  body {
+    padding-left: var(--safe-left);
+    padding-right: var(--safe-right);
   }
 }

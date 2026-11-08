@@ -150,7 +150,7 @@ export function ActivityFilters({ filters, onFiltersChange, onClearFilters, resu
           <div className="px-6 pt-4">
             <FilterPanel filters={localFilters} onChange={change} types={types} sdgs={sdgs} goals={goals} compact />
           </div>
-          <div className="sticky bottom-0 mt-4 flex gap-2 border-t bg-background px-6 py-3">
+          <div className="sticky bottom-0 mt-4 flex gap-2 border-t bg-background px-6 pb-[calc(0.75rem+var(--safe-bottom))] pt-3">
             {active && (
               <Button variant="outline" className="min-h-11" onClick={clear}>
                 {t('common.clearAll')}

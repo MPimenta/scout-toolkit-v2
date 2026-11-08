@@ -462,7 +462,7 @@ export function ProgramBuilder({
                   <a
                     href={program.orgo_event_url}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                   >
                     {t('programs.viewOrgo')}
                   </a>

@@ -19,7 +19,7 @@ export function TopBar() {
   const { t } = useLocale();
 
   return (
-    <div className="on-blue bg-primary text-primary-foreground">
+    <div className="on-blue bg-primary pt-[var(--safe-top)] text-primary-foreground">
       <div className="container relative flex h-8 items-center justify-between gap-6 text-xs">
         <nav aria-label={t('topBar.label')} className="hidden gap-7 whitespace-nowrap sm:flex">
           {LINKS.map((link) => (

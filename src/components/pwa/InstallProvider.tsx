@@ -28,9 +28,15 @@ export type InstallMode = 'prompt' | 'ios' | null;
 interface InstallContextValue {
   mode: InstallMode;
   requestInstall: () => void;
+  /** True while the app runs in its own window (installed), where the browser's back button is missing. */
+  standalone: boolean;
 }
 
-const InstallContext = createContext<InstallContextValue>({ mode: null, requestInstall: () => undefined });
+const InstallContext = createContext<InstallContextValue>({
+  mode: null,
+  requestInstall: () => undefined,
+  standalone: false,
+});
 
 /** What the install entries need. Inert (nothing to offer) outside the provider or with the flag off. */
 export function useInstall(): InstallContextValue {
@@ -55,6 +61,7 @@ export function InstallProvider({ children }: { children: React.ReactNode }) {
   const { t } = useLocale();
   const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
   const [standalone, setStandalone] = useState(false);
+  const [installed, setInstalled] = useState(false);
   const [ios, setIos] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [iosOpen, setIosOpen] = useState(false);
@@ -62,6 +69,9 @@ export function InstallProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!enabled) return;
     setStandalone(isStandalone(window));
+    const displayMode = window.matchMedia?.('(display-mode: standalone)');
+    const onDisplayModeChange = () => setStandalone(isStandalone(window));
+    displayMode?.addEventListener?.('change', onDisplayModeChange);
     setIos(isIosSafari(navigator));
     setDismissed(readDismissal(getStorage()));
 
@@ -71,13 +81,14 @@ export function InstallProvider({ children }: { children: React.ReactNode }) {
     };
     const onInstalled = () => {
       setDeferred(null);
-      setStandalone(true);
+      setInstalled(true); // the app opens in its own window; this tab stays a browser tab
     };
     window.addEventListener('beforeinstallprompt', onBeforeInstall);
     window.addEventListener('appinstalled', onInstalled);
     return () => {
       window.removeEventListener('beforeinstallprompt', onBeforeInstall);
       window.removeEventListener('appinstalled', onInstalled);
+      displayMode?.removeEventListener?.('change', onDisplayModeChange);
     };
   }, [enabled]);
 
@@ -86,7 +97,16 @@ export function InstallProvider({ children }: { children: React.ReactNode }) {
     setDismissed(true);
   }, []);
 
-  const mode: InstallMode = !enabled || standalone || dismissed ? null : deferred ? 'prompt' : ios ? 'ios' : null;
+  // Style hook for standalone-only rules: html[data-display-mode='standalone'].
+  useEffect(() => {
+    if (!enabled) return;
+    document.documentElement.dataset.displayMode = standalone ? 'standalone' : 'browser';
+    return () => {
+      delete document.documentElement.dataset.displayMode;
+    };
+  }, [enabled, standalone]);
+
+  const mode: InstallMode = !enabled || standalone || installed || dismissed ? null : deferred ? 'prompt' : ios ? 'ios' : null;
 
   const requestInstall = useCallback(() => {
     if (mode === 'ios') {
@@ -104,7 +124,10 @@ export function InstallProvider({ children }: { children: React.ReactNode }) {
       .catch(() => undefined);
   }, [mode, deferred, dismiss]);
 
-  const value = useMemo(() => ({ mode, requestInstall }), [mode, requestInstall]);
+  const value = useMemo(
+    () => ({ mode, requestInstall, standalone: enabled && standalone }),
+    [mode, requestInstall, enabled, standalone]
+  );
 
   return (
     <InstallContext.Provider value={value}>

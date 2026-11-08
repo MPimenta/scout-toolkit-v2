@@ -16,6 +16,16 @@ import { LOCALE_COOKIE, resolveLocale } from '@/lib/locale/catalog';
 import { VIEW_AS_COOKIE } from '@/lib/auth/view-as-cookie';
 import './globals.css';
 
+// Sonner's default offsets (24px, 16px on phones) plus the device safe areas (see --safe-* in globals.css).
+const insetOffset = (base: string) => ({
+  top: `calc(${base} + var(--safe-top))`,
+  right: `calc(${base} + var(--safe-right))`,
+  bottom: `calc(${base} + var(--safe-bottom))`,
+  left: `calc(${base} + var(--safe-left))`,
+});
+const TOAST_OFFSET = insetOffset('24px');
+const TOAST_MOBILE_OFFSET = insetOffset('16px');
+
 export function generateMetadata(): Metadata {
   const pwa = isFeatureEnabled('pwa');
   return {
@@ -72,7 +82,7 @@ export default async function RootLayout({
                     <AppShell>{children}</AppShell>
                     {enabled.has('issue-reports') && <ReportLauncher />}
                     {enabled.has('pwa') && <PwaRegistrar />}
-                    <Toaster />
+                    <Toaster offset={TOAST_OFFSET} mobileOffset={TOAST_MOBILE_OFFSET} />
                   </InstallProvider>
                 </ViewAsProvider>
               </LocaleProvider>

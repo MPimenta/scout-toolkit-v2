@@ -47,7 +47,7 @@ export function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background">
+    <header className="sticky top-[var(--safe-top)] z-50 w-full border-b bg-background">
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center min-h-11">
           <Image
@@ -93,7 +93,7 @@ export function Header() {
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[min(100dvw,20rem)]">
+            <SheetContent side="right" className="w-[min(100dvw,20rem)] pb-[var(--safe-bottom)]">
               <SheetHeader>
                 <SheetTitle>{t('nav.menu')}</SheetTitle>
               </SheetHeader>

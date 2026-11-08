@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useActivities } from '@/hooks/useActivities';
 import { ActivityCard } from '@/components/features/activities/ActivityCard';
 import { ActivitiesTable } from '@/components/features/activities/ActivitiesTable';
 import { ViewToggle, ViewMode } from '@/components/features/activities/ViewToggle';
 import { ActivityFilters } from '@/components/features/activities/ActivityFilters';
 import { EMPTY_FILTERS, type FilterState } from '@/lib/activities/filters';
+import { readCatalogueSession, writeCatalogueSession } from '@/lib/activities/catalogue-session';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -27,6 +28,27 @@ export default function ActivitiesPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('tiles');
   const [page, setPage] = useState(1);
 
+  // With the installed app there is no browser chrome, so keep the list as it was left while the
+  // session lasts (filters, page, view). Restored after mount to match the server-rendered page.
+  const keepSession = useFeature('pwa');
+  const [sessionReady, setSessionReady] = useState(false);
+  const restoredFilters = useRef<FilterState | null>(null);
+  useEffect(() => {
+    if (!keepSession) return;
+    const saved = readCatalogueSession(window.sessionStorage);
+    if (saved) {
+      restoredFilters.current = saved.filters;
+      setFilters(saved.filters);
+      setPage(saved.page);
+      setViewMode(saved.viewMode);
+    }
+    setSessionReady(true);
+  }, [keepSession]);
+  useEffect(() => {
+    if (!keepSession || !sessionReady) return;
+    writeCatalogueSession(window.sessionStorage, { filters, page, viewMode });
+  }, [keepSession, sessionReady, filters, page, viewMode]);
+
   const { activities, pagination, filterInfo, loading, error, refresh } = useActivities({
     filters,
     page,
@@ -35,7 +57,7 @@ export default function ActivitiesPage() {
     order: 'asc',
   });
 
-  useTrackSearch(filters, pagination?.total, loading);
+  useTrackSearch(filters, pagination?.total, loading, restoredFilters.current);
 
   const handleFiltersChange = (newFilters: FilterState) => {
     setFilters(newFilters);

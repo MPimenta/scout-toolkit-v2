@@ -1,5 +1,6 @@
 'use client';
 
+import { BackControl } from '@/components/pwa/BackControl';
 import { useActivity } from '@/hooks/useActivity';
 import { useTrackActivityView } from '@/hooks/useUsageTracking';
 import { Button } from '@/components/ui/button';
@@ -64,6 +65,7 @@ export function ActivityDetail({ activityId }: ActivityDetailProps) {
 
   return (
     <div className="mx-auto max-w-[900px] space-y-6">
+      <BackControl fallbackHref="/activities" label={t('back.activities')} />
       {/* Header: identity, key facts, divisions, actions, source (shown once) */}
       <header className="grid gap-5 md:grid-cols-[280px_1fr]">
         {activity.image_url ? (

@@ -120,6 +120,25 @@ describe('tracking hooks', () => {
     expect(sent()).toEqual([{ type: 'search', text: 'jogo', filters: expect.any(Object), result_count: 5 }]);
   });
 
+  it('does not record a search restored from the session again, but records the next one', () => {
+    const restored = { ...EMPTY_FILTERS, search: 'fogo' };
+    const { rerender } = renderHook(({ filters }) => useTrackSearch(filters, 5, false, restored), {
+      wrapper: wrapper(true),
+      initialProps: { filters: restored },
+    });
+    act(() => void vi.advanceTimersByTime(SEARCH_SETTLE_MS + 10));
+    expect(fetchMock).not.toHaveBeenCalled();
+
+    rerender({ filters: { ...EMPTY_FILTERS, search: 'jogo' } });
+    act(() => void vi.advanceTimersByTime(SEARCH_SETTLE_MS + 10));
+    expect(sent()).toEqual([{ type: 'search', text: 'jogo', filters: expect.any(Object), result_count: 5 }]);
+
+    // Coming back to the restored search later is a real search by the visitor.
+    rerender({ filters: restored });
+    act(() => void vi.advanceTimersByTime(SEARCH_SETTLE_MS + 10));
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
   it('sends nothing for an empty search, while loading, or when the flag is off', () => {
     renderHook(() => useTrackSearch(EMPTY_FILTERS, 20, false), { wrapper: wrapper(true) });
     renderHook(() => useTrackSearch({ ...EMPTY_FILTERS, search: 'jogo' }, 20, true), { wrapper: wrapper(true) });
