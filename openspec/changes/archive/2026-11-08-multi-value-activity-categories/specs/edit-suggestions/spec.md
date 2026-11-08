@@ -9,6 +9,11 @@ A signed-in user SHALL submit a suggestion against one allowed field (`name`, `d
 - **WHEN** a signed-in user suggests a new materials text on an approved activity
 - **THEN** a pending suggestion is stored for that field
 
+#### Scenario: Suggest instructions
+
+- **WHEN** a signed-in user suggests instructions text on an approved activity
+- **THEN** a pending suggestion is stored for the `instructions` field, and accepting it updates the activity's instructions
+
 #### Scenario: Suggest an extra age group
 
 - **WHEN** a user suggests `age_groups = [scouts, rovers]` for an activity currently `[scouts]`
