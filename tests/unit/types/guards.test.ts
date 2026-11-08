@@ -23,6 +23,7 @@ import {
   
   // API response type guards
   isApiActivity,
+  isApiEducationalGoal,
   isApiProgram,
   
   // Error type guards
@@ -321,6 +322,13 @@ describe('Type Guards - API Response Types', () => {
         sdgs: [],
       };
       expect(isApiActivity(validApiActivity)).toBe(true);
+    });
+
+    it('requires embedded goals to carry their code, title and age groups', () => {
+      const goal = { id: 'g1', code: '1A.2', title: 'Objetivo', age_groups: ['scouts'] };
+      expect(isApiEducationalGoal(goal)).toBe(true);
+      expect(isApiEducationalGoal({ ...goal, age_groups: undefined })).toBe(false);
+      expect(isApiEducationalGoal({ id: 'g1', title: 'Objetivo' })).toBe(false);
     });
 
     it('should return false for invalid API activity objects', () => {

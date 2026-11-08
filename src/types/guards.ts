@@ -19,6 +19,7 @@ import {
 
 import { 
   ApiActivity,
+  ApiEducationalGoal,
   ApiProgram,
   ApiProgramEntry
 } from './api';
@@ -159,6 +160,14 @@ export function isReview(value: unknown): value is Review {
 }
 
 // API response type guards
+export function isApiEducationalGoal(value: unknown): value is ApiEducationalGoal {
+  return isObject(value) &&
+    isString(value.id) &&
+    isString(value.code) &&
+    isString(value.title) &&
+    isArrayOf(value.age_groups, isString);
+}
+
 export function isApiActivity(value: unknown): value is ApiActivity {
   return isObject(value) &&
     isString(value.id) &&
@@ -174,7 +183,7 @@ export function isApiActivity(value: unknown): value is ApiActivity {
     isString(value.created_at) &&
     isArrayOf(value.activity_types, (t): t is { id: string; name: string } =>
       isObject(t) && isString(t.id) && isString(t.name)) &&
-    isArray(value.educational_goals) &&
+    isArray(value.educational_goals) && value.educational_goals.every(isApiEducationalGoal) &&
     isArray(value.sdgs);
 }
 

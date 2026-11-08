@@ -11,7 +11,7 @@ See `proposal.md` for motivation.
 
 Code grammar: `<n><area>.[<sub>.]<stage>[-<stage>]`, area letter in `A C E F I S`, stage `1`–`4` (1 Alcateia, 2 Escoteiros, 3 Exploradores, 4 Clã).
 
-**Current model.** `educational_areas` (5 invented rows) → `educational_goals` (15 invented rows, `area_id`, `title`, `description`, unique `code`, `icon`), linked to activities by `activity_educational_goals`. Activity age groups are text-enum rows in `activity_age_groups` (`cub_scouts | scouts | adventurers | rovers | leaders`). Seeds run through `drizzle/seeds/index.ts`; `scripts/ensure-hosted-db.mjs` runs them on Vercel **only when the catalogue is empty**. The local dev DB has 15 activities, one value per category (migration `0002` is applied; no activity is multi-valued yet).
+**Current model.** `educational_areas` (5 invented rows) → `educational_goals` (15 invented rows, `area_id`, `title`, `description`, unique `code`, `icon`), linked to activities by `activity_educational_goals`. Activity age groups are text-enum rows in `activity_age_groups` (`cub_scouts | scouts | adventurers | rovers | leaders`). Seeds run through `drizzle/seeds/index.ts`; `scripts/ensure-hosted-db.mjs` seeded hosted databases **only when the catalogue was empty** (before the reference loader of D5). The local dev DB has 15 activities, one value per category (migration `0002` is applied; no activity is multi-valued yet).
 
 **Constraints.** Plain Portuguese `text`, UUID keys, committed migrations only, no invented brand colours (`visual-system`), ask before any `db:*` command.
 
@@ -70,7 +70,7 @@ The 5 placeholder area codes and 15 goal codes from the old seed (`SOCIAL`, `SOC
 A `verifyActivityGoals(goalIds, ageGroups)` helper next to `verifyActivityTypes` runs one query over `educational_goal_age_groups` and returns the goals with no overlap. It is called by the admin and user create/update routes, and the Portuguese error names the goal codes. Goals with no age-group rows (legacy admin-created ones) never match, so they cannot be newly linked until an admin gives them age groups. The editor mirrors the rule on the client for UX only.
 
 **D9. Read API.**
-`GET /api/taxonomies/educational-goals` returns `{id, code, title, description, area, general_objective, age_groups}` and accepts repeated `age_group` and `general_objective_id` filters. `educational-areas` also returns general objectives, so the editor can group without extra calls. Activity payloads embed goals in the same shape. The catalogue `educational_goal` filter keeps its OR semantics.
+`GET /api/taxonomies/educational-goals` returns `{id, code, title, description, area, general_objective, age_groups}` and accepts repeated `age_group` and `general_objective_id` filters. `educational-areas` also returns general objectives, so the editor can group without extra calls. Activity payloads embed a leaner goal, `{id, code, title, age_groups}` (typed as `ApiEducationalGoal`), which is all the pills need; the activity detail adds `area` and a separate per-division `objectives` list (code, title, age group, observable behaviour, general objective) from `rich-activity-details`. The full shape with `general_objective` and `description` (`ApiTaxonomyGoal`) is only returned by the taxonomy endpoint. The catalogue `educational_goal` filter keeps its OR semantics.
 
 **D10. Pill component and colour tokens.**
 One `ObjectivePill` component (code, truncated title, `aria-label` and `title` with the age-group name) takes the activity's age groups and renders one pill per matching age group (D-rule in the `activity-objectives` spec). The colours are the division tokens defined by `brand-design-system` (Alcateia yellow, Tribo de Escoteiros dark green, Tribo de Exploradores dark blue, Clã red, each with its own label colour); the pill is built on that change's `DivisionPill`. Chefia has a token too but no objectives, so objective pills never use it.
@@ -89,7 +89,7 @@ The Regulamento is the regulation in force, so its codes and text win; the workb
 ## Risks / Trade-offs
 
 - **47 of 112 *desafios* link objectives from more than one stage** (for example an Escoteiros-band *desafio* that also lists a Clã objective) → stored exactly as in the Matriz; nothing in this change uses *desafio* links for matching. A report counts them so the owners of the Matriz can confirm.
-- **Pills depend on another change** → the division tokens and `DivisionPill` come from `brand-design-system`; until they land, pills use the neutral outline badge and everything else ships.
+- **Pills depend on another change** → the division tokens and `DivisionPill` come from `brand-design-system` and are in place; objectives with no matching division (legacy, admin-created) fall back to a neutral pill.
 - **The two sources disagree in places** → the reconciliation report (D13) makes each difference visible; the product owner or the Matriz team settles flagged items before the dataset is committed.
 - **Area names are confirmed** (and match the Regulamento), so no longer a risk; names live in the generator's mapping.
 - **Removing placeholder links on Preview/Production** → deliberate, logged with counts; run on Preview before Production. If real activities were curated against placeholders there, they lose those links.

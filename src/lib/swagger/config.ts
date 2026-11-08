@@ -148,9 +148,20 @@ const swaggerOptions: swaggerJSDoc.Options = {
             educational_goals: {
               type: 'array',
               items: {
-                type: 'string',
+                type: 'object',
+                properties: {
+                  id: { type: 'string', format: 'uuid' },
+                  code: { type: 'string', description: 'Matriz code, for example 1A.2' },
+                  title: { type: 'string' },
+                  age_groups: {
+                    type: 'array',
+                    items: { type: 'string', enum: ['cub_scouts', 'scouts', 'adventurers', 'rovers'] },
+                    description: 'Age groups the objective belongs to',
+                  },
+                },
+                required: ['id', 'code', 'title', 'age_groups'],
               },
-              description: 'Educational goals addressed by the activity',
+              description: 'Specific objectives (Matriz de Progresso) the activity develops',
             },
             sdgs: {
               type: 'array',

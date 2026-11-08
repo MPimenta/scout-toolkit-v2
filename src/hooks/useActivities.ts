@@ -36,7 +36,7 @@ export interface ActivitiesResponse {
     age_groups: string[];
     created_at: string;
     activity_types: Array<{ id: string; name: string }>;
-    educational_goals: Array<{ id: string; title: string; code: string }>;
+    educational_goals: Array<{ id: string; title: string; code: string; age_groups?: string[] }>;
     sdgs: Array<{ id: string; number: number; name: string; icon_url: string; icon: string }>;
   }>;
   pagination: PaginationInfo;

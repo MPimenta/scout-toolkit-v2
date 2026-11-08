@@ -9,6 +9,7 @@ import { FactIcon } from '@/components/ui/Fact';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Target, Users, GripVertical, Edit, Trash2 } from 'lucide-react';
 import { useAllActivities } from '@/hooks/useActivities';
+import { ObjectivePill } from '../activities/ObjectivePill';
 
 /**
  * Props for the ProgramEntryCard component
@@ -190,11 +191,11 @@ export function ProgramEntryCard({ entry, index, onRemove, onUpdate, onEdit }: P
               </div>
               
               {activity.educational_goals && activity.educational_goals.length > 0 && (
-                <div className="flex items-center gap-2">
-                  <Target className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">
-                    {activity.educational_goals.map(goal => goal.title).join(', ')}
-                  </span>
+                <div className="flex flex-wrap items-center gap-1">
+                  <Target className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+                  {activity.educational_goals.map(goal => (
+                    <ObjectivePill key={goal.id} objective={goal} activityAgeGroups={activity.age_groups} />
+                  ))}
                 </div>
               )}
             </div>

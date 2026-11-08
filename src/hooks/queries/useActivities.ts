@@ -48,6 +48,7 @@ export interface ActivityResponse {
       id: string;
       title: string;
       code: string;
+      age_groups?: string[];
     }>;
     sdgs: Array<{
       id: string;

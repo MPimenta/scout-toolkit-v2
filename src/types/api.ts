@@ -18,6 +18,27 @@ export interface PaginationParams {
   limit?: number;
 }
 
+/**
+ * A specific objective (Matriz de Progresso) as embedded in an activity. The catalogue list and
+ * the activity detail carry this lean shape; `general_objective` and `description` come only from
+ * GET /api/taxonomies/educational-goals, and `area` only from the activity detail.
+ */
+export interface ApiEducationalGoal {
+  id: string;
+  code: string;
+  title: string;
+  /** Age groups the objective belongs to (pills take their colour from these). */
+  age_groups: string[];
+  area?: { id: string; name: string; icon?: string; code?: string } | null;
+}
+
+/** Full shape returned by GET /api/taxonomies/educational-goals. */
+export interface ApiTaxonomyGoal extends ApiEducationalGoal {
+  description?: string | null;
+  is_managed?: boolean;
+  general_objective: { id: string; code: string; title: string; path?: string | null } | null;
+}
+
 // Activities API Types
 export interface ApiActivity {
   id: string;
@@ -36,12 +57,7 @@ export interface ApiActivity {
     id: string;
     name: string;
   }>;
-  educational_goals: Array<{
-    id: string;
-    title: string;
-    code: string;
-    age_groups?: string[];
-  }>;
+  educational_goals: ApiEducationalGoal[];
   sdgs: Array<{
     id: string;
     number: number;
@@ -99,13 +115,6 @@ export interface ApiProgramsResponse {
 export interface ApiActivityType {
   id: string;
   name: string;
-}
-
-export interface ApiEducationalGoal {
-  id: string;
-  title: string;
-  code: string;
-  area: string;
 }
 
 export interface ApiSdg {

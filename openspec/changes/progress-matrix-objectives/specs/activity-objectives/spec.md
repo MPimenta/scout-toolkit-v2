@@ -77,6 +77,12 @@ Wherever an objective is shown as a pill (activity card, activity detail, filter
 - **WHEN** the detail view renders
 - **THEN** it shows one pill, in the Clã colour
 
+#### Scenario: Program summary
+
+- **GIVEN** a program with an Exploradores activity and a Clã activity, both linked to `3A.3-4`
+- **WHEN** the program summary renders
+- **THEN** `3A.3-4` appears once per division the program uses it for (one Exploradores pill, one Clã pill), not once per activity
+
 #### Scenario: Contrast
 
 - **WHEN** a pill renders in light or dark mode

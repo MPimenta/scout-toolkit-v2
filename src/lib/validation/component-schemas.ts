@@ -54,6 +54,16 @@ export const componentSchemas = {
       effort_level: z.enum(['low', 'medium', 'high']),
       locations: z.array(z.enum(LOCATION_VALUES)).min(1),
       age_groups: z.array(z.enum(AGE_GROUP_VALUES)).min(1),
+      educational_goals: z
+        .array(
+          z.object({
+            id: z.string(),
+            code: z.string(),
+            title: z.string(),
+            age_groups: z.array(z.enum(AGE_GROUP_VALUES)),
+          })
+        )
+        .optional(),
     }),
   }),
 

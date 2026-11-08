@@ -4,7 +4,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Clock, Target, Globe, Users, Activity } from 'lucide-react';
-import { IconDisplay } from '@/components/ui/IconDisplay';
+import { ObjectivePill, pillAgeGroups } from '../activities/ObjectivePill';
 import { ProgramEntry } from '../../../../drizzle/schema/programs';
 import { ActivitiesResponse } from '@/hooks/useActivities';
 
@@ -38,7 +38,8 @@ export function ProgramSummary({
   const customBlockCount = entries.filter(entry => entry.entry_type === 'custom').length;
   
   // Get all educational goals and SDGs from activities
-  const allEducationalGoals = new Map();
+  // One entry per objective; its age groups are the divisions of the program's own activities that it belongs to.
+  const allEducationalGoals = new Map<string, { id: string; code: string; title: string; age_groups: string[] }>();
   const allSDGs = new Map();
 
   entries.forEach(entry => {
@@ -47,7 +48,14 @@ export function ProgramSummary({
       if (activity) {
         // Collect educational goals
         activity.educational_goals?.forEach(goal => {
-          allEducationalGoals.set(goal.id, goal);
+          const shared = pillAgeGroups(goal, activity.age_groups);
+          const known = allEducationalGoals.get(goal.id);
+          allEducationalGoals.set(goal.id, {
+            id: goal.id,
+            code: goal.code,
+            title: goal.title,
+            age_groups: [...new Set([...(known?.age_groups ?? []), ...shared])],
+          });
         });
 
         // Collect SDGs
@@ -99,15 +107,7 @@ export function ProgramSummary({
           {allEducationalGoals.size > 0 ? (
             <div className="flex flex-wrap gap-1">
               {Array.from(allEducationalGoals.values()).map(goal => (
-                <Badge key={goal.id} variant="secondary" className="text-xs">
-                  <IconDisplay 
-                    icon={goal.icon || '🎯'} 
-                    text={goal.title}
-                    className="gap-1"
-                    iconClassName="text-xs"
-                    textClassName="text-xs"
-                  />
-                </Badge>
+                <ObjectivePill key={goal.id} objective={goal} />
               ))}
             </div>
           ) : (

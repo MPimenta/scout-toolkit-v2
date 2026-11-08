@@ -100,6 +100,7 @@ describe.skip('API Response Type Validation', () => {
                   id: educationalGoal.id,
                   title: educationalGoal.title,
                   code: educationalGoal.code,
+                  age_groups: ['scouts'],
                 },
               ],
               sdgs: [

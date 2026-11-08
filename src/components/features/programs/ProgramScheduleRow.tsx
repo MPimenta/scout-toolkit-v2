@@ -10,7 +10,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { ObjectivePill } from '../activities/ObjectivePill';
 import { useLocale } from '@/components/locale/LocaleProvider';
 import { enumLabel, enumLabelList } from '@/lib/locale/labels';
 import { ProgramEntry } from '../../../../drizzle/schema/programs';
@@ -224,13 +224,7 @@ export function ProgramScheduleRow({
                 activity.educational_goals.length > 0 && (
                   <div className="flex flex-wrap gap-1">
                     {activity.educational_goals.map((goal) => (
-                      <Badge
-                        key={goal.id}
-                        variant="outline"
-                        className="text-xs font-normal"
-                      >
-                        {goal.title}
-                      </Badge>
+                      <ObjectivePill key={goal.id} objective={goal} activityAgeGroups={activity.age_groups} />
                     ))}
                   </div>
                 )}

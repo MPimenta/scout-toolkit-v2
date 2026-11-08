@@ -27,10 +27,10 @@
 
 ## 5. API and write validation
 
-- [ ] 5.1 Extend `GET /api/taxonomies/educational-goals` and `educational-areas` as in design D9 (general objective, age groups, repeated `age_group` filter); update `src/types/*`, `src/lib/validation/component-schemas.ts`, guards and `src/lib/swagger/config.ts`.
-  - Done: both routes and the activity payloads; still open: `src/lib/swagger/config.ts`, `component-schemas.ts`, `guards.ts`.
+- [x] 5.1 Extend `GET /api/taxonomies/educational-goals` and `educational-areas` as in design D9 (general objective, age groups, repeated `age_group` filter); update `src/types/*`, `src/lib/validation/component-schemas.ts`, guards and `src/lib/swagger/config.ts`.
+  - Done: both routes and the activity payloads; `ApiEducationalGoal` (embedded, lean) and `ApiTaxonomyGoal` (full) in `src/types/api.ts`, `isApiEducationalGoal` in `guards.ts`, the swagger activity schema and the component schema. D9 now says embedded goals are the lean shape.
 - [x] 5.2 Add `verifyActivityGoals(goalIds, ageGroups)` in `src/lib/activities/write.ts` and call it from the admin, user and PATCH routes before writing; return the Portuguese 400 naming the goal codes.
-- [ ] 5.3 Activity payloads embed goals in the new shape; the catalogue `educational_goal` filter keeps OR semantics; Excel/PDF exports show goal codes.
+- [x] 5.3 Activity payloads embed goals in the new shape; the catalogue `educational_goal` filter keeps OR semantics; Excel/PDF exports show goal codes. (Exports use `formatGoalLabel`, which prints `code title`.)
 - [x] 5.4 Integration tests for the four `activity-objectives` write scenarios (match, mismatch, several age groups with a shared objective, removing an age group) and for the filter returning one row per activity.
 
 ## 6. Admin taxonomies
@@ -44,7 +44,7 @@
 
 - [x] 7.1 Confirm the division tokens exist in `src/app/globals.css` (defined by `brand-design-system`); this change adds no colour values.
 - [x] 7.2 `ObjectivePill` component built on `DivisionPill` (code, truncated title, `aria-label` and `title` with the division name, one pill per matching activity age group) plus unit tests including the shared-objective scenarios and the Clã near-black label.
-- [ ] 7.3 Use it in `ActivityCard` (first three + "+k"), `ActivityDetail`, `ActivityFilters`, `ProgramSummary` and the program entry components.
+- [x] 7.3 Use it in `ActivityCard` (first three + "+k"), `ActivityDetail`, `ActivityFilters`, `ProgramSummary` and the program entry components. (The activity detail shows division pills per objective through `DivisionObjectives`; `ProgramSummary` shows one pill per division the program uses; `ProgramScheduleRow` and `ProgramEntryCard` use `ObjectivePill`. `ProgramEntryCard` is not rendered anywhere yet.)
 - [x] 7.4 `ActivityEditorForm`: objectives grouped by area and general objective for the selected age groups only, with search, a hint when none is selected, and auto-deselect with a message when an age group is dropped.
 - [x] 7.5 `ActivityFilters`: objective list follows the age-group selection and drops selections that no longer apply.
 - [ ] 7.6 Component tests for the editor and filters; add an E2E case: pick two age groups, pick matching objectives, save, see two coloured pills.
