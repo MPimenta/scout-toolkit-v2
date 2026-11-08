@@ -33,7 +33,7 @@ export function generateMetadata(): Metadata {
     description: 'Uma plataforma para Dirigentes escotistas navegarem atividades e criarem programas',
     icons: {
       icon: { url: '/brand/favicon.png', type: 'image/png' },
-      apple: '/apple-icon.png',
+      apple: '/brand/pwa/apple-touch-icon-180.png',
     },
     // PWA head metadata only with the `pwa` flag on (openspec: mobile-pwa).
     ...(pwa && {

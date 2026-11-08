@@ -37,15 +37,12 @@ yarn-error.log*
 .env*
 !.env.example
 
-# vercel
-.vercel
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts
 
 # database
-# drizzle/migrations/*.sql is committed: Vercel builds apply these migrations.
+# drizzle/migrations/*.sql is committed: deploys apply these migrations.
 
 # testing
 /test-results/

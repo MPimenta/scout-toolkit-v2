@@ -10,7 +10,7 @@ const ICONS: Array<[string, number]> = [
   ['public/brand/pwa/icon-192.png', 192],
   ['public/brand/pwa/icon-512.png', 512],
   ['public/brand/pwa/icon-maskable-512.png', 512],
-  ['src/app/apple-icon.png', 180],
+  ['public/brand/pwa/apple-touch-icon-180.png', 180],
 ];
 
 describe('app icons', () => {

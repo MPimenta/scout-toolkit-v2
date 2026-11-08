@@ -10,7 +10,7 @@
  * (a circle of 80% of the width).
  *
  *  - public/brand/pwa/icon-192.png, icon-512.png, icon-maskable-512.png
- *  - src/app/apple-icon.png (180x180; Next.js links it as the Apple touch icon)
+ *  - public/brand/pwa/apple-touch-icon-180.png (180x180; linked from icons.apple in layout.tsx)
  */
 import sharp from 'sharp';
 import { mkdir } from 'node:fs/promises';
@@ -41,7 +41,7 @@ const targets = [
   [join(outDir, 'icon-512.png'), 512],
   [join(outDir, 'icon-maskable-512.png'), 512],
   [join(outDir, 'icon-192.png'), 192],
-  [join(root, 'src', 'app', 'apple-icon.png'), 180],
+  [join(root, 'public', 'brand', 'pwa', 'apple-touch-icon-180.png'), 180],
 ];
 for (const [file, size] of targets) {
   await sharp(master).resize(size, size).removeAlpha().png().toFile(file);

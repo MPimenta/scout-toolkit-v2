@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Gives Kit de Atividades a hosted Preview on Vercel with its own Neon database so a pull request can be opened in a browser without writing to production or to the local Docker databases.
+Gives Kit de Atividades a hosted Preview on Azure with its own database so a pull request can be opened in a browser without writing to production or to the local Docker databases.
 
 ## Requirements
 

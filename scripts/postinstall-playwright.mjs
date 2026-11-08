@@ -1,6 +1,5 @@
 // Installs this project's Playwright Chromium after `npm install` so PDF export
-// and e2e tests work without a manual step. Skipped in CI and on Vercel (both
-// set CI), or when PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD is set. Playwright skips the
+// and e2e tests work without a manual step. Skipped in CI, or when PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD is set. Playwright skips the
 // download itself when the browser is already present.
 import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';

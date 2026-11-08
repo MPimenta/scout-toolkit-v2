@@ -1,6 +1,5 @@
 // Hosted database step for Preview and Production. The deploy workflow runs it (with
-// ENSURE_HOSTED_DB=1) before the new image is switched in; during the move from Vercel it
-// also still runs from `npm run build` there (the VERCEL variable).
+// ENSURE_HOSTED_DB=1) before the new image is switched in.
 //
 // 1. If the database already has the app tables but no Drizzle migration history
 //    (it was created with `drizzle-kit push` before migrations were committed),
@@ -17,7 +16,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import postgres from 'postgres';
 
-if (!process.env.VERCEL && process.env.ENSURE_HOSTED_DB !== '1') {
+if (process.env.ENSURE_HOSTED_DB !== '1') {
   process.exit(0);
 }
 
