@@ -134,16 +134,16 @@ describe('rich activity writes (DB)', () => {
     expect(error).toContain('1A.1');
   });
 
-  it('lets a leaders row reference a rovers objective, and nothing else', async () => {
+  it('has no objectives for Dirigentes: a leaders row is rejected even for a Clã objective', async () => {
     const roversGoal = await goalId('4A.4');
-    const scoutsGoal = await goalId('4A.2');
-    const ok = parsed({
+    const bad = parsed({
       age_groups: ['rovers', 'leaders'],
       objectives: [{ goal_id: roversGoal, age_group: 'leaders', behaviour: 'Dá o exemplo' }],
     });
+    expect(await verifyActivityGoals(bad)).toContain('4A.4');
+    // The same activity is fine with the objective on its Clã division only.
+    const ok = parsed({ age_groups: ['rovers', 'leaders'], objectives: [{ goal_id: roversGoal, age_group: 'rovers' }] });
     expect(await verifyActivityGoals(ok)).toBeNull();
-    const bad = parsed({ age_groups: ['rovers', 'leaders'], objectives: [{ goal_id: scoutsGoal, age_group: 'leaders' }] });
-    expect(await verifyActivityGoals(bad)).toContain('4A.2');
   });
 
   it('rejects a row for a division that is not on the activity', () => {

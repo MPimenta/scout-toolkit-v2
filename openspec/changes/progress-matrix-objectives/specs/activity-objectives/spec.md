@@ -26,6 +26,12 @@ An activity SHALL be linkable to any number of specific objectives. Every linked
 - **WHEN** it is saved with `1A.2`, `1A.3` and the shared `3A.3-4`
 - **THEN** all three are linked
 
+#### Scenario: Dirigentes carry no objectives
+
+- **GIVEN** an activity for `rovers` and `leaders`
+- **WHEN** it is saved with objective `4A.4` for `rovers`
+- **THEN** it is stored, and no objective is linked to `leaders`
+
 #### Scenario: Removing an age group
 
 - **GIVEN** an activity for `scouts` and `adventurers` linked to `1A.2` and `1A.3`
@@ -34,7 +40,7 @@ An activity SHALL be linkable to any number of specific objectives. Every linked
 
 ### Requirement: Editor offers only matching objectives
 
-The activity editor SHALL list objectives only for the age groups currently selected, grouped by area and general objective, each shown with its code. When no age group is selected it SHALL show a hint to choose one first. When the selection of age groups changes, objectives that no longer match SHALL be deselected and the user told which ones.
+The activity editor SHALL list objectives only for the age groups currently selected (Dirigentes have none and show a note instead), grouped by area and general objective, each shown with its code. When no age group is selected it SHALL show a hint to choose one first. When the selection of age groups changes, objectives that no longer match SHALL be deselected and the user told which ones.
 
 #### Scenario: Choosing an age group
 

@@ -182,11 +182,8 @@ function buildRichFields(
           unknown.push(line.code);
           continue;
         }
-        const allowed =
-          division === 'leaders'
-            ? ageGroups.some((group) => group !== 'leaders' && goal.age_groups.includes(group))
-            : goal.age_groups.includes(division);
-        if (!allowed) {
+        // Dirigentes have no objectives in the Matriz, so a block written for them is dropped.
+        if (!goal.age_groups.includes(division)) {
           wrongDivision.push(`${division}: ${line.code}`);
           continue;
         }

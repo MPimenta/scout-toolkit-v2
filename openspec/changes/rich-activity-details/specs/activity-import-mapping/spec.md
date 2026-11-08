@@ -22,7 +22,7 @@ The sheet loader SHALL map: `Fonte` and `link_fonte` to the source and its link;
 
 ### Requirement: Objectives and behaviours blocks
 
-An objectives cell SHALL be parsed as blocks starting with a division label (`Lobitos:`, `Escoteiros:`, `Exploradores:`, `Caminheiros:`, `Dirigentes (referência: …):`) followed by bullet lines `• código texto`. A behaviours cell SHALL be parsed the same way with lines `• código: comportamento`, matched to objective rows by division and code. The `Dirigentes` block SHALL create `leaders` rows that reference rovers objectives.
+An objectives cell SHALL be parsed as blocks starting with a division label (`Lobitos:`, `Escoteiros:`, `Exploradores:`, `Caminheiros:`, or the older `Dirigentes (referência: …):`) followed by bullet lines `• código texto`. A behaviours cell SHALL be parsed the same way with lines `• código: comportamento`, matched to objective rows by division and code. A `Dirigentes` block SHALL be ignored and reported as dropped, because Dirigentes have no objectives.
 
 #### Scenario: Two divisions
 

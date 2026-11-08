@@ -6,7 +6,7 @@ Educational objectives linked to an activity per division, each with the behavio
 
 ### Requirement: Objectives are linked per division with an observable behaviour
 
-An activity SHALL link objectives as rows of (objective, division, optional observable behaviour). The same objective MAY appear for several divisions with different behaviours. Each row's objective SHALL belong to its division, except that a `leaders` row SHALL reference an objective of one of the activity's other divisions (the sheet writes "referência: Caminheiros" or "referência: Exploradores"). A row whose division is not one of the activity's divisions SHALL be rejected. The behaviour text SHALL be limited to 1000 characters.
+An activity SHALL link objectives as rows of (objective, division, optional observable behaviour). The same objective MAY appear for several divisions with different behaviours. Each row's objective SHALL belong to its division. Dirigentes (`leaders`) have no objectives in the Matriz, so a row for `leaders` SHALL be rejected; an activity MAY list `leaders` among its age groups without having any objectives for them. A row whose division is not one of the activity's divisions SHALL be rejected. The behaviour text SHALL be limited to 1000 characters.
 
 #### Scenario: Shared objective, two behaviours
 
@@ -20,11 +20,17 @@ An activity SHALL link objectives as rows of (objective, division, optional obse
 - **WHEN** it is saved with objective `1A.1` for `scouts`
 - **THEN** the API returns 400 naming `1A.1` and stores nothing
 
-#### Scenario: Leaders reference rovers
+#### Scenario: No objectives for Dirigentes
 
 - **GIVEN** an activity for `rovers` and `leaders`
 - **WHEN** it is saved with `4A.4` for `leaders`
-- **THEN** the row is accepted because `4A.4` belongs to `rovers`
+- **THEN** the API returns 400 naming `4A.4` and stores nothing
+
+#### Scenario: Suitable for Dirigentes without objectives
+
+- **GIVEN** an activity for `rovers` and `leaders`
+- **WHEN** it is saved with `4A.4` for `rovers` only
+- **THEN** the activity is stored, the detail page has no Dirigentes tab, and the activity still lists Dirigentes among its age groups
 
 #### Scenario: Division not on the activity
 
@@ -43,7 +49,7 @@ The API SHALL keep accepting `educational_goal_ids` and expand each id to one ro
 
 ### Requirement: Objectives section on the detail page
 
-The detail page SHALL show objectives grouped by division. With more than one division it SHALL use a tab strip of `DivisionPill`s (division colour and name); with one division, a heading. Each objective SHALL show its code pill, its Matriz text and, when present, "Como observar:" followed by the behaviour. The `leaders` group SHALL state that it references the objectives of the other divisions of the activity.
+The detail page SHALL show objectives grouped by division. With more than one division it SHALL use a tab strip of `DivisionPill`s (division colour and name); with one division, a heading. Each objective SHALL show its code pill, its Matriz text and, when present, "Como observar:" followed by the behaviour. There SHALL be no group for `leaders`.
 
 #### Scenario: Two divisions
 
@@ -74,7 +80,7 @@ An activity SHALL be linkable to any number of Matriz *desafios*. The detail pag
 
 ### Requirement: Editor per division
 
-The editor SHALL, for each selected division, show an objective picker (objectives of that division; for `leaders`, those of the activity's other divisions) and a behaviour textarea for each chosen objective. Deselecting a division SHALL remove its rows and tell the user which were removed.
+The editor SHALL, for each selected division, show an objective picker (objectives of that division; none for `leaders`, which instead shows a note that Dirigentes have no objectives) and a behaviour textarea for each chosen objective. Deselecting a division SHALL remove its rows and tell the user which were removed.
 
 #### Scenario: Dropping a division
 

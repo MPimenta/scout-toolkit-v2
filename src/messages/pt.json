@@ -40,7 +40,6 @@
     "objectives": "Objetivos e como observar",
     "divisions": "Divisões",
     "howToObserve": "Como observar:",
-    "leadersReference": "Referência: objetivos de Caminheiros.",
     "sdgs": "ODS e porquê",
     "challenges": "Desafios",
     "challengesNote": "Formas opcionais de reconhecer progresso no Programa de Jovens.",
@@ -51,6 +50,7 @@
   "activityEditor": {
     "objectivesLegend": "Objetivos educativos",
     "objectivesHint": "Escolhe primeiro uma ou mais divisões para ver os objetivos correspondentes.",
+    "leadersNoObjectives": "Os Dirigentes não têm objetivos educativos na Matriz de Progresso. A atividade pode ser indicada para Dirigentes sem objetivos para esta divisão.",
     "objectivesSearch": "Pesquisar objetivos",
     "objectivesSelected": "Objetivos escolhidos",
     "objectivesEmpty": "Sem objetivos para esta pesquisa.",

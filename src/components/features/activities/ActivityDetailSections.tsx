@@ -207,9 +207,6 @@ export function DivisionObjectives({ objectives }: { objectives: ObjectiveItem[]
           <DivisionPill ageGroup={current} code={divisionLabel(t, current)} labelOnly className="px-3 py-1 text-sm" />
         </h3>
       )}
-      {current === 'leaders' && (
-        <p className="mb-2 text-sm text-muted-foreground">{t('activityDetail.leadersReference')}</p>
-      )}
       <ul>
         {rows.map((row) => (
           <li key={`${row.goal_id}-${row.age_group}`} className="border-t py-3 first:border-t-0">

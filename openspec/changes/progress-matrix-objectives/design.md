@@ -28,7 +28,7 @@ Code grammar: `<n><area>.[<sub>.]<stage>[-<stage>]`, area letter in `A C E F I S
 - No UI for browsing or choosing *desafios* yet; they are stored and linked so a later change can build on them.
 - No automatic suggestion of objectives from an activity's text.
 - No English translation of Matriz text (catalogue content stays Portuguese).
-- No change to how `leaders` is handled: the Matriz has no `leaders` objectives, so none exist for that age group.
+- No Dirigentes objectives: the Matriz has none, so no objective belongs to `leaders` and no activity link may use that division. An activity can still list `leaders` among its age groups (it is suitable for them) without carrying objectives for them.
 - No import path for admins to upload a newer Matriz (a new version is a regenerated dataset in a commit).
 
 ## Decisions

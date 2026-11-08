@@ -40,7 +40,6 @@
     "objectives": "Objectives and how to observe them",
     "divisions": "Divisions",
     "howToObserve": "How to observe:",
-    "leadersReference": "Reference: Rovers objectives.",
     "sdgs": "SDGs and why",
     "challenges": "Challenges",
     "challengesNote": "Optional ways to recognise progress in the Youth Programme.",
@@ -51,6 +50,7 @@
   "activityEditor": {
     "objectivesLegend": "Educational objectives",
     "objectivesHint": "Choose one or more divisions first to see the matching objectives.",
+    "leadersNoObjectives": "Leaders have no educational objectives in the Progress Matrix. An activity can suit Leaders without having objectives for that division.",
     "objectivesSearch": "Search objectives",
     "objectivesSelected": "Selected objectives",
     "objectivesEmpty": "No objectives match this search.",

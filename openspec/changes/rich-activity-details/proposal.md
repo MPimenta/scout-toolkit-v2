@@ -31,7 +31,7 @@ Leaders need this to run an activity safely and to justify it educationally; wit
 
 ## Impact
 
-- **Depends on `progress-matrix-objectives`** (Matriz tables, `DivisionPill`, `ObjectivePill`). Where this change differs, it amends that change: activity-objective links gain `age_group` and `observable_behaviour`; `verifyActivityGoals` checks each (goal, division) pair; a `leaders` row may reference a `rovers` objective (the sheet writes "Dirigentes (referência: objetivos de Caminheiros)"). Apply `progress-matrix-objectives` first, then this change.
+- **Depends on `progress-matrix-objectives`** (Matriz tables, `DivisionPill`, `ObjectivePill`). Where this change differs, it amends that change: activity-objective links gain `age_group` and `observable_behaviour`; `verifyActivityGoals` checks each (goal, division) pair; there are no objectives for `leaders`, so a `leaders` row is rejected and an old "Dirigentes (referência…)" block is dropped on import. Apply `progress-matrix-objectives` first, then this change.
 - Schema (additive, migration to be generated and reviewed): new columns on `activities` and `activity_sdgs`, new columns on `activity_educational_goals` (PK becomes activity, goal, division, backfilled), new tables `activity_sources` and `activity_challenges`.
 - API: activity read/write payloads, `/api/activities/[id]`, admin and proposal routes, new `/api/taxonomies/activity-sources` and `/api/taxonomies/challenges`.
 - UI: `ActivityDetail`, `ActivityEditorForm`, `ActivityCard` (small safety/objective cues), program entry views (objectives per division), exports.

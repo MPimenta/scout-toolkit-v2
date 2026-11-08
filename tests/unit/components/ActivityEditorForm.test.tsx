@@ -72,6 +72,14 @@ describe('ActivityEditorForm', () => {
     expect(screen.getByTestId('objectives-rovers')).toHaveTextContent('1S.4');
   });
 
+  it('offers no objectives for Dirigentes and says why', async () => {
+    render(<ActivityEditorForm action="/api/admin/activities" submitLabel="Criar" defaults={{ age_groups: ['rovers', 'leaders'] }} />);
+    fireEvent.click(screen.getByRole('button', { name: '4. Objetivos' }));
+    await waitFor(() => expect(screen.getByTestId('objectives-rovers')).toBeInTheDocument());
+    expect(screen.queryByTestId('objectives-leaders')).not.toBeInTheDocument();
+    expect(screen.getByText(/Os Dirigentes não têm objetivos educativos/)).toBeInTheDocument();
+  });
+
   it('sends objectives per division, SDG justifications and desafios', async () => {
     render(
       <ActivityEditorForm

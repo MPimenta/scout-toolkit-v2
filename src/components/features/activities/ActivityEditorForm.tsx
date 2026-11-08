@@ -61,15 +61,6 @@ const RISK_LEVELS = [
   { value: 'high', label: 'Alto' },
 ];
 
-/** Goals as the picker needs them for one division: a 'leaders' block offers the objectives of the other selected divisions. */
-function goalsForDivision(goals: PickerGoal[], division: string, ageGroups: readonly string[]): PickerGoal[] {
-  if (division !== 'leaders') return goals;
-  const others = ageGroups.filter((group) => group !== 'leaders');
-  return goals
-    .filter((goal) => goal.age_groups.some((group) => others.includes(group)))
-    .map((goal) => ({ ...goal, age_groups: [...goal.age_groups, 'leaders'] }));
-}
-
 /** Drops the rows of divisions that are no longer selected. Returns what was kept and removed. */
 export function pruneObjectives(
   rows: ObjectiveDraft[],
@@ -355,13 +346,16 @@ export function ActivityEditorForm({
 
       <section hidden={hidden('objectives')} className="space-y-6" aria-label={STEP_LABELS.objectives}>
         {ageGroups.length === 0 && <p className="text-sm text-muted-foreground">{t('activityEditor.objectivesHint')}</p>}
-        {AGE_GROUP_VALUES.filter((division) => ageGroups.includes(division)).map((division) => {
+        {ageGroups.includes('leaders') && (
+          <p className="text-sm text-muted-foreground">{t('activityEditor.leadersNoObjectives')}</p>
+        )}
+        {AGE_GROUP_VALUES.filter((division) => division !== 'leaders' && ageGroups.includes(division)).map((division) => {
           const rows = objectives.filter((row) => row.age_group === division);
           return (
             <div key={division} className="space-y-3 rounded-lg border p-4" data-testid={`objectives-${division}`}>
               <h3 className="font-bold">{enumLabel(t, 'ageGroup', division)}</h3>
               <ObjectivePicker
-                goals={goalsForDivision(goals, division, ageGroups)}
+                goals={goals}
                 ageGroups={[division]}
                 selected={rows.map((row) => row.goal_id)}
                 onChange={(ids) => setDivisionGoals(division, ids)}

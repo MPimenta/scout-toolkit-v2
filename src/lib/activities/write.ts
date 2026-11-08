@@ -320,16 +320,15 @@ export async function resolveObjectiveRows(data: ActivityWrite, executor: Execut
 
 
 /**
- * A row's objective must belong to the row's division. A 'leaders' row is a reference: its
- * objective must belong to one of the activity's other divisions ("referência: Caminheiros").
+ * A row's objective must belong to the row's division. The Matriz has no objectives for
+ * Dirigentes (`leaders`), so no objective ever belongs to that division: an activity can be
+ * suitable for Dirigentes, but it cannot carry objectives for them.
  */
 export function objectiveMatchesRow(
   row: ObjectiveRow,
-  activityAgeGroups: readonly AgeGroupValue[],
   belongs: (goalId: string, group: AgeGroupValue) => boolean
 ): boolean {
-  if (row.age_group !== 'leaders') return belongs(row.goal_id, row.age_group);
-  return activityAgeGroups.filter((group) => group !== 'leaders').some((group) => belongs(row.goal_id, group));
+  return belongs(row.goal_id, row.age_group);
 }
 
 /**
@@ -355,7 +354,7 @@ export async function verifyActivityGoals(data: ActivityWrite): Promise<string |
   const belongs = new Set(links.map((link) => `${link.goal_id}:${link.age_group}`));
   const mismatched = new Set<string>();
   for (const row of rows) {
-    if (!objectiveMatchesRow(row, data.age_groups, (goalId, group) => belongs.has(`${goalId}:${group}`))) {
+    if (!objectiveMatchesRow(row, (goalId, group) => belongs.has(`${goalId}:${group}`))) {
       mismatched.add(goals.find((goal) => goal.id === row.goal_id)!.code);
     }
   }

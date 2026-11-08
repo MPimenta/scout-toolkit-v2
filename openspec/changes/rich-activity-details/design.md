@@ -7,7 +7,7 @@
 - Instructions: three headed sections, numbered steps (`Preparação` / `Desenvolvimento` + `1.`…`5.` / `Fecho e debriefing`).
 - Risk: `Médio: corridas e apanhadas com risco de colisões…` (level, colon, text). A range appears in row 2: `Baixo a médio: …`.
 - Mitigation: free text per risk.
-- Objectives: `Lobitos:\n• 4E.1.1 Participar em momentos de partilha\n• 4S.2.1 …`, one block per division; leaders: `Dirigentes (referência: objetivos de Caminheiros):`.
+- Objectives: `Lobitos:\n• 4E.1.1 Participar em momentos de partilha\n• 4S.2.1 …`, one block per division. Older sheets also carry a `Dirigentes (referência: objetivos de Caminheiros):` block; it is dropped on import because Dirigentes have no objectives.
 - Behaviours: same block shape with `• 4E.1.1: aceita fazer parte da equipa…` (text differs per division even for the same shared code, e.g. `5I.3-4` for Exploradores and Caminheiros).
 - SDGs: `3 Saúde de Qualidade\n17 Parcerias…`; justification `ODS 3: …\nODS 17: …`.
 - *Desafios*: `EVAS-B - Participa em 3 jogos…\nCC-A - Partilha algo…` (codes already in the Matriz dataset).
@@ -39,7 +39,7 @@
 *Alternative:* a `risks` table with a free number of risks per activity. Rejected: the sheet has exactly one physical and one psychological risk with one mitigation each; a list can be added later without breaking this.
 
 **D2. Objectives are linked per division and carry the behaviour.**
-`activity_educational_goals` becomes `(activity_id, goal_id, age_group, observable_behaviour)` with primary key (activity, goal, age_group). A shared "3-4" objective can be linked twice with different behaviours (the sample does this). A `leaders` row must reference an objective of `rovers` (the sheet writes "referência: Caminheiros"); every other row's objective must belong to that same division. This replaces the rule in `progress-matrix-objectives` ("belongs to at least one of the activity's age groups") with the stricter per-row rule, and `ObjectivePill` draws exactly one pill per row. Migration backfills one row per (existing link × activity age group the objective belongs to), behaviour null.
+`activity_educational_goals` becomes `(activity_id, goal_id, age_group, observable_behaviour)` with primary key (activity, goal, age_group). A shared "3-4" objective can be linked twice with different behaviours (the sample does this). Every row's objective must belong to that same division. The Matriz has no objectives for Dirigentes (`leaders`), so no row can use that division: an activity may be suitable for Dirigentes without carrying objectives for them. This replaces the rule in `progress-matrix-objectives` ("belongs to at least one of the activity's age groups") with the stricter per-row rule, and `ObjectivePill` draws exactly one pill per row. Migration backfills one row per (existing link × activity age group the objective belongs to), behaviour null.
 Payload: `objectives: [{ goal_id, age_group, behaviour? }]`; the old `educational_goal_ids` stays accepted and expands to rows for every shared division, with no behaviour. Catalogue filtering by objective is unchanged (distinct activities).
 *Alternative:* a separate `activity_objective_behaviours` table keyed like this. Rejected: it duplicates the link and invites orphaned behaviours.
 
@@ -89,7 +89,7 @@ DESKTOP (>= 1024 px, one column)                  PHONE (390 px)
 Key UI decisions:
 
 - **Risk cards side by side** (stacked on phones), each with a level badge that uses text and a bar icon (1 to 3 bars), never colour alone: Baixo = outline, Médio = Azul tint, Alto = destructive. Under each level: "O que pode correr mal" then "Como reduzir", so the mitigation is read next to the risk it answers. When no analysis exists the section says so and tells the leader to do their own risk assessment; admins see an "incompleta" marker in the list.
-- **Objectives by division**: a tab strip of `DivisionPill`s (the division colour with its name) when the activity has more than one division, otherwise a plain heading. Each objective row: code pill, Matriz text, then "Como observar:" with the behaviour. Leaders' tab shows "Referência: objetivos de Caminheiros".
+- **Objectives by division**: a tab strip of `DivisionPill`s (the division colour with its name) when the activity has more than one division, otherwise a plain heading. Each objective row: code pill, Matriz text, then "Como observar:" with the behaviour. There is no Dirigentes tab, because there are no Dirigentes objectives.
 - **SDGs**: the official SDG image we already ship (`/sdg-icons/sdg-N.png`, the `icon_url` of each SDG) instead of a number tile, with the name, then the justification as a short paragraph (two columns on desktop). The image has a text alternative with the SDG number and name.
 - **Everything about the activity's identity appears once, at the top**: key facts, divisions, the two actions (add to program, suggest an edit) and the source with its licence line. There is no side column and nothing is repeated further down; the page is one reading column, capped at a comfortable line length on wide screens.
 - ***Desafios***: grouped by type; code chip, the *desafio*'s division pill, text. A short note says they are optional ways to recognise progress.
@@ -98,7 +98,7 @@ Key UI decisions:
 
 Open UI questions for review: tabs versus stacked divisions on desktop when there are five divisions; whether safety should also appear as a one-line badge on the catalogue card.
 
-**D8. Editor.** Steps, not one long form: (1) basics and source, (2) instructions with the heading template, (3) safety (two columns, level select + risk + mitigation), (4) divisions and objectives (for each selected division an objective picker from `progress-matrix-objectives` plus one textarea per chosen objective for the behaviour; a `leaders` block picks from rovers' objectives), (5) SDGs (a justification textarea appears for each chosen SDG), (6) *desafios*, image, review. Per-field help text explains the sheet conventions. Autosave of drafts is out of scope.
+**D8. Editor.** Steps, not one long form: (1) basics and source, (2) instructions with the heading template, (3) safety (two columns, level select + risk + mitigation), (4) divisions and objectives (for each selected division an objective picker from `progress-matrix-objectives` plus one textarea per chosen objective for the behaviour), (5) SDGs (a justification textarea appears for each chosen SDG), (6) *desafios*, image, review. Per-field help text explains the sheet conventions. Autosave of drafts is out of scope.
 
 **D9. Import mapping** (`activity-import-mapping`): parse rules per column, strict reporting. Unknown objective codes, behaviour lines without a matching objective, justifications for SDGs not listed, and *desafio* codes not in the Matriz are reported, never silently dropped; the activity loads without them. The loader keeps refusing non-local databases by default and committing nothing from the sheet.
 
