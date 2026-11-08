@@ -30,8 +30,8 @@ The product name stays **Kit de Atividades**. Chrome defaults to Portuguese; Eng
 
 Where things stand:
 
-- **Preview** runs on Azure with the catalogue (97 activities), search and filters, sign-in with eAEP, usage tracking (flag `usage-tracking` on) and image storage. PDF export, the admin usage dashboard and the GitHub deploy workflows have not been exercised on Azure yet.
-- **Production** is not on Azure and has no production Orgo app or database yet. The Vercel + Neon project and its Preview deployments still exist until Production moves.
+- **Preview** runs on Azure with the catalogue (97 activities), search and filters, sign-in with eAEP, usage tracking and the installable app (flags `usage-tracking` and `pwa` on) and image storage. PDF export, the admin usage dashboard and the GitHub deploy workflows have not been exercised on Azure yet.
+- **Production** (`aep-kit`) is provisioned on Azure but runs a placeholder image: there is no production Orgo app or database yet.
 - **Activity creation by users** is not switched on in the hosted Preview yet; the upload path is built and deployed but not tested by a signed-in user there.
 
 Not implemented (do not treat these as shipped):
@@ -44,7 +44,7 @@ Not implemented (do not treat these as shipped):
 
 | Change | What it is |
 |---|---|
-| `migrate-production-to-azure` | Re-evaluate after Preview testing, then move Production (domain, Orgo app, data cutover, retire Vercel and Neon) |
+| `migrate-production-to-azure` | Re-evaluate after Preview testing, then deploy Production (domain, Orgo app, `kit` database) |
 | `enable-activity-image-uploads` | Test uploads end to end with a signed-in user and decide when activity creation is opened |
 | `admin-activity-excel-import` | Admin upload of an `.xlsx` of activities, skipping repeats |
 | `security-testing` | Threat model, automated security checks, and a review of the Orgo sign-in flow |
@@ -124,7 +124,7 @@ npm run db:reset           # wipe the Docker volume, then start again (re-run db
 
 Upgrading from an older checkout: the local image is Postgres 17 (the AEP's shared server on Azure is PostgreSQL 16 and CI uses 16, so keep schema changes compatible with both), and Compose creates `scout_toolkit_e2e`. An existing Postgres 15 volume will not start on 17, so run `npm run db:reset` once (or `pg_dump` your dev data first and restore it after), then `npm run db:push` and `npm run db:seed`.
 
-`db:seed` reads `DATABASE_URL` from `.env.local`. Point it only at `scout_toolkit_dev` locally. Never seed `scout_toolkit_test` this way, and never point `npm run test:run` at Neon.
+`db:seed` reads `DATABASE_URL` from `.env.local`. Point it only at `scout_toolkit_dev` locally. Never seed `scout_toolkit_test` this way, and never point `npm run test:run` at a hosted database.
 
 ## Deploying
 
@@ -132,7 +132,7 @@ The Preview runs on **Azure App Service** (Linux container) with the AEP's Postg
 
 There is no `.env.preview` file. Next.js never loads one. Hosted values are Web App settings and Key Vault secrets.
 
-The hosted schema step (`scripts/ensure-hosted-db.mjs`) runs when `ENSURE_HOSTED_DB=1` (or on Vercel, while it still exists): it applies the committed migrations in `drizzle/migrations/` (`drizzle-kit migrate`), then runs `db:seed` **only if** the `activities` table is empty. It never force-pushes the schema. A local `npm run build` skips it.
+The hosted schema step (`scripts/ensure-hosted-db.mjs`) runs when `ENSURE_HOSTED_DB=1`: it applies the committed migrations in `drizzle/migrations/` (`drizzle-kit migrate`), then runs `db:seed` **only if** the `activities` table is empty. It never force-pushes the schema. A local `npm run build` skips it.
 
 ### Changing the schema
 
@@ -170,7 +170,7 @@ Key Vault references are cached by App Service; after rotating a secret, pin the
 
 ### Production (not set up yet)
 
-Production still runs on Vercel + Neon. Moving it to Azure (own Orgo app, `kit` database, custom domain, data cutover, retiring Vercel and Neon) is tracked in `openspec/changes/migrate-production-to-azure/` and will be re-evaluated after the Preview has been tested. Do not reuse Preview `DATABASE_URL` or Orgo credentials for Production. There is no `db:seed:production` script.
+Production (`aep-kit`) exists on Azure but runs a placeholder image. Deploying it (own Orgo app, `kit` database, custom domain) is tracked in `openspec/changes/migrate-production-to-azure/` and will be re-evaluated after the Preview has been tested. Do not reuse Preview `DATABASE_URL` or Orgo credentials for Production. There is no `db:seed:production` script.
 
 ## Testing
 
@@ -202,7 +202,7 @@ SQL-integration tests use only `postgresql://test_user:test_password@localhost:5
 | Script | Description |
 |---|---|
 | `npm run dev` | Next.js dev server (Turbopack) |
-| `npm run build` | Production build; also runs the hosted schema step when `ENSURE_HOSTED_DB=1` or on Vercel |
+| `npm run build` | Production build; also runs the hosted schema step when `ENSURE_HOSTED_DB=1` |
 | `npm run start` | Serve the production build |
 | `npm run lint` / `npm run format` | ESLint / Prettier |
 | `npm run typecheck` | `tsc --noEmit` over app and tests |
@@ -232,9 +232,8 @@ This README and the app do not depend on the GitHub owner name. When the reposit
 3. **Generated API docs** in `docs/api/` embed source links to the old URL; regenerate with `npm run docs` after the move.
 4. **GitHub Actions**: re-create repository secrets and variables (`AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, and any others the workflows read). The Azure **OIDC federated credential** is bound to the repository name and branch, so it must be recreated for the new repository (see `infra/README.md`).
 5. **Branch protection and required checks** (`.github/workflows/test.yml`) and the default branch name (`master`).
-6. **Vercel** (until Production moves to Azure): the project is linked to the old repository and must be reconnected or recreated.
-7. **Orgo**: redirect URLs depend on the hosting domain, not the repository, so they stay as they are unless the domain changes.
-8. **Contributors and ownership**: add the new owners, review who can read Actions secrets, and add a `LICENSE` (none exists yet).
+6. **Orgo**: redirect URLs depend on the hosting domain, not the repository, so they stay as they are unless the domain changes.
+7. **Contributors and ownership**: add the new owners, review who can read Actions secrets, and add a `LICENSE` (none exists yet).
 
 ## Stack
 

@@ -796,7 +796,7 @@ All answer 404 when the flag is off. No endpoint returns recorded events; only a
 - `POST /api/usage/events` - record a `search` (`text`, `filters`, `result_count`) or `activity_view` (`activity_id`) event. Answers `204`; bots, Global Privacy Control, Do Not Track and the opt-out cookie are skipped silently. `400` for invalid events (Portuguese message), `429` above 60 events per minute per visitor. `program_add` is recorded by the server when `POST /api/programs/{id}/entries` creates an activity entry, never accepted here.
 - `POST /api/usage/opt-out` / `DELETE /api/usage/opt-out` - turn recording off (removes the visitor cookie) or back on for this browser.
 - `GET /api/admin/usage/summary?period=7d|30d|90d|13m&division=<age group>` - admin only (401/403 otherwise): totals, daily evolution, top activities viewed and added to programs with conversion, top searches, searches without results, searches per division and most active users by name. Powers `/admin/utilizacao`.
-- `GET /api/usage/purge` - deletes events older than 13 months; needs `Authorization: Bearer $CRON_SECRET`; run daily by the Vercel cron in `vercel.json`.
+- `GET /api/usage/purge` - deletes events older than 13 months; needs `Authorization: Bearer $CRON_SECRET`; run daily by the `usage-purge` GitHub workflow.
 
 ## Rate Limiting
 

@@ -8,7 +8,7 @@ import { purgeOldUsageEvents } from '@/lib/usage/record';
  * /api/usage/purge:
  *   get:
  *     summary: Delete usage events older than 13 months
- *     description: Called daily by the Vercel cron with Authorization Bearer CRON_SECRET.
+ *     description: Called daily by the usage-purge workflow with Authorization Bearer CRON_SECRET.
  *     tags: [Usage]
  */
 export async function GET(request: NextRequest) {

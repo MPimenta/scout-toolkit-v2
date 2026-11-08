@@ -6,7 +6,7 @@ Platform for Escoteiros de Portugal leaders to browse activities, build programs
 
 - Next.js 15.5 (App Router, Turbopack), React 19, TypeScript (strict), Tailwind + shadcn/ui
 - Auth.js v5 with eAEP/Orgo OAuth (`src/lib/auth/orgo-provider.ts`); roles in `src/lib/auth/roles.ts`, admin "view as member" in `src/lib/auth/view-as*.ts`
-- PostgreSQL + Drizzle (`drizzle/schema`, seeds in `drizzle/seeds`); Neon for Preview/Production on Vercel
+- PostgreSQL + Drizzle (`drizzle/schema`, seeds in `drizzle/seeds`); the AEP's PostgreSQL server on Azure for Preview/Production (App Service)
 - TanStack Query for client data fetching (`src/hooks/queries`, `src/hooks/mutations`)
 - Zod for all input validation; Azure Blob Storage for images; SheetJS for Excel, Playwright for PDF
 - Vitest (unit + integration), Playwright (E2E)
@@ -21,7 +21,7 @@ Platform for Escoteiros de Portugal leaders to browse activities, build programs
 - `npm run typecheck` – `tsc --noEmit` over app and tests
 - `npm run db:generate | db:push | db:migrate | db:seed` – **ask before running any of these**
 
-Schema changes ship as committed migrations: edit `drizzle/schema`, `npm run db:generate`, review the SQL, commit it. Vercel builds apply them with `drizzle-kit migrate` (`scripts/ensure-hosted-db.mjs`), never `push --force`. `db:push` is only for local throwaway databases.
+Schema changes ship as committed migrations: edit `drizzle/schema`, `npm run db:generate`, review the SQL, commit it. Deploys apply them with `drizzle-kit migrate` (`scripts/ensure-hosted-db.mjs`), never `push --force`. `db:push` is only for local throwaway databases.
 
 Playwright uses its own database (`scout_toolkit_e2e`) and port (3200); it never touches `scout_toolkit_dev`.
 
@@ -43,7 +43,7 @@ Playwright uses its own database (`scout_toolkit_e2e`) and port (3200); it never
 
 ## Testing
 
-- SQL-integration tests use only the local `scout_toolkit_test` DB (`test_user` / `test_password`). If it's down, `npm run test:run` must fail: never skip-to-green, and never point tests at Neon.
+- SQL-integration tests use only the local `scout_toolkit_test` DB (`test_user` / `test_password`). If it's down, `npm run test:run` must fail: never skip-to-green, and never point tests at a hosted database.
 - Add tests with new work: unit tests in `tests/unit/`, API/DB tests in `tests/integration/`, critical flows in `tests/e2e/`.
 
 ## Safety

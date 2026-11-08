@@ -40,7 +40,7 @@ This document outlines the technical architecture, stack choices, and key design
 ### Export Functionality
 - **SheetJS (xlsx)** - Excel export generation (Portuguese sheets: Resumo, Cronograma, Detalhes das Atividades)
 - **Playwright Chromium** - Server-side HTML to PDF, with Chrome/Edge fallback if the bundled browser is missing
-- **Local/server runtime** - PDF generation runs in the Next.js Node process, not on Vercel Edge (Playwright needs a full browser)
+- **Local/server runtime** - PDF generation runs in the Next.js Node process, not in an edge runtime (Playwright needs a full browser)
 
 ### Development Tools
 - **ESLint + Prettier** - Code linting and formatting
@@ -549,7 +549,7 @@ SDGs: [SDG Icons]
 - **Query Optimization:** Proper indexing strategy
 
 ### Application Scaling
-- **CDN:** Vercel Edge Network for static assets
+- **Static assets:** served by the App Service (no CDN)
 - **Caching:** TanStack Query for API responses
 - **Image Optimization:** Next.js automatic optimization
 
@@ -615,7 +615,7 @@ Epic 5 focuses on improving code quality, type safety, performance, and architec
 ## Monitoring & Observability
 
 ### Application Monitoring
-- **Error Tracking:** Vercel Analytics
+- **Error Tracking:** application logs (`src/lib/errors`)
 - **Performance Monitoring:** Core Web Vitals tracking
 - **User Analytics:** Privacy-compliant analytics
 
@@ -626,5 +626,5 @@ Epic 5 focuses on improving code quality, type safety, performance, and architec
 
 ### Deployment Monitoring
 - **Build Status:** GitHub Actions integration
-- **Deployment Health:** Vercel deployment monitoring
+- **Deployment Health:** `GET /api/health`, checked after each deploy
 - **Environment Health:** Health check endpoints

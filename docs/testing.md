@@ -1,6 +1,6 @@
 # Testing
 
-A green `npm run test:run` means the same thing every time: unit tests passed, SQL-integration tests ran against a disposable local database, and nothing wrote to Neon.
+A green `npm run test:run` means the same thing every time: unit tests passed, SQL-integration tests ran against a disposable local database, and nothing wrote to a hosted database.
 
 ## Kinds
 
@@ -14,7 +14,7 @@ A test that mocks `@/lib/db/server` is a unit test, even if it imports a route h
 
 `postgresql://test_user:test_password@localhost:5432/scout_toolkit_test`
 
-Never point those tests at Neon or `.env.local`.
+Never point those tests at a hosted database or `.env.local`.
 
 ## Environments
 
@@ -40,7 +40,7 @@ CREATE DATABASE scout_toolkit_test OWNER test_user;
 
 `npm run test:run` **fails** if `scout_toolkit_test` is unreachable. It does not skip SQL files and look green.
 
-Schema for the test database is created in `tests/setup.ts` (`CREATE TABLE IF NOT EXISTS`). Do not run that against Neon.
+Schema for the test database is created in `tests/setup.ts` (`CREATE TABLE IF NOT EXISTS`). Do not run that against a hosted database.
 
 ## Commands
 
@@ -56,7 +56,7 @@ Install this project's Chromium with `npm run playwright:install` (PDF export an
 
 ## Reference data (Matriz objectives)
 
-`npm run db:load-reference` loads the Matriz Progresso Pessoal from the committed `drizzle/seeds/data/progress-matrix.json` into whatever `DATABASE_URL` points at. `db:seed`, the Vercel deploy hook and the Playwright global setup run it too, so every environment starts with the same 6 areas, 20 educational paths, 40 general objectives, 174 specific objectives, 7 challenge types, 112 *desafios* and 286 links. Run it twice and the second run changes nothing.
+`npm run db:load-reference` loads the Matriz Progresso Pessoal from the committed `drizzle/seeds/data/progress-matrix.json` into whatever `DATABASE_URL` points at. `db:seed`, the deploy step (`ensure-hosted-db`) and the Playwright global setup run it too, so every environment starts with the same 6 areas, 20 educational paths, 40 general objectives, 174 specific objectives, 7 challenge types, 112 *desafios* and 286 links. Run it twice and the second run changes nothing.
 
 To regenerate the dataset (only when the Matriz changes), put the workbook and the Regulamento PDF under the git-ignored `data/` folder and run `npx tsx scripts/build-progress-matrix.ts data/<workbook>.xlsx data/<regulamento>.pdf`. It needs `pdftotext` (poppler) on the machine and writes `progress-matrix.json` plus `progress-matrix.report.json` (differences between the two sources).
 

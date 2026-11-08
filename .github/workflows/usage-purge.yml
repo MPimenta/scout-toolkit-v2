@@ -1,6 +1,6 @@
 name: Usage purge
 
-# Replaces the Vercel cron. Deletes usage events older than 13 months (openspec: usage-tracking).
+# Deletes usage events older than 13 months (openspec: usage-tracking).
 # Reads CRON_SECRET from Key Vault through the OIDC identity; a failing call fails the run, which GitHub e-mails.
 
 on:
