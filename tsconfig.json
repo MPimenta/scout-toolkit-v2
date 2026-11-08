@@ -46,13 +46,15 @@
     ".next-e2e/types/**/*.ts",
     ".next/types/**/*.ts",
     "next-env.d.ts",
-    ".next-e2e-mvp/types/**/*.ts"
+    ".next-e2e-mvp/types/**/*.ts",
+    ".next-e2e-pwa/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
     "devlog",
     "eminent-eclipse",
     ".next-e2e",
-    ".next-e2e-mvp"
+    ".next-e2e-mvp",
+    ".next-e2e-pwa"
   ]
 }
