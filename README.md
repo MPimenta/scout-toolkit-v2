@@ -180,7 +180,10 @@ See [docs/testing.md](docs/testing.md). Short version:
 npm run db:start
 npm run test:run           # unit + SQL-integration; fails if scout_toolkit_test is down
 npx playwright test        # default: Chromium (+ Mobile Chrome when you touch layout)
+npx playwright test --project=pwa   # installable app: builds for production first, so it takes longer
 ```
+
+To try the installable app by hand, build for production with `FEATURES=pwa` and open it on `localhost` (the worker is not registered under `npm run dev`); how to switch it on or off for the hosted Preview, and the rollback, are in [docs/deployment.md](docs/deployment.md#feature-flags-features).
 
 SQL-integration tests use only `postgresql://test_user:test_password@localhost:5432/scout_toolkit_test`. CI uses workflow Postgres (`.github/workflows/test.yml`). `/api/e2e/session` only answers when `E2E_LOGIN=1` and `NODE_ENV` is not `production` (Playwright and CI set it); it is 404 on Preview and Production.
 

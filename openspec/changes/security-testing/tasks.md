@@ -20,7 +20,7 @@
 
 ## 4. Headers, CSRF and rate limiting
 
-- [ ] 4.1 Add security headers in `next.config.ts`/middleware, CSP first in report-only — verify the header test and a manual click-through of catalogue, builder, admin, PDF export, Swagger and uploads show no violations
+- [ ] 4.1 Add security headers in `next.config.ts`/middleware, CSP first in report-only — verify the header test and a manual click-through of catalogue, builder, admin, PDF export, Swagger and uploads show no violations Note from `mobile-pwa`: the CSP must allow `worker-src 'self'` (the service worker at `/sw.js`) and `manifest-src 'self'` (`/manifest.webmanifest`), keep no `unsafe-eval`, and leave `/sw.js` served with `Cache-Control: no-cache` and `Service-Worker-Allowed: /`; the `pwa` Playwright project fails if the worker stops registering.
 - [ ] 4.2 Switch CSP to enforcing and confirm cookie flags — verify header and cookie tests are green on a production build
 - [ ] 4.3 Add Origin checking for mutating routes — verify a foreign-origin POST is rejected
 - [ ] 4.4 Add rate limiting to sign-in start, reports, uploads and the ingest endpoint with Portuguese 429 messages in `src/lib/errors/` — verify a flood test gets 429

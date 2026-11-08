@@ -49,8 +49,13 @@ npm run db:start
 npm run test:run
 npx playwright test
 npx playwright test --project="Mobile Chrome"
+npx playwright test --project=pwa    # the installable app, on a production build
 npm run test:coverage
 ```
+
+### The `pwa` project
+
+Service workers do not run under the dev server, so the `pwa` project builds the app (`next build`, into `.next-e2e-pwa`) and serves it on its own port (3202) with `FEATURES=pwa` and the e2e database. The first run takes a few minutes for the build. It checks the manifest and head, that Chromium reports no installability errors, that the worker controls the page, the offline page (and that retry returns to the page), that a signed-in browse leaves no `/api/`, `/auth/` or page document in any cache, and that signing out deletes the worker's caches. A production build has no test login, so this project signs in by writing a session row straight into `scout_toolkit_e2e` (`tests/e2e/helpers/db-session.ts`). The `mvp` project has a matching check that with the flag off there is no manifest, no registered worker, and `/sw.js` is the self-unregistering one. The phone-layout checks for the installed app (safe areas, back control, exports) are in `tests/e2e/mobile/standalone.spec.ts`, which emulates standalone mode and runs with the other Chromium specs.
 
 Install this project's Chromium with `npm run playwright:install` (PDF export and Playwright share it).
 
