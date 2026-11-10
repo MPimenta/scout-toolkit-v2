@@ -1,3 +1,5 @@
+> **Note (2026-11-09):** the remaining tasks (full-snapshot dry run, load, findings) fold into `reference-sheet-alignment`, which loads all rows keyed by the sheet's `ATV` id.
+
 ## Why
 
 The catalogue only holds a handful of demo activities, which is too small to test search, filters, programs and exports realistically. The team keeps a curated Google Sheet (`atividades`, ~916 rows, with `bruto`, `mapeamento`, `valores`, `tipos`, `objetivos educativos`, `desafios`, `ods`, `fontes` tabs). A first controlled load of ~200 of those activities will give a realistic baseline for tests and will show what the sheet is missing or shaped wrongly for the product, before we invest in the admin Excel import.

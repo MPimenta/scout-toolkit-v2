@@ -17,6 +17,7 @@
 - [x] 3.1 Write `scripts/build-progress-matrix.ts <workbook.xlsx> <regulamento.pdf>`: read the Regulamento's Anexo 1 text, normalise codes (`4F1.1` to `4F.1.1`), diff every objective against the workbook, write `progress-matrix.report.json` (differences, one-sided codes, links to missing codes, verbatim repeats such as `4A.2`), then parse the code grammar, carry blank-first-cell rows to the general objective above, map stage columns to age groups, expand `3-4` ranges, skip "[sem objetivo específico]", derive each *desafio*'s age group from its column band, assign stable type and challenge codes, resolve all links, fail naming the type, column and code on any miss, and write the JSON in a fixed order.
 - [x] 3.2 Run it on the exported workbook (kept under the git-ignored `data/`), commit `drizzle/seeds/data/progress-matrix.json`, and print a report: totals, shared objectives, and the number of *desafios* that link other stages' objectives.
 - [x] 3.3 Unit tests: totals 6 / 40 / 174 / 7 / 112 / 286; the 13 shared codes carry two age groups; `7E` has no Alcateia objective; every link resolves; running the generator twice is byte-identical.
+- [x] 3.4 Resolve the workbook / Regulamento differences: the workbook (the reference sheet) wins; recorded in design D13. Desafio links, short titles and integration move to `reference-sheet-alignment`.
 
 ## 4. Loader and environment wiring
 

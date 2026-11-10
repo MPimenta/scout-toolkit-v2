@@ -1,3 +1,5 @@
+> **Superseded (2026-11-09) by `reference-sheet-alignment`.** The reference sheet defines formats and focuses as two separate fields instead of one list of types. Keep this change only until that one is archived, then archive or delete it.
+
 ## Why
 
 The activity-type list is the first filter people reach for, and today it does not describe the catalogue well:
