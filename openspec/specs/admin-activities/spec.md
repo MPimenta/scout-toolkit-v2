@@ -119,3 +119,18 @@ When an admin creates or updates an activity, every `educational_goal_ids` entry
 - **GIVEN** an activity for `scouts` linked to `1A.2`
 - **WHEN** an admin changes it to `scouts` and `rovers`, adding `1A.4`
 - **THEN** both objectives are linked
+
+### Requirement: Admin table shows format and focus
+
+The admin activities table (columns, the mobile row and the CSV export) SHALL show the activity's format and main focus in place of the former activity-type column. The table SHALL stay sortable and searchable by the same text as before.
+
+#### Scenario: Columns
+
+- **GIVEN** an activity with the format Jogo and the focus Cooperação
+- **WHEN** an admin opens the activities table
+- **THEN** the row shows "Jogo" and "Cooperação" in the format and focus columns
+
+#### Scenario: CSV
+
+- **WHEN** an admin exports the table to CSV
+- **THEN** the file has Formato and Foco columns in place of the type column

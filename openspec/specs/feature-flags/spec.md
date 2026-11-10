@@ -76,7 +76,7 @@ Each flag SHALL cover these surfaces:
 
 - **GIVEN** `admin-taxonomies` is off
 - **WHEN** a guest opens the activity filters
-- **THEN** activity types, SDGs, and educational goals still load
+- **THEN** activity formats, activity focuses, SDGs, and educational goals still load
 
 ### Requirement: MVP features are never flagged
 

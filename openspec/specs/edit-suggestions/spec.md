@@ -8,7 +8,7 @@ Lets signed-in leaders propose a single-field correction on an activity, and let
 
 ### Requirement: Suggest one field at a time
 
-A signed-in user SHALL submit a suggestion against one allowed field (`name`, `description`, `materials`, `instructions`, `approximate_duration_minutes`, `group_sizes`, `effort_level`, `locations`, `age_groups`, `activity_types`) with a non-empty `suggested_value`. For the four category fields the value SHALL be a non-empty list of valid values and, when accepted, SHALL replace the activity's whole set for that category. Guests SHALL receive 401. Unknown fields SHALL return 400. More than one pending suggestion per user per activity per field SHALL be rejected (409).
+A signed-in user SHALL submit a suggestion against one allowed field (`name`, `description`, `materials`, `instructions`, `approximate_duration_minutes`, `group_sizes`, `effort_level`, `locations`, `age_groups`, `format_id`, `focus_id`, `secondary_focus_id`) with a non-empty `suggested_value`. For the category fields (`group_sizes`, `locations`, `age_groups`) the value SHALL be a non-empty list of valid values and, when accepted, SHALL replace the activity's whole set for that category. For `format_id`, `focus_id` and `secondary_focus_id` the value SHALL be the id of an existing format or focus; the resulting main focus SHALL differ from the resulting secondary focus; accepting the suggestion SHALL set that field. The former `activity_types` field SHALL NOT exist: a suggestion for it SHALL be rejected with 400. Guests SHALL receive 401. Unknown fields SHALL return 400. More than one pending suggestion per user per activity per field SHALL be rejected (409).
 
 #### Scenario: Suggest a materials fix
 
@@ -24,6 +24,27 @@ A signed-in user SHALL submit a suggestion against one allowed field (`name`, `d
 
 - **WHEN** a user suggests `age_groups = [scouts, rovers]` for an activity currently `[scouts]`
 - **THEN** a pending suggestion is stored; on acceptance the activity has both
+
+#### Scenario: Suggest a format
+
+- **WHEN** a user suggests the id of the format Quebra-gelo for an activity whose format is Jogo
+- **THEN** a pending suggestion is stored; on acceptance the activity's format is Quebra-gelo
+
+#### Scenario: Suggest a secondary focus equal to the main focus
+
+- **GIVEN** an activity whose main focus is Confiança
+- **WHEN** a user suggests Confiança as its secondary focus
+- **THEN** the API returns 400 with a Portuguese message
+
+#### Scenario: Unknown format
+
+- **WHEN** a suggestion for `format_id` carries an id that does not exist
+- **THEN** the API returns 400
+
+#### Scenario: Activity types are gone
+
+- **WHEN** a user posts a suggestion for `activity_types`
+- **THEN** the API returns 400
 
 #### Scenario: Invalid category list
 

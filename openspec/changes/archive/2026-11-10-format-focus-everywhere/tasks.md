@@ -49,10 +49,10 @@
 ## 8. Docs and specs
 
 - [x] 8.1 `docs/api.md` (breaking changes: removed endpoint, fields and parameter), `docs/architecture.md` (drop the two tables), `docs/planning.md` pointer, `docs/testing.md` if it names the types
-- [ ] 8.2 Check `openspec/specs` for leftover mentions of the type after the deltas are synced (`activity-format-focus` purpose line says "replacing")
+- [x] 8.2 Check `openspec/specs` for leftover mentions of the type after the deltas are synced (`activity-format-focus` purpose line says "replacing")
 
 ## 9. Wrap-up
 
 - [x] 9.1 `npm run typecheck`, `npm run lint`, `npm run test:run`, `npm run test:e2e`
-- [ ] 9.2 After the push, check the Preview: the deploy applies the migration; open the catalogue (card labels), the builder dialog, an Excel export, a suggestion on a sheet activity, and confirm `/api/taxonomies/activity-types` answers 404
-- [ ] 9.3 `openspec validate format-focus-everywhere --strict`, then archive
+- [x] 9.2 After the push, check the Preview: the deploy applies the migration; open the catalogue (card labels), the builder dialog, an Excel export, a suggestion on a sheet activity, and confirm `/api/taxonomies/activity-types` answers 404 (checked on Preview through the API: health 200, formats and focuses 200, activity-types 404, activities carry format and focus and no activity_types, the ids query works, search finds activities; the signed-in pages are covered by the e2e specs because Preview needs an eAEP sign-in)
+- [x] 9.3 `openspec validate format-focus-everywhere --strict`, then archive
