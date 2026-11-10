@@ -41,7 +41,7 @@
 
 ## 7. Database
 
-- [ ] 7.1 Edit `drizzle/schema` to drop `activityTypes` and `activityActivityTypes`; **ask before running `npm run db:generate`**; review the SQL, add the first step (`UPDATE edit_suggestions SET status = 'rejected', reviewed_at = now() WHERE field = 'activity_types' AND status = 'pending'`) before the two `DROP TABLE`s, commit the migration
+- [x] 7.1 Edit `drizzle/schema` to drop `activityTypes` and `activityActivityTypes`; **ask before running `npm run db:generate`**; review the SQL, add the first step (`UPDATE edit_suggestions SET status = 'rejected', reviewed_at = now() WHERE field = 'activity_types' AND status = 'pending'`) before the two `DROP TABLE`s, commit the migration
 - [ ] 7.2 **Ask before applying** to `scout_toolkit_dev`; apply, run `db:load-reference` and the loader twice, and check nothing changes the second time
 - [x] 7.3 Update `tests/setup.ts` (hand-kept schema) and the helpers (`tests/helpers/activity-categories.ts`, `database.ts`) so no table or helper creates types; delete `tests/integration/db/category-migration.integration.test.ts`
 - [x] 7.4 Update or delete the tests that name the type (list in the search of 6.7 over `tests/`): integration, unit, component and e2e, adding format and focus where an activity is created
