@@ -5,14 +5,14 @@
 
 ## 2. Replace the type: catalogue and admin table
 
-- [ ] 2.1 `ActivityCard`: label is the format, no slot without one — component test
+- [ ] 2.1 `ActivityCard`: label is the format and the main focus, no slot without either — component test
 - [ ] 2.2 `ActivitiesTable`: Formato and Foco columns replace the type column; update the CSV and the mobile row; keep sorting and search — component test
 - [ ] 2.3 Add the new column and header strings to `pt.json` and `en.json` (Portuguese wording for approval)
 
 ## 3. Replace the type: program builder
 
 - [ ] 3.1 `GET /api/programs/[id]`: batch-load and return `format`, `focus`, `secondary_focus` per activity entry (no per-entry query); update `useProgram` types, swagger and `docs/api.md`
-- [ ] 3.2 `AddActivityModal`: format and focus selects built from the loaded activities (focus matches main or secondary) replace the type select — component test including the secondary-focus scenario
+- [ ] 3.2 `AddActivityModal`: format and focus selects built from the loaded activities (focus matches main or secondary) replace the type select, and the free-text search matches title, description and instructions — component test including the secondary-focus and instructions scenarios
 - [ ] 3.3 `ProgramScheduleRow` and `ProgramBuilder`: show `Formato · Foco · Foco secundário` using the helper — component test
 - [ ] 3.4 E2E: in the program builder, filter the add-activity dialog by a format and a focus and add a sheet activity
 

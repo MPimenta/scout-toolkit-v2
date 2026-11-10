@@ -2,7 +2,7 @@
 
 ### Requirement: Add-activity dialog filters by format and focus
 
-The add-activity dialog of the program builder SHALL offer a format filter and a focus filter, each listing the values present in the activities it shows with "Todos" first, instead of an activity-type filter. The focus filter SHALL match an activity whose main or secondary focus is the chosen one. The filters SHALL combine with the existing search and with each other.
+The add-activity dialog of the program builder SHALL offer a format filter and a focus filter, each listing the values present in the activities it shows with "Todos" first, instead of an activity-type filter. The focus filter SHALL match an activity whose main or secondary focus is the chosen one. The dialog SHALL keep its free-text search, matching the activity title, description and instructions (case and accent insensitive), and the filters SHALL combine with the search and with each other.
 
 #### Scenario: Filter by format
 
@@ -14,6 +14,12 @@ The add-activity dialog of the program builder SHALL offer a format filter and a
 
 - **GIVEN** an activity with the main focus Confiança and the secondary focus Comunicação
 - **WHEN** the leader picks the focus Comunicação
+- **THEN** that activity is listed
+
+#### Scenario: Search covers instructions
+
+- **GIVEN** an activity whose instructions mention "lenço" and whose title and description do not
+- **WHEN** the leader searches for "lenco"
 - **THEN** that activity is listed
 
 #### Scenario: Sheet activities have options

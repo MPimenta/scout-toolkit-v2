@@ -28,8 +28,8 @@ Phase 1 (replace) makes every screen and export work from format and focus. Phas
 ### One label helper
 `activityKindLabel(activity)` in `src/lib/activities/kind-label.ts` returns the format name and the main and secondary focus names. Cards, the table, program rows and the exports call it. The detail page moves onto it too. An activity with no format and no focus has no label (no fallback to anything else).
 
-### Card shows the format, not the focus
-The card has one label slot. It shows the format; the focus is on the detail page and in the filters.
+### Card shows the format and the focus
+The card label slot shows the format and the main focus (`Formato · Foco`), each only when present. The secondary focus stays on the detail page.
 
 ### Builder filters come from the loaded activities
 `AddActivityModal` already builds its type list from the activities it holds. It builds format and focus lists the same way, with "Todos" first. The focus filter matches the main or the secondary focus, as in the catalogue.
@@ -64,6 +64,4 @@ The generated migration is destructive, so it is not generated or applied withou
 
 ## Open Questions
 
-- Should the card also show the main focus as a second, lighter label? Default: no.
-- Should the builder keep a free-text search next to the selects? Default: unchanged.
-- The few old demo activities without a format or focus: delete them, or give them a format and focus by hand? Default: leave them until an admin edits them.
+- None. Decided with the user: the card shows format and focus; the builder keeps its free-text search on title, description and instructions; the only activity without a format or a focus ("Jogo da bandeira", an old test row) is deleted on dev and Preview.
