@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" role="img" aria-label="Ilustração da atividade Aipo Arco-Íris">
+<defs><filter id="hand" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G"/></filter></defs>
+<rect width="1200" height="900" fill="#ffffff"/>
+<g filter="url(#hand)" transform="translate(-140.6,-211.6) scale(1.234)">
+<path d="M30 850 Q600 856 1170 850" fill="none" stroke="#0b3a4a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.35" data-ground="1"/>
+<ellipse cx="379.023651287902" cy="607.9071957686483" rx="22.25892551008562" ry="20.16104800899562" fill="none" stroke="#0b3a4a" stroke-width="4.5"/>
+<path d="M362.54970121106584 639.5282543836759 L361.07142644038953 689.5641836273317 L364.3342245641324 721.8122493729984" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M395.1752119835817 639.4878080565891 L397.490007093451 687.2492196307746 L396.5343344300214 722.0587653694948" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M362.96956509913764 638.5806212061926 L394.60061247884323 640.1939319184022" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M365.2137525852834 698.3397008575218 L398.152312369343 699.1139915484534" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M364.9559548571966 640.233284903892 L348.7193797125571 666.7148289477057 L383.03012408806484 677.5955481055172" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M395.2770094274436 642.3974470448669 L413.5924830768688 669.5630729339845 L448.06680147730134 679.6324290030788" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M371.93425474354734 724.5194747994279 L366.31295398455717 760.1176184522536 L361.91332702581457 805.9873228659794" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M391.83540851629124 721.8109333070978 L393.2560923915152 763.6448241958603 L396.66025982469336 806.6868736206958" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<g transform="translate(1640,0) scale(-1,1)"><ellipse cx="819.129519561366" cy="607.2352678775951" rx="20.62082811273673" ry="22.658090766220397" fill="none" stroke="#0b3a4a" stroke-width="4.5"/>
+<path d="M800.2 602 Q820 584 839.8 602" fill="none" stroke="#0b3a4a" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M803.7195448704156 637.4906370731493 L804.43728841978 688.806471242293 L803.0621692185115 721.9780555210906" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M836.6791429687194 638.0558752673938 L838.9956190880833 687.6700134164979 L833.6154910814554 720.6586060223443" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M806.0914175398608 637.5545924401631 L833.73514182057 636.2285783209039" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M801.915839433072 697.1133516421138 L836.5010490067774 697.1306569073026" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M805.4506410353588 642.8238812740072 L782.8725722391031 675.2216226051662 L775.5111250286974 710.7783573166366" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M835.9514207121224 642.8279086415786 L869.160539011313 625.0791631359044 L907.5948251457395 631.5262244440272" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M811.9542307645336 721.4564595145437 L806.2150609347574 760.4291304672273 L801.4957626884783 809.583505255535" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M829.2728297769896 724.1500618655933 L836.5897750271903 762.4488819862013 L837.4595420839076 808.0238042360282" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" /></g>
+<rect x="200" y="706" width="800" height="40" rx="4" fill="#fff" stroke="#0b3a4a" stroke-width="5" stroke-linejoin="round"/>
+<rect x="214" y="746" width="772" height="110" rx="0" fill="#fff" stroke="#0b3a4a" stroke-width="0" stroke-linejoin="round"/>
+<path d="M240.67779492683607 746.099335333658 L237.63039016985817 798.9675848064793 L231.61175116515335 847.9018327322332" fill="none" stroke="#0b3a4a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M962.1027306424 745.7939068183274 L963.6253122219933 799.6225150426023 L969.714235412662 851.95458061069" fill="none" stroke="#0b3a4a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+<rect x="327.2" y="652.8" width="25.6" height="32" rx="6" fill="#fff" stroke="#0b3a4a" stroke-width="4" stroke-linejoin="round"/>
+<rect x="330.4" y="646.4" width="19.200000000000003" height="8" rx="0" fill="#bfe3f2" stroke="#0b3a4a" stroke-width="3" stroke-linejoin="round"/>
+<rect x="847.2" y="652.8" width="25.6" height="32" rx="6" fill="#fff" stroke="#0b3a4a" stroke-width="4" stroke-linejoin="round"/>
+<rect x="850.4" y="646.4" width="19.200000000000003" height="8" rx="0" fill="#bfe3f2" stroke="#0b3a4a" stroke-width="3" stroke-linejoin="round"/>
+<ellipse cx="600" cy="250" rx="70" ry="34" fill="#fff" stroke="#0b3a4a" stroke-width="4"/><path d="M580 278 L566 308 L606 282" fill="#fff" stroke="#0b3a4a" stroke-width="4" stroke-linejoin="round"/>
+<text x="600" y="260" font-family="Arial" font-size="24" font-weight="700" text-anchor="middle" fill="#0b3a4a">Arco-Íris</text>
+</g>
+</svg>
