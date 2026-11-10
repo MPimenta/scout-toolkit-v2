@@ -26,7 +26,6 @@ interface ActivityFiltersProps {
     effort_levels: string[];
     locations: string[];
     age_groups: string[];
-    activity_types: string[];
   };
 }
 

@@ -102,7 +102,6 @@ describe('ActivityEditorForm', () => {
           materials: 'm',
           approximate_duration_minutes: 30,
           age_groups: ['scouts'],
-          activity_type_ids: ['11111111-1111-4111-8111-111111111111'],
           format_id: 'fmt-jogo',
           focus_id: 'foc-coop',
           secondary_focus_id: null,
@@ -134,7 +133,6 @@ describe('ActivityEditorForm', () => {
       secondary_focus_id: null,
       duration_min_minutes: 15,
       duration_max_minutes: 40,
-      activity_type_ids: ['11111111-1111-4111-8111-111111111111'], // an edit keeps the former type links
     });
   });
 

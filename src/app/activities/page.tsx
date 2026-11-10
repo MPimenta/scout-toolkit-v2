@@ -137,7 +137,6 @@ export default function ActivitiesPage() {
           effort_levels: [],
           locations: [],
           age_groups: [],
-          activity_types: [],
         }}
       />
 

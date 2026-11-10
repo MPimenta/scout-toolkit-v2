@@ -26,6 +26,7 @@ import { useState } from 'react';
 import { useLocale } from '@/components/locale/LocaleProvider';
 import { enumLabel, enumLabelList } from '@/lib/locale/labels';
 import { formatDuration } from '@/lib/activities/duration-range';
+import { activityKindLabel } from '@/lib/activities/kind-label';
 
 interface ActivityDetailProps {
   activityId: string;
@@ -86,11 +87,7 @@ export function ActivityDetail({ activityId }: ActivityDetailProps) {
         )}
 
         <div className="space-y-3">
-          {activity.format ? (
-            <Eyebrow>{[activity.format.name, activity.focus?.name, activity.secondary_focus?.name].filter(Boolean).join(' · ')}</Eyebrow>
-          ) : (
-            activity.activity_types.length > 0 && <Eyebrow>{activity.activity_types.map((type) => type.name).join(' · ')}</Eyebrow>
-          )}
+          {activityKindLabel(activity, { secondary: true }) && <Eyebrow>{activityKindLabel(activity, { secondary: true })}</Eyebrow>}
           <h1 className="text-display font-bold">{activity.name}</h1>
           {activity.source && (
             <p className="text-sm text-muted-foreground">

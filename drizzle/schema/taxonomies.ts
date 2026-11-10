@@ -4,14 +4,6 @@ import { AGE_GROUP_VALUES } from './category-values';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
-// Activity types table
-export const activityTypes = pgTable('activity_types', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  name: text('name').notNull(),
-  description: text('description'),
-  created_at: timestamp('created_at').notNull().defaultNow(),
-});
-
 // Educational areas table
 export const educationalAreas = pgTable('educational_areas', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -192,9 +184,6 @@ export const ageGroups = pgTable('age_groups', {
 });
 
 // Zod schemas for validation
-export const insertActivityTypeSchema = createInsertSchema(activityTypes);
-export const selectActivityTypeSchema = createSelectSchema(activityTypes);
-
 export const insertEducationalAreaSchema = createInsertSchema(educationalAreas);
 export const selectEducationalAreaSchema = createSelectSchema(educationalAreas);
 
@@ -217,8 +206,6 @@ export const insertAgeGroupSchema = createInsertSchema(ageGroups);
 export const selectAgeGroupSchema = createSelectSchema(ageGroups);
 
 // TypeScript types
-export type ActivityType = z.infer<typeof selectActivityTypeSchema>;
-export type NewActivityType = z.infer<typeof insertActivityTypeSchema>;
 export type EducationalArea = z.infer<typeof selectEducationalAreaSchema>;
 export type NewEducationalArea = z.infer<typeof insertEducationalAreaSchema>;
 export type EducationalGoal = z.infer<typeof selectEducationalGoalSchema>;

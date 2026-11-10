@@ -231,7 +231,6 @@ export const specificSchemas = {
     onFiltersChange: z.function(),
     onClearFilters: z.function(),
     availableFilters: z.object({
-      activity_types: z.array(z.string()),
       sdgs: z.array(z.object({
         id: z.string(),
         number: z.number(),

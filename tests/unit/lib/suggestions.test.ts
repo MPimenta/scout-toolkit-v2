@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   isCategoryField,
+  isValueField,
   isSuggestableField,
   parseCategoryValue,
   SUGGESTABLE_FIELDS,
@@ -20,12 +21,25 @@ describe('suggestion fields', () => {
     expect(isSuggestableField('group_size')).toBe(false);
   });
 
-  it('accepts the four list fields and flags them as category fields', () => {
-    for (const field of ['group_sizes', 'locations', 'age_groups', 'activity_types']) {
+  it('accepts the three list fields and flags them as category fields', () => {
+    for (const field of ['group_sizes', 'locations', 'age_groups']) {
       expect(isSuggestableField(field)).toBe(true);
       expect(isCategoryField(field)).toBe(true);
     }
     expect(isCategoryField('description')).toBe(false);
+  });
+
+  it('accepts the format and the two focuses, as value fields rather than lists', () => {
+    for (const field of ['format_id', 'focus_id', 'secondary_focus_id']) {
+      expect(isSuggestableField(field)).toBe(true);
+      expect(isValueField(field)).toBe(true);
+      expect(isCategoryField(field)).toBe(false);
+    }
+    expect(isValueField('description')).toBe(false);
+  });
+
+  it('no longer accepts the former activity types', () => {
+    expect(isSuggestableField('activity_types')).toBe(false);
   });
 
   it('reads stored list values and tolerates malformed ones', () => {

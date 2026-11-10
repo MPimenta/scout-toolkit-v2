@@ -30,7 +30,9 @@ const sampleProgram: ProgramForExport = {
         group_sizes: ['medium'],
         effort_level: 'high',
         locations: ['outside'],
-        activityTypes: [{ name: 'Jogo' }],
+        format: 'Jogo',
+        focus: 'Cooperação',
+        secondaryFocus: null,
         educationalGoals: [{ code: 'F1', title: 'Cooperação' }],
         sdgs: [{ number: 4, name: 'Educação de qualidade' }],
       },
@@ -48,6 +50,7 @@ describe('generateProgramPDFHTML', () => {
     expect(html).toContain('Resumo do Programa');
     expect(html).toContain('Jogo da Bandeira');
     expect(html).toContain('F1 Cooperação');
+    expect(html).toContain('<div class="activity-details">Jogo · Cooperação</div>');
     expect(html).toContain('ODS 4: Educação de qualidade');
     expect(html).toContain('Médio (7-15)');
     expect(html).toContain('Exterior');

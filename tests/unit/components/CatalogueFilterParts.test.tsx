@@ -17,7 +17,6 @@ const baseActivity = {
   locations: ['outside'],
   age_groups: ['scouts'],
   created_at: '2026-01-01',
-  activity_types: [],
   educational_goals: [],
   sdgs: [],
 };
@@ -27,6 +26,33 @@ describe('Fact', () => {
     const { container } = render(<Fact kind="effort">Médio</Fact>);
     expect(container.querySelector('[data-fact="effort"]')).toHaveAttribute('aria-hidden', 'true');
     expect(screen.getByText('Médio')).toBeInTheDocument();
+  });
+});
+
+describe('ActivityCard label', () => {
+  it('shows the format and the main focus', () => {
+    render(
+      <ActivityCard
+        activity={{
+          ...baseActivity,
+          format: { id: 'f', code: 'jogo', name: 'Jogo' },
+          focus: { id: 'o', code: 'cooperacao', name: 'Cooperação' },
+          secondary_focus: { id: 's', code: 'lideranca', name: 'Liderança' },
+        }}
+      />
+    );
+    expect(screen.getByText('Jogo · Cooperação')).toBeInTheDocument();
+    expect(screen.queryByText(/Liderança/)).not.toBeInTheDocument();
+  });
+
+  it('shows the format alone when there is no focus', () => {
+    render(<ActivityCard activity={{ ...baseActivity, format: { id: 'f', code: 'jogo', name: 'Jogo' } }} />);
+    expect(screen.getByText('Jogo')).toBeInTheDocument();
+  });
+
+  it('has no label at all without a format or a focus', () => {
+    const { container } = render(<ActivityCard activity={baseActivity} />);
+    expect(container.querySelector('[data-slot="badge"]')).toBeNull();
   });
 });
 

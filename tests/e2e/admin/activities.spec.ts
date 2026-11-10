@@ -44,8 +44,9 @@ test.describe('Admin activities', () => {
       const withoutId = ((await withoutInstructions.json()) as { activity: { id: string } }).activity.id;
 
       await page.goto(`/activities/${withId}`);
-      const materials = page.getByText('Materiais', { exact: true });
-      const instructions = page.getByText('Como se faz', { exact: true });
+      // The suggestion form also lists a "Materiais" field, so look at the card titles only
+      const materials = page.locator('[data-slot="card-title"]', { hasText: /^Materiais$/ });
+      const instructions = page.locator('[data-slot="card-title"]', { hasText: /^Como se faz$/ });
       await expect(materials).toBeVisible();
       await expect(instructions).toBeVisible();
       await expect(page.getByText('Passo 1')).toBeVisible();
@@ -54,8 +55,8 @@ test.describe('Admin activities', () => {
       expect(instructionsBox!.y).toBeGreaterThan(materialsBox!.y);
 
       await page.goto(`/activities/${withoutId}`);
-      await expect(page.getByText('Materiais', { exact: true })).toBeVisible();
-      await expect(page.getByText('Como se faz', { exact: true })).toHaveCount(0);
+      await expect(page.locator('[data-slot="card-title"]', { hasText: /^Materiais$/ })).toBeVisible();
+      await expect(page.locator('[data-slot="card-title"]', { hasText: /^Como se faz$/ })).toHaveCount(0);
     } finally {
       await page.request.delete('/api/e2e/session');
     }

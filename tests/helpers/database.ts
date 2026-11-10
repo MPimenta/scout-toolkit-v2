@@ -40,13 +40,6 @@ export async function createTestUser(db: ReturnType<typeof drizzle>) {
 }
 
 export async function createTestActivity(db: ReturnType<typeof drizzle>) {
-  // First create required dependencies
-  const activityType = await db.insert(schema.activityTypes).values({
-    id: '550e8400-e29b-41d4-a716-446655440002',
-    name: 'Test Activity Type',
-    description: 'Test description'
-  }).returning()
-
   const activity = await insertActivities(db, {
     id: '550e8400-e29b-41d4-a716-446655440003',
     name: 'Test Activity',
@@ -57,11 +50,10 @@ export async function createTestActivity(db: ReturnType<typeof drizzle>) {
     effort_level: 'low',
     locations: ['inside'],
     age_groups: ['scouts'],
-    activity_type_id: activityType[0].id,
     is_approved: true
   })
 
-  return { activity: activity[0], activityType: activityType[0] }
+  return { activity: activity[0] }
 }
 
 export async function createTestProgram(db: ReturnType<typeof drizzle>, userId: string) {

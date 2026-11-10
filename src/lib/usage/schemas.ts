@@ -8,7 +8,6 @@ export const searchFiltersSchema = z
     groupSize: idList,
     effortLevel: idList,
     location: idList,
-    activityType: idList, // events recorded before format and focus replaced the types
     format: idList,
     focus: idList,
     sdgs: idList,

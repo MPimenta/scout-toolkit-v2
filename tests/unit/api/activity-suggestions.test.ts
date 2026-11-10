@@ -22,6 +22,8 @@ vi.mock('@/lib/auth/utils', () => ({
 vi.mock('@/lib/suggestions', () => ({
   isSuggestableField: (field: string) => ['description', 'name', 'materials'].includes(field),
   isCategoryField: () => false,
+  isValueField: () => false,
+  checkValueSuggestion: vi.fn(),
   normalizeCategorySuggestion: vi.fn(),
   findPendingDuplicate: (...args: unknown[]) => mockFindPending(...args),
   notifyAdmins: (...args: unknown[]) => mockNotifyAdmins(...args),

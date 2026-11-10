@@ -76,7 +76,9 @@ export function buildProgramExcelWorkbook(program: ProgramForExport): {
       exportLabels.groupSize,
       exportLabels.effortLevel,
       exportLabels.location,
-      exportLabels.activityType,
+      exportLabels.format,
+      exportLabels.focus,
+      exportLabels.secondaryFocus,
       exportLabels.educationalGoals,
       exportLabels.sdgs,
     ],
@@ -99,14 +101,16 @@ export function buildProgramExcelWorkbook(program: ProgramForExport): {
       isActivity ? translateList(entry.activity?.group_sizes, translateGroupSize) : '',
       isActivity ? translateEffortLevel(entry.activity?.effort_level) : '',
       isActivity ? translateList(entry.activity?.locations, translateLocation) : '',
-      isActivity ? (entry.activity?.activityTypes ?? []).map((t) => t.name).join(', ') : '',
+      isActivity ? entry.activity?.format ?? '' : '',
+      isActivity ? entry.activity?.focus ?? '' : '',
+      isActivity ? entry.activity?.secondaryFocus ?? '' : '',
       isActivity ? formatGoalsList(entry.activity?.educationalGoals ?? []) : '',
       isActivity ? formatSdgsList(entry.activity?.sdgs ?? []) : '',
     ]);
   });
 
   const scheduleSheet = XLSX.utils.aoa_to_sheet(scheduleData);
-  scheduleSheet['!cols'] = Array(12).fill({ wch: 18 });
+  scheduleSheet['!cols'] = Array(14).fill({ wch: 18 });
   XLSX.utils.book_append_sheet(workbook, scheduleSheet, exportLabels.scheduleSheet);
 
   const activityEntries = program.entries
@@ -123,7 +127,9 @@ export function buildProgramExcelWorkbook(program: ProgramForExport): {
         exportLabels.groupSize,
         exportLabels.effortLevel,
         exportLabels.location,
-        exportLabels.activityType,
+        exportLabels.format,
+        exportLabels.focus,
+        exportLabels.secondaryFocus,
         exportLabels.educationalGoals,
         exportLabels.sdgs,
         exportLabels.physicalRisk,
@@ -143,7 +149,9 @@ export function buildProgramExcelWorkbook(program: ProgramForExport): {
         translateList(activity.group_sizes, translateGroupSize),
         translateEffortLevel(activity.effort_level),
         translateList(activity.locations, translateLocation),
-        activity.activityTypes.map((t) => t.name).join(', '),
+        activity.format ?? '',
+        activity.focus ?? '',
+        activity.secondaryFocus ?? '',
         formatGoalsList(activity.educationalGoals),
         formatSdgsList(activity.sdgs),
         formatRisk(activity.physicalRisk),
@@ -155,7 +163,7 @@ export function buildProgramExcelWorkbook(program: ProgramForExport): {
     });
 
     const activityDetailsSheet = XLSX.utils.aoa_to_sheet(activityDetailsData);
-    activityDetailsSheet['!cols'] = Array(15).fill({ wch: 22 });
+    activityDetailsSheet['!cols'] = Array(17).fill({ wch: 22 });
     XLSX.utils.book_append_sheet(workbook, activityDetailsSheet, exportLabels.detailsSheet);
   }
 

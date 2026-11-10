@@ -24,10 +24,8 @@ const mockActivities = [
     locations: ['outside' as const],
     age_groups: ['scouts' as const],
     created_at: '2024-01-01T00:00:00Z',
-    activity_types: [{
-      id: '1',
-      name: 'Jogo',
-    }],
+    format: { id: '1', code: 'jogo', name: 'Jogo' },
+    focus: { id: '2', code: 'cooperacao', name: 'Cooperação' },
     educational_goals: [
       {
         id: '1',
@@ -71,6 +69,22 @@ describe('ActivitiesTable', () => {
     expect(screen.getAllByText('Atividade de Teste').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Jogo').length).toBeGreaterThan(0);
     expect(screen.getAllByText('60 min').length).toBeGreaterThan(0);
+  });
+
+  it('shows the format and the focus in their own columns, and no type column', () => {
+    render(
+      <ActivitiesTable
+        activities={mockActivities}
+        onViewActivity={mockOnViewActivity}
+        onEditActivity={mockOnEditActivity}
+        onDeleteActivity={mockOnDeleteActivity}
+      />
+    );
+
+    const headers = screen.getAllByTestId('table-head').map((header) => header.textContent);
+    expect(headers).toEqual(expect.arrayContaining(['Formato', 'Foco']));
+    expect(headers).not.toContain('Tipo');
+    expect(screen.getAllByText('Cooperação').length).toBeGreaterThan(0);
   });
 
   it('renders search input', () => {

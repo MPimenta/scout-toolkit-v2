@@ -31,12 +31,6 @@ interface ValueRef {
   name: string;
 }
 
-interface ActivityType {
-  id: string;
-  name: string; // Now simple string after migration
-  description?: string; // Now simple string after migration
-}
-
 interface Activity {
   id: string;
   name: string; // Now simple string after migration
@@ -57,7 +51,6 @@ interface Activity {
   image_url?: string;
   created_at: string;
   updated_at: string;
-  activity_types: ActivityType[];
   educational_goals: EducationalGoal[];
   sdgs: Sdg[];
   physical_risk_level?: RiskLevelValue | null;

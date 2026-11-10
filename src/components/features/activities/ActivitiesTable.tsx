@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useLocale } from '@/components/locale/LocaleProvider';
 import { enumLabel, enumLabelList } from '@/lib/locale/labels';
+import { activityKindLabel } from '@/lib/activities/kind-label';
 import { DivisionPill } from '@/components/ui/DivisionPill';
 import { AGE_GROUP_VALUES } from '@/lib/activities/category-values';
 import {
@@ -65,14 +66,6 @@ interface Sdg {
 }
 
 /**
- * Interface for activity type data
- */
-interface ActivityType {
-  id: string;
-  name: string;
-}
-
-/**
  * Interface for activity data
  */
 interface Activity {
@@ -87,7 +80,9 @@ interface Activity {
   locations: string[];
   age_groups: string[];
   created_at: string;
-  activity_types: ActivityType[];
+  format?: { id: string; code: string; name: string } | null;
+  focus?: { id: string; code: string; name: string } | null;
+  secondary_focus?: { id: string; code: string; name: string } | null;
   educational_goals: EducationalGoal[];
   sdgs: Sdg[];
 }
@@ -135,14 +130,21 @@ export function ActivitiesTable({
         ),
       },
       {
-        id: 'activity_types',
-        accessorFn: (row) => row.activity_types.map((type) => type.name).join(', '),
-        header: t('activities.csvType'),
-        cell: ({ row }) => (
-          <Badge variant="secondary" className="text-xs">
-            {row.original.activity_types.map((type) => type.name).join(', ')}
-          </Badge>
-        ),
+        id: 'format',
+        accessorFn: (row) => row.format?.name ?? '',
+        header: t('activities.csvFormat'),
+        cell: ({ row }) =>
+          row.original.format ? (
+            <Badge variant="secondary" className="text-xs">
+              {row.original.format.name}
+            </Badge>
+          ) : null,
+      },
+      {
+        id: 'focus',
+        accessorFn: (row) => row.focus?.name ?? '',
+        header: t('activities.csvFocus'),
+        cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.focus?.name ?? ''}</span>,
       },
       {
         accessorKey: 'approximate_duration_minutes',
@@ -309,7 +311,8 @@ export function ActivitiesTable({
   const exportToCSV = () => {
     const headers = [
       t('activities.csvName'),
-      t('activities.csvType'),
+      t('activities.csvFormat'),
+      t('activities.csvFocus'),
       t('activities.csvDuration'),
       t('filters.groupSize'),
       t('filters.effort'),
@@ -323,7 +326,8 @@ export function ActivitiesTable({
       headers.join(','),
       ...activities.map(activity => [
         activity.name,
-        activity.activity_types.map(type => type.name).join('; '),
+        activity.format?.name ?? '',
+        activity.focus?.name ?? '',
         activity.approximate_duration_minutes,
         enumLabelList(t, 'groupSize', activity.group_sizes).replace(/, /g, '; '),
         enumLabel(t, 'effort', activity.effort_level),
@@ -375,7 +379,7 @@ export function ActivitiesTable({
             >
               <p className="font-bold">{activity.name}</p>
               <p className="text-sm text-muted-foreground">
-                {activity.activity_types.map(type => type.name).join(', ')} · {activity.approximate_duration_minutes} {t('common.minutes')} · {enumLabelList(t, 'location', activity.locations)}
+                {[activityKindLabel(activity), `${activity.approximate_duration_minutes} ${t('common.minutes')}`, enumLabelList(t, 'location', activity.locations)].filter(Boolean).join(' · ')} {t('common.minutes')} · {enumLabelList(t, 'location', activity.locations)}
               </p>
             </button>
           ))}

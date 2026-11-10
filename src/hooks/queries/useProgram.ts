@@ -21,9 +21,9 @@ export interface ProgramEntry {
     effort_level: string;
     locations: string[];
     age_groups?: string[];
-    activity_types: Array<{
-      name: string;
-    }>;
+    format?: { id: string; code: string; name: string } | null;
+    focus?: { id: string; code: string; name: string } | null;
+    secondary_focus?: { id: string; code: string; name: string } | null;
   } | null;
 }
 

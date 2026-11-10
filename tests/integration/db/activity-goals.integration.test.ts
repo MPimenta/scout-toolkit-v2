@@ -30,7 +30,6 @@ function write(ageGroups: AgeGroupValue[], goalIds: string[]): ActivityWrite {
     // verifyActivityGoals does not look at them, so any ids do
     format_id: '6f1c2d4e-0a1b-4c3d-8e5f-0123456789ab',
     focus_id: '7a2d3e5f-1b2c-4d4e-9f60-123456789abc',
-    activity_type_ids: [],
     educational_goal_ids: goalIds,
   };
 }

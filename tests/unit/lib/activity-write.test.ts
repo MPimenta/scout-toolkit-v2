@@ -15,7 +15,6 @@ const valid = {
   age_groups: ['scouts'],
   format_id: '6f1c2d4e-0a1b-4c3d-8e5f-0123456789ab',
   focus_id: '7a2d3e5f-1b2c-4d4e-9f60-123456789abc',
-  activity_type_ids: ['550e8400-e29b-41d4-a716-446655440000'],
 };
 
 describe('parseActivityWrite: format, focus and duration range', () => {
@@ -107,17 +106,12 @@ describe('parseActivityWrite', () => {
         group_sizes: ['small', 'large'],
         locations: ['inside', 'outside'],
         age_groups: ['cub_scouts', 'scouts'],
-        activity_type_ids: [
-          '550e8400-e29b-41d4-a716-446655440000',
-          '550e8400-e29b-41d4-a716-446655440001',
-        ],
       });
       expect(parsed).toMatchObject({
         group_sizes: ['small', 'large'],
         locations: ['inside', 'outside'],
         age_groups: ['cub_scouts', 'scouts'],
       });
-      expect(typeof parsed === 'object' && parsed.activity_type_ids).toHaveLength(2);
     });
 
     it('collapses duplicate values', () => {
@@ -134,16 +128,14 @@ describe('parseActivityWrite', () => {
       }
     );
 
-    it('rejects unknown enum values and malformed type ids', () => {
+    it('rejects unknown enum values', () => {
       expect(parseActivityWrite({ ...valid, age_groups: ['wizards'] })).toBe('Valor inválido para secção');
-      expect(parseActivityWrite({ ...valid, activity_type_ids: ['not-a-uuid'] })).toBe(
-        'Tipo de atividade inválido'
-      );
     });
 
-    it('no longer requires the former activity types', () => {
-      const { activity_type_ids: _removed, ...rest } = valid as Record<string, unknown>;
-      expect(parseActivityWrite(rest)).toMatchObject({ activity_type_ids: [] });
+    it('ignores the removed activity_type_ids field', () => {
+      const parsed = parseActivityWrite({ ...valid, activity_type_ids: ['not-a-uuid'] });
+      expect(typeof parsed).toBe('object');
+      expect(parsed).not.toHaveProperty('activity_type_ids');
     });
 
     it('does not accept the old single-valued fields', () => {

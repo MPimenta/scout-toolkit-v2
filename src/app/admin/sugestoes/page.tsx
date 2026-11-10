@@ -9,6 +9,7 @@ interface Suggestion {
   activity_id: string;
   field: string;
   suggested_value: string;
+  suggested_label?: string | null;
 }
 
 /** Category suggestions are stored as JSON arrays; show them as a plain list. */
@@ -38,7 +39,7 @@ export default function AdminSuggestionsPage() {
         {items.map((item) => (
           <li key={item.id} className="border rounded-md p-3">
             <p className="font-bold">{item.field}</p>
-            <p className="text-sm mb-3">{formatSuggestedValue(item.suggested_value)}</p>
+            <p className="text-sm mb-3">{item.suggested_label ?? formatSuggestedValue(item.suggested_value)}</p>
             <div className="flex gap-2">
               <Button onClick={async () => {
                 await fetch(`/api/admin/suggestions/${item.id}/review`, {

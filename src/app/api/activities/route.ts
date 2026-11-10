@@ -7,7 +7,7 @@ import { auth } from '@/lib/auth/config';
 import { apiErrors, handleApiError } from '@/lib/errors';
 import { loadGoalAgeGroups } from '@/lib/activities/goals';
 import { formatFocusConditions, loadFormatFocus } from '@/lib/activities/format-focus';
-import { createActivity, parseActivityWrite, verifyActivityExtras, verifyActivityGoals, verifyActivityTypes, verifyFormatAndFocus } from '@/lib/activities/write';
+import { createActivity, parseActivityWrite, verifyActivityExtras, verifyActivityGoals, verifyFormatAndFocus } from '@/lib/activities/write';
 import { categoryConditions, loadActivityCategories } from '@/lib/activities/categories';
 import { AGE_GROUP_VALUES, GROUP_SIZE_VALUES, LOCATION_VALUES } from '@/lib/activities/category-values';
 import { featureOffResponse } from '@/lib/feature-gate';
@@ -24,7 +24,7 @@ import { featureOffResponse } from '@/lib/feature-gate';
  *         name: search
  *         schema:
  *           type: string
- *         description: Search term for activity name, description, or materials
+ *         description: Search term for activity name, description, materials, or instructions
  *       - in: query
  *         name: group_size
  *         schema:
@@ -84,14 +84,14 @@ import { featureOffResponse } from '@/lib/feature-gate';
  *         explode: false
  *         description: Filter by focus IDs (main or secondary focus, any of them)
  *       - in: query
- *         name: activity_type
+ *         name: ids
  *         schema:
  *           type: array
  *           items:
  *             type: string
  *         style: form
  *         explode: false
- *         description: Filter by activity type IDs
+ *         description: Return exactly these approved activities (at most 100), ignoring page and limit. Used to show the activities of a program.
  *       - in: query
  *         name: sdgs
  *         schema:
@@ -221,7 +221,7 @@ const catalogueQuerySchema = z.object({
   effort_level: list(z.enum(['low', 'medium', 'high'])),
   location: list(z.enum(LOCATION_VALUES)),
   age_group: list(z.enum(AGE_GROUP_VALUES)),
-  activity_type: list(z.string().uuid()),
+  ids: list(z.string().uuid()),
   // Format (what kind of activity) and focus (main or secondary), from the reference sheet.
   format: list(z.string().uuid()),
   focus: list(z.string().uuid()),
@@ -272,7 +272,7 @@ export async function GET(request: NextRequest) {
       effort_level: effortLevel,
       location,
       age_group: ageGroup,
-      activity_type: activityType,
+      ids: requestedIds,
       format: formatIds,
       focus: focusIds,
       sdgs: sdgIds,
@@ -281,27 +281,33 @@ export async function GET(request: NextRequest) {
       general_objectives: generalObjectiveIds,
       duration_min: durationMin,
       duration_max: durationMax,
-      page,
-      limit,
+      page: requestedPage,
+      limit: requestedLimit,
       sort,
       order,
     } = parsed.data;
+    // A list of ids asks for exactly those activities, whatever page and limit say.
+    const ids = requestedIds?.slice(0, 100);
+    const limit = ids ? Math.max(ids.length, 1) : requestedLimit;
+    const page = ids ? 1 : requestedPage;
 
     // Build where conditions. Every filter runs in SQL before counting and paginating.
     const whereConditions = [eq(activities.is_approved, true)];
 
-    // Text search: the term anywhere in name, description or materials, ignoring case.
+    // Text search: the term anywhere in name, description, materials or instructions, ignoring case.
     if (search) {
       const pattern = '%' + escapeLike(search) + '%';
       whereConditions.push(
         or(
           ilike(activities.name, pattern),
           ilike(activities.description, pattern),
-          ilike(activities.materials, pattern)
+          ilike(activities.materials, pattern),
+          ilike(activities.instructions, pattern)
         )!
       );
     }
 
+    if (ids) whereConditions.push(inArray(activities.id, ids));
     if (effortLevel) whereConditions.push(inArray(activities.effort_level, effortLevel));
     whereConditions.push(...formatFocusConditions({ formatIds, focusIds }));
     whereConditions.push(
@@ -309,7 +315,6 @@ export async function GET(request: NextRequest) {
         groupSizes: groupSize,
         locations: location,
         ageGroups: ageGroup,
-        activityTypeIds: activityType,
       })
     );
 
@@ -381,7 +386,6 @@ export async function GET(request: NextRequest) {
             effort_level: effortLevel || undefined,
             location: location || undefined,
             age_group: ageGroup || undefined,
-            activity_type: activityType || undefined,
             format: formatIds || undefined,
             focus: focusIds || undefined,
             sdgs: sdgIds || undefined,
@@ -396,7 +400,6 @@ export async function GET(request: NextRequest) {
             effort_levels: [],
             locations: [],
             age_groups: [],
-            activity_types: [],
             formats: [],
             focuses: [],
           },
@@ -500,7 +503,6 @@ export async function GET(request: NextRequest) {
       group_sizes: categoriesByActivity.get(activity.id)!.group_sizes,
       locations: categoriesByActivity.get(activity.id)!.locations,
       age_groups: categoriesByActivity.get(activity.id)!.age_groups,
-      activity_types: categoriesByActivity.get(activity.id)!.activity_types,
       educational_goals: goalsByActivity[activity.id] || [],
       sdgs: sdgsByActivity[activity.id] || [],
     }));
@@ -513,7 +515,6 @@ export async function GET(request: NextRequest) {
       effort_levels: [...new Set(filteredActivities.map(a => a.effort_level))],
       locations: [...new Set(filteredActivities.flatMap(a => a.locations))],
       age_groups: [...new Set(filteredActivities.flatMap(a => a.age_groups))],
-      activity_types: [...new Set(filteredActivities.flatMap(a => a.activity_types.map(t => t.id)))],
       formats: [...new Set(filteredActivities.flatMap(a => (a.format ? [a.format.id] : [])))],
       focuses: [...new Set(filteredActivities.flatMap(a => [a.focus?.id, a.secondary_focus?.id].filter(Boolean)))],
     };
@@ -533,7 +534,6 @@ export async function GET(request: NextRequest) {
           effort_level: effortLevel || undefined,
           location: location || undefined,
           age_group: ageGroup || undefined,
-          activity_type: activityType || undefined,
           format: formatIds || undefined,
           focus: focusIds || undefined,
           sdgs: sdgIds || undefined,
@@ -565,9 +565,6 @@ export async function POST(request: NextRequest) {
   if (typeof parsed === 'string') {
     return apiErrors.validation('body', parsed);
   }
-
-  const typeError = await verifyActivityTypes(parsed);
-  if (typeError) return apiErrors.validation('body', typeError);
 
   const formatFocusError = await verifyFormatAndFocus(parsed);
   if (formatFocusError) return apiErrors.validation('body', formatFocusError);

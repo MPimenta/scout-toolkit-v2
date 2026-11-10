@@ -35,7 +35,6 @@ export default function EditAdminActivityPage() {
           effort_level: String(activity.effort_level ?? 'medium'),
           locations: asStringArray(activity.locations, ['outside']),
           age_groups: asStringArray(activity.age_groups, ['scouts']),
-          activity_type_ids: ((activity.activity_types as Array<{ id: string }> | undefined) ?? []).map((type) => type.id),
           format_id: (activity.format as { id: string } | null | undefined)?.id ?? null,
           focus_id: (activity.focus as { id: string } | null | undefined)?.id ?? null,
           secondary_focus_id: (activity.secondary_focus as { id: string } | null | undefined)?.id ?? null,

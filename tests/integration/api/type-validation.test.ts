@@ -7,7 +7,6 @@ import {
   programs, 
   programEntries, 
   users,
-  activityTypes,
   educationalGoals,
   sdgs,
   activityEducationalGoals,
@@ -33,10 +32,6 @@ describe.skip('API Response Type Validation', () => {
     it('should validate activities API response structure', async () => {
       await withTestDatabase(async () => {
         // Create test data
-        const [activityType] = await db.insert(activityTypes).values({
-          name: 'Test Activity Type',
-        }).returning();
-
         // @ts-expect-error legacy shape (no area_id); this file is skipped
         const [educationalGoal] = await db.insert(educationalGoals).values({
           title: 'Test Educational Goal',
@@ -61,7 +56,6 @@ describe.skip('API Response Type Validation', () => {
           effort_level: 'medium',
           locations: ['inside'],
           age_groups: ['scouts'],
-          activity_type_id: activityType.id,
           is_approved: true,
         });
 
@@ -91,10 +85,6 @@ describe.skip('API Response Type Validation', () => {
               locations: ['inside'],
               age_groups: ['scouts'],
               created_at: activity.created_at.toISOString(),
-              activity_types: [{
-                id: activityType.id,
-                name: activityType.name,
-              }],
               educational_goals: [
                 {
                   id: educationalGoal.id,
@@ -127,7 +117,6 @@ describe.skip('API Response Type Validation', () => {
               effort_level: undefined,
               location: undefined,
               age_group: undefined,
-              activity_types: undefined,
               sdgs: undefined,
               educational_goals: undefined,
               duration_min: undefined,
@@ -139,7 +128,6 @@ describe.skip('API Response Type Validation', () => {
               effort_levels: ['medium'],
               locations: ['inside'],
               age_groups: ['scouts'],
-              activity_types: [activityType.id],
             },
           },
         };
@@ -164,10 +152,6 @@ describe.skip('API Response Type Validation', () => {
     it('should handle activities API response with missing optional fields', async () => {
       await withTestDatabase(async () => {
         // Create test data without educational goals or SDGs
-        const [activityType] = await db.insert(activityTypes).values({
-          name: 'Test Activity Type',
-        }).returning();
-
         const [activity] = await insertActivities(db, {
           name: 'Test Activity',
           description: 'Test Description',
@@ -177,7 +161,6 @@ describe.skip('API Response Type Validation', () => {
           effort_level: 'medium',
           locations: ['inside'],
           age_groups: ['scouts'],
-          activity_type_id: activityType.id,
           is_approved: true,
         });
 
@@ -193,10 +176,6 @@ describe.skip('API Response Type Validation', () => {
           locations: ['inside'],
           age_groups: ['scouts'],
           created_at: activity.created_at.toISOString(),
-          activity_types: [{
-            id: activityType.id,
-            name: activityType.name,
-          }],
           educational_goals: [],
           sdgs: [],
         };
@@ -277,10 +256,6 @@ describe.skip('API Response Type Validation', () => {
         }).returning();
 
         // Create test activity type and activity
-        const [activityType] = await db.insert(activityTypes).values({
-          name: 'Test Activity Type',
-        }).returning();
-
         const [activity] = await insertActivities(db, {
           name: 'Test Activity',
           description: 'Test Description',
@@ -290,7 +265,6 @@ describe.skip('API Response Type Validation', () => {
           effort_level: 'medium',
           locations: ['inside'],
           age_groups: ['scouts'],
-          activity_type_id: activityType.id,
           is_approved: true,
         });
 
@@ -335,10 +309,6 @@ describe.skip('API Response Type Validation', () => {
                 locations: ['inside'],
                 age_groups: ['scouts'],
                 created_at: activity.created_at.toISOString(),
-                activity_types: [{
-                  id: activityType.id,
-                  name: activityType.name,
-                }],
                 educational_goals: [],
                 sdgs: [],
               },
@@ -423,10 +393,6 @@ describe.skip('API Response Type Validation', () => {
           locations: ['inside'],
           age_groups: ['scouts'],
           created_at: '2023-01-01T00:00:00Z',
-          activity_types: [{
-            id: '456',
-            name: 'Test Type',
-          }],
           educational_goals: [],
           sdgs: [],
         },
@@ -442,10 +408,6 @@ describe.skip('API Response Type Validation', () => {
           locations: ['inside'],
           age_groups: ['scouts'],
           created_at: '2023-01-01T00:00:00Z',
-          activity_types: [{
-            id: '456',
-            name: 'Test Type',
-          }],
           educational_goals: [],
           sdgs: [],
         },

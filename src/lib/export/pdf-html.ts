@@ -12,6 +12,12 @@ import {
 import { getUniqueEducationalGoals, getUniqueSdgs } from './excel';
 
 /** Safety first: risks with their mitigation, then objectives per division with behaviours. */
+/** One line `Formato · Foco · Foco secundário` under the activity name, when the activity has them. */
+function activityKindHtml(activity: ProgramExportActivity): string {
+  const line = [activity.format, activity.focus, activity.secondaryFocus].filter(Boolean).join(' · ');
+  return line ? `<div class="activity-details">${escapeHtml(line)}</div>` : '';
+}
+
 function activityExtrasHtml(activity: ProgramExportActivity): string {
   const risk = (label: string, info?: { level: string | null; risk: string | null; mitigation: string | null }) => {
     if (!info || (!info.level && !info.risk && !info.mitigation)) return '';
@@ -251,6 +257,7 @@ export function generateProgramPDFHTML(program: ProgramForExport): string {
                         ? entry.activity.name || exportLabels.unknownActivity
                         : entry.custom_title || 'Bloco Personalizado'
                     )}</strong>
+                    ${entry.entry_type === 'activity' && entry.activity ? activityKindHtml(entry.activity) : ''}
                     ${entry.entry_type === 'activity' && entry.activity?.description ? `
                       <div class="activity-details">${escapeHtml(entry.activity.description)}</div>
                     ` : ''}

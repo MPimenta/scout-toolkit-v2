@@ -3,10 +3,6 @@ import { planBaselineLoad, summarizeReport, type SheetRow } from '@/lib/activiti
 
 const HEADERS = ['atividade_id', 'Nome', 'Descrição', 'Materiais', 'Intruções?', 'Mins', 'Grupo', 'Esforço', 'Local', 'Tipo', 'Divisão', 'ODS', 'Fonte', 'Formato', 'Foco', 'Foco secundário', 'duracao_min', 'duracao_max', 'Publicada', 'estado', 'confianca', 'variantes'];
 const taxonomies = {
-  types: [
-    { id: 'type-jogo', name: 'Jogo' },
-    { id: 'type-arte', name: 'Artesanato' },
-  ],
   formats: [
     { id: 'fmt-jogo', name: 'Jogo', code: 'jogo' },
     { id: 'fmt-quebra', name: 'Quebra-gelo', code: 'quebra-gelo' },
@@ -49,7 +45,7 @@ const plan = (rows: SheetRow[], limit = 200, existing: Array<{ name: string; age
 
 describe('planBaselineLoad', () => {
   it('normalises a row into an activity with lists', () => {
-    const { selected, report } = plan([row({ Divisão: 'Lobitos, Escoteiros', Local: 'Interior, Exterior', Tipo: 'Jogo, Artesanato' })]);
+    const { selected, report } = plan([row({ Divisão: 'Lobitos, Escoteiros', Local: 'Interior, Exterior' })]);
     expect(selected).toHaveLength(1);
     expect(selected[0]!.data).toMatchObject({
       name: 'Jogo da Bandeira',
@@ -58,7 +54,6 @@ describe('planBaselineLoad', () => {
       effort_level: 'high',
       locations: ['inside', 'outside'],
       age_groups: ['cub_scouts', 'scouts'],
-      activity_type_ids: ['type-jogo', 'type-arte'],
       sdg_ids: ['sdg-4'],
       instructions: '1. Dividir\n2. Jogar',
       sdgs: [{ sdg_id: 'sdg-4', justification: null }],
@@ -94,11 +89,11 @@ describe('planBaselineLoad', () => {
     expect(report.droppedValues).toContainEqual(expect.objectContaining({ field: 'formato', values: ['Culinária'] }));
   });
 
-  it('no longer needs the former activity type', () => {
+  it('ignores a Tipo column, which no longer means anything', () => {
     const { selected, report } = plan([row({ Tipo: 'Culinária' })]);
     expect(selected).toHaveLength(1);
-    expect(selected[0]!.data.activity_type_ids).toEqual([]);
-    expect(report.unmapped.types).toEqual({ Culinária: 1 });
+    expect(selected[0]!.data).not.toHaveProperty('activity_type_ids');
+    expect(report.droppedValues).toEqual([]);
   });
 
   it('maps format, main focus and secondary focus, never creating values', () => {

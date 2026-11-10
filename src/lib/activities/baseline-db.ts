@@ -6,7 +6,6 @@ import {
   activityAgeGroups,
   activityFocuses,
   activityFormats,
-  activityTypes,
   activitySources,
   challenges,
   educationalGoalAgeGroups,
@@ -20,8 +19,7 @@ import type { PlannedActivity, Taxonomies } from './baseline-plan';
 /** Database side of the baseline load. Callers decide which database `db` points at. */
 
 export async function loadTaxonomies(): Promise<Taxonomies> {
-  const [types, formats, focuses, sdgRows, goalRows, ageRows, challengeRows, sources] = await Promise.all([
-    db.select({ id: activityTypes.id, name: activityTypes.name }).from(activityTypes),
+  const [formats, focuses, sdgRows, goalRows, ageRows, challengeRows, sources] = await Promise.all([
     db.select({ id: activityFormats.id, name: activityFormats.name, code: activityFormats.code }).from(activityFormats),
     db.select({ id: activityFocuses.id, name: activityFocuses.name, code: activityFocuses.code }).from(activityFocuses),
     db.select({ id: sdgs.id, number: sdgs.number, name: sdgs.name }).from(sdgs),
@@ -34,7 +32,7 @@ export async function loadTaxonomies(): Promise<Taxonomies> {
     ...goal,
     age_groups: ageRows.filter((row) => row.goal_id === goal.id).map((row) => row.age_group),
   }));
-  return { types, formats, focuses, sdgs: sdgRows, goals, challenges: challengeRows, sources };
+  return { formats, focuses, sdgs: sdgRows, goals, challenges: challengeRows, sources };
 }
 
 export async function loadExistingActivities(): Promise<Array<{ name: string; age_groups: string[] }>> {

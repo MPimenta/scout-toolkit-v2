@@ -65,10 +65,6 @@ export interface ApiActivity {
   age_groups: string[];
   image_url?: string;
   created_at: string;
-  activity_types: Array<{
-    id: string;
-    name: string;
-  }>;
   educational_goals: ApiEducationalGoal[];
   sdgs: Array<{
     id: string;
@@ -124,11 +120,6 @@ export interface ApiProgramsResponse {
 }
 
 // Taxonomy API Types
-export interface ApiActivityType {
-  id: string;
-  name: string;
-}
-
 export interface ApiSdg {
   id: string;
   number: number;
@@ -175,7 +166,6 @@ export interface ApiActivitiesResponse {
       effort_level?: string[];
       location?: string[];
       age_group?: string[];
-      activity_type?: string[];
       sdgs?: string[];
       educational_goals?: string[];
       educational_areas?: string[];
@@ -188,7 +178,6 @@ export interface ApiActivitiesResponse {
       effort_levels: string[];
       locations: string[];
       age_groups: string[];
-      activity_types: string[];
     };
   };
 }

@@ -15,14 +15,13 @@ interface GeneralObjectiveOption {
 }
 
 const TABS = [
-  { id: 'activity-types', label: 'Tipos', list: '/api/taxonomies/activity-types', key: 'activity_types' },
   { id: 'educational-areas', label: 'Áreas', list: '/api/taxonomies/educational-areas', key: 'educational_areas' },
   { id: 'educational-goals', label: 'Objetivos', list: '/api/taxonomies/educational-goals', key: 'educational_goals' },
   { id: 'sdgs', label: 'ODS', list: '/api/taxonomies/sdgs', key: 'sdgs' },
 ] as const;
 
 export default function AdminTaxonomiesPage() {
-  const [tab, setTab] = useState<(typeof TABS)[number]['id']>('activity-types');
+  const [tab, setTab] = useState<(typeof TABS)[number]['id']>('educational-areas');
   const [items, setItems] = useState<Array<Record<string, unknown>>>([]);
   const [generalObjectives, setGeneralObjectives] = useState<GeneralObjectiveOption[]>([]);
   const current = TABS.find((item) => item.id === tab)!;

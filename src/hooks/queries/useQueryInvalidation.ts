@@ -67,10 +67,8 @@ export function useQueryInvalidation() {
    * Invalidates a specific taxonomy type
    * @param type - The taxonomy type to invalidate
    */
-  const invalidateTaxonomy = useCallback((type: 'activity-types' | 'educational-goals' | 'sdgs') => {
-    const key = type === 'activity-types' 
-      ? queryKeys.taxonomies.activityTypes()
-      : type === 'educational-goals'
+  const invalidateTaxonomy = useCallback((type: 'educational-goals' | 'sdgs') => {
+    const key = type === 'educational-goals'
       ? queryKeys.taxonomies.educationalGoals()
       : queryKeys.taxonomies.sdgs();
     
@@ -105,7 +103,7 @@ export function useQueryInvalidation() {
       
       case 'taxonomy':
         if (context.id) {
-          invalidateTaxonomy(context.id as 'activity-types' | 'educational-goals' | 'sdgs');
+          invalidateTaxonomy(context.id as 'educational-goals' | 'sdgs');
         } else {
           invalidateTaxonomies();
         }

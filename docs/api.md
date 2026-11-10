@@ -119,14 +119,14 @@ GET /api/activities?search=game&group_size=medium&effort_level=low&duration_min=
 ```
 
 **Query Parameters:**
-- `search` (string) - Text search in name, description, materials
+- `search` (string) - Text search in name, description, materials and instructions (ignoring case)
 - `group_size` (string[]) - Filter by group size: small, medium, large
 - `effort_level` (string[]) - Filter by effort: low, medium, high
 - `location` (string) - Filter by location: inside, outside
 - `age_group` (string[]) - Filter by age group
 - `format` (string[]) - Format IDs (what kind of activity). Several values match any of them.
 - `focus` (string[]) - Focus IDs. An activity matches when the focus is its main or its secondary focus.
-- `activity_type` (string[]) - Former activity types (kept working while the old tables exist; the interface no longer offers it)
+- `ids` (string[]) - Exactly these approved activities (at most 100), ignoring `page` and `limit`. The program page reads its activities this way.
 - `sdgs` (string[]) - Filter by SDG IDs
 - `educational_goals` (string[]) - Specific objective IDs
 - `educational_areas` (string[]) - Educational area IDs (any objective in the area)
@@ -162,13 +162,8 @@ GET /api/activities?search=game&group_size=medium&effort_level=low&duration_min=
       "effort_level": "low",
       "location": "outside",
       "age_group": "scouts",
-      "activity_type": {
-        "id": "type_1",
-        "name": {
-          "pt": "Jogo",
-          "en": "Game"
-        }
-      },
+      "format": { "id": "fmt_1", "code": "jogo", "name": "Jogo" },
+      "focus": { "id": "foc_1", "code": "cooperacao", "name": "Cooperação" },
       "image_url": "https://...",
       "educational_goals": [
         {
@@ -221,7 +216,6 @@ GET /api/activities?search=game&group_size=medium&effort_level=low&duration_min=
       "effort_levels": ["low", "medium", "high"],
       "locations": ["inside", "outside"],
       "age_groups": ["cub_scouts", "scouts", "adventurers", "rovers", "leaders"],
-      "activity_types": [...],
       "sdgs": [...],
       "educational_goals": [...]
     }
@@ -258,13 +252,8 @@ GET /api/activities/{id}
     "effort_level": "low",
     "location": "outside",
     "age_group": "scouts",
-    "activity_type": {
-      "id": "type_1",
-      "name": {
-        "pt": "Jogo",
-        "en": "Game"
-      }
-    },
+    "format": { "id": "fmt_1", "code": "jogo", "name": "Jogo" },
+    "focus": { "id": "foc_1", "code": "cooperacao", "name": "Cooperação" },
     "image_url": "https://...",
     "educational_goals": [...],
     "sdgs": [...],
@@ -382,12 +371,8 @@ GET /api/programs/{id}
           "group_size": "medium",
           "effort_level": "low",
           "location": "outside",
-          "activity_type": {
-            "name": {
-              "pt": "Jogo",
-              "en": "Game"
-            }
-          }
+          "format": { "name": "Jogo" },
+          "focus": { "name": "Cooperação" }
         }
       },
       {
@@ -699,7 +684,8 @@ POST /api/admin/activities
   "effort_level": "low",
   "location": "outside",
   "age_group": "scouts",
-  "activity_type_id": "type_1",
+  "format_id": "fmt_1",
+  "focus_id": "foc_1",
   "educational_goal_ids": ["goal_1", "goal_2"],
   "sdg_ids": ["sdg_1", "sdg_2"]
 }
@@ -743,32 +729,17 @@ Public. The 8 formats and 10 focuses of the reference sheet, plus any added by a
 ```
 (`activity_focuses` has the same shape.) Admin writes go through `/api/admin/taxonomies/activity-formats` and `/api/admin/taxonomies/activity-focuses`: values from the sheet (`is_managed`) answer `409` on rename and delete; an admin can add values of their own (`{ "name", "description"?, "position"? }`, the code is derived from the name), rename them and delete them when no activity uses them (`409` otherwise).
 
+#### Breaking changes: the activity type is gone (format-focus-everywhere)
+- `activity_types` is no longer returned by the activity or program endpoints, and `filters.available` no longer lists it. Read `format`, `focus` and `secondary_focus` instead (`GET /api/programs/[id]` returns them for each activity entry).
+- The `activity_type` filter is ignored, `activity_type_ids` on writes is ignored, and `/api/taxonomies/activity-types` answers `404`.
+- Edit suggestions: `activity_types` is no longer a suggestable field (`400`). `format_id`, `focus_id` and `secondary_focus_id` are: the value is the id of an existing format or focus, and the resulting main focus must differ from the secondary focus.
+- The Excel export replaces the "Tipo de Atividade" column with "Formato", "Foco" and "Foco secundário" on the schedule and the activity details sheets; the PDF shows `Formato · Foco · Foco secundário` under the activity name.
+
 #### Writing an activity
-`POST /api/activities`, `POST /api/admin/activities` and their `PATCH` need `format_id` and `focus_id` (valid ids; `400` with a Portuguese message otherwise). `secondary_focus_id` is optional and must differ from `focus_id`. `duration_min_minutes` / `duration_max_minutes` are optional whole minutes with the minimum not above the maximum. `activity_type_ids` is optional and kept only for older data. `physical_risk_level` and `psychological_risk_level` accept `low`, `low_medium`, `medium`, `medium_high` and `high`. The sheet id (`external_id`, `ATV-0001`) is returned on reads but never accepted from a request body.
+`POST /api/activities`, `POST /api/admin/activities` and their `PATCH` need `format_id` and `focus_id` (valid ids; `400` with a Portuguese message otherwise). `secondary_focus_id` is optional and must differ from `focus_id`. `duration_min_minutes` / `duration_max_minutes` are optional whole minutes with the minimum not above the maximum. The former `activity_type_ids` field no longer exists and is ignored. `physical_risk_level` and `psychological_risk_level` accept `low`, `low_medium`, `medium`, `medium_high` and `high`. The sheet id (`external_id`, `ATV-0001`) is returned on reads but never accepted from a request body.
 
-#### List Activity Types
-```http
-GET /api/taxonomies/activity-types
-```
-
-**Response:**
-```json
-{
-  "activity_types": [
-    {
-      "id": "type_1",
-      "name": {
-        "pt": "Jogo",
-        "en": "Game"
-      },
-      "description": {
-        "pt": "Atividades lúdicas...",
-        "en": "Playful activities..."
-      }
-    }
-  ]
-}
-```
+#### Activity types (removed)
+`GET /api/taxonomies/activity-types` and the `activity-types` admin taxonomy no longer exist: both answer `404`. What kind of activity it is, and what it works on, are the format and the focus (see above).
 
 #### List Educational Areas
 ```http

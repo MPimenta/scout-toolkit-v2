@@ -156,15 +156,6 @@ const swaggerOptions: swaggerJSDoc.Options = {
             },
             duration_min_minutes: { type: 'integer', nullable: true, description: 'Optional lower bound of the duration' },
             duration_max_minutes: { type: 'integer', nullable: true, description: 'Optional upper bound of the duration' },
-            activity_types: {
-              type: 'array',
-              minItems: 1,
-              items: {
-                type: 'object',
-                properties: { id: { type: 'string', format: 'uuid' }, name: { type: 'string' } },
-              },
-              description: 'Activity types (one or more)',
-            },
             educational_goals: {
               type: 'array',
               items: {

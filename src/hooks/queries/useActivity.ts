@@ -18,10 +18,9 @@ export interface Activity {
   age_groups: string[];
   image_url?: string;
   created_at: string;
-  activity_types: Array<{
-    id: string;
-    name: string;
-  }>;
+  format?: { id: string; code: string; name: string } | null;
+  focus?: { id: string; code: string; name: string } | null;
+  secondary_focus?: { id: string; code: string; name: string } | null;
   educational_goals: Array<{
     id: string;
     title: string;

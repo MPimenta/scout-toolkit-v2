@@ -4,11 +4,9 @@ import { NextRequest } from 'next/server';
 import { GET } from '@/app/api/activities/route';
 import { withTestDatabase, type TestDatabaseHandle } from '../../helpers/database';
 import { requireLocalTestDatabase } from '../../helpers/local-test-db';
-import { activitySdgs, activityTypes, sdgs } from '../../../drizzle/schema';
+import { activitySdgs, sdgs } from '../../../drizzle/schema';
 
 vi.mock('@/lib/auth/config', () => ({ auth: async () => null }));
-
-const TYPE_ID = '550e8400-e29b-41d4-a716-446655440601';
 const SDG_13 = '550e8400-e29b-41d4-a716-446655440613';
 const SDG_4 = '550e8400-e29b-41d4-a716-446655440604';
 
@@ -28,8 +26,6 @@ describe('Activity catalogue search and filters', () => {
     db = setup.db;
     cleanup = setup.cleanup;
     await cleanup();
-
-    await db.insert(activityTypes).values({ id: TYPE_ID, name: 'Jogo' });
     await db.insert(sdgs).values([
       { id: SDG_13, number: 13, name: 'Ação Climática', description: 'Clima', icon_url: '/sdg-13.png' },
       { id: SDG_4, number: 4, name: 'Educação de Qualidade', description: 'Educação', icon_url: '/sdg-4.png' },
@@ -42,7 +38,6 @@ describe('Activity catalogue search and filters', () => {
       effort_level: 'low' as const,
       locations: ['inside' as const],
       age_groups: ['scouts' as const],
-      activity_type_id: TYPE_ID,
       is_approved: true,
     };
     const rows = Array.from({ length: 30 }, (_, i) => ({

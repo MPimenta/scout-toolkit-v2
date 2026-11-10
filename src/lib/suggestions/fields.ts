@@ -8,7 +8,9 @@ export const SUGGESTABLE_FIELDS = [
   'effort_level',
   'locations',
   'age_groups',
-  'activity_types',
+  'format_id',
+  'focus_id',
+  'secondary_focus_id',
 ] as const;
 
 export type SuggestableField = (typeof SUGGESTABLE_FIELDS)[number];
@@ -18,8 +20,16 @@ export function isSuggestableField(field: string): field is SuggestableField {
 }
 
 /** Fields that hold a list of values; their suggested_value is stored as a JSON array string. */
-export const CATEGORY_FIELDS = ['group_sizes', 'locations', 'age_groups', 'activity_types'] as const;
+export const CATEGORY_FIELDS = ['group_sizes', 'locations', 'age_groups'] as const;
 export type CategoryField = (typeof CATEGORY_FIELDS)[number];
+
+/** Fields that hold the id of a format or a focus; their suggested_value is that id. */
+export const VALUE_FIELDS = ['format_id', 'focus_id', 'secondary_focus_id'] as const;
+export type ValueField = (typeof VALUE_FIELDS)[number];
+
+export function isValueField(field: string): field is ValueField {
+  return (VALUE_FIELDS as readonly string[]).includes(field);
+}
 
 export function isCategoryField(field: string): field is CategoryField {
   return (CATEGORY_FIELDS as readonly string[]).includes(field);

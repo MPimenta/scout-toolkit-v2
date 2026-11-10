@@ -28,17 +28,8 @@ vi.mock('@/components/features/programs/DeleteProgramModal', () => ({
   DeleteProgramModal: () => null,
 }));
 
-vi.mock('@/hooks/useActivities', () => ({
-  useActivities: () => ({
-    activities: [],
-    loading: false,
-    error: null,
-  }),
-  useAllActivities: () => ({
-    activities: [],
-    loading: false,
-    error: null,
-  }),
+vi.mock('@/hooks/queries/useActivities', () => ({
+  useActivitiesByIds: () => ({ data: { activities: [] } }),
 }));
 
 vi.mock('@/components/features/programs/AddActivityModal', () => ({
@@ -118,7 +109,6 @@ const mockEntries: ProgramEntry[] = [
       group_sizes: ['medium'],
       effort_level: 'low',
       locations: ['inside'],
-      activity_types: [{ name: 'Jogo' }],
     },
   },
   {

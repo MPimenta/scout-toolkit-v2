@@ -4,7 +4,7 @@ import { db } from '@/lib/db/server';
 import { activities } from '../../../../../drizzle/schema';
 import { requireAdminApi } from '@/lib/auth/utils';
 import { apiErrors, withApiErrorHandler } from '@/lib/errors';
-import { createActivity, parseActivityWrite, verifyActivityExtras, verifyActivityGoals, verifyActivityTypes, verifyFormatAndFocus } from '@/lib/activities/write';
+import { createActivity, parseActivityWrite, verifyActivityExtras, verifyActivityGoals, verifyFormatAndFocus } from '@/lib/activities/write';
 
 export const GET = withApiErrorHandler(async (request: NextRequest) => {
   const gate = await requireAdminApi();
@@ -26,9 +26,6 @@ export const POST = withApiErrorHandler(async (request: NextRequest) => {
   if (typeof parsed === 'string') {
     return apiErrors.validation('body', parsed);
   }
-
-  const typeError = await verifyActivityTypes(parsed);
-  if (typeError) return apiErrors.validation('body', typeError);
 
   const formatFocusError = await verifyFormatAndFocus(parsed);
   if (formatFocusError) return apiErrors.validation('body', formatFocusError);

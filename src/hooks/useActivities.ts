@@ -19,7 +19,6 @@ export interface FilterInfo {
     effort_levels: string[];
     locations: string[];
     age_groups: string[];
-    activity_types: string[];
   };
 }
 
@@ -35,7 +34,12 @@ export interface ActivitiesResponse {
     locations: string[];
     age_groups: string[];
     created_at: string;
-    activity_types: Array<{ id: string; name: string }>;
+    instructions?: string | null;
+    duration_min_minutes?: number | null;
+    duration_max_minutes?: number | null;
+    format?: { id: string; code: string; name: string } | null;
+    focus?: { id: string; code: string; name: string } | null;
+    secondary_focus?: { id: string; code: string; name: string } | null;
     educational_goals: Array<{ id: string; title: string; code: string; age_groups?: string[] }>;
     sdgs: Array<{ id: string; number: number; name: string; icon_url: string; icon: string }>;
   }>;
@@ -127,27 +131,6 @@ export function useActivities(options: UseActivitiesOptions) {
     error,
     pagination: response?.pagination || null,
     filterInfo: response?.filters || null,
-    refresh: () => refetch(),
-  };
-}
-
-// Simple hook for getting all activities without filters
-export function useAllActivities() {
-  // Use TanStack Query for data fetching with high limit
-  const { 
-    data: response, 
-    isLoading: loading, 
-    error: queryError, 
-    refetch 
-  } = useTanStackActivities({ limit: 1000 });
-
-  // Transform error to string format for backward compatibility
-  const error = queryError ? (queryError instanceof Error ? queryError.message : 'Erro desconhecido') : null;
-
-  return {
-    activities: response?.activities || [],
-    loading,
-    error,
     refresh: () => refetch(),
   };
 }

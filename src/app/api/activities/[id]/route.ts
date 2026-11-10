@@ -27,7 +27,7 @@ import { validateUUID } from '@/lib/errors/error-handler';
 import { loadActivityCategoriesFor } from '@/lib/activities/categories';
 import { loadGoalAgeGroups } from '@/lib/activities/goals';
 import { loadFormatFocus } from '@/lib/activities/format-focus';
-import { parseActivityWrite, updateActivity, verifyActivityExtras, verifyActivityGoals, verifyActivityTypes, verifyFormatAndFocus } from '@/lib/activities/write';
+import { parseActivityWrite, updateActivity, verifyActivityExtras, verifyActivityGoals, verifyFormatAndFocus } from '@/lib/activities/write';
 
 export const GET = withApiErrorHandler(async (
   _request: NextRequest,
@@ -214,9 +214,6 @@ export const PATCH = withApiErrorHandler(async (
 
   const parsed = parseActivityWrite(await request.json());
   if (typeof parsed === 'string') return apiErrors.validation('body', parsed);
-
-  const typeError = await verifyActivityTypes(parsed);
-  if (typeError) return apiErrors.validation('body', typeError);
 
   const formatFocusError = await verifyFormatAndFocus(parsed);
   if (formatFocusError) return apiErrors.validation('body', formatFocusError);

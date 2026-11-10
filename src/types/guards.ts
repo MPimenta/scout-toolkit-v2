@@ -11,7 +11,6 @@ import {
   Activity,
   Program,
   ProgramEntry,
-  ActivityType,
   EducationalGoal,
   Sdg,
   Review
@@ -99,7 +98,6 @@ export function isActivity(value: unknown): value is Activity {
     isEffortLevel(value['effort_level']) &&
     isArrayOf(value['locations'], isLocation) &&
     isArrayOf(value['age_groups'], isAgeGroup) &&
-    isArrayOf(value['activity_type_ids'], isString) &&
     isString(value['created_at']) &&
     isString(value['updated_at']) &&
     isBoolean(value['is_approved']);
@@ -125,12 +123,6 @@ export function isProgramEntry(value: unknown): value is ProgramEntry {
     isString(value.end_time) &&
     isEntryType(value.entry_type) &&
     isString(value.created_at);
-}
-
-export function isActivityType(value: unknown): value is ActivityType {
-  return isObject(value) &&
-    isString(value.id) &&
-    isString(value.name);
 }
 
 export function isEducationalGoal(value: unknown): value is EducationalGoal {
@@ -181,8 +173,6 @@ export function isApiActivity(value: unknown): value is ApiActivity {
     isArrayOf(value.locations, isLocation) &&
     isArrayOf(value.age_groups, isAgeGroup) &&
     isString(value.created_at) &&
-    isArrayOf(value.activity_types, (t): t is { id: string; name: string } =>
-      isObject(t) && isString(t.id) && isString(t.name)) &&
     isArray(value.educational_goals) && value.educational_goals.every(isApiEducationalGoal) &&
     isArray(value.sdgs);
 }

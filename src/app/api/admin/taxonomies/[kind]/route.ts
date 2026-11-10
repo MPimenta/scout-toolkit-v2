@@ -6,13 +6,11 @@ import {
   activities,
   activityFocuses,
   activityFormats,
-  activityTypes,
   educationalAreas,
   educationalGoals,
   educationalGoalAgeGroups,
   generalObjectives,
   sdgs,
-  activityActivityTypes,
   activityEducationalGoals,
   activitySdgs,
 } from '../../../../../../drizzle/schema';
@@ -22,7 +20,6 @@ import { slugCode } from '@/lib/reference-data/slug-code';
 import { apiErrors, withApiErrorHandler } from '@/lib/errors';
 
 const TABLES = {
-  'activity-types': activityTypes,
   'activity-formats': activityFormats,
   'activity-focuses': activityFocuses,
   'educational-areas': educationalAreas,
@@ -247,10 +244,6 @@ export const DELETE = withApiErrorHandler(async (
       .where(and(eq(educationalGoals.general_objective_id, id)))
       .limit(1);
     if (child) return apiErrors.conflict('Objetivo geral ainda tem objetivos específicos');
-  }
-  if (kind === 'activity-types') {
-    const [used] = await db.select({ id: activityActivityTypes.activity_id }).from(activityActivityTypes).where(eq(activityActivityTypes.activity_type_id, id)).limit(1);
-    if (used) return apiErrors.conflict('Tipo ainda usado por atividades');
   }
   if (kind === 'educational-goals') {
     const [used] = await db.select({ activity_id: activityEducationalGoals.activity_id }).from(activityEducationalGoals).where(eq(activityEducationalGoals.goal_id, id)).limit(1);

@@ -11,7 +11,6 @@ export * from './usage';
 // Export all tables for Drizzle
 import { users, userRoles } from './users';
 import {
-  activityTypes,
   educationalAreas,
   educationalGoals,
   educationalPaths,
@@ -30,7 +29,6 @@ import {
   activityGroupSizes,
   activityLocations,
   activityAgeGroups,
-  activityActivityTypes,
   activityChallenges,
 } from './activities';
 import { programs, programEntries } from './programs';
@@ -50,7 +48,6 @@ import { usageEvents } from './usage';
 export const schema = {
   users,
   userRoles,
-  activityTypes,
   educationalAreas,
   educationalGoals,
   educationalPaths,
@@ -67,7 +64,6 @@ export const schema = {
   activityGroupSizes,
   activityLocations,
   activityAgeGroups,
-  activityActivityTypes,
   activityChallenges,
   programs,
   programEntries,

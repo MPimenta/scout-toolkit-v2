@@ -31,7 +31,6 @@ export interface Activity {
   effort_level: EffortLevel;
   locations: Location[];
   age_groups: AgeGroup[];
-  activity_type_ids: string[];
   image_url?: string;
   created_at: string;
   updated_at: string;
@@ -63,12 +62,6 @@ export interface ProgramEntry {
   custom_title?: string;
   custom_duration_minutes?: number;
   created_at: string;
-}
-
-// Activity type entity
-export interface ActivityType {
-  id: string;
-  name: string;
 }
 
 // Educational goal entity

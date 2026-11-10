@@ -4,7 +4,6 @@ import {
   REQUIRED_COLUMNS,
   cleanOptionalText,
   isPlaceholder,
-  mapActivityTypes,
   mapAgeGroups,
   mapEffort,
   mapGroupSizes,
@@ -19,7 +18,6 @@ import {
   type ColumnKey,
   type NamedRef,
   type SdgRef,
-  type TypeRef,
 } from './baseline-map';
 import {
   matchSource,
@@ -41,8 +39,6 @@ import type { AgeGroupValue } from './category-values';
 export type SheetRow = Record<string, unknown>;
 
 export type Taxonomies = {
-  /** Former activity types (optional now; kept while the old tables exist). */
-  types: readonly TypeRef[];
   /** The official formats and focuses, matched by name or code; never created from activity rows. */
   formats: readonly NamedRef[];
   focuses: readonly NamedRef[];
@@ -89,7 +85,6 @@ export type LoadReport = {
   /** Values kept but worth a look, for example a risk range stored as its higher level. */
   notes: Array<{ row: number; note: string }>;
   unmapped: {
-    types: Record<string, number>;
     sdgs: Record<string, number>;
   };
 };
@@ -261,7 +256,7 @@ export function planBaselineLoad(
     reviewStates: { estado: {}, confianca: {}, variantes: 0 },
     ignored: { dirigentesBlocks: 0 },
     notes: [],
-    unmapped: { types: {}, sdgs: {} },
+    unmapped: { sdgs: {} },
   };
   if (missing.length > 0) {
     return {
@@ -317,7 +312,6 @@ export function planBaselineLoad(
     const groups = mapGroupSizes(cell(raw, columns.group));
     const locations = mapLocations(cell(raw, columns.location));
     const ages = mapAgeGroups(cell(raw, columns.age));
-    const types = columns.type ? mapActivityTypes(cell(raw, columns.type), taxonomies.types) : { values: [] as string[], dropped: [] as string[] };
     const format = mapNamedValue(cell(raw, columns.format), taxonomies.formats);
     const focus = mapNamedValue(cell(raw, columns.focus), taxonomies.focuses);
     const secondary = mapNamedValue(cell(raw, columns.focus_secondary), taxonomies.focuses);
@@ -331,7 +325,6 @@ export function planBaselineLoad(
       ['foco', focus.dropped],
       ['foco secundário', secondary.dropped],
     ];
-    for (const miss of types.dropped) bump(report.unmapped.types, miss);
     // Unknown values are reported even when the row is then skipped, so the report shows everything to fix.
     for (const [field, values] of dropped) {
       if (values.length > 0) report.droppedValues.push({ row: rowNumber, externalId, field, values });
@@ -384,7 +377,6 @@ export function planBaselineLoad(
       effort_level: effort.value,
       locations: locations.values,
       age_groups: ages.values,
-      activity_type_ids: types.values,
       image_url: rich.image_url ?? null,
       sdg_ids: sdgs.values,
     };
@@ -465,9 +457,7 @@ export function summarizeReport(report: LoadReport, loaded?: number): string {
   if (report.droppedValues.length > 0) lines.push(`Linhas com valores descartados: ${report.droppedValues.length}`);
   if (report.notes.length > 0) lines.push(`Notas: ${report.notes.length}`);
   if (report.ignored.dirigentesBlocks > 0) lines.push(`Blocos de Dirigentes ignorados (sem objetivos): ${report.ignored.dirigentesBlocks}`);
-  const unmappedTypes = Object.keys(report.unmapped.types).length;
   const unmappedSdgs = Object.keys(report.unmapped.sdgs).length;
-  if (unmappedTypes) lines.push(`Tipos não mapeados: ${unmappedTypes}`);
   if (unmappedSdgs) lines.push(`ODS não mapeados: ${unmappedSdgs}`);
   return lines.join('\n');
 }

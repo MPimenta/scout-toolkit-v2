@@ -3,12 +3,11 @@ import { seedFormatAndFocus } from '../../helpers/reference-values';
 import { eq } from 'drizzle-orm';
 import { setupTestDatabase, teardownTestDatabase, resetTestDatabase } from '../../setup';
 import { db } from '@/lib/db/server';
-import { activities, activityTypes } from '../../../drizzle/schema';
+import { activities } from '../../../drizzle/schema';
 import { requireLocalTestDatabase } from '../../helpers/local-test-db';
 import { createActivity, parseActivityWrite } from '@/lib/activities/write';
 
 describe('Activity instructions (DB)', () => {
-  let activityTypeId: string;
   let refs: Awaited<ReturnType<typeof seedFormatAndFocus>>;
 
   beforeAll(async () => {
@@ -22,8 +21,6 @@ describe('Activity instructions (DB)', () => {
 
   beforeEach(async () => {
     await resetTestDatabase();
-    const [type] = await db.insert(activityTypes).values({ name: 'Jogo' }).returning();
-    activityTypeId = type.id;
     refs = await seedFormatAndFocus(db);
   });
 
@@ -37,7 +34,6 @@ describe('Activity instructions (DB)', () => {
       effort_level: 'high',
       locations: ['outside'],
       age_groups: ['scouts'],
-      activity_type_ids: [activityTypeId],
       ...refs,
       ...extra,
     };

@@ -33,7 +33,9 @@ const sampleProgram: ProgramForExport = {
         group_sizes: ['medium'],
         effort_level: 'high',
         locations: ['outside'],
-        activityTypes: [{ name: 'Jogo' }],
+        format: 'Jogo',
+        focus: 'Cooperação',
+        secondaryFocus: null,
         educationalGoals: [{ code: 'F1', title: 'Cooperação' }],
         sdgs: [{ number: 4, name: 'Educação de qualidade' }],
       },
@@ -82,8 +84,12 @@ describe('buildProgramExcelWorkbook', () => {
     expect(schedule[1][3]).toBe('Atividade');
     expect(schedule[1][4]).toBe('Jogo da Bandeira');
     expect(schedule[1][6]).toBe('Médio (7-15)');
-    expect(schedule[1][10]).toBe('F1 Cooperação');
-    expect(schedule[1][11]).toBe('ODS 4: Educação de qualidade');
+    expect(schedule[0].slice(9, 12)).toEqual(['Formato', 'Foco', 'Foco secundário']);
+    expect(schedule[1][9]).toBe('Jogo');
+    expect(schedule[1][10]).toBe('Cooperação');
+    expect(schedule[1][11]).toBe('');
+    expect(schedule[1][12]).toBe('F1 Cooperação');
+    expect(schedule[1][13]).toBe('ODS 4: Educação de qualidade');
     expect(schedule[2][3]).toBe('Bloco personalizado');
     expect(schedule[2][4]).toBe('Lanche');
 
@@ -91,8 +97,11 @@ describe('buildProgramExcelWorkbook', () => {
       header: 1,
     });
     expect(details[1][0]).toBe('Jogo da Bandeira');
-    expect(details[1][8]).toBe('F1 Cooperação');
-    expect(details[1][9]).toBe('ODS 4: Educação de qualidade');
+    expect(details[0].slice(7, 10)).toEqual(['Formato', 'Foco', 'Foco secundário']);
+    expect(details[1][7]).toBe('Jogo');
+    expect(details[1][8]).toBe('Cooperação');
+    expect(details[1][10]).toBe('F1 Cooperação');
+    expect(details[1][11]).toBe('ODS 4: Educação de qualidade');
   });
 
   it('omits the activity details sheet when there are no activities', () => {

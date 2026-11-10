@@ -203,14 +203,6 @@ export function parseBoolean(raw: unknown): boolean {
   return ['true', 'verdadeiro', 'sim', 's', '1'].includes(normalizeText(String(raw ?? '')));
 }
 
-export type TypeRef = { id: string; name: string };
-
-/** Matches type names to existing activity types (never creates new ones). */
-export function mapActivityTypes(raw: unknown, types: readonly TypeRef[]): MappedList<string> {
-  const byName = new Map(types.map((type) => [normalizeText(type.name), type.id]));
-  return mapEach(raw, (n) => byName.get(n) ?? null);
-}
-
 export type SdgRef = { id: string; number: number; name: string };
 
 /** Accepts SDG numbers ("4; 17", "ODS 4") or names, matched to existing SDGs. */
@@ -265,7 +257,6 @@ export const COLUMN_ALIASES = {
   group: ['grupo', 'tamanho_grupo', 'tamanho_do_grupo'],
   effort: ['esforco', 'esforco_fisico', 'nivel_de_esforco', 'nivel_esforco'],
   location: ['local'],
-  type: ['tipo', 'tipo_de_atividade'],
   format: ['formato'],
   focus: ['foco', 'foco_principal'],
   focus_secondary: ['foco_secundario'],

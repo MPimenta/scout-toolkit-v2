@@ -5,13 +5,11 @@ import { daysBetween, lisbonDay, periodStart } from '@/lib/usage/analytics';
 import { insertActivities } from '../../helpers/activity-categories';
 import { withTestDatabase, type TestDatabaseHandle } from '../../helpers/database';
 import { requireLocalTestDatabase } from '../../helpers/local-test-db';
-import { activityTypes, usageEvents, user } from '../../../drizzle/schema';
+import { usageEvents, user } from '../../../drizzle/schema';
 
 type Gate = { user: { id: string; role: string } } | { error: NextResponse };
 let gate: Gate = { user: { id: 'admin', role: 'admin' } };
 vi.mock('@/lib/auth/utils', () => ({ requireAdminApi: async () => gate }));
-
-const TYPE_ID = '550e8400-e29b-41d4-a716-446655440701';
 const SCOUTS_ACTIVITY = '550e8400-e29b-41d4-a716-446655440702';
 const ROVERS_ACTIVITY = '550e8400-e29b-41d4-a716-446655440703';
 const MARIA = '550e8400-e29b-41d4-a716-446655440704';
@@ -43,7 +41,6 @@ describe('Admin usage analytics', () => {
       { id: MARIA, email: 'maria-uso@escoteiros.pt', name: 'Maria', role: 'user' },
       { id: SEM_NOME, email: 'sem-nome@escoteiros.pt', name: null, role: 'user' },
     ]);
-    await db.insert(activityTypes).values({ id: TYPE_ID, name: 'Jogo' });
     const base = {
       description: 'd',
       materials: 'm',
@@ -51,7 +48,6 @@ describe('Admin usage analytics', () => {
       group_sizes: ['medium' as const],
       effort_level: 'low' as const,
       locations: ['inside' as const],
-      activity_type_id: TYPE_ID,
       is_approved: true,
     };
     await insertActivities(db, [

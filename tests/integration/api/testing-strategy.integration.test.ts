@@ -5,7 +5,7 @@ import { eq } from 'drizzle-orm';
 import { resetTestDatabase, setupTestDatabase, teardownTestDatabase } from '../../setup';
 import { requireLocalTestDatabase } from '../../helpers/local-test-db';
 import { getBoundTestDb } from '../../helpers/bound-test-db';
-import { activityTypes, programs, user } from '../../../drizzle/schema';
+import { programs, user } from '../../../drizzle/schema';
 
 vi.mock('@/lib/db/server', async () => {
   const { getBoundTestDb } = await import('../../helpers/bound-test-db');
@@ -29,8 +29,6 @@ vi.mock('@/lib/auth/utils', () => ({
 const AUTHOR_ID = '550e8400-e29b-41d4-a716-446655440101';
 const COPIER_ID = '550e8400-e29b-41d4-a716-446655440102';
 const ADMIN_ID = '550e8400-e29b-41d4-a716-446655440103';
-const TYPE_ID = '550e8400-e29b-41d4-a716-446655440104';
-const ACTIVITY_ID = '550e8400-e29b-41d4-a716-446655440105';
 const UNAPPROVED_ID = '550e8400-e29b-41d4-a716-446655440106';
 const PROGRAM_ID = '550e8400-e29b-41d4-a716-446655440107';
 
@@ -120,39 +118,14 @@ describe('Testing strategy SQL cases', () => {
     expect(stillAdmin.role).toBe('admin');
   });
 
-  it('returns 409 when deleting a referenced activity type', async () => {
-    const db = getBoundTestDb();
-    await db.insert(activityTypes).values({
-      id: TYPE_ID,
-      name: 'Jogo',
-      description: 'Jogos',
-    });
-    await insertActivities(db, {
-      id: ACTIVITY_ID,
-      name: 'Jogo da bandeira',
-      description: 'Uma atividade',
-      materials: 'Bandeira',
-      approximate_duration_minutes: 30,
-      group_sizes: ['medium'],
-      effort_level: 'low',
-      locations: ['outside'],
-      age_groups: ['scouts'],
-      activity_type_id: TYPE_ID,
-      is_approved: true,
-    });
-
+  it('answers 404 for the removed activity-types taxonomy', async () => {
     const { DELETE } = await import('@/app/api/admin/taxonomies/[kind]/route');
     const response = await DELETE(
-      new NextRequest(
-        `http://localhost:3000/api/admin/taxonomies/activity-types?id=${TYPE_ID}`,
-        { method: 'DELETE' }
-      ),
+      new NextRequest('http://localhost:3000/api/admin/taxonomies/activity-types?id=00000000-0000-4000-8000-000000000001', { method: 'DELETE' }),
       { params: Promise.resolve({ kind: 'activity-types' }) }
     );
 
-    expect(response.status).toBe(409);
-    const [type] = await db.select().from(activityTypes).where(eq(activityTypes.id, TYPE_ID));
-    expect(type).toBeDefined();
+    expect(response.status).toBe(404);
   });
 
   it('returns 404 when a guest requests an unapproved activity', async () => {
@@ -162,10 +135,6 @@ describe('Testing strategy SQL cases', () => {
       email: 'autor@escoteiros.pt',
       name: 'Autor',
       role: 'user',
-    });
-    await db.insert(activityTypes).values({
-      id: TYPE_ID,
-      name: 'Jogo',
     });
     await insertActivities(db, {
       id: UNAPPROVED_ID,
@@ -177,7 +146,6 @@ describe('Testing strategy SQL cases', () => {
       effort_level: 'low',
       locations: ['inside'],
       age_groups: ['scouts'],
-      activity_type_id: TYPE_ID,
       created_by: AUTHOR_ID,
       is_approved: false,
     });

@@ -39,11 +39,6 @@ const mockActivity = {
   image_url: 'https://example.com/test-image.jpg',
   created_at: '2024-01-01T00:00:00Z',
   updated_at: '2024-01-01T00:00:00Z',
-  activity_types: [{
-    id: 'test-type-id',
-    name: 'Tipo de Atividade',
-    description: 'Descrição do tipo',
-  }],
   educational_goals: [
     {
       id: 'goal-1',
@@ -142,8 +137,6 @@ describe('ActivityDetail', () => {
     expect(screen.getAllByText('Médio').length).toBeGreaterThan(0);
     expect(screen.getByText('Exterior')).toBeInTheDocument();
     expect(screen.getAllByText('Escoteiros (10-14)').length).toBeGreaterThan(0);
-    expect(screen.getByText('Tipo de Atividade')).toBeInTheDocument();
-    
     // Check Add to Program button
     expect(screen.getByText('Adicionar ao programa')).toBeInTheDocument();
   });
@@ -241,15 +234,14 @@ describe('ActivityDetail', () => {
     render(<ActivityDetail activityId="test-id" />);
 
     expect(screen.getByText('Jogo · Cooperação · Liderança')).toBeInTheDocument();
-    expect(screen.queryByText('Tipo de Atividade')).not.toBeInTheDocument();
     expect(screen.getByText('40–75 min')).toBeInTheDocument();
     expect(screen.queryByText('60 min')).not.toBeInTheDocument();
   });
 
-  it('falls back to the former types for an activity with no format yet', () => {
+  it('shows no kind label for an activity with neither format nor focus', () => {
     mockUseActivity.mockReturnValue({ activity: mockActivity, loading: false, error: null });
     render(<ActivityDetail activityId="test-id" />);
-    expect(screen.getByText('Tipo de Atividade')).toBeInTheDocument();
+    expect(screen.queryByText(/Jogo|Cooperação|Liderança/)).not.toBeInTheDocument();
     expect(screen.getByText('60 min')).toBeInTheDocument();
   });
 

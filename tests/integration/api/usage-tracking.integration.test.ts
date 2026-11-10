@@ -10,13 +10,12 @@ import { resetUsageRateLimit } from '@/lib/usage/rate-limit';
 import { insertActivities } from '../../helpers/activity-categories';
 import { withTestDatabase, type TestDatabaseHandle } from '../../helpers/database';
 import { requireLocalTestDatabase } from '../../helpers/local-test-db';
-import { activityTypes, programs, usageEvents, user } from '../../../drizzle/schema';
+import { programs, usageEvents, user } from '../../../drizzle/schema';
 
 const mockAuth = vi.fn();
 vi.mock('@/lib/auth/config', () => ({ auth: () => mockAuth() }));
 
 const USER_ID = '550e8400-e29b-41d4-a716-446655440601';
-const TYPE_ID = '550e8400-e29b-41d4-a716-446655440602';
 const ACTIVITY_ID = '550e8400-e29b-41d4-a716-446655440603';
 const PROGRAM_ID = '550e8400-e29b-41d4-a716-446655440604';
 const VISITOR = '8c1c5f6e-5a54-4d0a-9d52-3d3a4d7f0a11';
@@ -48,7 +47,6 @@ describe('Usage tracking', () => {
     resetUsageRateLimit();
     mockAuth.mockResolvedValue(null);
     await db.insert(user).values({ id: USER_ID, email: 'uso@escoteiros.pt', name: 'Maria Uso', role: 'user' });
-    await db.insert(activityTypes).values({ id: TYPE_ID, name: 'Jogo' });
     await insertActivities(db, {
       id: ACTIVITY_ID,
       name: 'Jogo da bandeira',
@@ -59,7 +57,6 @@ describe('Usage tracking', () => {
       effort_level: 'low',
       locations: ['inside'],
       age_groups: ['scouts'],
-      activity_type_id: TYPE_ID,
       is_approved: true,
     });
     await db.insert(programs).values({ id: PROGRAM_ID, name: 'Sábado', date: '2026-11-14', start_time: '09:30', user_id: USER_ID });

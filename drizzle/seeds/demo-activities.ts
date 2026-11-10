@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import { db } from '@/lib/db/server';
-import { activityTypes, educationalGoalAgeGroups, educationalGoals, sdgs } from '../schema/taxonomies';
+import { activityFocuses, activityFormats, educationalGoalAgeGroups, educationalGoals, sdgs } from '../schema/taxonomies';
 import {
   activities,
   activityEducationalGoals,
@@ -8,7 +8,6 @@ import {
   activityGroupSizes,
   activityLocations,
   activityAgeGroups,
-  activityActivityTypes,
 } from '../schema/activities';
 
 // Load environment variables
@@ -27,7 +26,8 @@ const demoActivitiesData = [
     effort_level: 'low' as const,
     locations: ['inside' as const, 'outside' as const],
     age_groups: ['cub_scouts' as const, 'scouts' as const],
-    activity_type_name: 'Jogo',
+    format_code: 'quebra-gelo',
+    focus_code: 'comunicacao',
     educational_goal_codes: ['1S.1', '1S.2', '1A.2'],
     sdg_numbers: [4, 5],
   },
@@ -40,7 +40,8 @@ const demoActivitiesData = [
     effort_level: 'medium' as const,
     locations: ['outside' as const],
     age_groups: ['scouts' as const, 'adventurers' as const],
-    activity_type_name: 'Jogo',
+    format_code: 'aventura-percurso',
+    focus_code: 'cooperacao',
     educational_goal_codes: ['5I.2', '5I.3-4', '4S.2.2-3'],
     sdg_numbers: [4, 15],
   },
@@ -53,7 +54,8 @@ const demoActivitiesData = [
     effort_level: 'low' as const,
     locations: ['inside' as const],
     age_groups: ['adventurers' as const, 'rovers' as const],
-    activity_type_name: 'Reflexão',
+    format_code: 'reflexao-debriefing',
+    focus_code: 'valores-reflexao',
     educational_goal_codes: ['7E.3', '7E.4', '3A.3-4'],
     sdg_numbers: [3, 4],
   },
@@ -66,7 +68,8 @@ const demoActivitiesData = [
     effort_level: 'high' as const,
     locations: ['outside' as const],
     age_groups: ['adventurers' as const, 'rovers' as const],
-    activity_type_name: 'Técnica',
+    format_code: 'tecnica-oficina',
+    focus_code: 'competencias-tecnicas',
     educational_goal_codes: ['3F.3-4', '4F.4.3-4', '4S.1.3-4'],
     sdg_numbers: [4, 15],
   },
@@ -79,7 +82,8 @@ const demoActivitiesData = [
     effort_level: 'medium' as const,
     locations: ['outside' as const],
     age_groups: ['scouts' as const],
-    activity_type_name: 'Serviço',
+    format_code: 'desafio-iniciativa',
+    focus_code: 'cooperacao',
     educational_goal_codes: ['6S.2', '7S.1.2', '5S.2'],
     sdg_numbers: [11, 12, 15],
   },
@@ -90,15 +94,11 @@ export async function seedDemoActivities() {
   
   try {
     for (const activityData of demoActivitiesData) {
-      // Get activity type ID
-      const [activityType] = await db
-        .select()
-        .from(activityTypes)
-        .where(eq(activityTypes.name, activityData.activity_type_name))
-        .limit(1);
-
-      if (!activityType) {
-        console.warn(`⚠️ Activity type not found: ${activityData.activity_type_name}`);
+      // The format and the focus come from the reference data (loaded before the demo activities)
+      const [format] = await db.select().from(activityFormats).where(eq(activityFormats.code, activityData.format_code)).limit(1);
+      const [focus] = await db.select().from(activityFocuses).where(eq(activityFocuses.code, activityData.focus_code)).limit(1);
+      if (!format || !focus) {
+        console.warn(`⚠️ Format or focus not found: ${activityData.format_code} / ${activityData.focus_code}`);
         continue;
       }
 
@@ -109,6 +109,8 @@ export async function seedDemoActivities() {
         materials: activityData.materials,
         approximate_duration_minutes: activityData.approximate_duration_minutes,
         effort_level: activityData.effort_level,
+        format_id: format.id,
+        focus_id: focus.id,
         is_approved: true,
       }).onConflictDoNothing().returning();
 
@@ -122,10 +124,6 @@ export async function seedDemoActivities() {
         await db.insert(activityAgeGroups).values(
           activityData.age_groups.map((age_group) => ({ activity_id: activity.id, age_group }))
         );
-        await db.insert(activityActivityTypes).values({
-          activity_id: activity.id,
-          activity_type_id: activityType.id,
-        });
 
         // Link educational goals
         for (const goalCode of activityData.educational_goal_codes) {

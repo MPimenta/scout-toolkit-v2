@@ -9,13 +9,10 @@ import { loadActivityCategories } from '@/lib/activities/categories';
 import { withTestDatabase, type TestDatabaseHandle } from '../../helpers/database';
 import { insertActivities } from '../../helpers/activity-categories';
 import { requireLocalTestDatabase } from '../../helpers/local-test-db';
-import { activities, activityActivityTypes, activityTypes } from '../../../drizzle/schema';
+import { activities } from '../../../drizzle/schema';
 
 vi.mock('@/lib/auth/config', () => ({ auth: async () => null }));
 
-const TYPE_GAME = '550e8400-e29b-41d4-a716-446655440701';
-const TYPE_CRAFT = '550e8400-e29b-41d4-a716-446655440702';
-const TYPE_HIKE = '550e8400-e29b-41d4-a716-446655440703';
 
 const query = async (qs: string) => {
   const response = await GET(new NextRequest(`http://localhost:3000/api/activities?${qs}`));
@@ -37,11 +34,6 @@ describe('Activity categories (many-to-many)', () => {
     await cleanup();
 
     refs = await seedFormatAndFocus(db);
-    await db.insert(activityTypes).values([
-      { id: TYPE_GAME, name: 'Jogo' },
-      { id: TYPE_CRAFT, name: 'Artesanato' },
-      { id: TYPE_HIKE, name: 'Caminhada' },
-    ]);
     const base = { description: 'd', materials: 'm', approximate_duration_minutes: 30, effort_level: 'low' as const, is_approved: true };
     const rows = await insertActivities(db, [
       {
@@ -50,7 +42,6 @@ describe('Activity categories (many-to-many)', () => {
         group_sizes: ['small', 'large'],
         locations: ['inside', 'outside'],
         age_groups: ['cub_scouts', 'scouts'],
-        activity_type_ids: [TYPE_GAME, TYPE_CRAFT],
       },
       {
         ...base,
@@ -58,7 +49,6 @@ describe('Activity categories (many-to-many)', () => {
         group_sizes: ['medium'],
         locations: ['outside'],
         age_groups: ['rovers'],
-        activity_type_ids: [TYPE_HIKE],
       },
     ]);
     multiId = rows[0]!.id;
@@ -93,9 +83,10 @@ describe('Activity categories (many-to-many)', () => {
       expect(names((await query('age_group=rovers&location=inside')).body)).toEqual([]);
     });
 
-    it('filters by activity type through any linked type', async () => {
-      expect(names((await query(`activity_type=${TYPE_CRAFT}`)).body)).toEqual(['Multi']);
-      expect(names((await query(`activity_type=${TYPE_GAME},${TYPE_HIKE}`)).body)).toEqual(['Multi', 'So Rovers Fora']);
+    it('ignores the removed activity_type parameter', async () => {
+      const { status, body } = await query('activity_type=550e8400-e29b-41d4-a716-446655440701');
+      expect(status).toBe(200);
+      expect(names(body)).toEqual(['Multi', 'So Rovers Fora']);
     });
 
     it('accepts several locations', async () => {
@@ -110,7 +101,7 @@ describe('Activity categories (many-to-many)', () => {
       expect(activity.group_sizes).toEqual(['small', 'large']);
       expect(activity.locations).toEqual(['inside', 'outside']);
       expect(activity.age_groups).toEqual(['cub_scouts', 'scouts']);
-      expect(activity.activity_types.map((t: { name: string }) => t.name)).toEqual(['Artesanato', 'Jogo']);
+      expect(activity).not.toHaveProperty('activity_types');
       expect(activity).not.toHaveProperty('group_size');
     });
 
@@ -121,7 +112,7 @@ describe('Activity categories (many-to-many)', () => {
       );
       const detail = await response.json();
       expect(detail.age_groups).toEqual(['cub_scouts', 'scouts']);
-      expect(detail.activity_types).toHaveLength(2);
+      expect(detail).not.toHaveProperty('activity_types');
     });
   });
 
@@ -135,7 +126,6 @@ describe('Activity categories (many-to-many)', () => {
       effort_level: 'low',
       locations: ['inside', 'outside'],
       age_groups: ['scouts', 'rovers'],
-      activity_type_ids: [TYPE_GAME, TYPE_HIKE],
       ...refs,
       ...extra,
     });
@@ -148,29 +138,21 @@ describe('Activity categories (many-to-many)', () => {
       let categories = (await loadActivityCategories([created.id])).get(created.id)!;
       expect(categories.locations).toEqual(['inside', 'outside']);
       expect(categories.age_groups).toEqual(['scouts', 'rovers']);
-      expect(categories.activity_types).toHaveLength(2);
 
-      const next = parseActivityWrite(payload({ locations: ['outside'], activity_type_ids: [TYPE_CRAFT] }));
+      const next = parseActivityWrite(payload({ locations: ['outside'] }));
       if (typeof next === 'string') throw new Error(next);
       await updateActivity(created.id, next);
 
       categories = (await loadActivityCategories([created.id])).get(created.id)!;
       expect(categories.locations).toEqual(['outside']);
-      expect(categories.activity_types.map((t) => t.id)).toEqual([TYPE_CRAFT]);
     });
 
     it('rolls back the whole write when a relation fails', async () => {
-      const parsed = parseActivityWrite(payload({ name: 'Nao Deve Existir', activity_type_ids: ['550e8400-e29b-41d4-a716-4466554407ff'] }));
+      const parsed = parseActivityWrite(payload({ name: 'Nao Deve Existir', educational_goal_ids: ['550e8400-e29b-41d4-a716-4466554407ff'] }));
       if (typeof parsed === 'string') throw new Error(parsed);
       await expect(createActivity(parsed, { isApproved: true })).rejects.toThrow();
       const found = await db.select().from(activities).where(eq(activities.name, 'Nao Deve Existir'));
       expect(found).toHaveLength(0);
-    });
-
-    it('keeps an activity type protected while any activity still links to it', async () => {
-      await expect(db.delete(activityTypes).where(eq(activityTypes.id, TYPE_HIKE))).rejects.toThrow();
-      const links = await db.select().from(activityActivityTypes).where(eq(activityActivityTypes.activity_type_id, TYPE_HIKE));
-      expect(links.length).toBeGreaterThan(0);
     });
   });
 });

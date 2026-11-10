@@ -200,8 +200,12 @@ export function ProgramScheduleRow({
             <div className="space-y-3 duration-200 animate-in slide-in-from-top-2">
               <dl className="flex flex-wrap gap-x-6 gap-y-1 text-sm">
                 <div className="flex gap-1">
-                  <dt className="text-muted-foreground">Tipo:</dt>
-                  <dd>{activity.activity_types.map((type) => type.name).join(', ')}</dd>
+                  <dt className="text-muted-foreground">Formato:</dt>
+                  <dd>{activity.format?.name}</dd>
+                </div>
+                <div className="flex gap-1">
+                  <dt className="text-muted-foreground">Foco:</dt>
+                  <dd>{[activity.focus?.name, activity.secondary_focus?.name].filter(Boolean).join(' · ')}</dd>
                 </div>
                 <div className="flex gap-1">
                   <dt className="text-muted-foreground">Grupo:</dt>

@@ -82,7 +82,6 @@ describe('ProgramScheduleTable', () => {
       locations: ['outside'],
       age_groups: ['scouts'],
       created_at: '2024-01-01T00:00:00Z',
-      activity_types: [{ id: 'type-1', name: 'Game' }],
       educational_goals: [],
       sdgs: []
     },
@@ -97,7 +96,6 @@ describe('ProgramScheduleTable', () => {
       locations: ['inside'],
       age_groups: ['cub_scouts'],
       created_at: '2024-01-01T00:00:00Z',
-      activity_types: [{ id: 'type-2', name: 'Craft' }],
       educational_goals: [],
       sdgs: []
     }

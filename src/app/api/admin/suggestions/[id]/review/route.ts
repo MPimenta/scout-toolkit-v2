@@ -4,7 +4,7 @@ import { db } from '@/lib/db/server';
 import { editSuggestions } from '../../../../../../../drizzle/schema';
 import { requireAdminApi } from '@/lib/auth/utils';
 import { apiErrors, withApiErrorHandler } from '@/lib/errors';
-import { applySuggestion, isSuggestableField, notifyUser } from '@/lib/suggestions';
+import { applySuggestion, checkValueSuggestion, isSuggestableField, isValueField, notifyUser } from '@/lib/suggestions';
 
 export const POST = withApiErrorHandler(async (
   request: NextRequest,
@@ -23,6 +23,11 @@ export const POST = withApiErrorHandler(async (
 
   if (decision === 'approved') {
     if (!isSuggestableField(row.field)) return apiErrors.validation('field', 'Campo inválido');
+    if (isValueField(row.field)) {
+      // The activity may have changed since the suggestion was made.
+      const stale = await checkValueSuggestion(row.field, row.suggested_value, row.activity_id);
+      if (stale) return apiErrors.conflict(`A sugestão já não é válida: ${stale}`);
+    }
     await applySuggestion(row.field, row.suggested_value, row.activity_id);
   }
 

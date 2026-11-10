@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { FactIcon } from '@/components/ui/Fact';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Target, Users, GripVertical, Edit, Trash2 } from 'lucide-react';
-import { useAllActivities } from '@/hooks/useActivities';
+import { useActivitiesByIds } from '@/hooks/queries/useActivities';
 import { ObjectivePill } from '../activities/ObjectivePill';
 
 /**
@@ -32,8 +32,8 @@ interface ProgramEntryCardProps {
  * @returns JSX element representing the program entry card
  */
 export function ProgramEntryCard({ entry, index, onRemove, onUpdate, onEdit }: ProgramEntryCardProps) {
-  const { activities } = useAllActivities();
-  const activity = activities?.find(a => a.id === entry.activity_id);
+  const { data } = useActivitiesByIds(entry.activity_id ? [entry.activity_id] : []);
+  const activity = data?.activities.find((a) => a.id === entry.activity_id);
 
   const {
     attributes,

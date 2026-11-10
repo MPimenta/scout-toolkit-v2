@@ -4,18 +4,15 @@ import { setupTestDatabase, teardownTestDatabase, resetTestDatabase } from '../.
 import { db } from '@/lib/db/server';
 import {
   activities,
-  activityActivityTypes,
   activityFocuses,
   activityFormats,
   activitySources,
-  activityTypes,
   challenges,
 } from '../../../drizzle/schema';
 import { requireLocalTestDatabase } from '../../helpers/local-test-db';
 import { applyProgressMatrix } from '@/lib/reference-data/progress-matrix';
 import { applyActivityFormatsAndFocuses } from '@/lib/reference-data/activity-formats-focuses';
 import { applyActivitySources } from '@/lib/reference-data/activity-sources';
-import { backfillFormatAndFocus } from '@/lib/reference-data/format-focus-backfill';
 import { contentHash, upsertSelection } from '@/lib/activities/baseline-db';
 import type { PlannedActivity } from '@/lib/activities/baseline-plan';
 import type { ActivityWrite } from '@/lib/activities/write';
@@ -111,42 +108,6 @@ describe('reference sheet loaders (DB)', () => {
       await applyProgressMatrix(db);
       await db.update(challenges).set({ integration_age_groups: [] }).where(eq(challenges.code, 'EVAS-A'));
       expect((await applyProgressMatrix(db)).changed.challenges).toBe(1);
-    });
-  });
-
-  describe('former types to format and focus', () => {
-    async function activityWithTypes(typeNames: string[]) {
-      const [activity] = await db
-        .insert(activities)
-        .values({ name: 'Antiga', description: 'd', materials: 'm', approximate_duration_minutes: 10, effort_level: 'low' })
-        .returning({ id: activities.id });
-      for (const name of typeNames) {
-        const [type] = await db.insert(activityTypes).values({ name }).onConflictDoNothing().returning({ id: activityTypes.id });
-        const id = type?.id ?? (await db.select({ id: activityTypes.id }).from(activityTypes).where(eq(activityTypes.name, name)))[0]!.id;
-        await db.insert(activityActivityTypes).values({ activity_id: activity!.id, activity_type_id: id });
-      }
-      return activity!.id;
-    }
-
-    it('maps the first format and the first two focuses, reports the rest, and never overwrites', async () => {
-      await applyActivityFormatsAndFocuses(db);
-      const id = await activityWithTypes(['Quebra-Gelo', 'Jogo', 'Cooperação', 'Liderança', 'Serviço']);
-      const result = await backfillFormatAndFocus(db);
-      expect(result).toEqual({ updated: 1, stillIncomplete: 0, unmappedTypes: { Serviço: 1 } });
-      const [row] = await db.select().from(activities).where(eq(activities.id, id));
-      const [jogo] = await db.select().from(activityFormats).where(eq(activityFormats.code, 'jogo'));
-      const [cooperacao] = await db.select().from(activityFocuses).where(eq(activityFocuses.code, 'cooperacao'));
-      const [lideranca] = await db.select().from(activityFocuses).where(eq(activityFocuses.code, 'lideranca'));
-      expect(row!.format_id).toBe(jogo!.id); // Jogo comes before Quebra-Gelo in the precedence
-      expect(row!.focus_id).toBe(cooperacao!.id);
-      expect(row!.secondary_focus_id).toBe(lideranca!.id);
-      expect(await backfillFormatAndFocus(db)).toMatchObject({ updated: 0 });
-    });
-
-    it('leaves an activity with no mappable type incomplete and says so', async () => {
-      await applyActivityFormatsAndFocuses(db);
-      await activityWithTypes(['Serviço']);
-      expect(await backfillFormatAndFocus(db)).toEqual({ updated: 0, stillIncomplete: 1, unmappedTypes: { Serviço: 1 } });
     });
   });
 

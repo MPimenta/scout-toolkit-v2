@@ -32,7 +32,10 @@ export type ProgramExportActivity = {
   group_sizes: string[];
   effort_level: string | null;
   locations: string[];
-  activityTypes: Array<{ name: string }>;
+  /** Names of the activity's format, main focus and secondary focus (null when it has none). */
+  format?: string | null;
+  focus?: string | null;
+  secondaryFocus?: string | null;
   educationalGoals: ProgramExportGoal[];
   sdgs: ProgramExportSdg[];
   /** Safety first: risks with their mitigation, then objectives per division with behaviours. */

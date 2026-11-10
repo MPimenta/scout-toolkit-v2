@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { ProgramEntry } from '../../../../drizzle/schema/programs';
 import { ProgramEntry as APIProgramEntry } from '@/hooks/useProgram';
 import { ActivitiesResponse } from '@/hooks/useActivities';
@@ -35,7 +35,7 @@ import { DeleteProgramModal } from './DeleteProgramModal';
 import { CreateOrgoEventDialog } from './CreateOrgoEventDialog';
 import { useLocale } from '@/components/locale/LocaleProvider';
 import { useProgramMutations } from '@/hooks/useProgramMutations';
-import { useAllActivities } from '@/hooks/useActivities';
+import { useActivitiesByIds } from '@/hooks/queries/useActivities';
 import { log } from '@/lib/errors';
 import { ErrorBoundary } from '@/lib/errors';
 import { validateProps } from '@/lib/validation';
@@ -133,7 +133,21 @@ export function ProgramBuilder({
   const [showDeleteProgram, setShowDeleteProgram] = useState(false);
   const [showOrgoEvent, setShowOrgoEvent] = useState(false);
   const { updateProgram, deleteProgram } = useProgramMutations();
-  const { activities } = useAllActivities();
+  // The program's own activities, fetched by id (the catalogue list is paged and holds only a
+  // few of them), plus the ones added in this session, which are known before the refetch.
+  const entryActivityIds = useMemo(
+    () => entries.flatMap((entry) => (entry.activity_id ? [entry.activity_id] : [])),
+    [entries]
+  );
+  const { data: programActivities } = useActivitiesByIds(entryActivityIds);
+  const [addedActivities, setAddedActivities] = useState<ActivitiesResponse['activities']>([]);
+  const addedRef = useRef(new Map<string, ActivitiesResponse['activities'][0]>());
+  const activities = useMemo(() => {
+    const byId = new Map<string, ActivitiesResponse['activities'][0]>();
+    for (const activity of programActivities?.activities ?? []) byId.set(activity.id, activity);
+    for (const activity of addedActivities) if (!byId.has(activity.id)) byId.set(activity.id, activity);
+    return [...byId.values()];
+  }, [programActivities, addedActivities]);
 
   // One schedule calculation everywhere (src/lib/programs/schedule.ts): entries run back
   // to back from the program's own start time.
@@ -143,6 +157,7 @@ export function ProgramBuilder({
       entry.entry_type === 'activity'
         ? (activities.find((a) => a.id === entry.activity_id)
             ?.approximate_duration_minutes ??
+          addedRef.current.get(entry.activity_id ?? '')?.approximate_duration_minutes ??
           initialEntries.find((e) => e.activity?.id === entry.activity_id)
             ?.activity?.approximate_duration_minutes ??
           null)
@@ -181,6 +196,8 @@ export function ProgramBuilder({
   const handleAddActivity = async (
     activity: ActivitiesResponse['activities'][0]
   ) => {
+    addedRef.current.set(activity.id, activity);
+    setAddedActivities((previous) => [...previous, activity]);
     const newEntry: ProgramEntry = {
       id: crypto.randomUUID(),
       program_id: programId,
@@ -383,7 +400,6 @@ export function ProgramBuilder({
         group_sizes: [],
         effort_level: '',
         locations: [],
-        activity_types: [],
       },
     }),
   });

@@ -97,7 +97,6 @@ export function ActivityEditorForm({
     effort_level: string;
     locations: string[];
     age_groups: string[];
-    activity_type_ids: string[];
     format_id: string | null;
     focus_id: string | null;
     secondary_focus_id: string | null;
@@ -153,8 +152,6 @@ export function ActivityEditorForm({
   const [groupSizes, setGroupSizes] = useState<string[]>(defaults?.group_sizes ?? ['medium']);
   const [locations, setLocations] = useState<string[]>(defaults?.locations ?? ['outside']);
   const [ageGroups, setAgeGroupsState] = useState<string[]>(defaults?.age_groups ?? ['scouts']);
-  // The former activity types are no longer edited here; an edit keeps whatever links the activity has.
-  const keptTypeIds = defaults?.activity_type_ids ?? [];
   const [formatId, setFormatId] = useState(defaults?.format_id ?? '');
   const [focusId, setFocusId] = useState(defaults?.focus_id ?? '');
   const [secondaryFocusId, setSecondaryFocusId] = useState(defaults?.secondary_focus_id ?? '');
@@ -245,7 +242,6 @@ export function ActivityEditorForm({
     body.group_sizes = groupSizes;
     body.locations = locations;
     body.age_groups = ageGroups;
-    body.activity_type_ids = keptTypeIds;
     body.format_id = formatId;
     body.focus_id = focusId;
     body.secondary_focus_id = secondaryFocusId || null;

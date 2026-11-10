@@ -7,7 +7,6 @@ import { db } from '@/lib/db/server';
 import {
   activityEducationalGoals,
   activitySources,
-  activityTypes,
   challenges,
   educationalGoals,
   sdgs,
@@ -31,7 +30,6 @@ async function goalId(code: string): Promise<string> {
 }
 
 describe('rich activity writes (DB)', () => {
-  let typeId: string;
   let refs: Awaited<ReturnType<typeof seedFormatAndFocus>>;
   let sdg3: string;
   let sdg17: string;
@@ -50,7 +48,6 @@ describe('rich activity writes (DB)', () => {
     await applyProgressMatrix(db);
     await applyActivitySources(db);
     refs = await seedFormatAndFocus(db);
-    [{ id: typeId }] = await db.insert(activityTypes).values({ name: 'Jogo' }).returning({ id: activityTypes.id }) as [{ id: string }];
     const rows = await db
       .insert(sdgs)
       .values([
@@ -72,7 +69,6 @@ describe('rich activity writes (DB)', () => {
       effort_level: 'low',
       locations: ['outside'],
       age_groups: ['scouts', 'adventurers'],
-      activity_type_ids: [typeId],
       ...refs,
       ...extra,
     };

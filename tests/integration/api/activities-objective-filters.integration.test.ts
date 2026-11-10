@@ -6,7 +6,6 @@ import { setupTestDatabase, teardownTestDatabase, resetTestDatabase } from '../.
 import { db } from '@/lib/db/server';
 import {
   activityEducationalGoals,
-  activityTypes,
   educationalAreas,
   educationalGoals,
   generalObjectives,
@@ -49,7 +48,6 @@ describe('Catalogue objective filters (areas, general objectives, objectives)', 
     goal4S12 = await id(db.select({ id: educationalGoals.id }).from(educationalGoals).where(eq(educationalGoals.code, '4S.1.2')));
     const goal5F2 = await id(db.select({ id: educationalGoals.id }).from(educationalGoals).where(eq(educationalGoals.code, '5F.2')));
     const goal1A2 = await id(db.select({ id: educationalGoals.id }).from(educationalGoals).where(eq(educationalGoals.code, '1A.2')));
-    const [type] = await db.insert(activityTypes).values({ name: 'Jogo' }).returning({ id: activityTypes.id });
 
     const make = async (name: string, minutes: number, goals: string[]) => {
       const parsed = parseActivityWrite({
@@ -61,7 +59,6 @@ describe('Catalogue objective filters (areas, general objectives, objectives)', 
         effort_level: 'low',
         locations: ['inside'],
         age_groups: ['scouts'],
-        activity_type_ids: [type!.id],
         ...refs,
       });
       if (typeof parsed === 'string') throw new Error(parsed);

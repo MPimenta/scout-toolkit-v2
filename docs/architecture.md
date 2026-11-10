@@ -161,7 +161,6 @@ activities {
   effort_level: 'low' | 'medium' | 'high'
   location: 'inside' | 'outside'
   age_group: 'cub_scouts' | 'scouts' | 'adventurers' | 'rovers' | 'leaders'
-  activity_type_id: string (foreign key) // former type, kept for older data
   format_id?: string (foreign key to activity_formats)
   focus_id?: string (foreign key to activity_focuses) // main focus
   secondary_focus_id?: string (foreign key to activity_focuses)
@@ -180,13 +179,6 @@ activities {
 
 #### Taxonomies
 ```typescript
-activity_types {
-  id: string (primary key)
-  name: text // Portuguese activity type name
-  description?: text // Portuguese activity type description
-  created_at: timestamp
-} // former types: hidden from the interface, kept for older data
-
 activity_formats / activity_focuses {
   id: string (primary key)
   code: string (unique) // for example 'jogo', 'cooperacao'
@@ -403,7 +395,6 @@ CREATE INDEX idx_activities_effort_level ON activities(effort_level);
 CREATE INDEX idx_activities_location ON activities(location);
 CREATE INDEX idx_activities_age_group ON activities(age_group);
 CREATE INDEX idx_activities_duration ON activities(approximate_duration_minutes);
-CREATE INDEX idx_activities_type ON activities(activity_type_id);
 
 -- Program indexes
 CREATE INDEX idx_programs_user ON programs(user_id);
@@ -471,9 +462,9 @@ const activityDescription = "Descrição da atividade em português";
 - **Debouncing:** 300ms delay on search input
 
 ### Filter Types
-- **Text Search:** Name, description, materials
+- **Text Search:** Name, description, materials, instructions
 - **Duration:** Number input with operator (>, <, =)
-- **Multi-select:** Effort level, group size, activity type, SDGs, educational goals
+- **Multi-select:** Effort level, group size, format, focus, SDGs, educational goals
 - **Single-select:** Location
 - **Clear Filters:** Reset all applied filters
 

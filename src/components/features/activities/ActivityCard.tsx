@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { useLocale } from '@/components/locale/LocaleProvider';
 import { enumLabel, enumLabelList } from '@/lib/locale/labels';
 import { formatDuration } from '@/lib/activities/duration-range';
+import { activityKindLabel } from '@/lib/activities/kind-label';
 
 /**
  * Interface for educational goal data
@@ -33,14 +34,6 @@ interface Sdg {
 }
 
 /**
- * Interface for activity type data
- */
-interface ActivityType {
-  id: string;
-  name: string; // Now simple string after migration
-}
-
-/**
  * Interface for activity data
  */
 interface Activity {
@@ -57,7 +50,9 @@ interface Activity {
   age_groups: string[];
   image_url?: string;
   created_at: string;
-  activity_types: ActivityType[];
+  format?: { id: string; code: string; name: string } | null;
+  focus?: { id: string; code: string; name: string } | null;
+  secondary_focus?: { id: string; code: string; name: string } | null;
   educational_goals: EducationalGoal[];
   sdgs: Sdg[];
 }
@@ -87,7 +82,7 @@ export function ActivityCard({ activity }: ActivityCardProps) {
   const description = activity.description;
   // Every division of the activity, always in the same order.
   const divisions = AGE_GROUP_VALUES.filter((value) => activity.age_groups.includes(value));
-  const activityTypeName = activity.activity_types.map((type) => type.name).join(', ');
+  const kindLabel = activityKindLabel(activity);
 
   const sdgBadges = activity.sdgs.length > 0 && (
     <div className="flex gap-1">
@@ -137,18 +132,18 @@ export function ActivityCard({ activity }: ActivityCardProps) {
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
-          {activityTypeName && (
+          {kindLabel && (
             <Badge variant="outline" className="absolute top-3 left-3 bg-background text-foreground">
-              {activityTypeName}
+              {kindLabel}
             </Badge>
           )}
           {sdgBadges && <div className="absolute bottom-3 right-3">{sdgBadges}</div>}
         </div>
       ) : (
         <div className="flex items-center justify-between gap-2 rounded-t-lg border-b bg-muted px-4 py-3 min-h-14">
-          {activityTypeName ? (
+          {kindLabel ? (
             <Badge variant="outline" className="bg-background text-foreground">
-              {activityTypeName}
+              {kindLabel}
             </Badge>
           ) : (
             <span />

@@ -16,6 +16,7 @@ import { eq, asc, inArray } from 'drizzle-orm';
 import type { ProgramExportEntry, ProgramExportObjective, ProgramForExport } from './types';
 import { computeSchedule } from '@/lib/programs/schedule';
 import { loadActivityCategories } from '@/lib/activities/categories';
+import { loadFormatFocus } from '@/lib/activities/format-focus';
 
 export { canAccessProgramExport } from './access';
 
@@ -60,6 +61,9 @@ export async function loadProgramForExport(programId: string): Promise<ProgramFo
       activity_instructions: activities.instructions,
       activity_duration: activities.approximate_duration_minutes,
       activity_effort_level: activities.effort_level,
+      activity_format_id: activities.format_id,
+      activity_focus_id: activities.focus_id,
+      activity_secondary_focus_id: activities.secondary_focus_id,
       activity_physical_risk_level: activities.physical_risk_level,
       activity_physical_risk: activities.physical_risk,
       activity_physical_mitigation: activities.physical_mitigation,
@@ -79,6 +83,16 @@ export async function loadProgramForExport(programId: string): Promise<ProgramFo
     .filter((id): id is string => Boolean(id));
 
   const categoriesByActivity = await loadActivityCategories(activityIds);
+  const formatFocusByActivity = await loadFormatFocus(
+    entries
+      .filter((entry) => entry.activity_id)
+      .map((entry) => ({
+        id: entry.activity_id as string,
+        format_id: entry.activity_format_id,
+        focus_id: entry.activity_focus_id,
+        secondary_focus_id: entry.activity_secondary_focus_id,
+      }))
+  );
 
   const goalsByActivity = new Map<string, Array<{ title: string; code: string }>>();
   const sdgsByActivity = new Map<string, Array<{ number: number; name: string; justification: string | null }>>();
@@ -185,7 +199,9 @@ export async function loadProgramForExport(programId: string): Promise<ProgramFo
           group_sizes: categoriesByActivity.get(entry.activity_id)?.group_sizes ?? [],
           effort_level: entry.activity_effort_level,
           locations: categoriesByActivity.get(entry.activity_id)?.locations ?? [],
-          activityTypes: (categoriesByActivity.get(entry.activity_id)?.activity_types ?? []).map((t) => ({ name: t.name })),
+          format: formatFocusByActivity.get(entry.activity_id)?.format?.name ?? null,
+          focus: formatFocusByActivity.get(entry.activity_id)?.focus?.name ?? null,
+          secondaryFocus: formatFocusByActivity.get(entry.activity_id)?.secondary_focus?.name ?? null,
           educationalGoals: goalsByActivity.get(entry.activity_id) ?? [],
           sdgs: sdgsByActivity.get(entry.activity_id) ?? [],
           physicalRisk: {

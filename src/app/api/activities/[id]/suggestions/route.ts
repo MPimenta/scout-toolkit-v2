@@ -7,8 +7,10 @@ import { apiErrors, withApiErrorHandler } from '@/lib/errors';
 import { validateUUID } from '@/lib/errors/error-handler';
 import {
   findPendingDuplicate,
+  checkValueSuggestion,
   isCategoryField,
   isSuggestableField,
+  isValueField,
   normalizeCategorySuggestion,
   notifyAdmins,
 } from '@/lib/suggestions';
@@ -37,6 +39,10 @@ export const POST = withApiErrorHandler(async (
     suggested_value = normalized.value;
   }
   if (!suggested_value) return apiErrors.validation('suggested_value', 'Valor obrigatório');
+  if (isValueField(field)) {
+    const valueError = await checkValueSuggestion(field, suggested_value, id);
+    if (valueError) return apiErrors.validation('suggested_value', valueError);
+  }
 
   if (await findPendingDuplicate(id, session.user.id, field)) {
     return apiErrors.conflict('Já tem uma sugestão pendente neste campo');

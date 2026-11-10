@@ -26,10 +26,6 @@ export interface ActivityCardProps extends BaseComponentProps {
     age_groups: string[];
     image_url?: string;
     created_at: string;
-    activity_types: Array<{
-      id: string;
-      name: string;
-    }>;
     educational_goals: Array<{
       id: string;
       title: string;
@@ -155,7 +151,6 @@ export interface ProgramScheduleTableProps extends BaseComponentProps {
 export interface ActivityFiltersProps extends BaseComponentProps {
   onFiltersChange: (filters: FilterState) => void;
   availableFilters: {
-    activity_types: string[];
     sdgs: Array<{
       id: string;
       number: number;

@@ -13,6 +13,7 @@ import { validateUUID } from '@/lib/errors/error-handler';
 import { isE2EOrgoStub, isOrgoWriteConfigured } from '@/lib/orgo/config';
 import { z } from 'zod';
 import { loadActivityCategories } from '@/lib/activities/categories';
+import { loadFormatFocus } from '@/lib/activities/format-focus';
 import { recalculateProgramSchedule } from '@/lib/programs/recalculate';
 import { computeSchedule, timeToMinutes } from '@/lib/programs/schedule';
 import { isOrgoPending } from '@/lib/orgo/claim';
@@ -89,6 +90,9 @@ export const GET = withApiErrorHandler(async (
         activity_name: activities.name,
         activity_duration: activities.approximate_duration_minutes,
         activity_effort_level: activities.effort_level,
+        activity_format_id: activities.format_id,
+        activity_focus_id: activities.focus_id,
+        activity_secondary_focus_id: activities.secondary_focus_id,
       })
       .from(programEntries)
       .leftJoin(activities, eq(programEntries.activity_id, activities.id))
@@ -97,6 +101,16 @@ export const GET = withApiErrorHandler(async (
 
     const categoriesByActivity = await loadActivityCategories(
       entries.map((entry) => entry.activity_id).filter((id): id is string => Boolean(id))
+    );
+    const formatFocusByActivity = await loadFormatFocus(
+      entries
+        .filter((entry) => entry.activity_id)
+        .map((entry) => ({
+          id: entry.activity_id as string,
+          format_id: entry.activity_format_id,
+          focus_id: entry.activity_focus_id,
+          secondary_focus_id: entry.activity_secondary_focus_id,
+        }))
     );
 
     // Times and the total always come from the shared schedule calculation.
@@ -122,7 +136,9 @@ export const GET = withApiErrorHandler(async (
         effort_level: entry.activity_effort_level || '',
         locations: categoriesByActivity.get(entry.activity_id)?.locations ?? [],
         age_groups: categoriesByActivity.get(entry.activity_id)?.age_groups ?? [],
-        activity_types: categoriesByActivity.get(entry.activity_id)?.activity_types ?? [],
+        format: formatFocusByActivity.get(entry.activity_id)?.format ?? null,
+        focus: formatFocusByActivity.get(entry.activity_id)?.focus ?? null,
+        secondary_focus: formatFocusByActivity.get(entry.activity_id)?.secondary_focus ?? null,
       } : null
     }));
 

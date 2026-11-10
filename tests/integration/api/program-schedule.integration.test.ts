@@ -8,14 +8,13 @@ import { GET as listPrograms } from '@/app/api/programs/route';
 import { loadProgramForExport } from '@/lib/export/load-program';
 import { withTestDatabase, type TestDatabaseHandle } from '../../helpers/database';
 import { requireLocalTestDatabase } from '../../helpers/local-test-db';
-import { activityTypes, programEntries, programs, user } from '../../../drizzle/schema';
+import { programEntries, programs, user } from '../../../drizzle/schema';
 
 const mockAuth = vi.fn();
 vi.mock('@/lib/auth/config', () => ({ auth: () => mockAuth() }));
 
 const OWNER_ID = '550e8400-e29b-41d4-a716-446655440401';
 const PROGRAM_ID = '550e8400-e29b-41d4-a716-446655440402';
-const TYPE_ID = '550e8400-e29b-41d4-a716-446655440403';
 const LONG_ID = '550e8400-e29b-41d4-a716-446655440404'; // 90 min
 const SHORT_ID = '550e8400-e29b-41d4-a716-446655440405'; // 30 min
 
@@ -36,7 +35,6 @@ describe('Program schedule', () => {
 
   beforeEach(async () => {
     await db.insert(user).values({ id: OWNER_ID, email: 'dono-horario@escoteiros.pt', name: 'Dono', role: 'user' });
-    await db.insert(activityTypes).values({ id: TYPE_ID, name: 'Jogo' });
     const base = {
       description: 'd',
       materials: 'm',
@@ -44,7 +42,6 @@ describe('Program schedule', () => {
       effort_level: 'low' as const,
       locations: ['inside' as const],
       age_groups: ['scouts' as const],
-      activity_type_id: TYPE_ID,
       is_approved: true,
     };
     await insertActivities(db, [

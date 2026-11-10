@@ -5,7 +5,7 @@ import path from 'node:path';
 import { readFileSync } from 'node:fs';
 import { setupTestDatabase, teardownTestDatabase, resetTestDatabase } from '../../setup';
 import { db } from '@/lib/db/server';
-import { activities, activityTypes, sdgs } from '../../../drizzle/schema';
+import { activities, sdgs } from '../../../drizzle/schema';
 import { requireLocalTestDatabase } from '../../helpers/local-test-db';
 import { seedFormatAndFocus } from '../../helpers/reference-values';
 import { planBaselineLoad, type SheetRow } from '@/lib/activities/baseline-plan';
@@ -39,11 +39,6 @@ describe('Baseline load (DB)', () => {
   beforeEach(async () => {
     await resetTestDatabase();
     await seedFormatAndFocus(db);
-    await db.insert(activityTypes).values([
-      { name: 'Jogo' },
-      { name: 'Técnica' },
-      { name: 'Expressão' },
-    ]);
     await db.insert(sdgs).values([
       { number: 4, name: 'Educação de Qualidade', description: 'd', icon_url: '/4.png' },
       { number: 13, name: 'Ação Climática', description: 'd', icon_url: '/13.png' },

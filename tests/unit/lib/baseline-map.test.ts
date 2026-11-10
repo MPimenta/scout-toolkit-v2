@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import {
   cleanOptionalText,
   isPlaceholder,
-  mapActivityTypes,
   mapAgeGroups,
   mapEffort,
   mapGroupSizes,
@@ -90,17 +89,6 @@ describe('category mapping keeps every recognised value', () => {
     expect(mapEffort('Baixo')).toEqual({ value: 'low', dropped: [] });
     expect(mapEffort('Alto, Médio')).toEqual({ value: 'high', dropped: ['Médio'] });
     expect(mapEffort('').value).toBeNull();
-  });
-
-  it('matches activity types by name only and reports the rest', () => {
-    const types = [
-      { id: 't1', name: 'Jogo' },
-      { id: 't2', name: 'Expressão Dramática' },
-    ];
-    expect(mapActivityTypes('jogo, expressao dramatica, Culinária', types)).toEqual({
-      values: ['t1', 't2'],
-      dropped: ['Culinária'],
-    });
   });
 
   it('matches SDGs by number or name', () => {

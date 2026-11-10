@@ -1,7 +1,7 @@
 import { pgTable, text, timestamp, uuid, integer, boolean, primaryKey, index, uniqueIndex } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
-import { activityFocuses, activityFormats, activityTypes, activitySources, challenges, educationalGoals, sdgs } from './taxonomies';
+import { activityFocuses, activityFormats, activitySources, challenges, educationalGoals, sdgs } from './taxonomies';
 import { user } from './auth';
 import { GROUP_SIZE_VALUES, LOCATION_VALUES, AGE_GROUP_VALUES, RISK_LEVEL_VALUES } from './category-values';
 
@@ -110,13 +110,6 @@ export const activityChallenges = pgTable('activity_challenges', {
   challengeIdx: index('activity_challenges_challenge_idx').on(table.challenge_id),
 }));
 
-export const activityActivityTypes = pgTable('activity_activity_types', {
-  activity_id: uuid('activity_id').notNull().references(() => activities.id, { onDelete: 'cascade' }),
-  activity_type_id: uuid('activity_type_id').notNull().references(() => activityTypes.id, { onDelete: 'restrict' }),
-}, (table) => ({
-  pk: primaryKey(table.activity_id, table.activity_type_id),
-  valueIdx: index('activity_activity_types_type_idx').on(table.activity_type_id),
-}));
 
 // Zod schemas for validation
 export const insertActivitySchema = createInsertSchema(activities);

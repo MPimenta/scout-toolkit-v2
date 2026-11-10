@@ -8,8 +8,7 @@ import {
   programs, 
   programEntries, 
   users,
-  activityTypes,
-} from '../../../drizzle/schema';
+  } from '../../../drizzle/schema';
 import { eq, or } from 'drizzle-orm';
 import {
   isUser,
@@ -55,10 +54,6 @@ describe.skip('Type Validation Integration Tests', () => {
     it('should validate activity entities from database', async () => {
       await withTestDatabase(async () => {
         // Create test activity type
-        const [activityType] = await db.insert(activityTypes).values({
-          name: 'Test Activity Type',
-        }).returning();
-
         // Create a test activity
         const [activity] = await insertActivities(db, {
           name: 'Test Activity',
@@ -69,7 +64,6 @@ describe.skip('Type Validation Integration Tests', () => {
           effort_level: 'medium',
           locations: ['inside'],
           age_groups: ['scouts'],
-          activity_type_id: activityType.id,
           is_approved: true,
         });
 
@@ -159,10 +153,6 @@ describe.skip('Type Validation Integration Tests', () => {
     it('should validate API activity responses', async () => {
       await withTestDatabase(async () => {
         // Create test activity type
-        const [activityType] = await db.insert(activityTypes).values({
-          name: 'Test Activity Type',
-        }).returning();
-
         // Create a test activity
         const [activity] = await insertActivities(db, {
           name: 'Test Activity',
@@ -173,7 +163,6 @@ describe.skip('Type Validation Integration Tests', () => {
           effort_level: 'medium',
           locations: ['inside'],
           age_groups: ['scouts'],
-          activity_type_id: activityType.id,
           is_approved: true,
         });
 
@@ -189,10 +178,6 @@ describe.skip('Type Validation Integration Tests', () => {
           locations: ['inside'],
           age_groups: ['scouts'],
           created_at: activity.created_at.toISOString(),
-          activity_types: [{
-            id: activityType.id,
-            name: activityType.name,
-          }],
           educational_goals: [],
           sdgs: [],
         };
@@ -274,10 +259,6 @@ describe.skip('Type Validation Integration Tests', () => {
     it('should validate activity arrays from database', async () => {
       await withTestDatabase(async () => {
         // Create test activity type
-        const [activityType] = await db.insert(activityTypes).values({
-          name: 'Test Activity Type',
-        }).returning();
-
         // Create test activities
         const [activity1] = await insertActivities(db, {
           name: 'Test Activity 1',
@@ -288,7 +269,6 @@ describe.skip('Type Validation Integration Tests', () => {
           effort_level: 'medium',
           locations: ['inside'],
           age_groups: ['scouts'],
-          activity_type_id: activityType.id,
           is_approved: true,
         });
 
@@ -301,7 +281,6 @@ describe.skip('Type Validation Integration Tests', () => {
           effort_level: 'high',
           locations: ['outside'],
           age_groups: ['adventurers'],
-          activity_type_id: activityType.id,
           is_approved: true,
         });
 
@@ -410,7 +389,6 @@ describe.skip('Type Validation Integration Tests', () => {
             effort_level: 'medium',
             locations: ['inside'],
             age_groups: ['scouts'],
-            activity_type_id: '456',
             created_at: '2023-01-01T00:00:00Z',
             updated_at: '2023-01-01T00:00:00Z',
             is_approved: true,

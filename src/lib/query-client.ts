@@ -71,8 +71,6 @@ export const queryKeys = {
   taxonomies: {
     /** Base key for all taxonomy queries */
     all: ['taxonomies'] as const,
-    /** Key for activity types taxonomy */
-    activityTypes: () => [...queryKeys.taxonomies.all, 'activity-types'] as const,
     /** Key for educational goals taxonomy */
     educationalGoals: () => [...queryKeys.taxonomies.all, 'educational-goals'] as const,
     /** Key for SDGs taxonomy */

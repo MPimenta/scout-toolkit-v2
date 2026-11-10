@@ -49,33 +49,47 @@ describe('Admin taxonomies API', () => {
     expect(response.status).toBe(403);
   });
 
-  it('creates an activity type', async () => {
+  it('creates an activity format', async () => {
     mockRequireAdminApi.mockResolvedValue({
       user: { id: 'admin-1', role: 'admin' },
     });
     mockInsert.mockResolvedValue([{ id: 'type-1', name: 'Jogo', code: 'JOGO' }]);
     const { POST } = await import('@/app/api/admin/taxonomies/[kind]/route');
     const response = await POST(
-      new NextRequest('http://localhost/api/admin/taxonomies/activity-types', {
+      new NextRequest('http://localhost/api/admin/taxonomies/activity-formats', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: 'Jogo', code: 'JOGO' }),
       }),
-      { params: Promise.resolve({ kind: 'activity-types' }) }
+      { params: Promise.resolve({ kind: 'activity-formats' }) }
     );
     expect(response.status).toBe(201);
   });
 
-  it('returns 409 when deleting a referenced type', async () => {
+  it('returns 409 when deleting an SDG that activities still use', async () => {
     mockRequireAdminApi.mockResolvedValue({
       user: { id: 'admin-1', role: 'admin' },
     });
     mockSelect.mockResolvedValue([{ id: 'act-1' }]);
     const { DELETE } = await import('@/app/api/admin/taxonomies/[kind]/route');
     const response = await DELETE(
-      new NextRequest('http://localhost/api/admin/taxonomies/activity-types?id=550e8400-e29b-41d4-a716-446655440000'),
-      { params: Promise.resolve({ kind: 'activity-types' }) }
+      new NextRequest('http://localhost/api/admin/taxonomies/sdgs?id=550e8400-e29b-41d4-a716-446655440000'),
+      { params: Promise.resolve({ kind: 'sdgs' }) }
     );
     expect(response.status).toBe(409);
+  });
+
+  it('answers 404 for the removed activity-types taxonomy', async () => {
+    mockRequireAdminApi.mockResolvedValue({ user: { id: 'admin-1', role: 'admin' } });
+    const { POST } = await import('@/app/api/admin/taxonomies/[kind]/route');
+    const response = await POST(
+      new NextRequest('http://localhost/api/admin/taxonomies/activity-types', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: 'Jogo' }),
+      }),
+      { params: Promise.resolve({ kind: 'activity-types' }) }
+    );
+    expect(response.status).toBe(404);
   });
 });

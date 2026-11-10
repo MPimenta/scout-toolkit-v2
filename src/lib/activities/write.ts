@@ -8,10 +8,8 @@ import {
   activityGroupSizes,
   activityLocations,
   activityAgeGroups,
-  activityActivityTypes,
   activityFocuses,
   activityFormats,
-  activityTypes,
   activityChallenges,
   activitySources,
   challenges,
@@ -50,7 +48,6 @@ export const ACTIVITY_FIELDS = [
   'secondary_focus_id',
   'duration_min_minutes',
   'duration_max_minutes',
-  'activity_type_ids',
 ] as const;
 
 export const INSTRUCTIONS_MAX_LENGTH = 5000;
@@ -88,8 +85,6 @@ export type ActivityWrite = {
   external_id?: string | null;
   /** Hash of the loaded content (snapshot loader only). */
   external_hash?: string | null;
-  /** Former activity types, kept during the transition; no longer required. */
-  activity_type_ids?: string[];
   image_url?: string | null;
   physical_risk_level?: RiskLevelValue | null;
   physical_risk?: string | null;
@@ -152,14 +147,6 @@ export function parseActivityWrite(body: Record<string, unknown>): ActivityWrite
     if (rawSecondary === rawFocus) return 'O foco secundário tem de ser diferente do foco principal';
     secondaryFocus = rawSecondary;
   }
-  const rawTypes = body['activity_type_ids'];
-  let activityTypeIds: string[] = [];
-  if (rawTypes !== undefined && rawTypes !== null) {
-    if (!Array.isArray(rawTypes) || !rawTypes.every((id) => typeof id === 'string' && UUID_RE.test(id))) {
-      return 'Tipo de atividade inválido';
-    }
-    activityTypeIds = [...new Set(rawTypes as string[])];
-  }
   const instructionsRaw = typeof body['instructions'] === 'string' ? body['instructions'].trim() : '';
   if (instructionsRaw.length > INSTRUCTIONS_MAX_LENGTH) {
     return `As instruções não podem exceder ${INSTRUCTIONS_MAX_LENGTH} caracteres`;
@@ -201,7 +188,6 @@ export function parseActivityWrite(body: Record<string, unknown>): ActivityWrite
     secondary_focus_id: secondaryFocus,
     duration_min_minutes: range.min,
     duration_max_minutes: range.max,
-    activity_type_ids: activityTypeIds,
     image_url: typeof body['image_url'] === 'string' ? body['image_url'] : null,
     educational_goal_ids: Array.isArray(body['educational_goal_ids'])
       ? body['educational_goal_ids'].map(String)
@@ -324,14 +310,6 @@ function parseActivityExtras(
   return out;
 }
 
-/** Returns an error message when any activity type id does not exist, else null. */
-export async function verifyActivityTypes(data: ActivityWrite): Promise<string | null> {
-  const ids = data.activity_type_ids ?? [];
-  if (ids.length === 0) return null;
-  const found = await db.select({ id: activityTypes.id }).from(activityTypes).where(inArray(activityTypes.id, ids));
-  return found.length === ids.length ? null : 'Tipo de atividade inválido';
-}
-
 /** Returns an error message when the format or a focus does not exist, else null. */
 export async function verifyFormatAndFocus(data: ActivityWrite): Promise<string | null> {
   const [format] = await db.select({ id: activityFormats.id }).from(activityFormats).where(eq(activityFormats.id, data.format_id));
@@ -435,7 +413,6 @@ export async function replaceRelations(
   await executor.delete(activityGroupSizes).where(eq(activityGroupSizes.activity_id, activityId));
   await executor.delete(activityLocations).where(eq(activityLocations.activity_id, activityId));
   await executor.delete(activityAgeGroups).where(eq(activityAgeGroups.activity_id, activityId));
-  await executor.delete(activityActivityTypes).where(eq(activityActivityTypes.activity_id, activityId));
   await executor.insert(activityGroupSizes).values(
     data.group_sizes.map((group_size) => ({ activity_id: activityId, group_size }))
   );
@@ -445,11 +422,6 @@ export async function replaceRelations(
   await executor.insert(activityAgeGroups).values(
     data.age_groups.map((age_group) => ({ activity_id: activityId, age_group }))
   );
-  if (data.activity_type_ids?.length) {
-    await executor.insert(activityActivityTypes).values(
-      data.activity_type_ids.map((activity_type_id) => ({ activity_id: activityId, activity_type_id }))
-    );
-  }
   const objectiveRows = await resolveObjectiveRows(data, executor);
   if (objectiveRows.length > 0) {
     await executor.insert(activityEducationalGoals).values(

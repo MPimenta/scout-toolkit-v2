@@ -106,6 +106,10 @@ async function createTestSchema() {
       )
     `;
 
+    // The activity types are gone (format-focus-everywhere): drop the tables an older run left in this test database.
+    await sql`DROP TABLE IF EXISTS activity_activity_types`;
+    await sql`DROP TABLE IF EXISTS activity_types`;
+
     // Educational areas table
     await sql`
       CREATE TABLE IF NOT EXISTS educational_areas (
@@ -126,16 +130,6 @@ async function createTestSchema() {
         description text,
         code text NOT NULL UNIQUE,
         area_id uuid REFERENCES educational_areas(id),
-        created_at timestamp DEFAULT now()
-      )
-    `;
-
-    // Activity types table
-    await sql`
-      CREATE TABLE IF NOT EXISTS activity_types (
-        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-        name text NOT NULL,
-        description text,
         created_at timestamp DEFAULT now()
       )
     `;
@@ -183,13 +177,6 @@ async function createTestSchema() {
         activity_id uuid NOT NULL REFERENCES activities(id) ON DELETE CASCADE,
         age_group text NOT NULL,
         PRIMARY KEY (activity_id, age_group)
-      )
-    `;
-    await sql`
-      CREATE TABLE IF NOT EXISTS activity_activity_types (
-        activity_id uuid NOT NULL REFERENCES activities(id) ON DELETE CASCADE,
-        activity_type_id uuid NOT NULL REFERENCES activity_types(id) ON DELETE RESTRICT,
-        PRIMARY KEY (activity_id, activity_type_id)
       )
     `;
 
@@ -559,12 +546,10 @@ export async function resetTestDatabase() {
         'activity_group_sizes',
         'activity_locations',
         'activity_age_groups',
-        'activity_activity_types',
         'activities',
         'activity_formats',
         'activity_focuses',
         'activity_sources',
-        'activity_types',
         'challenge_goals',
         'challenges',
         'challenge_types',

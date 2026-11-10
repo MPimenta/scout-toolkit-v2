@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import { insertActivities } from '../../helpers/activity-categories'
 import { setupTestDatabase, teardownTestDatabase, resetTestDatabase } from '../../setup';
 import { db } from '@/lib/db/server';
-import { activityTypes, educationalGoals, sdgs, activityEducationalGoals, activitySdgs, educationalAreas } from '../../../drizzle/schema';
+import { educationalGoals, sdgs, activityEducationalGoals, activitySdgs, educationalAreas } from '../../../drizzle/schema';
 import { requireLocalTestDatabase } from '../../helpers/local-test-db';
 
 describe('Activity Detail API Integration', () => {
@@ -37,11 +37,6 @@ describe('Activity Detail API Integration', () => {
 
     it.skip('returns complete activity data with all related information', async () => {
       // Create test data
-      const activityType = await db.insert(activityTypes).values({
-        name: 'Tipo de Atividade',
-        description: 'Descrição do tipo',
-      }).returning();
-
       const educationalArea = await db.insert(educationalAreas).values({
         name: 'Área Educativa',
         description: 'Descrição da área',
@@ -73,7 +68,6 @@ describe('Activity Detail API Integration', () => {
         locations: ['outside'],
         age_groups: ['scouts'],
         image_url: 'https://example.com/test.jpg',
-        activity_type_id: activityType[0].id,
       });
 
       // Create relationships
@@ -107,9 +101,6 @@ describe('Activity Detail API Integration', () => {
       expect(data.age_group).toBe('scouts');
       expect(data.image_url).toBe('https://example.com/test.jpg');
 
-      // Check activity type
-      expect(data.activity_type.id).toBe(activityType[0].id);
-      expect(data.activity_type.name).toBe('Tipo de Atividade');
 
       // Check educational goals
       expect(data.educational_goals).toHaveLength(1);
@@ -130,10 +121,6 @@ describe('Activity Detail API Integration', () => {
 
     it.skip('handles activities without educational goals gracefully', async () => {
       // Create test data without educational goals
-      const activityType = await db.insert(activityTypes).values({
-        name: 'Tipo de Atividade',
-      }).returning();
-
       const activity = await insertActivities(db, {
         name: 'Atividade Simples',
         description: 'Descrição simples',
@@ -143,7 +130,6 @@ describe('Activity Detail API Integration', () => {
         effort_level: 'low',
         locations: ['inside'],
         age_groups: ['cub_scouts'],
-        activity_type_id: activityType[0].id,
       });
 
       const response = await fetch(`/api/activities/${activity[0].id}`);
@@ -157,10 +143,6 @@ describe('Activity Detail API Integration', () => {
 
     it.skip('handles activities without SDGs gracefully', async () => {
       // Create test data without SDGs
-      const activityType = await db.insert(activityTypes).values({
-        name: 'Tipo de Atividade',
-      }).returning();
-
       const activity = await insertActivities(db, {
         name: 'Atividade Sem ODS',
         description: 'Descrição sem ODS',
@@ -170,7 +152,6 @@ describe('Activity Detail API Integration', () => {
         effort_level: 'high',
         locations: ['outside'],
         age_groups: ['rovers'],
-        activity_type_id: activityType[0].id,
       });
 
       const response = await fetch(`/api/activities/${activity[0].id}`);
@@ -183,10 +164,6 @@ describe('Activity Detail API Integration', () => {
 
     it.skip('handles activities without image gracefully', async () => {
       // Create test data without image
-      const activityType = await db.insert(activityTypes).values({
-        name: 'Tipo de Atividade',
-      }).returning();
-
       const activity = await insertActivities(db, {
         name: 'Atividade Sem Imagem',
         description: 'Descrição sem imagem',
@@ -196,7 +173,6 @@ describe('Activity Detail API Integration', () => {
         effort_level: 'low',
         locations: ['inside'],
         age_groups: ['leaders'],
-        activity_type_id: activityType[0].id,
         image_url: null,
       });
 
