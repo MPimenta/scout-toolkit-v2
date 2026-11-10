@@ -4,7 +4,9 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { chromium } from 'playwright'
 import * as L from './lib.mjs'
-import { scenes } from './catalog-sheet.mjs'
+import { scenes as s1 } from './catalog-sheet.mjs'
+import { scenes as s2 } from './catalog-sheet2.mjs'
+const scenes = { ...s1, ...s2 }
 
 const [idsFile, outDir] = process.argv.slice(2)
 const list = JSON.parse(fs.readFileSync(idsFile, 'utf8'))

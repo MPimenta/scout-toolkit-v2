@@ -8,12 +8,12 @@ const ell = (cx, cy, rx, ry, fill = '#fff', w = 4) => raw(`<ellipse cx="${cx}" c
 const blind = (p, s = 1) => line(p.x - 24 * s, p.head - 2, p.x + 24 * s, p.head - 2, 9)
 
 // two people face to face, optionally on low benches, something between them
-function duel({ bench = false, between, bub = '!' }) {
+function duel({ bench = false, between, bub = '!', pose = 'reach' }) {
   ground(850)
   const lift = bench ? 70 : 0
   if (bench) { rect(380, 800 - lift, 170, lift, '#fff', 5); rect(650, 800 - lift, 170, lift, '#fff', 5) }
-  person({ x: 470, foot: 800 - lift, s: 1.0, pose: 'reach', team: 'a' })
-  person({ x: 740, foot: 800 - lift, s: 1.0, pose: 'reach', flip: true, team: 'b' })
+  person({ x: 470, foot: 800 - lift, s: 1.0, pose, team: 'a' })
+  person({ x: 740, foot: 800 - lift, s: 1.0, pose, flip: true, team: 'b' })
   if (between) between()
   rays(400, 560 - lift, 34, 3, 30, 190); rays(820, 560 - lift, 34, 3, 30, -10)
   bubble(600, 250, bub)
@@ -149,3 +149,5 @@ export const scenes = {
   'ATV-0604': () => wall({ people: 3, bub: '7' }),
   'ATV-0612': () => converge({ arrows: true, blockers: 2, bub: 'cevada!' }),
 }
+
+export { duel, blind, rect, ell, lines, speakers }
