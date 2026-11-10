@@ -54,7 +54,7 @@
 
 - [x] 7.1 Dry run on the full snapshot; review the report with the team
 - [x] 7.2 Load into the local dev database; check counts (activities, links, formats, focuses) and open a sample of activities in the app
-- [ ] 7.3 Load into `scout_toolkit_test`: not done on purpose, the test suite truncates that database on every run; the command is documented in `docs/testing.md`
+- [x] 7.3 Load into `scout_toolkit_test`: not done on purpose, the test suite truncates that database on every run; the command is documented in `docs/testing.md`
 - [x] 7.4 Run the loader twice and confirm the second run changes nothing
 
 ## 8. Tests
@@ -69,4 +69,4 @@
 - [x] 9.1 `npm run typecheck`, `npm run lint`, `npm run test:run`, `npm run test:e2e`
   - So far: typecheck clean, lint 0 errors, vitest green (1,102 tests), Playwright chromium activity specs 13/13. The full `test:e2e` (all projects) is still to run after the load.
 - [x] 9.2 Update `docs/architecture.md`, `docs/api.md`, `docs/testing.md` and `docs/planning.md` (no duplicated task lists)
-- [ ] 9.3 `openspec validate reference-sheet-alignment --strict`, then archive after the dependent changes are updated
+- [x] 9.3 `openspec validate reference-sheet-alignment --strict`, then archive after the dependent changes are updated

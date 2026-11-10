@@ -22,7 +22,7 @@
 - [x] 4.2 `DivisionToggle` (built on `DivisionPill`, inside the same file so the colour scan still passes), with selected and unselected states, `aria-pressed`, 44 px targets and tests including the contrast pairs for the swatch border.
 - [x] 4.3 Fact sections (group, effort, location) with the shared icons and checkbox options.
 - [x] 4.4 `DurationRange`: pure helpers (stops, nearest stop, readout, validation) with unit tests; the slider, the two fields, the keyboard behaviour and the inline error.
-- [x] 4.5 Types section grouped with counts and descriptions, flat fallback; hide zero-count types.
+- [x] 4.5 Format and focus sections (replacing the types section, by ) with counts and descriptions, flat fallback; hide zero-count values.
 - [x] 4.6 `ObjectiveFilterTree`: pure node-state functions (on, partial, off, select, deselect, clear below, drop objectives that no longer match the divisions) with unit tests; the tree UI with search, counts, chips and division-coloured leaves.
 - [x] 4.7 Active-filter chips with the same icons and pills; the "Limpar" control.
 - [x] 4.8 Phone sheet: same sections in one column, sticky search and actions, one open area at a time.
@@ -38,4 +38,4 @@
 - [x] 6.1 Component tests for every section and an E2E case: choose a division pill, set a duration range, select an area, see the chips and the filtered list.
 - [x] 6.2 Manual pass at 1440 px and 390 px, light and dark (Playwright screenshots; fixed the phone sheet bleed, 44 px close target and duplicate clear control).
 - [x] 6.3 `npm run typecheck`, `npm run lint`, `npm run test:run`, `npm run test:e2e` all pass (79 passed, 32 skipped by design).
-- [ ] 6.4 `openspec validate catalogue-filters-refresh --strict`; archive after `activity-types-review` and `progress-matrix-objectives`.
+- [ ] 6.4 `openspec validate catalogue-filters-refresh --strict`; archive after `reference-sheet-alignment` (which replaced `activity-types-review`) and `progress-matrix-objectives`.

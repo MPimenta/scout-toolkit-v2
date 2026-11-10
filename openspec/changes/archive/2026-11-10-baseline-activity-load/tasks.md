@@ -1,7 +1,7 @@
 ## 1. Inputs
 
 - [x] 1.1 Export the `atividades` tab (and `ods`) to an untracked folder (`data/`), add it to `.gitignore`, and document the export steps in the script header
-- [ ] 1.2 Confirm the open questions in `design.md` (collapse rules, committable sources) and update the artifacts if they change
+- [x] 1.2 Confirm the open questions in `design.md` (collapse rules, committable sources) and update the artifacts if they change (resolved in `reference-sheet-alignment`: the sheet wins, every row has an ATV id)
   - Partly done: collapse rules dropped (lists now); still open: committable sources, and whether "Exploradores" = 10-14 section.
 
 ## 2. Mapping module
@@ -19,16 +19,16 @@
 
 ## 4. Baseline fixture and tests
 
-- [ ] 4.1 Generate a fixture from rows with open/public-domain sources only; commit it under `tests/fixtures/`
+- [x] 4.1 Generate a fixture from rows with open/public-domain sources only; commit it under `tests/fixtures/` (replaced by `tests/fixtures/baseline-sample.csv` and the unit tests on the real export plan)
   - Not done: needs the sheet snapshot and your licence decision. A synthetic sample (`tests/fixtures/baseline-sample.csv`) covers the tests meanwhile.
 - [x] 4.2 Integration test in `tests/integration/` that loads a small fixture into `scout_toolkit_test` and checks counts, normalised values and duplicate skipping
 - [x] 4.3 Document how to load the full local snapshot into `scout_toolkit_test`
 
 ## 5. Run and review (needs your go-ahead each time: data change)
 
-- [ ] 5.1 Dry run against the full snapshot and review the report with you
-- [ ] 5.2 Load ~200 activities into the local dev database with `--replace`
-- [ ] 5.3 Write up the findings: sheet fixes, schema questions, and a revised plan for `admin-activity-excel-import`
+- [x] 5.1 Dry run against the full snapshot and review the report with you (done in `reference-sheet-alignment`: 1,080 rows, 5 rows with dropped values, reviewed)
+- [x] 5.2 Load ~200 activities into the local dev database with `--replace` (done: all 1,080 activities loaded into dev and Preview)
+- [x] 5.3 Write up the findings: sheet fixes, schema questions, and a revised plan for `admin-activity-excel-import` (findings are in `reference-sheet-alignment` design D1-D12 and the loader report)
 
 ## 6. Verification
 

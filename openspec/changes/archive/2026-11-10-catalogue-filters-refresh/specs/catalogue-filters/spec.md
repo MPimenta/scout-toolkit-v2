@@ -1,6 +1,6 @@
 ## Purpose
 
-The structure and behaviour of the catalogue filter panel: divisions as pills, fact filters with the shared icons, a duration range, grouped types and objectives, active-filter chips, and the same panel in the phone sheet.
+The structure and behaviour of the catalogue filter panel: divisions as pills, fact filters with the shared icons, a duration range, format and focus filters and grouped objectives, active-filter chips, and the same panel in the phone sheet.
 
 ## ADDED Requirements
 
@@ -75,20 +75,20 @@ The duration filter SHALL be a stepped two-handle slider over the stops 5, 10, 1
 - **WHEN** a request carries `duration_operator=>` with `duration_min=30`
 - **THEN** the operator is ignored and activities of 30 minutes are included
 
-### Requirement: Types are grouped
+### Requirement: Format and focus are separate filters
 
-When the type metadata is available, the type filter SHALL group types as Formato, Foco and Outros, SHALL show each type's activity count, SHALL hide types with no approved activity and SHALL show each type's description as the option title. Without the metadata it SHALL show a flat list.
+The filter panel SHALL offer the activity format and the activity focus as two separate sections (the former activity types are no longer offered), SHALL show each value's count of approved activities, SHALL hide values with no approved activity and SHALL show each value's description as the option title. Without the metadata it SHALL show a flat list. How the filters match is defined by the format and focus filters of the reference sheet (a focus matches the main or the secondary focus).
 
-#### Scenario: Grouped list
+#### Scenario: Two sections
 
 - **WHEN** the filter panel is expanded
 - **THEN** Jogo appears under Formato with its count and Cooperação under Foco with its count
 
-#### Scenario: Empty type hidden
+#### Scenario: Empty value hidden
 
-- **GIVEN** no approved activity uses Serviço
+- **GIVEN** no approved activity uses the format Aventura/Percurso
 - **WHEN** the filter panel is expanded
-- **THEN** Serviço is not listed
+- **THEN** Aventura/Percurso is not listed
 
 ### Requirement: Objectives are a grouped tree
 
@@ -151,7 +151,7 @@ When divisions are selected the objective tree SHALL list only objectives of tho
 
 ### Requirement: Active filters are shown with the same icons
 
-The active-filter summary SHALL show one removable chip per active filter: division chips as division pills, fact chips with the fact icon, a duration chip with the readout, type chips with their name, and objective chips with the code pill or the area or general-objective name. A "Limpar" control SHALL clear every filter.
+The active-filter summary SHALL show one removable chip per active filter: division chips as division pills, fact chips with the fact icon, a duration chip with the readout, format and focus chips with their name, and objective chips with the code pill or the area or general-objective name. A "Limpar" control SHALL clear every filter.
 
 #### Scenario: Removing a chip
 

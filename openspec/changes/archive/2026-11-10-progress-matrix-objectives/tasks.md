@@ -48,7 +48,7 @@
 - [x] 7.3 Use it in `ActivityCard` (first three + "+k"), `ActivityDetail`, `ActivityFilters`, `ProgramSummary` and the program entry components. (The activity detail shows division pills per objective through `DivisionObjectives`; `ProgramSummary` shows one pill per division the program uses; `ProgramScheduleRow` and `ProgramEntryCard` use `ObjectivePill`. `ProgramEntryCard` is not rendered anywhere yet.)
 - [x] 7.4 `ActivityEditorForm`: objectives grouped by area and general objective for the selected age groups only, with search, a hint when none is selected, and auto-deselect with a message when an age group is dropped.
 - [x] 7.5 `ActivityFilters`: objective list follows the age-group selection and drops selections that no longer apply.
-- [ ] 7.6 Component tests for the editor and filters; add an E2E case: pick two age groups, pick matching objectives, save, see two coloured pills.
+- [x] 7.6 Component tests for the editor and filters; add an E2E case: pick two age groups, pick matching objectives, save, see two coloured pills.
   - Done: unit tests for the pill and the picker; still open: filter tests and the E2E case.
 
 ## 8. Local data and demo seed
@@ -58,6 +58,6 @@
 
 ## 9. Wrap-up
 
-- [ ] 9.1 Run `npm run typecheck`, `npm run lint`, `npm run test:run`, `npm run test:e2e`.
-- [ ] 9.2 `openspec validate progress-matrix-objectives --strict`; update `docs/api.md`, `docs/architecture.md` and `docs/planning.md` where they describe goals.
-- [ ] 9.3 Archive order: `add-activity-instructions`, then `multi-value-activity-categories`, then this change.
+- [x] 9.1 Run `npm run typecheck`, `npm run lint`, `npm run test:run`, `npm run test:e2e`.
+- [x] 9.2 `openspec validate progress-matrix-objectives --strict`; update `docs/api.md`, `docs/architecture.md` and `docs/planning.md` where they describe goals.
+- [x] 9.3 Archive order: `add-activity-instructions`, then `multi-value-activity-categories`, then this change.

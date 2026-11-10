@@ -205,14 +205,67 @@ educational_areas {
   created_at: timestamp
 }
 
+educational_paths {
+  id: string (primary key)
+  area_id: string (foreign key)
+  code: string (unique)
+  name: text
+  position: number
+}
+
+general_objectives {
+  id: string (primary key)
+  area_id: string (foreign key)
+  path_id?: string (foreign key to educational_paths)
+  code: string (unique) // e.g. '4F.1'
+  title: text
+  position: number
+  is_managed: boolean // true for the Matriz objectives loaded by db:load-reference
+}
+
+// The specific objectives of the Matriz Progresso Pessoal (e.g. '4F.1.1'); 174 in the dataset
 educational_goals {
   id: string (primary key)
   area_id: string (foreign key)
-  title: text // Portuguese educational goal title
-  description?: text // Portuguese educational goal description
+  general_objective_id?: string (foreign key; required by the API for new goals)
+  title: text // Portuguese objective text, as in the sheet
+  description?: text
   code: string (unique)
-  icon: string // Icon for educational goal
+  icon: string
+  position: number
+  is_managed: boolean
   created_at: timestamp
+}
+
+// An objective can belong to several divisions (a "3-4" objective has two rows).
+// Dirigentes (leaders) have no objectives.
+educational_goal_age_groups {
+  goal_id: string (foreign key)
+  age_group: string // 'cub_scouts' | 'scouts' | 'adventurers' | 'rovers'
+  primary key: (goal_id, age_group)
+}
+
+// Desafios of the Matriz, each linked to the objectives it serves
+challenge_types {
+  id: string (primary key)
+  code: string (unique)
+  name: text
+}
+
+challenges {
+  id: string (primary key)
+  type_id: string (foreign key)
+  code: string (unique)
+  title: text // full text, without the integration marker
+  short_title?: text // from the sheet, shown first
+  age_group: string
+  integration_age_groups: string[] // divisions for which the desafio is mandatory for the first etapa
+}
+
+challenge_goals {
+  challenge_id: string (foreign key)
+  goal_id: string (foreign key)
+  primary key: (challenge_id, goal_id)
 }
 
 sdgs {
@@ -257,10 +310,19 @@ age_groups {
 
 #### Many-to-Many Relationships
 ```typescript
+// One row per objective and division: the same objective on a two-division activity has two rows
 activity_educational_goals {
   activity_id: string (foreign key)
   goal_id: string (foreign key)
-  primary key: (activity_id, goal_id)
+  age_group: string
+  observable_behaviour?: text // what a leader can observe for this objective in this division
+  primary key: (activity_id, goal_id, age_group)
+}
+
+activity_challenges {
+  activity_id: string (foreign key)
+  challenge_id: string (foreign key)
+  primary key: (activity_id, challenge_id)
 }
 
 activity_sdgs {
