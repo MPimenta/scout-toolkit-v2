@@ -1,0 +1,38 @@
+## ADDED Requirements
+
+### Requirement: Add-activity dialog filters by format and focus
+
+The add-activity dialog of the program builder SHALL offer a format filter and a focus filter, each listing the values present in the activities it shows with "Todos" first, instead of an activity-type filter. The focus filter SHALL match an activity whose main or secondary focus is the chosen one. The filters SHALL combine with the existing search and with each other.
+
+#### Scenario: Filter by format
+
+- **GIVEN** the dialog lists activities of the formats Jogo and Quebra-gelo
+- **WHEN** the leader picks Jogo
+- **THEN** only activities with the format Jogo are listed
+
+#### Scenario: Focus matches the secondary focus
+
+- **GIVEN** an activity with the main focus Confiança and the secondary focus Comunicação
+- **WHEN** the leader picks the focus Comunicação
+- **THEN** that activity is listed
+
+#### Scenario: Sheet activities have options
+
+- **GIVEN** the dialog lists only activities loaded from the reference sheet (none has a former type)
+- **WHEN** the dialog opens
+- **THEN** the format and focus filters have options
+
+### Requirement: Schedule rows show format and focus
+
+A program schedule row for an activity SHALL show its format, main focus and secondary focus (in that order, those that exist) where it used to show the activity type, and the former types only when the activity has no format. The program API SHALL return `format`, `focus` and `secondary_focus` for each activity entry.
+
+#### Scenario: Row details
+
+- **GIVEN** a program entry for an activity with the format Jogo, the focus Cooperação and the secondary focus Liderança
+- **WHEN** the leader opens the row details
+- **THEN** it shows "Jogo · Cooperação · Liderança"
+
+#### Scenario: Program API
+
+- **WHEN** a client reads a program
+- **THEN** each activity entry carries `format`, `focus` and `secondary_focus` (each `{ id, code, name }` or `null`)

@@ -1,7 +1,7 @@
 # program-export Specification
 
 ## Purpose
-TBD - created by archiving change add-activity-instructions. Update Purpose after archive.
+What a program export (Excel and PDF) contains for each activity, so a leader can run the session from the file alone: the instructions, the risk analysis and the objectives per division.
 
 ## Requirements
 
@@ -26,3 +26,19 @@ Program exports (Excel and PDF) SHALL include each activity's `instructions` whe
 - **GIVEN** a program whose activity has no instructions
 - **WHEN** it is exported to Excel or PDF
 - **THEN** the export succeeds with an empty instructions cell and no instructions block
+
+### Requirement: Exports include risk and objectives per division
+
+The Excel activity details sheet SHALL include, for each activity, the physical and the psychological risk (level, risk and how to reduce it, with the five risk levels shown by their Portuguese labels) and the objectives grouped by division with the observable behaviour for each. An activity without them SHALL export with empty cells and the export SHALL NOT fail.
+
+#### Scenario: Risk and objectives columns
+
+- **GIVEN** a program containing an activity with a medium-to-high physical risk and objectives for two divisions
+- **WHEN** the program is exported to Excel
+- **THEN** the activity details sheet shows "Médio a alto" with its risk and mitigation, and the objectives listed under each division
+
+#### Scenario: Sparse activity
+
+- **GIVEN** an activity with no risk analysis and no objectives
+- **WHEN** the program is exported to Excel
+- **THEN** the export succeeds with empty risk and objectives cells
