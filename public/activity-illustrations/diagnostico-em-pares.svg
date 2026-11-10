@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" role="img" aria-label="Ilustração da atividade Diagnóstico em Pares">
+<defs><filter id="hand" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G"/></filter></defs>
+<rect width="1200" height="900" fill="#ffffff"/>
+<g filter="url(#hand)" transform="translate(-140.6,-211.6) scale(1.234)">
+<path d="M30 850 Q600 856 1170 850" fill="none" stroke="#0b3a4a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.35" data-ground="1"/>
+<ellipse cx="379.0184389259752" cy="608.3030288652997" rx="20.409208637247428" ry="20.969566217469783" fill="none" stroke="#0b3a4a" stroke-width="4.5"/>
+<path d="M365.13914495475547 639.9092545757579 L362.54165476292445 689.2916004718708 L363.4291307323282 720.7002182404977" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M396.4679680454396 639.6389397026221 L398.759581969613 689.3941632859381 L397.40234676278305 724.7420420948147" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M365.2014875491622 636.1012387696194 L396.02000099277126 639.0566855062063" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M365.1133028097047 695.280322706923 L397.58373525551696 695.4384394732483" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M365.9522268840355 642.5772399846359 L345.9724217745813 667.7927653874237 L380.70786643000685 675.4110891252808" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M394.6749285939964 643.2248792977189 L411.8463567601267 670.418067449526 L447.5596241828332 678.3036408773175" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M368.9922250747179 720.6268307834057 L366.2449767000717 761.623398105066 L360.7519518440831 805.1546435050454" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M388.9933892999279 722.3939638886573 L393.4510766626108 762.7454684994862 L395.1890708626663 804.0139888320183" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<g transform="translate(1640,0) scale(-1,1)"><ellipse cx="819.504681696419" cy="606.585271713969" rx="22.89254501443009" ry="22.404057526543763" fill="none" stroke="#0b3a4a" stroke-width="4.5"/>
+<path d="M800.2 602 Q820 584 839.8 602" fill="none" stroke="#0b3a4a" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M802.9324446441757 639.4971346606021 L801.6422407402388 686.8401211935283 L803.0168996289917 722.3320644631666" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M833.3074324402061 637.3170225446657 L837.897908197063 687.6430680374815 L833.9445059523193 724.0115406315828" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M803.6633950112217 639.7799536032509 L835.3802098376118 639.686740742571" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M803.6516603918986 699.0562066409067 L837.6650137193805 697.4855816259447" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M804.2703872532446 641.4985652817873 L781.0866909977918 672.3155998867543 L773.9872966802154 712.1953043805413" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M833.3807237583588 640.7242067371143 L866.2426306785749 626.1938148074754 L906.3454692400272 630.4015171376996" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M811.3985333160956 723.0494436188832 L805.4989025685932 762.3554703444036 L802.2900783898262 810.047497810073" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M830.7956938962898 724.1273149422032 L837.0822336082264 762.8002534611152 L838.1599209628347 809.291622362701" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" /></g>
+<rect x="200" y="706" width="800" height="40" rx="4" fill="#fff" stroke="#0b3a4a" stroke-width="5" stroke-linejoin="round"/>
+<rect x="214" y="746" width="772" height="110" rx="0" fill="#fff" stroke="#0b3a4a" stroke-width="0" stroke-linejoin="round"/>
+<path d="M239.69704991648769 745.1179464083714 L233.53448022507806 797.0091428868515 L231.95396616317052 848.7093044067311" fill="none" stroke="#0b3a4a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M959.2791639290188 744.1081550178621 L962.4927980129107 797.4562029915193 L968.8293642065624 851.924219695164" fill="none" stroke="#0b3a4a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+<ellipse cx="340" cy="672" rx="36.800000000000004" ry="16" fill="#bfe3f2" stroke="#0b3a4a" stroke-width="4"/>
+<path d="M308.36041662123074 670.7221530249911 L339.4898513986216 671.9324566335102 L371.1190022320109 671.0705134079188" fill="none" stroke="#0b3a4a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<ellipse cx="860" cy="672" rx="36.800000000000004" ry="16" fill="#bfe3f2" stroke="#0b3a4a" stroke-width="4"/>
+<path d="M826.1188468923415 673.8597195824887 L858.2368493905462 672.7277069109156 L893.8847046221069 672.6305837515883" fill="none" stroke="#0b3a4a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<ellipse cx="600" cy="250" rx="70" ry="34" fill="#fff" stroke="#0b3a4a" stroke-width="4"/><path d="M580 278 L566 308 L606 282" fill="#fff" stroke="#0b3a4a" stroke-width="4" stroke-linejoin="round"/>
+<text x="600" y="260" font-family="Arial" font-size="24.5" font-weight="700" text-anchor="middle" fill="#0b3a4a">Pares</text>
+</g>
+</svg>
