@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { seedFormatAndFocus } from '../../helpers/reference-values';
 import { eq } from 'drizzle-orm';
 import { NextRequest } from 'next/server';
 import { GET } from '@/app/api/activities/route';
@@ -26,6 +27,7 @@ describe('Activity categories (many-to-many)', () => {
   let db: TestDatabaseHandle['db'];
   let cleanup: () => Promise<void>;
   let multiId: string;
+  let refs: Awaited<ReturnType<typeof seedFormatAndFocus>>;
 
   beforeAll(async () => {
     requireLocalTestDatabase();
@@ -34,6 +36,7 @@ describe('Activity categories (many-to-many)', () => {
     cleanup = setup.cleanup;
     await cleanup();
 
+    refs = await seedFormatAndFocus(db);
     await db.insert(activityTypes).values([
       { id: TYPE_GAME, name: 'Jogo' },
       { id: TYPE_CRAFT, name: 'Artesanato' },
@@ -133,6 +136,7 @@ describe('Activity categories (many-to-many)', () => {
       locations: ['inside', 'outside'],
       age_groups: ['scouts', 'rovers'],
       activity_type_ids: [TYPE_GAME, TYPE_HIKE],
+      ...refs,
       ...extra,
     });
 

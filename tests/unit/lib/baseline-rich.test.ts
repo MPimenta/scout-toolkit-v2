@@ -19,10 +19,28 @@ describe('parseRiskCell', () => {
     expect(parseRiskCell('Alto: risco elevado').level).toBe('high');
   });
 
-  it('stores the higher level for a range and keeps the original wording', () => {
+  it('reads the two intermediate levels of the sheet', () => {
     expect(parseRiskCell('Baixo a médio: vergonha de falhar o ritmo.')).toEqual({
-      level: 'medium',
-      text: 'Baixo a médio: vergonha de falhar o ritmo.',
+      level: 'low_medium',
+      text: 'vergonha de falhar o ritmo.',
+      range: false,
+    });
+    expect(parseRiskCell('Médio a alto: supervisão reforçada.')).toEqual({
+      level: 'medium_high',
+      text: 'supervisão reforçada.',
+      range: false,
+    });
+  });
+
+  it('reads a cell that is only a level', () => {
+    expect(parseRiskCell('Baixo')).toEqual({ level: 'low', text: null, range: false });
+    expect(parseRiskCell('Médio a alto.')).toEqual({ level: 'medium_high', text: null, range: false });
+  });
+
+  it('stores the higher level for any other range and keeps the original wording', () => {
+    expect(parseRiskCell('Baixo a alto: depende do grupo.')).toEqual({
+      level: 'high',
+      text: 'Baixo a alto: depende do grupo.',
       range: true,
     });
   });

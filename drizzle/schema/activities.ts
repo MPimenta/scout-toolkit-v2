@@ -1,7 +1,7 @@
-import { pgTable, text, timestamp, uuid, integer, boolean, primaryKey, index } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid, integer, boolean, primaryKey, index, uniqueIndex } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
-import { activityTypes, activitySources, challenges, educationalGoals, sdgs } from './taxonomies';
+import { activityFocuses, activityFormats, activityTypes, activitySources, challenges, educationalGoals, sdgs } from './taxonomies';
 import { user } from './auth';
 import { GROUP_SIZE_VALUES, LOCATION_VALUES, AGE_GROUP_VALUES, RISK_LEVEL_VALUES } from './category-values';
 
@@ -13,6 +13,17 @@ export const activities = pgTable('activities', {
   materials: text('materials').notNull(),
   instructions: text('instructions'),
   approximate_duration_minutes: integer('approximate_duration_minutes').notNull(),
+  // Optional range from the reference sheet; the single value above is what programs use.
+  duration_min_minutes: integer('duration_min_minutes'),
+  duration_max_minutes: integer('duration_max_minutes'),
+  // Id in the reference sheet (ATV-0001); the key the snapshot loader upserts by. Null for activities made in the app.
+  external_id: text('external_id'),
+  // Hash of the loaded content, so the snapshot loader can tell an unchanged activity from an edited one.
+  external_hash: text('external_hash'),
+  // Format, main focus and secondary focus. Nullable so older rows survive; the write schema requires format and main focus.
+  format_id: uuid('format_id').references(() => activityFormats.id, { onDelete: 'restrict' }),
+  focus_id: uuid('focus_id').references(() => activityFocuses.id, { onDelete: 'restrict' }),
+  secondary_focus_id: uuid('secondary_focus_id').references(() => activityFocuses.id, { onDelete: 'restrict' }),
   effort_level: text('effort_level', { enum: ['low', 'medium', 'high'] }).notNull(),
   image_url: text('image_url'),
   // Risk analysis: all optional (legacy activities have none)
@@ -36,6 +47,9 @@ export const activities = pgTable('activities', {
   durationIdx: index('activities_duration_idx').on(table.approximate_duration_minutes),
   createdAtIdx: index('activities_created_at_idx').on(table.created_at),
   searchIdx: index('activities_search_idx').on(table.is_approved, table.created_at),
+  externalIdIdx: uniqueIndex('activities_external_id_unique').on(table.external_id),
+  formatIdx: index('activities_format_idx').on(table.format_id),
+  focusIdx: index('activities_focus_idx').on(table.focus_id),
 }));
 
 // Many-to-many relationships

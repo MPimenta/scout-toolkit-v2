@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { formatAndFocus } from '../helpers/activity';
 
 test.describe('Admin activities', () => {
   test.beforeEach(({}, testInfo) => {
@@ -19,10 +20,7 @@ test.describe('Admin activities', () => {
     expect(login.ok()).toBeTruthy();
 
     try {
-      const types = await page.request.get('/api/taxonomies/activity-types');
-      const typeBody = (await types.json()) as { activity_types: { id: string }[] };
-      const typeId = typeBody.activity_types[0]?.id;
-      if (!typeId) test.skip(true, 'No activity types available');
+      const refs = await formatAndFocus(page.request);
 
       const base = {
         description: 'Descrição E2E',
@@ -32,7 +30,7 @@ test.describe('Admin activities', () => {
         effort_level: 'low',
         locations: ['outside'],
         age_groups: ['scouts'],
-        activity_type_ids: [typeId],
+        ...refs,
       };
       const withInstructions = await page.request.post('/api/admin/activities', {
         data: { ...base, name: `E2E com instruções ${Date.now()}`, instructions: 'Passo 1\nPasso 2' },
@@ -77,10 +75,7 @@ test.describe('Admin activities', () => {
     expect(login.ok()).toBeTruthy();
 
     try {
-      const types = await page.request.get('/api/taxonomies/activity-types');
-      const typeBody = (await types.json()) as { activity_types: { id: string }[] };
-      const typeId = typeBody.activity_types[0]?.id;
-      if (!typeId) test.skip(true, 'No activity types available');
+      const refs = await formatAndFocus(page.request);
 
       const name = `E2E atividade ${Date.now()}`;
       const created = await page.request.post('/api/admin/activities', {
@@ -93,7 +88,7 @@ test.describe('Admin activities', () => {
           effort_level: 'low',
           locations: ['outside'],
           age_groups: ['scouts'],
-          activity_type_ids: [typeId],
+          ...refs,
         },
       });
       expect(created.status()).toBe(201);
@@ -129,10 +124,7 @@ test.describe('Admin activities', () => {
     expect(login.ok()).toBeTruthy();
 
     try {
-      const types = await page.request.get('/api/taxonomies/activity-types');
-      const typeBody = (await types.json()) as { activity_types: { id: string }[] };
-      const typeIds = typeBody.activity_types.slice(0, 2).map((type) => type.id);
-      if (typeIds.length === 0) test.skip(true, 'No activity types available');
+      const refs = await formatAndFocus(page.request);
 
       const name = `E2E multi ${Date.now()}`;
       const created = await page.request.post('/api/admin/activities', {
@@ -145,7 +137,7 @@ test.describe('Admin activities', () => {
           effort_level: 'low',
           locations: ['inside', 'outside'],
           age_groups: ['cub_scouts', 'scouts'],
-          activity_type_ids: typeIds,
+          ...refs,
         },
       });
       expect(created.status()).toBe(201);

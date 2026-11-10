@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { seedFormatAndFocus } from '../../helpers/reference-values';
 import { NextRequest } from 'next/server';
 import { eq } from 'drizzle-orm';
 import { setupTestDatabase, teardownTestDatabase, resetTestDatabase } from '../../setup';
@@ -39,6 +40,7 @@ describe('Catalogue objective filters (areas, general objectives, objectives)', 
     await setupTestDatabase();
     await resetTestDatabase();
     await applyProgressMatrix(db);
+    const refs = await seedFormatAndFocus(db);
 
     physicalArea = await id(db.select({ id: educationalAreas.id }).from(educationalAreas).where(eq(educationalAreas.code, 'F')));
     socialArea = await id(db.select({ id: educationalAreas.id }).from(educationalAreas).where(eq(educationalAreas.code, 'S')));
@@ -60,6 +62,7 @@ describe('Catalogue objective filters (areas, general objectives, objectives)', 
         locations: ['inside'],
         age_groups: ['scouts'],
         activity_type_ids: [type!.id],
+        ...refs,
       });
       if (typeof parsed === 'string') throw new Error(parsed);
       const activity = await createActivity(parsed, { isApproved: true });

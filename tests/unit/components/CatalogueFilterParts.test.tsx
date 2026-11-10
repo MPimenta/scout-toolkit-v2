@@ -118,25 +118,43 @@ describe('ObjectiveFilterTree', () => {
 import { FilterPanel } from '@/components/features/activities/filters/FilterPanel';
 import { EMPTY_FILTERS } from '@/lib/activities/filters';
 
-describe('FilterPanel activity types', () => {
-  const render_ = (types: Array<{ id: string; name: string; kind?: 'format' | 'focus' | null; activity_count?: number }>) =>
-    render(<FilterPanel filters={EMPTY_FILTERS} onChange={() => {}} types={types} sdgs={[]} goals={[]} />);
+describe('FilterPanel format and focus', () => {
+  type Option = { id: string; name: string; description?: string | null; activity_count?: number };
+  const render_ = (formats: Option[], focuses: Option[], onChange: () => void = () => {}) =>
+    render(<FilterPanel filters={EMPTY_FILTERS} onChange={onChange} formats={formats} focuses={focuses} sdgs={[]} goals={[]} />);
 
-  it('is flat while types carry no kind', () => {
-    render_([{ id: '1', name: 'Jogo' }]);
-    expect(screen.getByLabelText('Jogo')).toBeInTheDocument();
-    expect(screen.queryByText('Formato')).not.toBeInTheDocument();
-  });
-
-  it('groups by format and focus with counts and hides empty types', () => {
-    render_([
-      { id: '1', name: 'Jogo', kind: 'format', activity_count: 12 },
-      { id: '2', name: 'Serviço', kind: 'focus', activity_count: 3 },
-      { id: '3', name: 'Vazio', kind: 'focus', activity_count: 0 },
-    ]);
+  it('shows a format section and a focus section', () => {
+    render_([{ id: '1', name: 'Jogo' }], [{ id: 'f1', name: 'Cooperação' }]);
     expect(screen.getByText('Formato')).toBeInTheDocument();
     expect(screen.getByText('Foco')).toBeInTheDocument();
+    expect(screen.getByLabelText('Jogo')).toBeInTheDocument();
+    expect(screen.getByLabelText('Cooperação')).toBeInTheDocument();
+  });
+
+  it('shows counts and hides values with no approved activity', () => {
+    render_(
+      [
+        { id: '1', name: 'Jogo', activity_count: 12 },
+        { id: '2', name: 'Energizante', activity_count: 0 },
+      ],
+      [{ id: 'f1', name: 'Liderança', activity_count: 3 }]
+    );
     expect(screen.getByLabelText('Jogo (12)')).toBeInTheDocument();
-    expect(screen.queryByLabelText(/Vazio/)).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Liderança (3)')).toBeInTheDocument();
+    expect(screen.queryByLabelText(/Energizante/)).not.toBeInTheDocument();
+  });
+
+  it('puts the description of a value in its tooltip', () => {
+    render_([{ id: '1', name: 'Jogo', description: 'Atividade lúdica com regras.' }], []);
+    expect(screen.getByLabelText('Jogo').closest('label')).toHaveAttribute('title', 'Atividade lúdica com regras.');
+  });
+
+  it('toggles a format and a focus in the filter state', () => {
+    const onChange = vi.fn();
+    render_([{ id: '1', name: 'Jogo' }], [{ id: 'f1', name: 'Cooperação' }], onChange);
+    fireEvent.click(screen.getByLabelText('Jogo'));
+    expect(onChange).toHaveBeenLastCalledWith({ ...EMPTY_FILTERS, format: ['1'] });
+    fireEvent.click(screen.getByLabelText('Cooperação'));
+    expect(onChange).toHaveBeenLastCalledWith({ ...EMPTY_FILTERS, focus: ['f1'] });
   });
 });

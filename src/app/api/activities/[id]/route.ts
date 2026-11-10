@@ -26,7 +26,8 @@ import {
 import { validateUUID } from '@/lib/errors/error-handler';
 import { loadActivityCategoriesFor } from '@/lib/activities/categories';
 import { loadGoalAgeGroups } from '@/lib/activities/goals';
-import { parseActivityWrite, updateActivity, verifyActivityExtras, verifyActivityGoals, verifyActivityTypes } from '@/lib/activities/write';
+import { loadFormatFocus } from '@/lib/activities/format-focus';
+import { parseActivityWrite, updateActivity, verifyActivityExtras, verifyActivityGoals, verifyActivityTypes, verifyFormatAndFocus } from '@/lib/activities/write';
 
 export const GET = withApiErrorHandler(async (
   _request: NextRequest,
@@ -55,6 +56,12 @@ export const GET = withApiErrorHandler(async (
         materials: activities.materials,
         instructions: activities.instructions,
         approximate_duration_minutes: activities.approximate_duration_minutes,
+        duration_min_minutes: activities.duration_min_minutes,
+        duration_max_minutes: activities.duration_max_minutes,
+        external_id: activities.external_id,
+        format_id: activities.format_id,
+        focus_id: activities.focus_id,
+        secondary_focus_id: activities.secondary_focus_id,
         effort_level: activities.effort_level,
         image_url: activities.image_url,
         physical_risk_level: activities.physical_risk_level,
@@ -139,6 +146,8 @@ export const GET = withApiErrorHandler(async (
         id: challenges.id,
         code: challenges.code,
         title: challenges.title,
+        short_title: challenges.short_title,
+        integration_age_groups: challenges.integration_age_groups,
         age_group: challenges.age_group,
         type_code: challengeTypes.code,
         type_name: challengeTypes.name,
@@ -172,9 +181,11 @@ export const GET = withApiErrorHandler(async (
 
     // Combine all data
     const categories = await loadActivityCategoriesFor(id);
+    const formatFocus = (await loadFormatFocus([activity])).get(id)!;
     const activityWithDetails = {
       ...activity,
       ...categories,
+      ...formatFocus,
       educational_goals: distinctGoals.map((goal) => ({ ...goal, age_groups: goal.id ? goalAgeGroups.get(goal.id) ?? [] : [] })),
       objectives,
       challenges: linkedChallenges,
@@ -206,6 +217,9 @@ export const PATCH = withApiErrorHandler(async (
 
   const typeError = await verifyActivityTypes(parsed);
   if (typeError) return apiErrors.validation('body', typeError);
+
+  const formatFocusError = await verifyFormatAndFocus(parsed);
+  if (formatFocusError) return apiErrors.validation('body', formatFocusError);
 
   const goalError = await verifyActivityGoals(parsed);
   if (goalError) return apiErrors.validation('body', goalError);

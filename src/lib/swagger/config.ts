@@ -136,6 +136,26 @@ const swaggerOptions: swaggerJSDoc.Options = {
               items: { type: 'string', enum: ['cub_scouts', 'scouts', 'adventurers', 'rovers', 'leaders'] },
               description: 'Target age groups (one or more)',
             },
+            format: {
+              type: 'object',
+              nullable: true,
+              properties: { id: { type: 'string', format: 'uuid' }, code: { type: 'string' }, name: { type: 'string' } },
+              description: 'What kind of activity it is (reference sheet formats)',
+            },
+            focus: {
+              type: 'object',
+              nullable: true,
+              properties: { id: { type: 'string', format: 'uuid' }, code: { type: 'string' }, name: { type: 'string' } },
+              description: 'Main focus',
+            },
+            secondary_focus: {
+              type: 'object',
+              nullable: true,
+              properties: { id: { type: 'string', format: 'uuid' }, code: { type: 'string' }, name: { type: 'string' } },
+              description: 'Optional secondary focus, different from the main one',
+            },
+            duration_min_minutes: { type: 'integer', nullable: true, description: 'Optional lower bound of the duration' },
+            duration_max_minutes: { type: 'integer', nullable: true, description: 'Optional upper bound of the duration' },
             activity_types: {
               type: 'array',
               minItems: 1,

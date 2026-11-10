@@ -11,7 +11,8 @@ export interface ActivityFilters {
   effort_level?: string[];
   location?: string[];
   age_group?: string[];
-  activity_type?: string[];
+  format?: string[];
+  focus?: string[];
   sdgs?: string[];
   educational_goals?: string[];
   educational_areas?: string[];

@@ -6,7 +6,8 @@ import { z } from 'zod';
 import { auth } from '@/lib/auth/config';
 import { apiErrors, handleApiError } from '@/lib/errors';
 import { loadGoalAgeGroups } from '@/lib/activities/goals';
-import { createActivity, parseActivityWrite, verifyActivityExtras, verifyActivityGoals, verifyActivityTypes } from '@/lib/activities/write';
+import { formatFocusConditions, loadFormatFocus } from '@/lib/activities/format-focus';
+import { createActivity, parseActivityWrite, verifyActivityExtras, verifyActivityGoals, verifyActivityTypes, verifyFormatAndFocus } from '@/lib/activities/write';
 import { categoryConditions, loadActivityCategories } from '@/lib/activities/categories';
 import { AGE_GROUP_VALUES, GROUP_SIZE_VALUES, LOCATION_VALUES } from '@/lib/activities/category-values';
 import { featureOffResponse } from '@/lib/feature-gate';
@@ -64,6 +65,24 @@ import { featureOffResponse } from '@/lib/feature-gate';
  *         style: form
  *         explode: false
  *         description: Filter by age group
+ *       - in: query
+ *         name: format
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         style: form
+ *         explode: false
+ *         description: Filter by format IDs (any of them)
+ *       - in: query
+ *         name: focus
+ *         schema:
+ *           type: array
+ *           items:
+ *             type: string
+ *         style: form
+ *         explode: false
+ *         description: Filter by focus IDs (main or secondary focus, any of them)
  *       - in: query
  *         name: activity_type
  *         schema:
@@ -203,6 +222,9 @@ const catalogueQuerySchema = z.object({
   location: list(z.enum(LOCATION_VALUES)),
   age_group: list(z.enum(AGE_GROUP_VALUES)),
   activity_type: list(z.string().uuid()),
+  // Format (what kind of activity) and focus (main or secondary), from the reference sheet.
+  format: list(z.string().uuid()),
+  focus: list(z.string().uuid()),
   sdgs: list(z.string().uuid()),
   // Objective filters: an activity matches when it is linked to ANY objective selected by id,
   // under a selected general objective, or under a selected area.
@@ -251,6 +273,8 @@ export async function GET(request: NextRequest) {
       location,
       age_group: ageGroup,
       activity_type: activityType,
+      format: formatIds,
+      focus: focusIds,
       sdgs: sdgIds,
       educational_goals: educationalGoalIds,
       educational_areas: educationalAreaIds,
@@ -279,6 +303,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (effortLevel) whereConditions.push(inArray(activities.effort_level, effortLevel));
+    whereConditions.push(...formatFocusConditions({ formatIds, focusIds }));
     whereConditions.push(
       ...categoryConditions({
         groupSizes: groupSize,
@@ -357,6 +382,8 @@ export async function GET(request: NextRequest) {
             location: location || undefined,
             age_group: ageGroup || undefined,
             activity_type: activityType || undefined,
+            format: formatIds || undefined,
+            focus: focusIds || undefined,
             sdgs: sdgIds || undefined,
             educational_goals: educationalGoalIds || undefined,
             educational_areas: educationalAreaIds || undefined,
@@ -370,6 +397,8 @@ export async function GET(request: NextRequest) {
             locations: [],
             age_groups: [],
             activity_types: [],
+            formats: [],
+            focuses: [],
           },
         },
       });
@@ -391,8 +420,13 @@ export async function GET(request: NextRequest) {
         description: activities.description,
         materials: activities.materials,
         approximate_duration_minutes: activities.approximate_duration_minutes,
+        duration_min_minutes: activities.duration_min_minutes,
+        duration_max_minutes: activities.duration_max_minutes,
         effort_level: activities.effort_level,
         image_url: activities.image_url,
+        format_id: activities.format_id,
+        focus_id: activities.focus_id,
+        secondary_focus_id: activities.secondary_focus_id,
         created_at: activities.created_at,
       })
       .from(activities)
@@ -457,10 +491,12 @@ export async function GET(request: NextRequest) {
     }, {} as Record<string, Array<{ id: string; number: number; name: string; icon_url: string; icon: string }>>);
 
     const categoriesByActivity = await loadActivityCategories(activityIdList);
+    const formatFocusByActivity = await loadFormatFocus(activitiesData);
 
     // Combine all data
-    const activitiesWithDetails = activitiesData.map(activity => ({
+    const activitiesWithDetails = activitiesData.map(({ format_id: _f, focus_id: _o, secondary_focus_id: _s, ...activity }) => ({
       ...activity,
+      ...formatFocusByActivity.get(activity.id)!,
       group_sizes: categoriesByActivity.get(activity.id)!.group_sizes,
       locations: categoriesByActivity.get(activity.id)!.locations,
       age_groups: categoriesByActivity.get(activity.id)!.age_groups,
@@ -478,6 +514,8 @@ export async function GET(request: NextRequest) {
       locations: [...new Set(filteredActivities.flatMap(a => a.locations))],
       age_groups: [...new Set(filteredActivities.flatMap(a => a.age_groups))],
       activity_types: [...new Set(filteredActivities.flatMap(a => a.activity_types.map(t => t.id)))],
+      formats: [...new Set(filteredActivities.flatMap(a => (a.format ? [a.format.id] : [])))],
+      focuses: [...new Set(filteredActivities.flatMap(a => [a.focus?.id, a.secondary_focus?.id].filter(Boolean)))],
     };
 
     return NextResponse.json({
@@ -496,6 +534,8 @@ export async function GET(request: NextRequest) {
           location: location || undefined,
           age_group: ageGroup || undefined,
           activity_type: activityType || undefined,
+          format: formatIds || undefined,
+          focus: focusIds || undefined,
           sdgs: sdgIds || undefined,
           educational_goals: educationalGoalIds || undefined,
             educational_areas: educationalAreaIds || undefined,
@@ -528,6 +568,9 @@ export async function POST(request: NextRequest) {
 
   const typeError = await verifyActivityTypes(parsed);
   if (typeError) return apiErrors.validation('body', typeError);
+
+  const formatFocusError = await verifyFormatAndFocus(parsed);
+  if (formatFocusError) return apiErrors.validation('body', formatFocusError);
 
   const goalError = await verifyActivityGoals(parsed);
   if (goalError) return apiErrors.validation('body', goalError);

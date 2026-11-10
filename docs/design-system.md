@@ -56,8 +56,8 @@ Use the `DivisionPill` component; it is the only place these tokens may appear.
 
 | Age group | Division | Ages | Pantone | Fill | Label | Contrast |
 | --- | --- | --- | --- | --- | --- | --- |
-| `cub_scouts` | Alcateia | 7–10½ | 109 | `#FFD100` | `#15394B` | 8.36 |
-| `scouts` | Tribo de Escoteiros | 10½–14 | 348 | `#00843D` | `#FFFFFF` | 4.81 |
+| `cub_scouts` | Alcateia | 6–10 | 109 | `#FFD100` | `#15394B` | 8.36 |
+| `scouts` | Tribo de Escoteiros | 10–14 | 348 | `#00843D` | `#FFFFFF` | 4.81 |
 | `adventurers` | Tribo de Exploradores | 14–17 | 280 | `#012169` | `#FFFFFF` | 14.76 |
 | `rovers` | Clã | 17–21 | 032 | `#EF3340` | `#020817` | 4.97 |
 | `leaders` | Chefia | Adultos | Branco | `#FFFFFF` | `#15394B` | 12.22 |

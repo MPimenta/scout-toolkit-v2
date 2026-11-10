@@ -10,6 +10,8 @@ export interface ActivitySourceRecord {
   license: string | null;
   access: string | null;
   language: string | null;
+  /** Reading priority from the reference sheet (1 is the most important); null when not rated. */
+  priority: number | null;
 }
 
 export const ACTIVITY_SOURCES = (dataset as { sources: ActivitySourceRecord[] }).sources;
@@ -29,8 +31,8 @@ export async function applyActivitySources(
       .values({ ...source, is_managed: true })
       .onConflictDoUpdate({
         target: activitySources.code,
-        set: { name: source.name, url: source.url, license: source.license, access: source.access, language: source.language, is_managed: true },
-        setWhere: sql`(${activitySources.name}, ${activitySources.url}, ${activitySources.license}, ${activitySources.access}, ${activitySources.language}, ${activitySources.is_managed}) IS DISTINCT FROM (${source.name}, ${source.url}, ${source.license}, ${source.access}, ${source.language}, true)`,
+        set: { name: source.name, url: source.url, license: source.license, access: source.access, language: source.language, priority: source.priority, is_managed: true },
+        setWhere: sql`(${activitySources.name}, ${activitySources.url}, ${activitySources.license}, ${activitySources.access}, ${activitySources.language}, ${activitySources.priority}, ${activitySources.is_managed}) IS DISTINCT FROM (${source.name}, ${source.url}, ${source.license}, ${source.access}, ${source.language}, ${source.priority}::int, true)`,
       })
       .returning({ id: activitySources.id });
     changed += rows.length;

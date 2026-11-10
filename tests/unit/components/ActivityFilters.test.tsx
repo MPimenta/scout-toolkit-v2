@@ -6,9 +6,13 @@ import { ActivityFilters, FilterState } from '@/components/features/activities/A
 global.fetch = vi.fn();
 
 // Mock data for filter options - updated to use single-language strings
-const mockActivityTypes = [
-  { id: '1', name: 'Jogo' },
-  { id: '2', name: 'Atividade Manual' },
+const mockFormats = [
+  { id: '1', name: 'Jogo', description: 'Atividade lúdica com regras.' },
+  { id: '2', name: 'Técnica/Oficina', description: 'Aprender uma técnica.' },
+];
+const mockFocuses = [
+  { id: 'f1', name: 'Cooperação', description: 'Trabalhar em conjunto.' },
+  { id: 'f2', name: 'Liderança', description: 'Orientar e decidir.' },
 ];
 
 const mockSdgs = [
@@ -42,7 +46,8 @@ const mockFilters: FilterState = {
   effortLevel: [],
   location: [],
   ageGroup: [],
-  activityType: [],
+  format: [],
+  focus: [],
   sdgs: [],
   educationalGoals: [],
   educationalAreas: [],
@@ -60,8 +65,11 @@ describe('ActivityFilters', () => {
 
     vi.mocked(global.fetch).mockImplementation(async (input: RequestInfo | URL) => {
       const url = String(input);
-      if (url.includes('/api/taxonomies/activity-types')) {
-        return { ok: true, json: async () => ({ activity_types: mockActivityTypes }) } as Response;
+      if (url.includes('/api/taxonomies/activity-formats')) {
+        return { ok: true, json: async () => ({ activity_formats: mockFormats }) } as Response;
+      }
+      if (url.includes('/api/taxonomies/activity-focuses')) {
+        return { ok: true, json: async () => ({ activity_focuses: mockFocuses }) } as Response;
       }
       if (url.includes('/api/taxonomies/sdgs')) {
         return { ok: true, json: async () => ({ sdgs: mockSdgs }) } as Response;
@@ -95,7 +103,8 @@ describe('ActivityFilters', () => {
     expect(screen.getByText('Nível de Esforço')).toBeInTheDocument();
     expect(screen.getByText('Localização')).toBeInTheDocument();
     expect(screen.getByText('Faixa Etária')).toBeInTheDocument();
-    expect(screen.getByText('Tipo de Atividade')).toBeInTheDocument();
+    expect(screen.getByText('Formato')).toBeInTheDocument();
+    expect(screen.getByText('Foco')).toBeInTheDocument();
   });
 
   it('handles search input changes', async () => {
@@ -227,19 +236,19 @@ describe('ActivityFilters', () => {
     const expandButton = screen.getByRole('button', { name: /expandir/i });
     fireEvent.click(expandButton);
 
-    // Wait for the activity types to load
+    // Wait for the formats to load
     await waitFor(() => {
       expect(screen.getByText('Jogo')).toBeInTheDocument();
     });
 
-    // Find and click an activity type checkbox
+    // Find and click a format checkbox
     const gameCheckbox = screen.getByLabelText(/Jogo/);
     fireEvent.click(gameCheckbox);
 
     await waitFor(() => {
       expect(mockOnFiltersChange).toHaveBeenCalledWith({
         ...mockFilters,
-        activityType: ['1'],
+        format: ['1'],
       });
     });
   });
@@ -344,7 +353,8 @@ describe('ActivityFilters', () => {
       effortLevel: ['medium'],
       location: ['outside'],
       ageGroup: ['scouts'],
-      activityType: ['1'],
+      format: ['1'],
+      focus: ['f2'],
       sdgs: ['1'],
       educationalGoals: ['1'],
       durationMin: '30',
@@ -370,7 +380,8 @@ describe('ActivityFilters', () => {
     expect(screen.getByText('Médio')).toBeInTheDocument();
     expect(screen.getByText('Exterior')).toBeInTheDocument();
     expect(screen.getByText('Escoteiros (10-14)')).toBeInTheDocument();
-    expect(screen.getByText('Tipo: Jogo')).toBeInTheDocument();
+    expect(screen.getByText('Formato: Jogo')).toBeInTheDocument();
+    expect(screen.getByText('Foco: Liderança')).toBeInTheDocument();
     expect(screen.getByText('ODS 1: Erradicar a Pobreza')).toBeInTheDocument();
     expect(await screen.findByText('4S.1')).toBeInTheDocument();
     expect(screen.getByText('30–60 min')).toBeInTheDocument();

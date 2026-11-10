@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { seedFormatAndFocus } from '../../helpers/reference-values';
 import { eq } from 'drizzle-orm';
 import { NextRequest } from 'next/server';
 import { setupTestDatabase, teardownTestDatabase, resetTestDatabase } from '../../setup';
@@ -31,6 +32,7 @@ async function goalId(code: string): Promise<string> {
 
 describe('rich activity writes (DB)', () => {
   let typeId: string;
+  let refs: Awaited<ReturnType<typeof seedFormatAndFocus>>;
   let sdg3: string;
   let sdg17: string;
 
@@ -47,6 +49,7 @@ describe('rich activity writes (DB)', () => {
     await resetTestDatabase();
     await applyProgressMatrix(db);
     await applyActivitySources(db);
+    refs = await seedFormatAndFocus(db);
     [{ id: typeId }] = await db.insert(activityTypes).values({ name: 'Jogo' }).returning({ id: activityTypes.id }) as [{ id: string }];
     const rows = await db
       .insert(sdgs)
@@ -70,6 +73,7 @@ describe('rich activity writes (DB)', () => {
       locations: ['outside'],
       age_groups: ['scouts', 'adventurers'],
       activity_type_ids: [typeId],
+      ...refs,
       ...extra,
     };
   }
@@ -198,7 +202,7 @@ describe('rich activity writes (DB)', () => {
 
   it('loads the source catalogue idempotently', async () => {
     const [{ n }] = (await db.execute(`select count(*)::int as n from activity_sources` as never)) as unknown as Array<{ n: number }>;
-    expect(n).toBe(31);
+    expect(n).toBe(36);
     expect(await applyActivitySources(db)).toBe(0);
   });
 });

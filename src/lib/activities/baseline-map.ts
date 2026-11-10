@@ -135,7 +135,7 @@ export function mapLocations(raw: unknown): MappedList<LocationValue> {
   return { values, dropped };
 }
 
-// Divisions: Alcateia/Lobitos 7-10½, Tribo de Escoteiros 10½-14, Tribo de Exploradores 14-17 (alias Pioneiros), Clã/Caminheiros 17-21, Chefia.
+// Divisions, as in the reference sheet: Lobitos (Alcateia) 6-10, Escoteiros (Tropa) 10-14, Exploradores (Esquadra) 14-17 (alias Pioneiros), Caminheiros (Clã) 17-21, Dirigentes 21+.
 const AGE_ALIASES: Record<string, AgeGroupValue> = {
   lobito: 'cub_scouts',
   lobitos: 'cub_scouts',
@@ -183,6 +183,24 @@ export function mapEffort(raw: unknown): { value: EffortValue | null; dropped: s
     else dropped.push(item);
   }
   return { value, dropped };
+}
+
+export type NamedRef = { id: string; name: string; code?: string };
+
+/**
+ * A single-valued reference cell (format, focus): matched by name or code, never created.
+ * An empty cell is not an error here; an unknown value is returned in `dropped`.
+ */
+export function mapNamedValue(raw: unknown, refs: readonly NamedRef[]): { id: string | null; dropped: string[] } {
+  if (isPlaceholder(raw)) return { id: null, dropped: [] };
+  const wanted = normalizeText(String(raw));
+  const hit = refs.find((ref) => normalizeText(ref.name) === wanted || (ref.code !== undefined && normalizeText(ref.code) === wanted));
+  return hit ? { id: hit.id, dropped: [] } : { id: null, dropped: [String(raw).trim()] };
+}
+
+/** TRUE / FALSE cells (also sim / não, 1 / 0). Anything else, including empty, counts as not published. */
+export function parseBoolean(raw: unknown): boolean {
+  return ['true', 'verdadeiro', 'sim', 's', '1'].includes(normalizeText(String(raw ?? '')));
 }
 
 export type TypeRef = { id: string; name: string };
@@ -248,6 +266,15 @@ export const COLUMN_ALIASES = {
   effort: ['esforco', 'esforco_fisico', 'nivel_de_esforco', 'nivel_esforco'],
   location: ['local'],
   type: ['tipo', 'tipo_de_atividade'],
+  format: ['formato'],
+  focus: ['foco', 'foco_principal'],
+  focus_secondary: ['foco_secundario'],
+  minutes_min: ['duracao_min'],
+  minutes_max: ['duracao_max'],
+  published: ['publicada'],
+  state: ['estado'],
+  confidence: ['confianca'],
+  variants: ['variantes'],
   age: ['divisao', 'divisoes', 'faixa_etaria', 'seccao'],
   sdgs: ['ods'],
   source: ['fonte'],
@@ -272,7 +299,8 @@ export const REQUIRED_COLUMNS: readonly ColumnKey[] = [
   'group',
   'effort',
   'location',
-  'type',
+  'format',
+  'focus',
   'age',
 ];
 

@@ -13,8 +13,61 @@ const valid = {
   effort_level: 'low',
   locations: ['outside'],
   age_groups: ['scouts'],
+  format_id: '6f1c2d4e-0a1b-4c3d-8e5f-0123456789ab',
+  focus_id: '7a2d3e5f-1b2c-4d4e-9f60-123456789abc',
   activity_type_ids: ['550e8400-e29b-41d4-a716-446655440000'],
 };
+
+describe('parseActivityWrite: format, focus and duration range', () => {
+  it('keeps the format, the main focus and the optional secondary focus', () => {
+    expect(parseActivityWrite({ ...valid, secondary_focus_id: '8b3e4f60-2c3d-4e5f-a071-23456789abcd' })).toMatchObject({
+      format_id: '6f1c2d4e-0a1b-4c3d-8e5f-0123456789ab',
+      focus_id: '7a2d3e5f-1b2c-4d4e-9f60-123456789abc',
+      secondary_focus_id: '8b3e4f60-2c3d-4e5f-a071-23456789abcd',
+    });
+    expect(parseActivityWrite(valid)).toMatchObject({ secondary_focus_id: null });
+  });
+
+  it('rejects a missing format or main focus with a Portuguese message', () => {
+    const { format_id: _f, ...noFormat } = valid as Record<string, unknown>;
+    const { focus_id: _o, ...noFocus } = valid as Record<string, unknown>;
+    expect(parseActivityWrite(noFormat)).toBe('Indique o formato da atividade');
+    expect(parseActivityWrite(noFocus)).toBe('Indique o foco principal da atividade');
+    expect(parseActivityWrite({ ...valid, format_id: 'not-a-uuid' })).toBe('Formato inválido');
+    expect(parseActivityWrite({ ...valid, focus_id: 'not-a-uuid' })).toBe('Foco principal inválido');
+  });
+
+  it('rejects a secondary focus equal to the main one or malformed', () => {
+    expect(parseActivityWrite({ ...valid, secondary_focus_id: '7a2d3e5f-1b2c-4d4e-9f60-123456789abc' })).toBe(
+      'O foco secundário tem de ser diferente do foco principal'
+    );
+    expect(parseActivityWrite({ ...valid, secondary_focus_id: 'x' })).toBe('Foco secundário inválido');
+  });
+
+  it('stores an optional duration range and rejects an inverted or invalid one', () => {
+    expect(parseActivityWrite({ ...valid, duration_min_minutes: 20, duration_max_minutes: '40' })).toMatchObject({
+      duration_min_minutes: 20,
+      duration_max_minutes: 40,
+    });
+    expect(parseActivityWrite(valid)).toMatchObject({ duration_min_minutes: null, duration_max_minutes: null });
+    expect(parseActivityWrite({ ...valid, duration_min_minutes: 40, duration_max_minutes: 20 })).toBe(
+      'A duração mínima não pode exceder a máxima'
+    );
+    expect(parseActivityWrite({ ...valid, duration_min_minutes: 0 })).toBe('Duração mínima ou máxima inválida');
+    expect(parseActivityWrite({ ...valid, duration_max_minutes: 'abc' })).toBe('Duração mínima ou máxima inválida');
+  });
+
+  it('accepts the five risk levels', () => {
+    for (const level of ['low', 'low_medium', 'medium', 'medium_high', 'high']) {
+      expect(parseActivityWrite({ ...valid, physical_risk_level: level })).toMatchObject({ physical_risk_level: level });
+    }
+    expect(parseActivityWrite({ ...valid, physical_risk_level: 'extreme' })).toBe('Nível de risco inválido (físico)');
+  });
+
+  it('never takes the sheet id from the request body', () => {
+    expect(parseActivityWrite({ ...valid, external_id: 'ATV-0001' })).not.toHaveProperty('external_id', 'ATV-0001');
+  });
+});
 
 describe('parseActivityWrite', () => {
   it('accepts an HTTPS image URL', () => {
@@ -72,7 +125,7 @@ describe('parseActivityWrite', () => {
       expect(parsed).toMatchObject({ locations: ['inside'] });
     });
 
-    it.each(['group_sizes', 'locations', 'age_groups', 'activity_type_ids'])(
+    it.each(['group_sizes', 'locations', 'age_groups'])(
       'rejects an empty or missing %s',
       (field) => {
         expect(typeof parseActivityWrite({ ...valid, [field]: [] })).toBe('string');
@@ -86,6 +139,11 @@ describe('parseActivityWrite', () => {
       expect(parseActivityWrite({ ...valid, activity_type_ids: ['not-a-uuid'] })).toBe(
         'Tipo de atividade inválido'
       );
+    });
+
+    it('no longer requires the former activity types', () => {
+      const { activity_type_ids: _removed, ...rest } = valid as Record<string, unknown>;
+      expect(parseActivityWrite(rest)).toMatchObject({ activity_type_ids: [] });
     });
 
     it('does not accept the old single-valued fields', () => {

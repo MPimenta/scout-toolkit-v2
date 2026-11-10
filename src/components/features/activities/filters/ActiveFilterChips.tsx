@@ -13,7 +13,8 @@ import type { FilterState } from '@/lib/activities/filters';
 import type { GoalOption } from '@/lib/activities/objective-tree';
 
 export interface ChipOptions {
-  types: Array<{ id: string; name: string }>;
+  formats: Array<{ id: string; name: string }>;
+  focuses: Array<{ id: string; name: string }>;
   sdgs: Array<{ id: string; name: string; number: number }>;
   goals: GoalOption[];
   areas: Array<{ id: string; name: string }>;
@@ -96,11 +97,19 @@ export function ActiveFilterChips({ filters, options, onChange, onClear }: Props
               {durationText}
             </Chip>
           )}
-          {filters.activityType.map((id) => {
-            const name = options.types.find((o) => o.id === id)?.name ?? '';
+          {filters.format.map((id) => {
+            const name = options.formats.find((o) => o.id === id)?.name ?? '';
             return (
-              <Chip key={`type-${id}`} label={name} onRemove={() => without('activityType', id)}>
-                {t('filters.badgeType', { value: name })}
+              <Chip key={`format-${id}`} label={name} onRemove={() => without('format', id)}>
+                {t('filters.badgeFormat', { value: name })}
+              </Chip>
+            );
+          })}
+          {filters.focus.map((id) => {
+            const name = options.focuses.find((o) => o.id === id)?.name ?? '';
+            return (
+              <Chip key={`focus-${id}`} label={name} onRemove={() => without('focus', id)}>
+                {t('filters.badgeFocus', { value: name })}
               </Chip>
             );
           })}

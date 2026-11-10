@@ -21,6 +21,8 @@ export async function GET(request: NextRequest) {
         id: challenges.id,
         code: challenges.code,
         title: challenges.title,
+        short_title: challenges.short_title,
+        integration_age_groups: challenges.integration_age_groups,
         age_group: challenges.age_group,
         type: { code: challengeTypes.code, name: challengeTypes.name },
       })

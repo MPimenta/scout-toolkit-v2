@@ -14,6 +14,7 @@ vi.mock('@/lib/activities/write', () => ({
   parseActivityWrite: (...args: unknown[]) => mockParse(...args),
   createActivity: (...args: unknown[]) => mockCreate(...args),
   verifyActivityTypes: async () => null,
+  verifyFormatAndFocus: async () => null,
   verifyActivityGoals: async () => null,
   verifyActivityExtras: async () => null,
   updateActivity: vi.fn(),

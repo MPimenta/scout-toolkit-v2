@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm';
 import { pgTable, text, timestamp, uuid, integer, boolean, primaryKey, index } from 'drizzle-orm/pg-core';
 import { AGE_GROUP_VALUES } from './category-values';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
@@ -92,6 +93,10 @@ export const challenges = pgTable('challenges', {
   age_group: text('age_group', { enum: AGE_GROUP_VALUES }).notNull(),
   position: integer('position').notNull().default(0),
   title: text('title').notNull(),
+  // Short title from the reference sheet, for lists and pills (the full text stays in `title`).
+  short_title: text('short_title'),
+  // Divisions for which completing this desafio is mandatory for the first stage (integração).
+  integration_age_groups: text('integration_age_groups', { enum: AGE_GROUP_VALUES }).array().notNull().default(sql`'{}'::text[]`),
   is_managed: boolean('is_managed').notNull().default(false),
   created_at: timestamp('created_at').notNull().defaultNow(),
 }, (table) => ({
@@ -116,6 +121,29 @@ export const activitySources = pgTable('activity_sources', {
   license: text('license'),
   access: text('access'),
   language: text('language'),
+  // Reading priority from the reference sheet (1 is the most important); null when not rated.
+  priority: integer('priority'),
+  is_managed: boolean('is_managed').notNull().default(false),
+  created_at: timestamp('created_at').notNull().defaultNow(),
+});
+
+// Format (what kind of activity it is) and focus (what it develops), from the reference sheet.
+export const activityFormats = pgTable('activity_formats', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  code: text('code').notNull().unique(),
+  name: text('name').notNull(),
+  description: text('description'),
+  position: integer('position').notNull().default(0),
+  is_managed: boolean('is_managed').notNull().default(false),
+  created_at: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const activityFocuses = pgTable('activity_focuses', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  code: text('code').notNull().unique(),
+  name: text('name').notNull(),
+  description: text('description'),
+  position: integer('position').notNull().default(0),
   is_managed: boolean('is_managed').notNull().default(false),
   created_at: timestamp('created_at').notNull().defaultNow(),
 });

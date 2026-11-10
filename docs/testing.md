@@ -61,23 +61,38 @@ Install this project's Chromium with `npm run playwright:install` (PDF export an
 
 ## Reference data (Matriz objectives)
 
-`npm run db:load-reference` loads the Matriz Progresso Pessoal from the committed `drizzle/seeds/data/progress-matrix.json` into whatever `DATABASE_URL` points at. `db:seed`, the deploy step (`ensure-hosted-db`) and the Playwright global setup run it too, so every environment starts with the same 6 areas, 20 educational paths, 40 general objectives, 174 specific objectives, 7 challenge types, 112 *desafios* and 286 links. Run it twice and the second run changes nothing.
+`npm run db:load-reference` loads the Matriz Progresso Pessoal from the committed `drizzle/seeds/data/progress-matrix.json` into whatever `DATABASE_URL` points at. `db:seed`, the deploy step (`ensure-hosted-db`) and the Playwright global setup run it too, so every environment starts with the same 6 areas, 20 educational paths, 40 general objectives, 174 specific objectives, 7 challenge types, 112 *desafios* (with their short title and the divisions for which each is mandatory for integration) and 287 links, plus the 8 activity formats, the 10 focuses and the 36 sources (the 31 of the sheet with their priority, plus the 5 that activities name but the `fontes` tab lacks). It also puts each ODS on its own icon and gives activities that still carry the former types a format and a focus (`format-focus-backfill`). Run it twice and the second run changes nothing.
 
-To regenerate the dataset (only when the Matriz changes), put the workbook and the Regulamento PDF under the git-ignored `data/` folder and run `npx tsx scripts/build-progress-matrix.ts data/<workbook>.xlsx data/<regulamento>.pdf`. It needs `pdftotext` (poppler) on the machine and writes `progress-matrix.json` plus `progress-matrix.report.json` (differences between the two sources).
+The curated Google Sheet is the definitive reference. To regenerate the datasets (only when the sheet or the Matriz changes), export the sheet (File > Download > Microsoft Excel) to the git-ignored `data/` folder, then:
+
+```bash
+# objectives, desafios (short title, integration, matrix v1.1 links)
+npx tsx scripts/build-progress-matrix.ts data/<workbook>.xlsx data/<regulamento>.pdf data/atividades.xlsx
+# formats, focuses; checks the source priorities
+npx tsx scripts/build-reference-values.ts data/atividades.xlsx
+```
+
+The first needs `pdftotext` (poppler) on the machine and writes `progress-matrix.json` plus `progress-matrix.report.json` (the objectives tab must have exactly the dataset's codes; it lists the *desafios* whose v1.0 and v1.1 links differ, and the differences with the Regulamento, which are known and not open items: the workbook wins).
 
 ## Loading the activities baseline
 
-`scripts/load-baseline-activities.ts` loads an exported snapshot of the curated activities sheet (the `atividades` tab, CSV or XLSX) into the catalogue. The snapshot lives under `data/`, which is git-ignored: some sources in the sheet are copyrighted, so it is never committed.
+`scripts/load-baseline-activities.ts` loads an exported snapshot of the curated activities sheet (the `atividades` tab, XLSX or CSV) into the catalogue. Every row carries a sheet id (`ATV-0001`): the load creates the missing activities, updates the ones whose content changed and leaves the rest alone, so a second run changes nothing. Activities made in the app (no sheet id) are never touched. The snapshot lives under `data/`, which is git-ignored: some sources in the sheet are copyrighted, so it is never committed.
 
 ```bash
 # plan and report only; reads taxonomies, writes nothing but the JSON report
-npm run db:load-baseline -- data/atividades.csv --dry-run
+npm run db:load-baseline -- data/atividades.xlsx --dry-run
 
-# add ~200 activities (balanced by source and section, repeatable with --seed)
-npm run db:load-baseline -- data/atividades.csv --limit 200
+# load every row; the sheet's Publicada cell decides the approval (all rows are FALSE today)
+npm run db:load-baseline -- data/atividades.xlsx
+
+# load every row and mark them approved, to see the whole set in a local catalogue
+npm run db:load-baseline -- data/atividades.xlsx --approve-all
+
+# a sample instead of every row (balanced by source and section, repeatable with --seed)
+npm run db:load-baseline -- data/atividades.xlsx --limit 200
 
 # replace the whole catalogue (refuses while programs use activities, unless --force)
-npm run db:load-baseline -- data/atividades.csv --replace
+npm run db:load-baseline -- data/atividades.xlsx --replace --approve-all
 ```
 
 The script refuses any `DATABASE_URL` that is not `localhost`/`127.0.0.1`. Without `--dry-run` it changes data, so run it deliberately.
@@ -85,7 +100,7 @@ The script refuses any `DATABASE_URL` that is not `localhost`/`127.0.0.1`. Witho
 To load a snapshot into the test database, point `DATABASE_URL` at `scout_toolkit_test` for that one command:
 
 ```bash
-DATABASE_URL=postgresql://test_user:test_password@localhost:5432/scout_toolkit_test npm run db:load-baseline -- data/atividades.csv
+DATABASE_URL=postgresql://test_user:test_password@localhost:5432/scout_toolkit_test npm run db:load-baseline -- data/atividades.xlsx --approve-all
 ```
 
-Activity types and SDGs must already exist (the loader never creates taxonomies). Cells with several values (`Grupo`, `Local`, `Tipo`, `Divisão`) become lists. The automated tests use a small synthetic sample, `tests/fixtures/baseline-sample.csv`.
+Run `npm run db:load-reference` first: formats, focuses, SDGs, sources, objectives and *desafios* must already exist (the loader never creates reference values; an unknown value is dropped and listed in the report with its row, column and sheet id). Cells with several values (`Grupo`, `Local`, `Divisão`) become lists; `Formato`, `Foco` and `Foco secundário` are single values. The blocks written for Dirigentes are ignored on purpose (Dirigentes have no objectives). The report also counts the sheet's review fields (`estado`, `confianca`, `variantes`), which are not stored. The automated tests use a small synthetic sample, `tests/fixtures/baseline-sample.csv`.

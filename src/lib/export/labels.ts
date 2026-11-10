@@ -53,7 +53,7 @@ export const exportLabels = {
   howToObserve: 'Como observar',
   challenges: 'Desafios',
   source: 'Fonte',
-  riskLevels: { low: 'Baixo', medium: 'Médio', high: 'Alto' } as Record<string, string>,
+  riskLevels: { low: 'Baixo', low_medium: 'Baixo a médio', medium: 'Médio', medium_high: 'Médio a alto', high: 'Alto' } as Record<string, string>,
   none: '—',
 };
 

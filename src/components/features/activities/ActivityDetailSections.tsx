@@ -8,6 +8,7 @@ import { useLocale } from '@/components/locale/LocaleProvider';
 import { enumLabel } from '@/lib/locale/labels';
 import { DIVISIONS } from '@/lib/design/tokens';
 import { parseInstructions } from '@/lib/activities/instructions';
+import type { RiskLevelValue } from '@/lib/activities/category-values';
 
 /* ---------- Instructions ---------- */
 
@@ -40,7 +41,7 @@ export function InstructionsView({ text }: { text: string | null | undefined }) 
 
 /* ---------- Safety ---------- */
 
-export type RiskLevel = 'low' | 'medium' | 'high';
+export type RiskLevel = RiskLevelValue;
 
 export interface RiskInfo {
   level?: RiskLevel | null;
@@ -50,10 +51,12 @@ export interface RiskInfo {
 
 const LEVEL_CLASSES: Record<RiskLevel, string> = {
   low: 'border border-border text-foreground',
+  low_medium: 'border border-border text-foreground',
   medium: 'border border-primary bg-secondary text-secondary-foreground',
+  medium_high: 'border border-primary bg-secondary text-secondary-foreground',
   high: 'border border-destructive bg-destructive text-destructive-foreground',
 };
-const LEVEL_BARS: Record<RiskLevel, number> = { low: 1, medium: 2, high: 3 };
+const LEVEL_BARS: Record<RiskLevel, number> = { low: 1, low_medium: 2, medium: 3, medium_high: 4, high: 5 };
 
 function LevelBadge({ level }: { level: RiskLevel }) {
   const { t } = useLocale();
@@ -63,11 +66,11 @@ function LevelBadge({ level }: { level: RiskLevel }) {
       className={`inline-flex items-center gap-2 rounded-lg px-2 py-0.5 text-sm font-bold ${LEVEL_CLASSES[level]}`}
     >
       <span aria-hidden className="inline-flex items-end gap-0.5">
-        {[1, 2, 3].map((bar) => (
+        {[1, 2, 3, 4, 5].map((bar) => (
           <i
             key={bar}
             className={`block w-1 bg-current ${bar <= LEVEL_BARS[level] ? '' : 'opacity-25'}`}
-            style={{ height: `${4 + bar * 3}px` }}
+            style={{ height: `${3 + bar * 2}px` }}
           />
         ))}
       </span>
@@ -263,7 +266,12 @@ export function SdgJustifications({ sdgs }: { sdgs: SdgItem[] }) {
 export interface ChallengeItem {
   id: string;
   code: string;
+  /** Full official text. */
   title: string;
+  /** Short title from the reference sheet, shown first. */
+  short_title?: string | null;
+  /** Divisions for which this desafio is mandatory to complete the first stage. */
+  integration_age_groups?: string[];
   age_group: string;
   type_name: string;
 }
@@ -285,7 +293,24 @@ export function ChallengeList({ challenges }: { challenges: ChallengeItem[] }) {
                 <li key={challenge.id} className="flex flex-wrap items-start gap-2 border-t py-2 first:border-t-0">
                   <Badge variant="outline">{challenge.code}</Badge>
                   <DivisionPill ageGroup={challenge.age_group} code={divisionLabel(t, challenge.age_group)} labelOnly />
-                  <span>{challenge.title}</span>
+                  <div className="min-w-0 flex-1">
+                    <span>{challenge.short_title || challenge.title}</span>
+                    {challenge.integration_age_groups && challenge.integration_age_groups.length > 0 && (
+                      <p className="mt-1">
+                        <Badge variant="secondary" data-testid="integration-badge">
+                          {t('activityDetail.integrationMandatory', {
+                            divisions: challenge.integration_age_groups.map((group) => divisionLabel(t, group)).join(', '),
+                          })}
+                        </Badge>
+                      </p>
+                    )}
+                    {challenge.short_title && challenge.short_title !== challenge.title && (
+                      <details className="mt-1 text-sm text-muted-foreground">
+                        <summary className="cursor-pointer">{t('activityDetail.fullText')}</summary>
+                        <p className="mt-1 whitespace-pre-line">{challenge.title}</p>
+                      </details>
+                    )}
+                  </div>
                 </li>
               ))}
           </ul>

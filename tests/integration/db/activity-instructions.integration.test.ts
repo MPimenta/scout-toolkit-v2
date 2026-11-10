@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { seedFormatAndFocus } from '../../helpers/reference-values';
 import { eq } from 'drizzle-orm';
 import { setupTestDatabase, teardownTestDatabase, resetTestDatabase } from '../../setup';
 import { db } from '@/lib/db/server';
@@ -8,6 +9,7 @@ import { createActivity, parseActivityWrite } from '@/lib/activities/write';
 
 describe('Activity instructions (DB)', () => {
   let activityTypeId: string;
+  let refs: Awaited<ReturnType<typeof seedFormatAndFocus>>;
 
   beforeAll(async () => {
     requireLocalTestDatabase();
@@ -22,6 +24,7 @@ describe('Activity instructions (DB)', () => {
     await resetTestDatabase();
     const [type] = await db.insert(activityTypes).values({ name: 'Jogo' }).returning();
     activityTypeId = type.id;
+    refs = await seedFormatAndFocus(db);
   });
 
   function payload(extra: Record<string, unknown> = {}) {
@@ -35,6 +38,7 @@ describe('Activity instructions (DB)', () => {
       locations: ['outside'],
       age_groups: ['scouts'],
       activity_type_ids: [activityTypeId],
+      ...refs,
       ...extra,
     };
   }

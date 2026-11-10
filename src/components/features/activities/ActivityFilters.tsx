@@ -11,7 +11,7 @@ import { useLocale } from '@/components/locale/LocaleProvider';
 import { EMPTY_FILTERS, hasActiveFilters, type FilterState } from '@/lib/activities/filters';
 import type { GoalOption } from '@/lib/activities/objective-tree';
 import { ActiveFilterChips } from './filters/ActiveFilterChips';
-import { FilterPanel, type SdgOption, type TypeOption } from './filters/FilterPanel';
+import { FilterPanel, type SdgOption, type ValueOption } from './filters/FilterPanel';
 
 export type { FilterState } from '@/lib/activities/filters';
 
@@ -39,7 +39,8 @@ export function ActivityFilters({ filters, onFiltersChange, onClearFilters, resu
   const [isExpanded, setIsExpanded] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);
-  const [types, setTypes] = useState<TypeOption[]>([]);
+  const [formats, setFormats] = useState<ValueOption[]>([]);
+  const [focuses, setFocuses] = useState<ValueOption[]>([]);
   const [sdgs, setSdgs] = useState<SdgOption[]>([]);
   const [goals, setGoals] = useState<GoalOption[]>([]);
 
@@ -50,12 +51,14 @@ export function ActivityFilters({ filters, onFiltersChange, onClearFilters, resu
   useEffect(() => {
     const load = async () => {
       try {
-        const [typesRes, sdgsRes, goalsRes] = await Promise.all([
-          fetch('/api/taxonomies/activity-types'),
+        const [formatsRes, focusesRes, sdgsRes, goalsRes] = await Promise.all([
+          fetch('/api/taxonomies/activity-formats'),
+          fetch('/api/taxonomies/activity-focuses'),
           fetch('/api/taxonomies/sdgs'),
           fetch('/api/taxonomies/educational-goals'),
         ]);
-        if (typesRes.ok) setTypes(((await typesRes.json()).activity_types as TypeOption[]) || []);
+        if (formatsRes.ok) setFormats(((await formatsRes.json()).activity_formats as ValueOption[]) || []);
+        if (focusesRes.ok) setFocuses(((await focusesRes.json()).activity_focuses as ValueOption[]) || []);
         if (sdgsRes.ok) setSdgs(((await sdgsRes.json()).sdgs as SdgOption[]) || []);
         if (goalsRes.ok) setGoals(((await goalsRes.json()).educational_goals as GoalOption[]) || []);
       } catch (error) {
@@ -83,13 +86,14 @@ export function ActivityFilters({ filters, onFiltersChange, onClearFilters, resu
       if (goal.general_objective) generals.set(goal.general_objective.id, goal.general_objective.code);
     }
     return {
-      types,
+      formats,
+      focuses,
       sdgs,
       goals,
       areas: [...areas].map(([id, name]) => ({ id, name })),
       generals: [...generals].map(([id, code]) => ({ id, code })),
     };
-  }, [types, sdgs, goals]);
+  }, [formats, focuses, sdgs, goals]);
 
   const active = hasActiveFilters(filters);
 
@@ -129,7 +133,7 @@ export function ActivityFilters({ filters, onFiltersChange, onClearFilters, resu
 
         {isExpanded && (
           <CardContent className="hidden border-t md:block">
-            <FilterPanel filters={localFilters} onChange={change} types={types} sdgs={sdgs} goals={goals} />
+            <FilterPanel filters={localFilters} onChange={change} formats={formats} focuses={focuses} sdgs={sdgs} goals={goals} />
           </CardContent>
         )}
       </Card>
@@ -148,7 +152,7 @@ export function ActivityFilters({ filters, onFiltersChange, onClearFilters, resu
             />
           </SheetHeader>
           <div className="px-6 pt-4">
-            <FilterPanel filters={localFilters} onChange={change} types={types} sdgs={sdgs} goals={goals} compact />
+            <FilterPanel filters={localFilters} onChange={change} formats={formats} focuses={focuses} sdgs={sdgs} goals={goals} compact />
           </div>
           <div className="sticky bottom-0 mt-4 flex gap-2 border-t bg-background px-6 pb-[calc(0.75rem+var(--safe-bottom))] pt-3">
             {active && (

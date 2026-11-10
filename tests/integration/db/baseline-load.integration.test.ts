@@ -7,10 +7,11 @@ import { setupTestDatabase, teardownTestDatabase, resetTestDatabase } from '../.
 import { db } from '@/lib/db/server';
 import { activities, activityTypes, sdgs } from '../../../drizzle/schema';
 import { requireLocalTestDatabase } from '../../helpers/local-test-db';
+import { seedFormatAndFocus } from '../../helpers/reference-values';
 import { planBaselineLoad, type SheetRow } from '@/lib/activities/baseline-plan';
 import {
+  applySelection,
   deleteAllActivities,
-  insertSelection,
   loadExistingActivities,
   loadTaxonomies,
 } from '@/lib/activities/baseline-db';
@@ -37,6 +38,7 @@ describe('Baseline load (DB)', () => {
 
   beforeEach(async () => {
     await resetTestDatabase();
+    await seedFormatAndFocus(db);
     await db.insert(activityTypes).values([
       { name: 'Jogo' },
       { name: 'Técnica' },
@@ -55,7 +57,7 @@ describe('Baseline load (DB)', () => {
       seed: 1,
       existing: await loadExistingActivities(),
     });
-    const loaded = await insertSelection(plan.selected);
+    const { loaded } = await applySelection(plan.selected, { approveAll: false });
     return { plan, loaded };
   }
 
@@ -65,16 +67,20 @@ describe('Baseline load (DB)', () => {
     expect(plan.report.rowsRead).toBe(7); // the blank spacer row is not counted
     expect(plan.report.skipped.map((s) => s.reason).sort()).toEqual([
       'duplicada (mesmo nome e secção)',
+      'formato em falta ou não reconhecido',
       'grupo em falta ou não reconhecido',
       'linha de exemplo',
-      'tipo em falta ou não reconhecido',
     ]);
 
     const rows = await db.select().from(activities);
     const treasure = rows.find((row) => row.name === 'Caça ao Tesouro de Teste')!;
     expect(treasure.approximate_duration_minutes).toBe(30);
     expect(treasure.instructions).toBe('1. Esconder pistas');
-    expect(treasure.is_approved).toBe(true);
+    expect(treasure.is_approved).toBe(true); // Publicada is TRUE in the sheet
+    expect(treasure).toMatchObject({ external_id: 'TEST-1', duration_min_minutes: 15, duration_max_minutes: 30 });
+    expect(treasure.format_id).not.toBeNull();
+    expect(treasure.focus_id).not.toBeNull();
+    expect(treasure.secondary_focus_id).not.toBeNull();
 
     const categories = (await loadActivityCategories(rows.map((r) => r.id)));
     const t = categories.get(treasure.id)!;
@@ -86,6 +92,7 @@ describe('Baseline load (DB)', () => {
     expect(knots.approximate_duration_minutes).toBe(60);
     expect(knots.materials).toBe('Nenhum material necessário');
     expect(knots.instructions).toBeNull();
+    expect(knots.is_approved).toBe(false); // Publicada is FALSE in the sheet
     const song = rows.find((row) => row.name === 'Canção em Roda de Teste')!;
     expect(song.approximate_duration_minutes).toBe(30);
   });
@@ -93,8 +100,8 @@ describe('Baseline load (DB)', () => {
   it('does not load the same activities twice', async () => {
     await runLoad();
     const second = await runLoad();
-    expect(second.loaded).toBe(0);
-    expect(second.plan.report.skipped.filter((s) => s.reason.startsWith('duplicada')).length).toBeGreaterThanOrEqual(3);
+    expect(second.loaded).toBe(0); // the three rows with a sheet id are unchanged
+    expect(second.plan.report.skipped.filter((s) => s.reason.startsWith('duplicada'))).toHaveLength(1);
     expect(await db.select().from(activities)).toHaveLength(3);
   });
 

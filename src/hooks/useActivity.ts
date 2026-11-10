@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import type { RiskLevelValue } from '@/lib/activities/category-values';
 
 interface EducationalGoal {
   id: string;
@@ -24,6 +25,12 @@ interface Sdg {
   justification?: string | null;
 }
 
+interface ValueRef {
+  id: string;
+  code: string;
+  name: string;
+}
+
 interface ActivityType {
   id: string;
   name: string; // Now simple string after migration
@@ -37,6 +44,12 @@ interface Activity {
   materials: string; // Now simple string after migration
   instructions?: string | null;
   approximate_duration_minutes: number;
+  duration_min_minutes?: number | null;
+  duration_max_minutes?: number | null;
+  external_id?: string | null;
+  format?: ValueRef | null;
+  focus?: ValueRef | null;
+  secondary_focus?: ValueRef | null;
   group_sizes: Array<'small' | 'medium' | 'large'>;
   effort_level: 'low' | 'medium' | 'high';
   locations: Array<'inside' | 'outside'>;
@@ -47,10 +60,10 @@ interface Activity {
   activity_types: ActivityType[];
   educational_goals: EducationalGoal[];
   sdgs: Sdg[];
-  physical_risk_level?: 'low' | 'medium' | 'high' | null;
+  physical_risk_level?: RiskLevelValue | null;
   physical_risk?: string | null;
   physical_mitigation?: string | null;
-  psychological_risk_level?: 'low' | 'medium' | 'high' | null;
+  psychological_risk_level?: RiskLevelValue | null;
   psychological_risk?: string | null;
   psychological_mitigation?: string | null;
   source_url?: string | null;
@@ -62,7 +75,16 @@ interface Activity {
     age_group: string;
     behaviour: string | null;
   }>;
-  challenges?: Array<{ id: string; code: string; title: string; age_group: string; type_code: string; type_name: string }>;
+  challenges?: Array<{
+    id: string;
+    code: string;
+    title: string;
+    short_title?: string | null;
+    integration_age_groups?: string[];
+    age_group: string;
+    type_code: string;
+    type_name: string;
+  }>;
 }
 
 interface UseActivityReturn {

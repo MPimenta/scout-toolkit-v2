@@ -1,23 +1,27 @@
 /**
- * Loads a curated activities sheet into the catalogue (a realistic test baseline).
+ * Loads the curated activities sheet into the catalogue (a realistic test baseline).
+ * Rows carry a sheet id (ATV-0001): the load creates the missing activities, updates the ones whose
+ * content changed and leaves the rest alone, so running it twice changes nothing the second time.
+ * Activities made in the app (no sheet id) are never touched.
  *
  * LOCAL ONLY by default: it refuses any DATABASE_URL whose host is not localhost.
  * Running it without --dry-run changes data; only do so deliberately.
  *
  * How to get the input
- *   1. Open the Google Sheet and select the `atividades` tab.
- *   2. File > Download > Comma Separated Values (.csv) (or Microsoft Excel .xlsx).
- *   3. Save it under `data/` (untracked, listed in .gitignore). Never commit it:
- *      some sources in the sheet are copyrighted.
+ *   1. Open the Google Sheet (all tabs are exported; the loader reads the `atividades` tab).
+ *   2. File > Download > Microsoft Excel (.xlsx), or the `atividades` tab as .csv.
+ *   3. Save it under `data/` (untracked, listed in .gitignore), for example `data/atividades.xlsx`.
+ *      Never commit it: some sources in the sheet are copyrighted.
  *
  * Usage
- *   npm run db:load-baseline -- data/atividades.csv --dry-run
- *   npm run db:load-baseline -- data/atividades.csv --limit 200
- *   npm run db:load-baseline -- data/atividades.csv --replace
+ *   npm run db:load-baseline -- data/atividades.xlsx --dry-run
+ *   npm run db:load-baseline -- data/atividades.xlsx --approve-all
+ *   npm run db:load-baseline -- data/atividades.xlsx --limit 200 --replace
  *
  * Flags
  *   --dry-run            plan and report only, never touch the database
- *   --limit <n>          activities to select (default 200)
+ *   --approve-all        mark the loaded activities approved (the sheet's Publicada cell is respected otherwise)
+ *   --limit <n>          select only n activities (default: all rows)
  *   --seed <n>           selection seed (default 1)
  *   --replace            delete every existing activity first
  *   --force              with --replace: also delete activities that programs use
@@ -37,6 +41,7 @@ type Args = {
   file: string;
   dryRun: boolean;
   limit: number;
+  approveAll: boolean;
   seed: number;
   replace: boolean;
   force: boolean;
@@ -48,7 +53,8 @@ function parseArgs(argv: string[]): Args {
   const args: Args = {
     file: '',
     dryRun: false,
-    limit: 200,
+    limit: Number.POSITIVE_INFINITY,
+    approveAll: false,
     seed: 1,
     replace: false,
     force: false,
@@ -59,6 +65,7 @@ function parseArgs(argv: string[]): Args {
     const arg = argv[i]!;
     if (arg === '--dry-run') args.dryRun = true;
     else if (arg === '--replace') args.replace = true;
+    else if (arg === '--approve-all') args.approveAll = true;
     else if (arg === '--force') args.force = true;
     else if (arg === '--allow-remote') args.allowRemote = true;
     else if (arg === '--limit') args.limit = Number(argv[++i]);
@@ -68,7 +75,7 @@ function parseArgs(argv: string[]): Args {
     else throw new Error(`Argumento desconhecido: ${arg}`);
   }
   if (!args.file) throw new Error('Indique o ficheiro exportado (.csv ou .xlsx).');
-  if (!Number.isInteger(args.limit) || args.limit < 1) throw new Error('--limit inválido');
+  if (args.limit !== Number.POSITIVE_INFINITY && (!Number.isInteger(args.limit) || args.limit < 1)) throw new Error('--limit inválido');
   if (!Number.isInteger(args.seed)) throw new Error('--seed inválido');
   return args;
 }
@@ -124,6 +131,11 @@ async function main() {
   }
 
   let loaded: number | undefined;
+  let upsert: { created: number; updated: number; unchanged: number; inserted: number } | undefined;
+  if (args.dryRun && !args.replace) {
+    // Count what a real run would do (reads only).
+    upsert = await db.applySelection(plan.selected, { approveAll: args.approveAll, dryRun: true });
+  }
   if (!args.dryRun) {
     if (args.replace) {
       const referenced = await db.findReferencedActivities();
@@ -137,15 +149,18 @@ async function main() {
       const removed = await db.deleteAllActivities();
       console.log(`Apagadas ${removed} atividades existentes.`);
     }
-    loaded = await db.insertSelection(plan.selected);
+    const result = await db.applySelection(plan.selected, { approveAll: args.approveAll });
+    upsert = result;
+    loaded = result.loaded;
   }
 
   mkdirSync(path.dirname(args.report), { recursive: true });
   writeFileSync(
     args.report,
-    JSON.stringify({ ...plan.report, dryRun: args.dryRun, loaded: loaded ?? 0 }, null, 2)
+    JSON.stringify({ ...plan.report, dryRun: args.dryRun, loaded: loaded ?? 0, upsert: upsert ?? null }, null, 2)
   );
   console.log(summarizeReport(plan.report, loaded));
+  if (upsert) console.log(`${args.dryRun ? 'Previsto' : 'Resultado'}: ${upsert.created} criadas, ${upsert.updated} atualizadas, ${upsert.unchanged} sem alterações, ${upsert.inserted} sem id da folha`);
   console.log(`Relatório: ${args.report}`);
   process.exit(0);
 }

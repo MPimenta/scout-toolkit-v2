@@ -5,7 +5,10 @@ export interface FilterState {
   effortLevel: string[];
   location: string[];
   ageGroup: string[];
-  activityType: string[];
+  /** Format ids (what kind of activity). */
+  format: string[];
+  /** Focus ids: an activity matches when the focus is its main or its secondary one. */
+  focus: string[];
   sdgs: string[];
   /** Specific objective ids. */
   educationalGoals: string[];
@@ -24,7 +27,8 @@ export const EMPTY_FILTERS: FilterState = {
   effortLevel: [],
   location: [],
   ageGroup: [],
-  activityType: [],
+  format: [],
+  focus: [],
   sdgs: [],
   educationalGoals: [],
   educationalAreas: [],

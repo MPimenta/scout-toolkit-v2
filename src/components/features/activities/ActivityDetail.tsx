@@ -25,6 +25,7 @@ import { useFeature } from '@/components/providers/FeaturesProvider';
 import { useState } from 'react';
 import { useLocale } from '@/components/locale/LocaleProvider';
 import { enumLabel, enumLabelList } from '@/lib/locale/labels';
+import { formatDuration } from '@/lib/activities/duration-range';
 
 interface ActivityDetailProps {
   activityId: string;
@@ -85,8 +86,10 @@ export function ActivityDetail({ activityId }: ActivityDetailProps) {
         )}
 
         <div className="space-y-3">
-          {activity.activity_types.length > 0 && (
-            <Eyebrow>{activity.activity_types.map((type) => type.name).join(' · ')}</Eyebrow>
+          {activity.format ? (
+            <Eyebrow>{[activity.format.name, activity.focus?.name, activity.secondary_focus?.name].filter(Boolean).join(' · ')}</Eyebrow>
+          ) : (
+            activity.activity_types.length > 0 && <Eyebrow>{activity.activity_types.map((type) => type.name).join(' · ')}</Eyebrow>
           )}
           <h1 className="text-display font-bold">{activity.name}</h1>
           {activity.source && (
@@ -104,7 +107,7 @@ export function ActivityDetail({ activityId }: ActivityDetailProps) {
           )}
 
           <div className="flex flex-wrap gap-x-5 gap-y-2 text-[0.9375rem]">
-            <Fact kind="duration">{activity.approximate_duration_minutes} min</Fact>
+            <Fact kind="duration">{formatDuration(activity.approximate_duration_minutes, activity.duration_min_minutes, activity.duration_max_minutes)}</Fact>
             <Fact kind="groupSize">{enumLabelList(t, 'groupSize', activity.group_sizes)}</Fact>
             <Fact kind="effort">{enumLabel(t, 'effort', activity.effort_level)}</Fact>
             <Fact kind="location">{enumLabelList(t, 'location', activity.locations)}</Fact>

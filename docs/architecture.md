@@ -161,7 +161,15 @@ activities {
   effort_level: 'low' | 'medium' | 'high'
   location: 'inside' | 'outside'
   age_group: 'cub_scouts' | 'scouts' | 'adventurers' | 'rovers' | 'leaders'
-  activity_type_id: string (foreign key)
+  activity_type_id: string (foreign key) // former type, kept for older data
+  format_id?: string (foreign key to activity_formats)
+  focus_id?: string (foreign key to activity_focuses) // main focus
+  secondary_focus_id?: string (foreign key to activity_focuses)
+  approximate_duration_minutes: number // what programs use
+  duration_min_minutes?: number // optional range, shown in lists and the detail
+  duration_max_minutes?: number
+  external_id?: string // id in the reference sheet (ATV-0001); the loader's upsert key
+  external_hash?: string // hash of the loaded content, to tell unchanged rows
   image_url?: string
   created_at: timestamp
   updated_at: timestamp
@@ -177,6 +185,15 @@ activity_types {
   name: text // Portuguese activity type name
   description?: text // Portuguese activity type description
   created_at: timestamp
+} // former types: hidden from the interface, kept for older data
+
+activity_formats / activity_focuses {
+  id: string (primary key)
+  code: string (unique) // for example 'jogo', 'cooperacao'
+  name: text
+  description?: text
+  position: number
+  is_managed: boolean // true for the values of the reference sheet: read-only for admins
 }
 
 educational_areas {

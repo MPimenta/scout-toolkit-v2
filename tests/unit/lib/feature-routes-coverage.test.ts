@@ -50,6 +50,8 @@ const ALWAYS_ON = new Set([
   '/api/programs/x/export/pdf',
   '/api/programs/x/orgo',
   '/api/taxonomies/activity-types',
+  '/api/taxonomies/activity-formats',
+  '/api/taxonomies/activity-focuses',
   '/api/taxonomies/educational-areas',
   '/api/taxonomies/educational-goals',
   '/api/taxonomies/sdgs',

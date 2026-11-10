@@ -5,7 +5,7 @@ test.describe('Admin taxonomies', () => {
     test.skip(testInfo.project.name !== 'chromium', 'Admin E2E runs on desktop Chromium only');
   });
 
-  test('creates an activity type visible in filters', async ({ page }) => {
+  test('creates a former activity type, which the catalogue filters no longer offer', async ({ page }) => {
     const login = await page.request.post('/api/e2e/session', {
       data: {
         email: `e2e.admin.${crypto.randomUUID()}@example.com`,
@@ -30,9 +30,11 @@ test.describe('Admin taxonomies', () => {
       await page.getByRole('button', { name: 'Adicionar' }).click();
       await expect(page.getByText(name)).toBeVisible();
 
+      // Filters are by format and focus now (reference-sheet-alignment); the type is not offered there
       await page.goto('/activities');
       await page.getByRole('button', { name: /Expandir|Filtros/ }).first().click();
-      await expect(page.getByText(name)).toBeVisible();
+      await expect(page.getByText('Formato').first()).toBeVisible();
+      await expect(page.getByText(name)).toHaveCount(0);
     } finally {
       await page.request.delete('/api/e2e/session');
     }

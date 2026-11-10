@@ -9,6 +9,8 @@ import {
   activityLocations,
   activityAgeGroups,
   activityActivityTypes,
+  activityFocuses,
+  activityFormats,
   activityTypes,
   activityChallenges,
   activitySources,
@@ -27,6 +29,7 @@ import {
   type LocationValue,
   type RiskLevelValue,
 } from './category-values';
+import { parseDurationRange } from './duration-range';
 
 type Db = typeof db;
 // A transaction exposes the same query API as the db handle.
@@ -42,6 +45,11 @@ export const ACTIVITY_FIELDS = [
   'effort_level',
   'locations',
   'age_groups',
+  'format_id',
+  'focus_id',
+  'secondary_focus_id',
+  'duration_min_minutes',
+  'duration_max_minutes',
   'activity_type_ids',
 ] as const;
 
@@ -69,7 +77,19 @@ export type ActivityWrite = {
   effort_level: 'low' | 'medium' | 'high';
   locations: LocationValue[];
   age_groups: AgeGroupValue[];
-  activity_type_ids: string[];
+  /** Format (what kind of activity), main focus and optional secondary focus (reference sheet). */
+  format_id: string;
+  focus_id: string;
+  secondary_focus_id?: string | null;
+  /** Optional range; the single duration above is what programs use. */
+  duration_min_minutes?: number | null;
+  duration_max_minutes?: number | null;
+  /** Id in the reference sheet (ATV-0001). Set by the snapshot loader only, never accepted from a request body. */
+  external_id?: string | null;
+  /** Hash of the loaded content (snapshot loader only). */
+  external_hash?: string | null;
+  /** Former activity types, kept during the transition; no longer required. */
+  activity_type_ids?: string[];
   image_url?: string | null;
   physical_risk_level?: RiskLevelValue | null;
   physical_risk?: string | null;
@@ -119,14 +139,27 @@ export function parseActivityWrite(body: Record<string, unknown>): ActivityWrite
   if (typeof locations === 'string') return locations;
   const ageGroups = parseEnumList(body['age_groups'], AGE_GROUP_VALUES, 'secção');
   if (typeof ageGroups === 'string') return ageGroups;
+  const rawFormat = body['format_id'];
+  if (typeof rawFormat !== 'string' || !rawFormat) return 'Indique o formato da atividade';
+  if (!UUID_RE.test(rawFormat)) return 'Formato inválido';
+  const rawFocus = body['focus_id'];
+  if (typeof rawFocus !== 'string' || !rawFocus) return 'Indique o foco principal da atividade';
+  if (!UUID_RE.test(rawFocus)) return 'Foco principal inválido';
+  const rawSecondary = body['secondary_focus_id'];
+  let secondaryFocus: string | null = null;
+  if (rawSecondary !== undefined && rawSecondary !== null && rawSecondary !== '') {
+    if (typeof rawSecondary !== 'string' || !UUID_RE.test(rawSecondary)) return 'Foco secundário inválido';
+    if (rawSecondary === rawFocus) return 'O foco secundário tem de ser diferente do foco principal';
+    secondaryFocus = rawSecondary;
+  }
   const rawTypes = body['activity_type_ids'];
-  if (!Array.isArray(rawTypes) || rawTypes.length === 0) {
-    return 'Indique pelo menos um valor para tipo de atividade';
+  let activityTypeIds: string[] = [];
+  if (rawTypes !== undefined && rawTypes !== null) {
+    if (!Array.isArray(rawTypes) || !rawTypes.every((id) => typeof id === 'string' && UUID_RE.test(id))) {
+      return 'Tipo de atividade inválido';
+    }
+    activityTypeIds = [...new Set(rawTypes as string[])];
   }
-  if (!rawTypes.every((id) => typeof id === 'string' && UUID_RE.test(id))) {
-    return 'Tipo de atividade inválido';
-  }
-  const activityTypeIds = [...new Set(rawTypes as string[])];
   const instructionsRaw = typeof body['instructions'] === 'string' ? body['instructions'].trim() : '';
   if (instructionsRaw.length > INSTRUCTIONS_MAX_LENGTH) {
     return `As instruções não podem exceder ${INSTRUCTIONS_MAX_LENGTH} caracteres`;
@@ -135,6 +168,8 @@ export function parseActivityWrite(body: Record<string, unknown>): ActivityWrite
   if (!Number.isFinite(duration) || duration < 1) {
     return 'Duração inválida';
   }
+  const range = parseDurationRange(body['duration_min_minutes'], body['duration_max_minutes']);
+  if (typeof range === 'string') return range;
   const imageValue = typeof body['image_url'] === 'string' ? body['image_url'].trim() : '';
   const isStoredImage =
     imageValue.startsWith(MEDIA_PATH_PREFIX) && STORED_IMAGE_NAME.test(imageValue.slice(MEDIA_PATH_PREFIX.length));
@@ -161,6 +196,11 @@ export function parseActivityWrite(body: Record<string, unknown>): ActivityWrite
     effort_level: body['effort_level'] as ActivityWrite['effort_level'],
     locations,
     age_groups: ageGroups,
+    format_id: rawFormat,
+    focus_id: rawFocus,
+    secondary_focus_id: secondaryFocus,
+    duration_min_minutes: range.min,
+    duration_max_minutes: range.max,
     activity_type_ids: activityTypeIds,
     image_url: typeof body['image_url'] === 'string' ? body['image_url'] : null,
     educational_goal_ids: Array.isArray(body['educational_goal_ids'])
@@ -286,11 +326,19 @@ function parseActivityExtras(
 
 /** Returns an error message when any activity type id does not exist, else null. */
 export async function verifyActivityTypes(data: ActivityWrite): Promise<string | null> {
-  const found = await db
-    .select({ id: activityTypes.id })
-    .from(activityTypes)
-    .where(inArray(activityTypes.id, data.activity_type_ids));
-  return found.length === data.activity_type_ids.length ? null : 'Tipo de atividade inválido';
+  const ids = data.activity_type_ids ?? [];
+  if (ids.length === 0) return null;
+  const found = await db.select({ id: activityTypes.id }).from(activityTypes).where(inArray(activityTypes.id, ids));
+  return found.length === ids.length ? null : 'Tipo de atividade inválido';
+}
+
+/** Returns an error message when the format or a focus does not exist, else null. */
+export async function verifyFormatAndFocus(data: ActivityWrite): Promise<string | null> {
+  const [format] = await db.select({ id: activityFormats.id }).from(activityFormats).where(eq(activityFormats.id, data.format_id));
+  if (!format) return 'Formato inválido';
+  const focusIds = [data.focus_id, ...(data.secondary_focus_id ? [data.secondary_focus_id] : [])];
+  const found = await db.select({ id: activityFocuses.id }).from(activityFocuses).where(inArray(activityFocuses.id, focusIds));
+  return found.length === focusIds.length ? null : 'Foco inválido';
 }
 
 /**
@@ -397,9 +445,11 @@ export async function replaceRelations(
   await executor.insert(activityAgeGroups).values(
     data.age_groups.map((age_group) => ({ activity_id: activityId, age_group }))
   );
-  await executor.insert(activityActivityTypes).values(
-    data.activity_type_ids.map((activity_type_id) => ({ activity_id: activityId, activity_type_id }))
-  );
+  if (data.activity_type_ids?.length) {
+    await executor.insert(activityActivityTypes).values(
+      data.activity_type_ids.map((activity_type_id) => ({ activity_id: activityId, activity_type_id }))
+    );
+  }
   const objectiveRows = await resolveObjectiveRows(data, executor);
   if (objectiveRows.length > 0) {
     await executor.insert(activityEducationalGoals).values(
@@ -446,6 +496,13 @@ export async function createActivity(
         materials: data.materials,
         instructions: data.instructions,
         approximate_duration_minutes: data.approximate_duration_minutes,
+        duration_min_minutes: data.duration_min_minutes ?? null,
+        duration_max_minutes: data.duration_max_minutes ?? null,
+        external_id: data.external_id ?? null,
+        external_hash: data.external_hash ?? null,
+        format_id: data.format_id,
+        focus_id: data.focus_id,
+        secondary_focus_id: data.secondary_focus_id ?? null,
         effort_level: data.effort_level,
         image_url: data.image_url,
         physical_risk_level: data.physical_risk_level ?? null,
@@ -476,6 +533,12 @@ export async function updateActivity(activityId: string, data: ActivityWrite) {
         materials: data.materials,
         instructions: data.instructions,
         approximate_duration_minutes: data.approximate_duration_minutes,
+        duration_min_minutes: data.duration_min_minutes ?? null,
+        duration_max_minutes: data.duration_max_minutes ?? null,
+        format_id: data.format_id,
+        focus_id: data.focus_id,
+        secondary_focus_id: data.secondary_focus_id ?? null,
+        ...(data.external_hash !== undefined ? { external_hash: data.external_hash } : {}),
         effort_level: data.effort_level,
         image_url: data.image_url,
         physical_risk_level: data.physical_risk_level ?? null,

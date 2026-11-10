@@ -14,11 +14,11 @@ import { ObjectiveFilterTree } from './ObjectiveFilterTree';
 
 const EFFORT_VALUES = ['low', 'medium', 'high'] as const;
 
-export interface TypeOption {
+/** A format or a focus, with the number of approved activities that use it. */
+export interface ValueOption {
   id: string;
   name: string;
-  /** Present once activity types are split into format and focus. */
-  kind?: 'format' | 'focus' | null;
+  description?: string | null;
   activity_count?: number;
 }
 export interface SdgOption {
@@ -31,7 +31,8 @@ export interface SdgOption {
 interface Props {
   filters: FilterState;
   onChange: (next: FilterState) => void;
-  types: TypeOption[];
+  formats: ValueOption[];
+  focuses: ValueOption[];
   sdgs: SdgOption[];
   goals: GoalOption[];
   /** Phones: one column, one open area at a time. */
@@ -55,14 +56,14 @@ function Checks({
   selected,
   onToggle,
 }: {
-  options: Array<{ value: string; label: string }>;
+  options: Array<{ value: string; label: string; hint?: string }>;
   selected: string[];
   onToggle: (value: string, checked: boolean) => void;
 }) {
   return (
     <div className="space-y-1">
       {options.map((option) => (
-        <label key={option.value} className="flex min-h-8 items-center gap-2">
+        <label key={option.value} className="flex min-h-8 items-center gap-2" title={option.hint}>
           <input
             type="checkbox"
             checked={selected.includes(option.value)}
@@ -76,10 +77,10 @@ function Checks({
   );
 }
 
-/** The full filter panel: divisions, facts, duration, types, objectives and SDGs. */
-export function FilterPanel({ filters, onChange, types, sdgs, goals, compact }: Props) {
+/** The full filter panel: divisions, facts, duration, format and focus, objectives and SDGs. */
+export function FilterPanel({ filters, onChange, formats, focuses, sdgs, goals, compact }: Props) {
   const { t } = useLocale();
-  const toggle = (key: 'groupSize' | 'effortLevel' | 'location' | 'activityType' | 'sdgs') => (value: string, checked: boolean) =>
+  const toggle = (key: 'groupSize' | 'effortLevel' | 'location' | 'format' | 'focus' | 'sdgs') => (value: string, checked: boolean) =>
     onChange({ ...filters, [key]: checked ? [...filters[key], value] : filters[key].filter((v) => v !== value) });
 
   const toggleDivision = (value: string) => {
@@ -97,16 +98,14 @@ export function FilterPanel({ filters, onChange, types, sdgs, goals, compact }: 
   const options = (kind: 'groupSize' | 'effort' | 'location', values: readonly string[]) =>
     values.map((value) => ({ value, label: enumLabel(t, kind, value) }));
 
-  // Types: grouped by format and focus once the data carries it; flat otherwise. Empty ones are hidden.
-  const visibleTypes = types.filter((type) => type.activity_count === undefined || type.activity_count > 0);
-  const grouped = visibleTypes.some((type) => type.kind);
-  const typeGroups: Array<{ title: string | null; items: TypeOption[] }> = grouped
-    ? [
-        { title: t('filters.typeFormat'), items: visibleTypes.filter((x) => x.kind === 'format') },
-        { title: t('filters.typeFocus'), items: visibleTypes.filter((x) => x.kind === 'focus') },
-        { title: t('filters.typeOther'), items: visibleTypes.filter((x) => !x.kind) },
-      ].filter((group) => group.items.length > 0)
-    : [{ title: null, items: visibleTypes }];
+  // Formats and focuses with no approved activity are hidden, so the filter never leads to an empty list.
+  const shown = (items: ValueOption[]) => items.filter((item) => item.activity_count === undefined || item.activity_count > 0);
+  const valueOptions = (items: ValueOption[]) =>
+    shown(items).map((item) => ({
+      value: item.id,
+      label: item.activity_count !== undefined ? `${item.name} (${item.activity_count})` : item.name,
+      hint: item.description ?? undefined,
+    }));
 
   return (
     <div className={compact ? 'space-y-6' : 'space-y-6 pt-4'}>
@@ -145,21 +144,14 @@ export function FilterPanel({ filters, onChange, types, sdgs, goals, compact }: 
         />
       </Section>
 
-      <Section title={t('filters.activityType')}>
-        {typeGroups.map((group) => (
-          <div key={group.title ?? 'all'} className="space-y-1">
-            {group.title && <p className="text-xs font-bold text-muted-foreground">{group.title}</p>}
-            <Checks
-              options={group.items.map((item) => ({
-                value: item.id,
-                label: item.activity_count !== undefined ? `${item.name} (${item.activity_count})` : item.name,
-              }))}
-              selected={filters.activityType}
-              onToggle={toggle('activityType')}
-            />
-          </div>
-        ))}
-      </Section>
+      <div className={compact ? 'space-y-6' : 'grid gap-6 md:grid-cols-2'}>
+        <Section title={t('filters.typeFormat')}>
+          <Checks options={valueOptions(formats)} selected={filters.format} onToggle={toggle('format')} />
+        </Section>
+        <Section title={t('filters.typeFocus')}>
+          <Checks options={valueOptions(focuses)} selected={filters.focus} onToggle={toggle('focus')} />
+        </Section>
+      </div>
 
       <Section title={t('filters.objectives')}>
         <ObjectiveFilterTree

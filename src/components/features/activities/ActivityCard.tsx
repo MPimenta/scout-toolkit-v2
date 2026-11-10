@@ -10,6 +10,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale } from '@/components/locale/LocaleProvider';
 import { enumLabel, enumLabelList } from '@/lib/locale/labels';
+import { formatDuration } from '@/lib/activities/duration-range';
 
 /**
  * Interface for educational goal data
@@ -48,6 +49,8 @@ interface Activity {
   description: string; // Now simple string after migration
   materials: string; // Now simple string after migration
   approximate_duration_minutes: number;
+  duration_min_minutes?: number | null;
+  duration_max_minutes?: number | null;
   group_sizes: string[]; // API returns strings, not union types
   effort_level: string; // API returns string, not union type
   locations: string[];
@@ -170,7 +173,7 @@ export function ActivityCard({ activity }: ActivityCardProps) {
 
       <CardContent className="flex-1 space-y-3">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
-          <Fact kind="duration">{activity.approximate_duration_minutes} min</Fact>
+          <Fact kind="duration">{formatDuration(activity.approximate_duration_minutes, activity.duration_min_minutes, activity.duration_max_minutes)}</Fact>
           <Fact kind="groupSize">{enumLabelList(t, 'groupSize', activity.group_sizes, 2)}</Fact>
           <Fact kind="effort">{enumLabel(t, 'effort', activity.effort_level)}</Fact>
           <Fact kind="location">{enumLabelList(t, 'location', activity.locations, 2)}</Fact>

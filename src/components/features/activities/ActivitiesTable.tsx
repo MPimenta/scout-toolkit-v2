@@ -42,6 +42,7 @@ import {
   Edit,
   Trash2,
 } from 'lucide-react';
+import { formatDuration } from '@/lib/activities/duration-range';
 
 /**
  * Interface for educational goal data
@@ -79,6 +80,8 @@ interface Activity {
   name: string;
   description: string;
   approximate_duration_minutes: number;
+  duration_min_minutes?: number | null;
+  duration_max_minutes?: number | null;
   group_sizes: string[]; // API returns strings, not union types
   effort_level: string; // API returns string, not union type
   locations: string[];
@@ -146,7 +149,7 @@ export function ActivitiesTable({
         header: t('activities.colDuration'),
         cell: ({ row }) => (
           <span className="text-sm text-muted-foreground">
-            {row.original.approximate_duration_minutes} min
+            {formatDuration(row.original.approximate_duration_minutes, row.original.duration_min_minutes, row.original.duration_max_minutes)}
           </span>
         ),
       },

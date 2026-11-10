@@ -224,6 +224,71 @@ describe('ActivityDetail', () => {
     expect(screen.getByText('Participa em 3 jogos.')).toBeInTheDocument();
   });
 
+  it('shows the format and focuses above the title, and the duration range', () => {
+    mockUseActivity.mockReturnValue({
+      activity: {
+        ...mockActivity,
+        format: { id: 'f1', code: 'jogo', name: 'Jogo' },
+        focus: { id: 'o1', code: 'cooperacao', name: 'Cooperação' },
+        secondary_focus: { id: 'o2', code: 'lideranca', name: 'Liderança' },
+        duration_min_minutes: 40,
+        duration_max_minutes: 75,
+      },
+      loading: false,
+      error: null,
+    });
+
+    render(<ActivityDetail activityId="test-id" />);
+
+    expect(screen.getByText('Jogo · Cooperação · Liderança')).toBeInTheDocument();
+    expect(screen.queryByText('Tipo de Atividade')).not.toBeInTheDocument();
+    expect(screen.getByText('40–75 min')).toBeInTheDocument();
+    expect(screen.queryByText('60 min')).not.toBeInTheDocument();
+  });
+
+  it('falls back to the former types for an activity with no format yet', () => {
+    mockUseActivity.mockReturnValue({ activity: mockActivity, loading: false, error: null });
+    render(<ActivityDetail activityId="test-id" />);
+    expect(screen.getByText('Tipo de Atividade')).toBeInTheDocument();
+    expect(screen.getByText('60 min')).toBeInTheDocument();
+  });
+
+  it('shows the short title of a desafio first and the full text on demand, with the integration highlight', () => {
+    mockUseActivity.mockReturnValue({
+      activity: {
+        ...mockActivity,
+        challenges: [
+          {
+            id: 'c2',
+            code: 'VAL-D',
+            title: 'Acumula 3 noites de campo (tenda ou abrigo) em atividade, deixando o campo limpo.',
+            short_title: 'Acumula 3 noites de campo.',
+            integration_age_groups: ['scouts', 'adventurers'],
+            age_group: 'cub_scouts',
+            type_code: 'VAL',
+            type_name: 'Vida ao Ar Livre',
+          },
+        ],
+      },
+      loading: false,
+      error: null,
+    });
+
+    render(<ActivityDetail activityId="test-id" />);
+
+    expect(screen.getByText('Acumula 3 noites de campo.')).toBeInTheDocument();
+    expect(screen.getByTestId('integration-badge')).toHaveTextContent('Obrigatório para a integração: Escoteiros (10-14), Exploradores (14-17)');
+    expect(screen.getByText('Texto completo')).toBeInTheDocument();
+    expect(screen.getByText(/tenda ou abrigo/)).toBeInTheDocument();
+  });
+
+  it('shows no integration highlight and no full-text toggle when there is nothing to add', () => {
+    mockUseActivity.mockReturnValue({ activity: mockActivity, loading: false, error: null });
+    render(<ActivityDetail activityId="test-id" />);
+    expect(screen.queryByTestId('integration-badge')).not.toBeInTheDocument();
+    expect(screen.queryByText('Texto completo')).not.toBeInTheDocument();
+  });
+
   it('renders rating and comments section', () => {
     mockUseActivity.mockReturnValue({
       activity: mockActivity,

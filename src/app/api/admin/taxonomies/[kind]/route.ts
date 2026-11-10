@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, or } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '@/lib/db/server';
 import {
+  activities,
+  activityFocuses,
+  activityFormats,
   activityTypes,
   educationalAreas,
   educationalGoals,
@@ -15,10 +18,13 @@ import {
 } from '../../../../../../drizzle/schema';
 import { AGE_GROUP_VALUES } from '../../../../../../drizzle/schema/category-values';
 import { requireAdminApi } from '@/lib/auth/utils';
+import { slugCode } from '@/lib/reference-data/slug-code';
 import { apiErrors, withApiErrorHandler } from '@/lib/errors';
 
 const TABLES = {
   'activity-types': activityTypes,
+  'activity-formats': activityFormats,
+  'activity-focuses': activityFocuses,
   'educational-areas': educationalAreas,
   'educational-goals': educationalGoals,
   'general-objectives': generalObjectives,
@@ -26,8 +32,17 @@ const TABLES = {
 } as const;
 
 /** Tables whose rows the Matriz loader may own (is_managed): read-only for admins. */
-const MANAGED_KINDS = new Set<string>(['educational-areas', 'educational-goals', 'general-objectives']);
+const MANAGED_KINDS = new Set<string>(['educational-areas', 'educational-goals', 'general-objectives', 'activity-formats', 'activity-focuses']);
 const MANAGED_MESSAGE = 'Este registo é gerido pela Matriz Progresso Pessoal e não pode ser alterado';
+const SHEET_MANAGED_MESSAGE = 'Este valor vem da folha de referência e não pode ser alterado';
+const managedMessage = (kind: string) => (kind === 'activity-formats' || kind === 'activity-focuses' ? SHEET_MANAGED_MESSAGE : MANAGED_MESSAGE);
+
+/** A format or focus an admin adds: the code is derived from the name and the loader flag is never set. */
+const valueBody = z.object({
+  name: z.string().trim().min(1, 'Nome obrigatório').max(80, 'Nome demasiado longo'),
+  description: z.string().trim().max(300, 'Descrição demasiado longa').nullish(),
+  position: z.number().int().min(0).optional(),
+});
 
 const goalBody = z.object({
   area_id: z.string().uuid(),
@@ -53,6 +68,14 @@ function withoutManagedFlag(body: Record<string, unknown>): Record<string, unkno
 }
 
 async function isManaged(kind: string, id: string): Promise<boolean> {
+  if (kind === 'activity-formats') {
+    const [row] = await db.select({ m: activityFormats.is_managed }).from(activityFormats).where(eq(activityFormats.id, id));
+    return Boolean(row?.m);
+  }
+  if (kind === 'activity-focuses') {
+    const [row] = await db.select({ m: activityFocuses.is_managed }).from(activityFocuses).where(eq(activityFocuses.id, id));
+    return Boolean(row?.m);
+  }
   if (kind === 'educational-areas') {
     const [row] = await db.select({ m: educationalAreas.is_managed }).from(educationalAreas).where(eq(educationalAreas.id, id));
     return Boolean(row?.m);
@@ -123,6 +146,20 @@ export const POST = withApiErrorHandler(async (
     }
   }
 
+  if (kind === 'activity-formats' || kind === 'activity-focuses') {
+    const parsed = valueBody.safeParse(body);
+    if (!parsed.success) return apiErrors.validation('body', parsed.error.issues[0]?.message ?? 'Dados inválidos');
+    const code = slugCode(parsed.data.name);
+    if (!code) return apiErrors.validation('name', 'Nome inválido');
+    const values = { ...parsed.data, code, description: parsed.data.description ?? null, position: parsed.data.position ?? 1000, is_managed: false };
+    try {
+      const [row] = await db.insert(kind === 'activity-formats' ? activityFormats : activityFocuses).values(values).returning();
+      return NextResponse.json({ item: row }, { status: 201 });
+    } catch {
+      return apiErrors.conflict('Já existe um valor com este nome');
+    }
+  }
+
   try {
     const [row] = await db.insert(table).values(body).returning();
     return NextResponse.json({ item: row }, { status: 201 });
@@ -143,7 +180,16 @@ export const PATCH = withApiErrorHandler(async (
   const body = withoutManagedFlag(await request.json());
   const id = body.id as string;
   if (!id) return apiErrors.validation('id', 'ID obrigatório');
-  if (MANAGED_KINDS.has(kind) && (await isManaged(kind, id))) return apiErrors.conflict(MANAGED_MESSAGE);
+  if (MANAGED_KINDS.has(kind) && (await isManaged(kind, id))) return apiErrors.conflict(managedMessage(kind));
+
+  if (kind === 'activity-formats' || kind === 'activity-focuses') {
+    // Only the wording of an admin's own value can change; the code and the loader flag never do.
+    const parsed = valueBody.partial().safeParse(body);
+    if (!parsed.success) return apiErrors.validation('body', parsed.error.issues[0]?.message ?? 'Dados inválidos');
+    const target = kind === 'activity-formats' ? activityFormats : activityFocuses;
+    const [row] = await db.update(target).set(parsed.data).where(eq(target.id, id)).returning();
+    return row ? NextResponse.json({ item: row }) : apiErrors.notFound('valor', id);
+  }
 
   if (kind === 'educational-goals' && ('age_groups' in body || 'general_objective_id' in body || 'area_id' in body)) {
     const [current] = await db.select().from(educationalGoals).where(eq(educationalGoals.id, id));
@@ -181,7 +227,19 @@ export const DELETE = withApiErrorHandler(async (
   const id = new URL(request.url).searchParams.get('id');
   if (!id) return apiErrors.validation('id', 'ID obrigatório');
 
-  if (MANAGED_KINDS.has(kind) && (await isManaged(kind, id))) return apiErrors.conflict(MANAGED_MESSAGE);
+  if (MANAGED_KINDS.has(kind) && (await isManaged(kind, id))) return apiErrors.conflict(managedMessage(kind));
+  if (kind === 'activity-formats') {
+    const [used] = await db.select({ id: activities.id }).from(activities).where(eq(activities.format_id, id)).limit(1);
+    if (used) return apiErrors.conflict('Formato ainda usado por atividades');
+  }
+  if (kind === 'activity-focuses') {
+    const [used] = await db
+      .select({ id: activities.id })
+      .from(activities)
+      .where(or(eq(activities.focus_id, id), eq(activities.secondary_focus_id, id)))
+      .limit(1);
+    if (used) return apiErrors.conflict('Foco ainda usado por atividades');
+  }
   if (kind === 'general-objectives') {
     const [child] = await db
       .select({ id: educationalGoals.id })

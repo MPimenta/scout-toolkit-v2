@@ -130,8 +130,8 @@ export const CONTRAST_PAIRS: readonly ContrastPair[] = [
 
 /** Age-group enum value to division token key and display metadata. */
 export const DIVISIONS = [
-  { ageGroup: 'cub_scouts', key: 'cub-scouts', name: 'Alcateia', ages: '7–10½', pantone: '109' },
-  { ageGroup: 'scouts', key: 'scouts', name: 'Tribo de Escoteiros', ages: '10½–14', pantone: '348' },
+  { ageGroup: 'cub_scouts', key: 'cub-scouts', name: 'Alcateia', ages: '6–10', pantone: '109' },
+  { ageGroup: 'scouts', key: 'scouts', name: 'Tribo de Escoteiros', ages: '10–14', pantone: '348' },
   { ageGroup: 'adventurers', key: 'adventurers', name: 'Tribo de Exploradores', ages: '14–17', pantone: '280' },
   { ageGroup: 'rovers', key: 'rovers', name: 'Clã', ages: '17–21', pantone: '032' },
   { ageGroup: 'leaders', key: 'leaders', name: 'Chefia', ages: 'Adultos', pantone: 'Branco' },

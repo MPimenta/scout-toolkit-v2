@@ -257,6 +257,34 @@ async function createTestSchema() {
       await sql.unsafe(`ALTER TABLE activities ADD COLUMN IF NOT EXISTS ${column}`);
     }
     await sql`ALTER TABLE activities ADD COLUMN IF NOT EXISTS source_id uuid REFERENCES activity_sources(id) ON DELETE SET NULL`;
+    await sql`ALTER TABLE activity_sources ADD COLUMN IF NOT EXISTS priority integer`;
+
+    // Formats and focuses (reference sheet), the duration range and the sheet id of activities
+    for (const table of ['activity_formats', 'activity_focuses']) {
+      await sql.unsafe(`
+        CREATE TABLE IF NOT EXISTS ${table} (
+          id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+          code text NOT NULL UNIQUE,
+          name text NOT NULL,
+          description text,
+          position integer NOT NULL DEFAULT 0,
+          is_managed boolean NOT NULL DEFAULT false,
+          created_at timestamp NOT NULL DEFAULT now()
+        )
+      `);
+    }
+    for (const column of [
+      'duration_min_minutes integer',
+      'duration_max_minutes integer',
+      'external_id text',
+      'external_hash text',
+      'format_id uuid REFERENCES activity_formats(id) ON DELETE RESTRICT',
+      'focus_id uuid REFERENCES activity_focuses(id) ON DELETE RESTRICT',
+      'secondary_focus_id uuid REFERENCES activity_focuses(id) ON DELETE RESTRICT',
+    ]) {
+      await sql.unsafe(`ALTER TABLE activities ADD COLUMN IF NOT EXISTS ${column}`);
+    }
+    await sql`CREATE UNIQUE INDEX IF NOT EXISTS activities_external_id_unique ON activities (external_id)`;
     await sql`ALTER TABLE activity_sdgs ADD COLUMN IF NOT EXISTS justification text`;
 
     // Programs table
@@ -343,6 +371,8 @@ async function createTestSchema() {
         created_at timestamp NOT NULL DEFAULT now()
       )
     `;
+    await sql`ALTER TABLE challenges ADD COLUMN IF NOT EXISTS short_title text`;
+    await sql`ALTER TABLE challenges ADD COLUMN IF NOT EXISTS integration_age_groups text[] NOT NULL DEFAULT '{}'`;
     await sql`
       CREATE TABLE IF NOT EXISTS challenge_goals (
         challenge_id uuid NOT NULL REFERENCES challenges(id) ON DELETE CASCADE,
@@ -531,6 +561,8 @@ export async function resetTestDatabase() {
         'activity_age_groups',
         'activity_activity_types',
         'activities',
+        'activity_formats',
+        'activity_focuses',
         'activity_sources',
         'activity_types',
         'challenge_goals',

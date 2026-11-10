@@ -31,6 +31,8 @@ interface ChallengeOption {
   id: string;
   code: string;
   title: string;
+  short_title?: string | null;
+  integration_age_groups?: string[];
   age_group: string;
   type: { code: string; name: string };
 }
@@ -57,7 +59,9 @@ const INSTRUCTIONS_TEMPLATE = 'Preparação\n…\n\nDesenvolvimento\n1. …\n2. 
 const RISK_LEVELS = [
   { value: '', label: '—' },
   { value: 'low', label: 'Baixo' },
+  { value: 'low_medium', label: 'Baixo a médio' },
   { value: 'medium', label: 'Médio' },
+  { value: 'medium_high', label: 'Médio a alto' },
   { value: 'high', label: 'Alto' },
 ];
 
@@ -94,6 +98,11 @@ export function ActivityEditorForm({
     locations: string[];
     age_groups: string[];
     activity_type_ids: string[];
+    format_id: string | null;
+    focus_id: string | null;
+    secondary_focus_id: string | null;
+    duration_min_minutes: number | null;
+    duration_max_minutes: number | null;
     educational_goal_ids: string[];
     objectives: ObjectiveDraft[];
     sdgs: SdgDraft[];
@@ -144,8 +153,13 @@ export function ActivityEditorForm({
   const [groupSizes, setGroupSizes] = useState<string[]>(defaults?.group_sizes ?? ['medium']);
   const [locations, setLocations] = useState<string[]>(defaults?.locations ?? ['outside']);
   const [ageGroups, setAgeGroupsState] = useState<string[]>(defaults?.age_groups ?? ['scouts']);
-  const [typeIds, setTypeIds] = useState<string[]>(defaults?.activity_type_ids ?? []);
-  const [typeOptions, setTypeOptions] = useState<Array<{ value: string; label: string }>>([]);
+  // The former activity types are no longer edited here; an edit keeps whatever links the activity has.
+  const keptTypeIds = defaults?.activity_type_ids ?? [];
+  const [formatId, setFormatId] = useState(defaults?.format_id ?? '');
+  const [focusId, setFocusId] = useState(defaults?.focus_id ?? '');
+  const [secondaryFocusId, setSecondaryFocusId] = useState(defaults?.secondary_focus_id ?? '');
+  const [formatOptions, setFormatOptions] = useState<ValueChoice[]>([]);
+  const [focusOptions, setFocusOptions] = useState<ValueChoice[]>([]);
   const [objectives, setObjectives] = useState<ObjectiveDraft[]>(defaults?.objectives ?? []);
   const [goals, setGoals] = useState<PickerGoal[]>([]);
   const [removedNotice, setRemovedNotice] = useState<string | null>(null);
@@ -161,9 +175,8 @@ export function ActivityEditorForm({
         .then((response) => response.json())
         .then(apply)
         .catch(() => undefined);
-    load('/api/taxonomies/activity-types', (data) =>
-      setTypeOptions(((data.activity_types as Array<{ id: string; name: string }>) ?? []).map((type) => ({ value: type.id, label: type.name })))
-    );
+    load('/api/taxonomies/activity-formats', (data) => setFormatOptions((data.activity_formats as ValueChoice[]) ?? []));
+    load('/api/taxonomies/activity-focuses', (data) => setFocusOptions((data.activity_focuses as ValueChoice[]) ?? []));
     load('/api/taxonomies/educational-goals', (data) => setGoals((data.educational_goals as PickerGoal[]) ?? []));
     load('/api/taxonomies/sdgs', (data) => setSdgOptions((data.sdgs as SdgOption[]) ?? []));
     load('/api/taxonomies/challenges', (data) => setChallengeOptions((data.challenges as ChallengeOption[]) ?? []));
@@ -208,8 +221,20 @@ export function ActivityEditorForm({
     event.preventDefault();
     setBusy(true);
     setError(null);
-    if (!groupSizes.length || !locations.length || !ageGroups.length || !typeIds.length) {
-      setError('Escolha pelo menos um valor em tamanho do grupo, local, secção e tipo.');
+    if (!groupSizes.length || !locations.length || !ageGroups.length) {
+      setError('Escolha pelo menos um valor em tamanho do grupo, local e secção.');
+      setStep('basics');
+      setBusy(false);
+      return;
+    }
+    if (!formatId || !focusId) {
+      setError(t('activityEditor.formatFocusRequired'));
+      setStep('basics');
+      setBusy(false);
+      return;
+    }
+    if (secondaryFocusId && secondaryFocusId === focusId) {
+      setError(t('activityEditor.secondaryDiffers'));
       setStep('basics');
       setBusy(false);
       return;
@@ -220,7 +245,12 @@ export function ActivityEditorForm({
     body.group_sizes = groupSizes;
     body.locations = locations;
     body.age_groups = ageGroups;
-    body.activity_type_ids = typeIds;
+    body.activity_type_ids = keptTypeIds;
+    body.format_id = formatId;
+    body.focus_id = focusId;
+    body.secondary_focus_id = secondaryFocusId || null;
+    body.duration_min_minutes = body.duration_min_minutes === '' ? null : Number(body.duration_min_minutes);
+    body.duration_max_minutes = body.duration_max_minutes === '' ? null : Number(body.duration_max_minutes);
     body.objectives = objectives.map((row) => ({ goal_id: row.goal_id, age_group: row.age_group, behaviour: row.behaviour.trim() || null }));
     body.sdgs = sdgRows.map((row) => ({ sdg_id: row.sdg_id, justification: row.justification.trim() || null }));
     body.challenge_ids = challengeIds;
@@ -264,6 +294,10 @@ export function ActivityEditorForm({
         <Field name="description" label="Descrição" defaultValue={defaults?.description} />
         <Field name="materials" label="Materiais" defaultValue={defaults?.materials} />
         <Field name="approximate_duration_minutes" label="Duração (min)" type="number" defaultValue={defaults?.approximate_duration_minutes} />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field name="duration_min_minutes" label={t('activityEditor.durationMin')} type="number" required={false} defaultValue={defaults?.duration_min_minutes ?? undefined} />
+          <Field name="duration_max_minutes" label={t('activityEditor.durationMax')} type="number" required={false} defaultValue={defaults?.duration_max_minutes ?? undefined} />
+        </div>
         <CheckboxGroup
           legend="Grupo"
           name="group_sizes"
@@ -286,7 +320,16 @@ export function ActivityEditorForm({
           selected={ageGroups}
           onChange={setAgeGroups}
         />
-        <CheckboxGroup legend="Tipo de atividade" name="activity_type_ids" options={typeOptions} selected={typeIds} onChange={setTypeIds} />
+        <ValueSelect id="format_id" label={t('activityEditor.format')} options={formatOptions} value={formatId} onChange={setFormatId} required noneLabel={t('activityEditor.choose')} />
+        <ValueSelect id="focus_id" label={t('activityEditor.focus')} options={focusOptions} value={focusId} onChange={setFocusId} required noneLabel={t('activityEditor.choose')} />
+        <ValueSelect
+          id="secondary_focus_id"
+          label={t('activityEditor.secondaryFocus')}
+          options={focusOptions.filter((option) => option.id !== focusId)}
+          value={secondaryFocusId}
+          onChange={setSecondaryFocusId}
+          noneLabel={t('activityEditor.noSecondary')}
+        />
         <div className="space-y-1">
           <Label htmlFor="source_id">Fonte</Label>
           <select
@@ -435,7 +478,7 @@ export function ActivityEditorForm({
                   <span>
                     <span className="mr-1 font-bold">{challenge.code}</span>
                     <span className="mr-1 text-muted-foreground">({enumLabel(t, 'ageGroup', challenge.age_group)})</span>
-                    {challenge.title}
+                    {challenge.short_title || challenge.title}
                   </span>
                 </label>
               ))}
@@ -496,6 +539,54 @@ function RiskFields({
         <Textarea id={`${prefix}_mitigation`} name={`${prefix}_mitigation`} rows={3} defaultValue={value('mitigation')} />
       </div>
     </fieldset>
+  );
+}
+
+type ValueChoice = { id: string; name: string; description?: string | null };
+
+/** A single choice (format or focus) with the description of the chosen value as help text. */
+function ValueSelect({
+  id,
+  label,
+  options,
+  value,
+  onChange,
+  noneLabel,
+  required = false,
+}: {
+  id: string;
+  label: string;
+  options: ValueChoice[];
+  value: string;
+  onChange: (next: string) => void;
+  noneLabel: string;
+  required?: boolean;
+}) {
+  const chosen = options.find((option) => option.id === value);
+  return (
+    <div className="space-y-1">
+      <Label htmlFor={id}>{label}</Label>
+      <select
+        id={id}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        required={required}
+        aria-describedby={chosen?.description ? `${id}-help` : undefined}
+        className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+      >
+        <option value="">{noneLabel}</option>
+        {options.map((option) => (
+          <option key={option.id} value={option.id}>
+            {option.name}
+          </option>
+        ))}
+      </select>
+      {chosen?.description && (
+        <p id={`${id}-help`} className="text-xs text-muted-foreground">
+          {chosen.description}
+        </p>
+      )}
+    </div>
   );
 }
 

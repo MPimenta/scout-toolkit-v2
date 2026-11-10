@@ -12,21 +12,36 @@ import type { AgeGroupValue, RiskLevelValue } from './category-values';
 export type ParsedRisk = {
   level: RiskLevelValue | null;
   text: string | null;
-  /** "Baixo a médio: …" style cells: the higher level is stored and the wording is kept. */
+  /** A range the five levels cannot express (for example "Baixo a alto"): the higher level is stored and the wording is kept. */
   range: boolean;
 };
 
 const LEVELS: Record<string, RiskLevelValue> = { baixo: 'low', medio: 'medium', alto: 'high' };
+/** The two intermediate levels of the reference sheet, written as "A a B". */
+const INTERMEDIATE: Record<string, RiskLevelValue> = { 'baixo a medio': 'low_medium', 'medio a alto': 'medium_high' };
+const BARE_LEVEL = /^\s*(baixo a medio|medio a alto|baixo|medio|alto)\s*\.?\s*$/i;
 const RISK_HEAD = /^\s*(baixo|medio|alto)(?:\s+a\s+(baixo|medio|alto))?\s*[:\-–]\s*/i;
 
 export function parseRiskCell(raw: unknown): ParsedRisk {
   if (isPlaceholder(raw)) return { level: null, text: null, range: false };
   const original = String(raw).trim();
+  // A cell that is only the level ("Baixo") has a level and no explanation.
+  const bare = BARE_LEVEL.exec(normalizeText(original));
+  if (bare) {
+    const label = bare[1]!;
+    return { level: INTERMEDIATE[label] ?? LEVELS[label]!, text: null, range: false };
+  }
   const head = RISK_HEAD.exec(normalizeText(original));
   if (!head) return { level: null, text: original, range: false };
   const first = LEVELS[head[1]!]!;
   const second = head[2] ? LEVELS[head[2]] : undefined;
   if (second) {
+    const intermediate = INTERMEDIATE[`${head[1]} a ${head[2]}`];
+    if (intermediate) {
+      const colon = original.search(/[:\-–]/);
+      const rest = colon >= 0 ? original.slice(colon + 1).trim() : '';
+      return { level: intermediate, text: rest || null, range: false };
+    }
     const order: RiskLevelValue[] = ['low', 'medium', 'high'];
     const level = order[Math.max(order.indexOf(first), order.indexOf(second))]!;
     return { level, text: original, range: true };
@@ -147,10 +162,20 @@ function editDistance(a: string, b: string): number {
 
 export type SourceRef = { id: string; code: string; name: string };
 
+/**
+ * Spellings used in the activities tab that differ from the sources tab for the same source
+ * (reviewed by hand; nothing else is guessed). Key: normalised activity spelling. Value: source code.
+ */
+export const SOURCE_ALIASES: Record<string, string> = {
+  'cim terras de tras-os-montes': 'cimttm',
+  'project gutenberg: how girls can help their country (1917)': 'gut28983',
+  'project gutenberg: scouting for girls (1918)': 'gut52506',
+};
+
 /** Matches the "Fonte" cell to a source by name or code, tolerating a one-letter typo. */
 export function matchSource(raw: unknown, sources: readonly SourceRef[]): SourceRef | null {
   if (isPlaceholder(raw)) return null;
-  const wanted = normalizeText(String(raw));
+  const wanted = SOURCE_ALIASES[normalizeText(String(raw))] ?? normalizeText(String(raw));
   const exact = sources.find((source) => normalizeText(source.name) === wanted || normalizeText(source.code) === wanted);
   if (exact) return exact;
   const close = sources.filter((source) => wanted.length > 4 && editDistance(normalizeText(source.name), wanted) <= 1);

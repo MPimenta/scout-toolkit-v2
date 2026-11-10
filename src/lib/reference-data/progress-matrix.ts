@@ -64,6 +64,11 @@ export interface ApplyProgressMatrixResult {
 
 type Tx = ReferenceExecutor;
 
+/** A text[] literal for a comparison in SQL (an empty list is '{}'). */
+function textArray(values: readonly string[]) {
+  return values.length === 0 ? sql`'{}'::text[]` : sql`ARRAY[${sql.join(values.map((value) => sql`${value}`), sql`, `)}]::text[]`;
+}
+
 function pairKey(a: string, b: string): string {
   return `${a}\u0000${b}`;
 }
@@ -252,12 +257,22 @@ async function run(tx: Tx, data: ProgressMatrixDataset): Promise<ApplyProgressMa
         age_group: challenge.age_group,
         position: challenge.position,
         title: challenge.title,
+        short_title: challenge.short_title,
+        integration_age_groups: challenge.integration_age_groups,
         is_managed: true,
       })
       .onConflictDoUpdate({
         target: challenges.code,
-        set: { type_id: typeId, age_group: challenge.age_group, position: challenge.position, title: challenge.title, is_managed: true },
-        setWhere: sql`(${challenges.type_id}, ${challenges.age_group}, ${challenges.position}, ${challenges.title}, ${challenges.is_managed}) IS DISTINCT FROM (${typeId}::uuid, ${challenge.age_group}, ${challenge.position}, ${challenge.title}, true)`,
+        set: {
+          type_id: typeId,
+          age_group: challenge.age_group,
+          position: challenge.position,
+          title: challenge.title,
+          short_title: challenge.short_title,
+          integration_age_groups: challenge.integration_age_groups,
+          is_managed: true,
+        },
+        setWhere: sql`(${challenges.type_id}, ${challenges.age_group}, ${challenges.position}, ${challenges.title}, ${challenges.short_title}, ${challenges.integration_age_groups}, ${challenges.is_managed}) IS DISTINCT FROM (${typeId}::uuid, ${challenge.age_group}, ${challenge.position}, ${challenge.title}, ${challenge.short_title}, ${textArray(challenge.integration_age_groups)}, true)`,
       })
       .returning({ id: challenges.id });
     result.changed.challenges += rows.length;

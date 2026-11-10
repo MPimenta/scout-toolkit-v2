@@ -35,7 +35,41 @@ describe('progress-matrix dataset', () => {
     expect(data.challenge_types).toHaveLength(7);
     expect(data.challenges).toHaveLength(112);
     // 287 listed codes; one challenge lists a code twice.
-    expect(data.challenges.reduce((n, c) => n + c.goal_codes.length, 0)).toBe(286);
+    expect(data.challenges.reduce((n, c) => n + c.goal_codes.length, 0)).toBe(287);
+  });
+
+  it('follows the reference sheet: matrix v1.1 links for the five desafios that changed', () => {
+    const links = (code: string) => data.challenges.find((c) => c.code === code)!.goal_codes;
+    expect(links('VAL-G')).toEqual(['1E.2', '4C.2', '4C.3']);
+    expect(links('CC-H')).toEqual(['7S.2.3']);
+    expect(links('CC-I')).toEqual(['8S.1.3', '7S.2.2']);
+    expect(links('CC-M')).toEqual(['4E.2.4', '2I.4']);
+    expect(links('CR-N')).toEqual(['4I.4']);
+  });
+
+  it('keeps the workbook codes of the objectives the Regulamento writes differently', () => {
+    const codes = new Set(data.goals.map((g) => g.code));
+    for (const code of ['2C.3-4', '4F.2.3', '4F.2.4', '6C.2', '6C.3', '7C.3-4']) expect(codes.has(code), code).toBe(true);
+    expect(data.goals.find((g) => g.code === '4A.2')!.title).toBe('Gerir as suas emoções.');
+  });
+
+  it('stores the integration divisions as data and no marker in the text', () => {
+    const by = (code: string) => data.challenges.find((c) => c.code === code)!;
+    expect(by('EVAS-A').integration_age_groups).toEqual(['cub_scouts']);
+    expect(by('EVAS-H').integration_age_groups).toEqual(['adventurers']);
+    expect(by('VAL-D').integration_age_groups).toEqual(['scouts', 'adventurers', 'rovers']);
+    expect(by('VA-A').integration_age_groups).toEqual(['cub_scouts', 'scouts', 'adventurers', 'rovers']);
+    expect(by('VAL-G').integration_age_groups).toEqual([]);
+    expect(data.challenges.filter((c) => c.integration_age_groups.length > 0)).toHaveLength(31);
+    for (const challenge of data.challenges) expect(challenge.title, challenge.code).not.toMatch(/\[Integra/i);
+  });
+
+  it('gives every desafio the short title of the sheet', () => {
+    expect(data.challenges.find((c) => c.code === 'EVAS-B')!.short_title).toBe('Participa em 3 jogos de sentidos e motricidade.');
+    for (const challenge of data.challenges) {
+      expect(challenge.short_title.length, challenge.code).toBeGreaterThan(5);
+      expect(challenge.short_title.length, challenge.code).toBeLessThanOrEqual(challenge.title.length);
+    }
   });
 
   it('names the six areas as the product owner confirmed', () => {

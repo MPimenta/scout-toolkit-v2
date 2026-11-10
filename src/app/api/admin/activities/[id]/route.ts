@@ -5,7 +5,7 @@ import { activities } from '../../../../../../drizzle/schema';
 import { requireAdminApi } from '@/lib/auth/utils';
 import { apiErrors, withApiErrorHandler } from '@/lib/errors';
 import { validateUUID } from '@/lib/errors/error-handler';
-import { activityIsReferenced, parseActivityWrite, updateActivity, verifyActivityExtras, verifyActivityGoals, verifyActivityTypes } from '@/lib/activities/write';
+import { activityIsReferenced, parseActivityWrite, updateActivity, verifyActivityExtras, verifyActivityGoals, verifyActivityTypes, verifyFormatAndFocus } from '@/lib/activities/write';
 
 export const PATCH = withApiErrorHandler(async (
   request: NextRequest,
@@ -33,6 +33,9 @@ export const PATCH = withApiErrorHandler(async (
 
   const typeError = await verifyActivityTypes(parsed);
   if (typeError) return apiErrors.validation('body', typeError);
+
+  const formatFocusError = await verifyFormatAndFocus(parsed);
+  if (formatFocusError) return apiErrors.validation('body', formatFocusError);
 
   const goalError = await verifyActivityGoals(parsed);
   if (goalError) return apiErrors.validation('body', goalError);

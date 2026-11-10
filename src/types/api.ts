@@ -40,6 +40,13 @@ export interface ApiTaxonomyGoal extends ApiEducationalGoal {
 }
 
 // Activities API Types
+/** A format or a focus as embedded in an activity. */
+export interface ApiValueRef {
+  id: string;
+  code: string;
+  name: string;
+}
+
 export interface ApiActivity {
   id: string;
   name: string;
@@ -47,6 +54,11 @@ export interface ApiActivity {
   materials: string;
   instructions?: string | null;
   approximate_duration_minutes: number;
+  duration_min_minutes?: number | null;
+  duration_max_minutes?: number | null;
+  format?: ApiValueRef | null;
+  focus?: ApiValueRef | null;
+  secondary_focus?: ApiValueRef | null;
   group_sizes: string[]; // API returns strings, not union types
   effort_level: string; // API returns string, not union type
   locations: string[];
@@ -140,7 +152,8 @@ export interface ApiUser {
 // Filter and Search API Types
 export interface ApiFilterState {
   search?: string;
-  activityType?: string[];
+  format?: string[];
+  focus?: string[];
   sdgs?: string[];
   educationalGoals?: string[];
   durationMin?: number;

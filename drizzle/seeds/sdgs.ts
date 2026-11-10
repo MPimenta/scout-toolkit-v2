@@ -71,7 +71,7 @@ const sdgData = [
     number: 11,
     name: 'Cidades e Comunidades Sustentáveis',
     description: 'Tornar as cidades e os assentamentos humanos inclusivos, seguros, resilientes e sustentáveis',
-    icon_url: '/sdg-icons/sdg-9.png',
+    icon_url: '/sdg-icons/sdg-11.png',
   },
   {
     number: 12,

@@ -9,12 +9,15 @@ import {
   mapEffort,
   mapGroupSizes,
   mapLocations,
+  mapNamedValue,
   mapSdgs,
   normalizeName,
   normalizeText,
+  parseBoolean,
   parseDuration,
   resolveColumns,
   type ColumnKey,
+  type NamedRef,
   type SdgRef,
   type TypeRef,
 } from './baseline-map';
@@ -26,6 +29,7 @@ import {
   parseSdgJustifications,
   type SourceRef,
 } from './baseline-rich';
+import { parseDurationRange } from './duration-range';
 import type { ActivityWrite, ObjectiveRow } from './write';
 import type { AgeGroupValue } from './category-values';
 
@@ -37,7 +41,11 @@ import type { AgeGroupValue } from './category-values';
 export type SheetRow = Record<string, unknown>;
 
 export type Taxonomies = {
+  /** Former activity types (optional now; kept while the old tables exist). */
   types: readonly TypeRef[];
+  /** The official formats and focuses, matched by name or code; never created from activity rows. */
+  formats: readonly NamedRef[];
+  focuses: readonly NamedRef[];
   sdgs: readonly SdgRef[];
   /** Matriz objectives with the divisions they belong to (needed for objective rows). */
   goals?: ReadonlyArray<{ id: string; code: string; age_groups: readonly string[] }>;
@@ -58,6 +66,8 @@ export type PlannedActivity = {
   row: number;
   externalId: string | null;
   source: string | null;
+  /** The sheet's Publicada cell. */
+  published: boolean;
   data: ActivityWrite;
 };
 
@@ -71,7 +81,11 @@ export type LoadReport = {
   /** Count of rows with a non-empty value, per field. */
   fillRates: Record<string, { filled: number; total: number }>;
   collapsedDurations: Array<{ row: number; note: string }>;
-  droppedValues: Array<{ row: number; field: string; values: string[] }>;
+  droppedValues: Array<{ row: number; externalId?: string | null; field: string; values: string[] }>;
+  /** Blocks written for Dirigentes that were left out on purpose (they have no objectives): number of activities. */
+  ignored: { dirigentesBlocks: number };
+  /** Review fields of the sheet that are counted but not stored. */
+  reviewStates: { estado: Record<string, number>; confianca: Record<string, number>; variantes: number };
   /** Values kept but worth a look, for example a risk range stored as its higher level. */
   notes: Array<{ row: number; note: string }>;
   unmapped: {
@@ -131,10 +145,11 @@ function buildRichFields(
   ageGroups: readonly AgeGroupValue[],
   sdgIds: readonly string[],
   rowNumber: number,
-  report: LoadReport
+  report: LoadReport,
+  externalId: string | null
 ): Partial<ActivityWrite> {
   const dropped = (field: string, values: string[]) => {
-    if (values.length > 0) report.droppedValues.push({ row: rowNumber, field, values });
+    if (values.length > 0) report.droppedValues.push({ row: rowNumber, externalId, field, values });
   };
   const out: Partial<ActivityWrite> = {};
 
@@ -147,7 +162,7 @@ function buildRichFields(
     out[`${kind}_risk`] = risk.text;
     out[`${kind}_mitigation`] = cleanOptionalText(cell(raw, columns[mitigationKey]));
     if (risk.range) report.notes.push({ row: rowNumber, note: `risco ${kind}: intervalo guardado como nível mais alto` });
-    if (risk.text && !risk.level) dropped(`risco ${kind} sem nível`, [risk.text.slice(0, 40)]);
+    if (risk.text && !risk.level) dropped(`risco ${kind === 'physical' ? 'físico' : 'psicológico'} sem nível`, [risk.text.slice(0, 40)]);
   }
 
   const imageCell = text(raw, columns.image);
@@ -167,11 +182,14 @@ function buildRichFields(
     const objectives = parseDivisionBlocks(cell(raw, columns.objectives));
     const behaviours = parseDivisionBlocks(cell(raw, columns.behaviours));
     dropped('objetivos (linhas ilegíveis)', objectives.unparsed);
+    // Dirigentes have no objectives: their blocks are skipped on purpose, not reported as errors.
+    if (objectives.blocks.has('leaders') || behaviours.blocks.has('leaders')) report.ignored.dirigentesBlocks += 1;
     const rows: ObjectiveRow[] = [];
     const used = new Set<string>();
     const unknown: string[] = [];
     const wrongDivision: string[] = [];
     for (const [division, lines] of objectives.blocks) {
+      if (division === 'leaders') continue;
       if (!ageGroups.includes(division)) {
         wrongDivision.push(`${division}: divisão não está na atividade`);
         continue;
@@ -196,7 +214,7 @@ function buildRichFields(
     }
     dropped('objetivos desconhecidos', unknown);
     dropped('objetivos fora da divisão', wrongDivision);
-    const orphans = [...behaviours.blocks].flatMap(([division, lines]) =>
+    const orphans = [...behaviours.blocks].filter(([division]) => division !== 'leaders').flatMap(([division, lines]) =>
       lines.filter((line) => !used.has(`${division}:${line.code}`)).map((line) => `${division}: ${line.code}`)
     );
     dropped('comportamentos sem objetivo', orphans);
@@ -240,6 +258,8 @@ export function planBaselineLoad(
     fillRates: {},
     collapsedDurations: [],
     droppedValues: [],
+    reviewStates: { estado: {}, confianca: {}, variantes: 0 },
+    ignored: { dirigentesBlocks: 0 },
     notes: [],
     unmapped: { types: {}, sdgs: {} },
   };
@@ -270,6 +290,12 @@ export function planBaselineLoad(
       if (!isPlaceholder(cell(raw, header))) report.fillRates[key]!.filled += 1;
     }
 
+    const estado = text(raw, columns.state);
+    if (estado) bump(report.reviewStates.estado, estado);
+    const confianca = text(raw, columns.confidence);
+    if (confianca) bump(report.reviewStates.confianca, confianca);
+    if (!isPlaceholder(cell(raw, columns.variants))) report.reviewStates.variantes += 1;
+
     const name = text(raw, columns.name);
     const externalId = text(raw, columns.external_id) || null;
     const skip = (reason: string): void =>
@@ -291,29 +317,55 @@ export function planBaselineLoad(
     const groups = mapGroupSizes(cell(raw, columns.group));
     const locations = mapLocations(cell(raw, columns.location));
     const ages = mapAgeGroups(cell(raw, columns.age));
-    const types = mapActivityTypes(cell(raw, columns.type), taxonomies.types);
+    const types = columns.type ? mapActivityTypes(cell(raw, columns.type), taxonomies.types) : { values: [] as string[], dropped: [] as string[] };
+    const format = mapNamedValue(cell(raw, columns.format), taxonomies.formats);
+    const focus = mapNamedValue(cell(raw, columns.focus), taxonomies.focuses);
+    const secondary = mapNamedValue(cell(raw, columns.focus_secondary), taxonomies.focuses);
 
     const dropped: Array<[string, string[]]> = [
       ['esforço', effort.dropped],
       ['grupo', groups.dropped],
       ['local', locations.dropped],
       ['divisão', ages.dropped],
+      ['formato', format.dropped],
+      ['foco', focus.dropped],
+      ['foco secundário', secondary.dropped],
     ];
     for (const miss of types.dropped) bump(report.unmapped.types, miss);
+    // Unknown values are reported even when the row is then skipped, so the report shows everything to fix.
+    for (const [field, values] of dropped) {
+      if (values.length > 0) report.droppedValues.push({ row: rowNumber, externalId, field, values });
+    }
 
     if (groups.values.length === 0) return skip('grupo em falta ou não reconhecido');
     if (locations.values.length === 0) return skip('local em falta ou não reconhecido');
     if (ages.values.length === 0) return skip('divisão em falta ou não reconhecida');
-    if (types.values.length === 0) return skip('tipo em falta ou não reconhecido');
+    if (!format.id) return skip('formato em falta ou não reconhecido');
+    if (!focus.id) return skip('foco em falta ou não reconhecido');
+    let secondaryId = secondary.id;
+    if (secondaryId === focus.id) {
+      secondaryId = null;
+      report.notes.push({ row: rowNumber, note: 'foco secundário igual ao principal: ignorado' });
+    }
+
+    // Optional range next to the single duration the programs use.
+    const range = parseDurationRange(cell(raw, columns.minutes_min), cell(raw, columns.minutes_max));
+    let durationMin: number | null = null;
+    let durationMax: number | null = null;
+    if (typeof range === 'string') {
+      report.notes.push({ row: rowNumber, note: `intervalo de duração ignorado: ${range}` });
+    } else {
+      durationMin = range.min;
+      durationMax = range.max;
+      if ((durationMin !== null && duration.minutes < durationMin) || (durationMax !== null && duration.minutes > durationMax)) {
+        report.notes.push({ row: rowNumber, note: `duração ${duration.minutes} min fora do intervalo ${durationMin ?? '?'}-${durationMax ?? '?'}` });
+      }
+    }
 
     const sdgs = mapSdgs(cell(raw, columns.sdgs), taxonomies.sdgs);
     for (const miss of sdgs.dropped) bump(report.unmapped.sdgs, miss);
 
-    for (const [field, values] of dropped) {
-      if (values.length > 0) report.droppedValues.push({ row: rowNumber, field, values });
-    }
-
-    const rich = buildRichFields(raw, columns, taxonomies, ages.values, sdgs.values, rowNumber, report);
+    const rich = buildRichFields(raw, columns, taxonomies, ages.values, sdgs.values, rowNumber, report, externalId);
 
     const data: ActivityWrite = {
       ...rich,
@@ -322,6 +374,12 @@ export function planBaselineLoad(
       materials: cleanOptionalText(cell(raw, columns.materials)) ?? NO_MATERIALS_TEXT,
       instructions: cleanOptionalText(cell(raw, columns.instructions)),
       approximate_duration_minutes: duration.minutes,
+      duration_min_minutes: durationMin,
+      duration_max_minutes: durationMax,
+      external_id: externalId,
+      format_id: format.id,
+      focus_id: focus.id,
+      secondary_focus_id: secondaryId,
       group_sizes: groups.values,
       effort_level: effort.value,
       locations: locations.values,
@@ -334,6 +392,7 @@ export function planBaselineLoad(
       row: rowNumber,
       externalId,
       source: text(raw, columns.source) || null,
+      published: parseBoolean(cell(raw, columns.published)),
       data,
       ageKey: [...ages.values].sort()[0]!,
       dedupeName: normalizeName(name),
@@ -347,9 +406,10 @@ export function planBaselineLoad(
   }));
   const unique: typeof valid = [];
   for (const candidate of valid) {
-    const clash = seen.find(
-      (s) => s.name === candidate.dedupeName && s.ages.some((a) => candidate.data.age_groups.includes(a as never))
-    );
+    // A row with a sheet id is keyed by that id (the sheet is the reference); only rows without one are de-duplicated by name.
+    const clash = candidate.externalId
+      ? undefined
+      : seen.find((s) => s.name === candidate.dedupeName && s.ages.some((a) => candidate.data.age_groups.includes(a as never)));
     if (clash) {
       report.skipped.push({
         row: candidate.row,
@@ -385,7 +445,7 @@ export function planBaselineLoad(
   report.selected = selected.length;
 
   return {
-    selected: selected.map(({ row, externalId, source, data }) => ({ row, externalId, source, data })),
+    selected: selected.map(({ row, externalId, source, published, data }) => ({ row, externalId, source, published, data })),
     report,
   };
 }
@@ -404,6 +464,7 @@ export function summarizeReport(report: LoadReport, loaded?: number): string {
   if (report.collapsedDurations.length > 0) lines.push(`Durações em intervalo: ${report.collapsedDurations.length}`);
   if (report.droppedValues.length > 0) lines.push(`Linhas com valores descartados: ${report.droppedValues.length}`);
   if (report.notes.length > 0) lines.push(`Notas: ${report.notes.length}`);
+  if (report.ignored.dirigentesBlocks > 0) lines.push(`Blocos de Dirigentes ignorados (sem objetivos): ${report.ignored.dirigentesBlocks}`);
   const unmappedTypes = Object.keys(report.unmapped.types).length;
   const unmappedSdgs = Object.keys(report.unmapped.sdgs).length;
   if (unmappedTypes) lines.push(`Tipos não mapeados: ${unmappedTypes}`);

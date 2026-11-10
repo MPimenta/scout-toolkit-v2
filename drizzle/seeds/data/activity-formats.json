@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "source": "Folha de atividades, separadores \"formatos\" e \"focos\"",
+  "formats": [
+    {
+      "code": "jogo",
+      "name": "Jogo",
+      "description": "Atividade lúdica com regras, em geral com movimento.",
+      "position": 1
+    },
+    {
+      "code": "quebra-gelo",
+      "name": "Quebra-gelo",
+      "description": "Dinâmica curta para apresentar, aproximar e descontrair o grupo.",
+      "position": 2
+    },
+    {
+      "code": "reflexao-debriefing",
+      "name": "Reflexão/Debriefing",
+      "description": "Conversa guiada para pensar e partilhar o que se viveu.",
+      "position": 3
+    },
+    {
+      "code": "tecnica-oficina",
+      "name": "Técnica/Oficina",
+      "description": "Aprender uma técnica ou construir algo, passo a passo.",
+      "position": 4
+    },
+    {
+      "code": "desafio-iniciativa",
+      "name": "Desafio/Iniciativa",
+      "description": "Missão ou problema que o grupo tem de resolver.",
+      "position": 5
+    },
+    {
+      "code": "expressao-criativa",
+      "name": "Expressão criativa",
+      "description": "Arte, teatro, música ou construção criativa.",
+      "position": 6
+    },
+    {
+      "code": "energizante",
+      "name": "Energizante",
+      "description": "Jogo curto e de alta energia para ativar o grupo.",
+      "position": 7
+    },
+    {
+      "code": "aventura-percurso",
+      "name": "Aventura/Percurso",
+      "description": "Percurso, caça ao tesouro ou exploração no terreno.",
+      "position": 8
+    }
+  ]
+}

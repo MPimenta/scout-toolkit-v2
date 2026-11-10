@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { formatAndFocus } from '../helpers/activity';
 
 test.describe('User-generated activities', () => {
   test.beforeEach(({}, testInfo) => {
@@ -6,10 +7,7 @@ test.describe('User-generated activities', () => {
   });
 
   test('user submits, guest cannot see it, admin approves', async ({ page }) => {
-    const types = await page.request.get('/api/taxonomies/activity-types');
-    const typeBody = (await types.json()) as { activity_types: { id: string }[] };
-    const typeId = typeBody.activity_types[0]?.id;
-    if (!typeId) test.skip(true, 'No activity types available');
+    const refs = await formatAndFocus(page.request);
 
     const login = await page.request.post('/api/e2e/session', {
       data: {
@@ -35,7 +33,7 @@ test.describe('User-generated activities', () => {
           effort_level: 'low',
           locations: ['outside'],
           age_groups: ['scouts'],
-          activity_type_ids: [typeId],
+          ...refs,
         },
       });
       expect(created.status()).toBe(201);

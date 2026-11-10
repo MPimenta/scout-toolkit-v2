@@ -57,7 +57,7 @@ describe('applyProgressMatrix (DB)', () => {
     expect(await count(educationalGoalAgeGroups, 'educational_goal_age_groups')).toBe(187);
     expect(await count(challengeTypes, 'challenge_types')).toBe(7);
     expect(await count(challenges, 'challenges')).toBe(112);
-    expect(await count(challengeGoals, 'challenge_goals')).toBe(286);
+    expect(await count(challengeGoals, 'challenge_goals')).toBe(287);
     expect(result.changed.goals).toBe(174);
 
     const shared = await db

@@ -124,7 +124,9 @@ GET /api/activities?search=game&group_size=medium&effort_level=low&duration_min=
 - `effort_level` (string[]) - Filter by effort: low, medium, high
 - `location` (string) - Filter by location: inside, outside
 - `age_group` (string[]) - Filter by age group
-- `activity_type` (string[]) - Filter by activity type
+- `format` (string[]) - Format IDs (what kind of activity). Several values match any of them.
+- `focus` (string[]) - Focus IDs. An activity matches when the focus is its main or its secondary focus.
+- `activity_type` (string[]) - Former activity types (kept working while the old tables exist; the interface no longer offers it)
 - `sdgs` (string[]) - Filter by SDG IDs
 - `educational_goals` (string[]) - Specific objective IDs
 - `educational_areas` (string[]) - Educational area IDs (any objective in the area)
@@ -226,6 +228,8 @@ GET /api/activities?search=game&group_size=medium&effort_level=low&duration_min=
   }
 }
 ```
+
+**Each activity** also carries `format`, `focus` and `secondary_focus` (`{ id, code, name }` or `null`) and, when the sheet gave a range, `duration_min_minutes` / `duration_max_minutes` next to `approximate_duration_minutes`. `filters.available` lists the `formats` and `focuses` ids of the current page.
 
 #### Get Activity
 ```http
@@ -712,6 +716,35 @@ DELETE /api/admin/activities/{id}
 ```
 
 ### Taxonomies
+
+#### List Activity Formats and Focuses
+```http
+GET /api/taxonomies/activity-formats
+GET /api/taxonomies/activity-focuses
+```
+
+Public. The 8 formats and 10 focuses of the reference sheet, plus any added by an admin, in sheet order. `activity_count` is the number of approved activities that use the value (for a focus, as main or secondary focus).
+
+**Response:**
+```json
+{
+  "activity_formats": [
+    {
+      "id": "…",
+      "code": "jogo",
+      "name": "Jogo",
+      "description": "Atividade lúdica com regras, em geral com movimento.",
+      "position": 1,
+      "is_managed": true,
+      "activity_count": 582
+    }
+  ]
+}
+```
+(`activity_focuses` has the same shape.) Admin writes go through `/api/admin/taxonomies/activity-formats` and `/api/admin/taxonomies/activity-focuses`: values from the sheet (`is_managed`) answer `409` on rename and delete; an admin can add values of their own (`{ "name", "description"?, "position"? }`, the code is derived from the name), rename them and delete them when no activity uses them (`409` otherwise).
+
+#### Writing an activity
+`POST /api/activities`, `POST /api/admin/activities` and their `PATCH` need `format_id` and `focus_id` (valid ids; `400` with a Portuguese message otherwise). `secondary_focus_id` is optional and must differ from `focus_id`. `duration_min_minutes` / `duration_max_minutes` are optional whole minutes with the minimum not above the maximum. `activity_type_ids` is optional and kept only for older data. `physical_risk_level` and `psychological_risk_level` accept `low`, `low_medium`, `medium`, `medium_high` and `high`. The sheet id (`external_id`, `ATV-0001`) is returned on reads but never accepted from a request body.
 
 #### List Activity Types
 ```http
