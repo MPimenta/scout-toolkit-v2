@@ -129,6 +129,18 @@ describe('reference sheet loaders (DB)', () => {
       expect(rows[0]!.external_hash).toBe(contentHash(planned('ATV-0001', ids, { description: 'Nova descrição' }).data));
     });
 
+    it('keeps the picture an activity already has when the sheet row changes', async () => {
+      await applyActivityFormatsAndFocuses(db);
+      const ids = await refIds();
+      await upsertSelection([planned('ATV-0001', ids)], { approveAll: false });
+      await db.update(activities).set({ image_url: '/activity-illustrations/exemplo.png' }).where(eq(activities.external_id, 'ATV-0001'));
+
+      await upsertSelection([planned('ATV-0001', ids, { description: 'Outra descrição' })], { approveAll: false });
+
+      const [row] = await db.select().from(activities).where(eq(activities.external_id, 'ATV-0001'));
+      expect(row).toMatchObject({ description: 'Outra descrição', image_url: '/activity-illustrations/exemplo.png' });
+    });
+
     it('respects Publicada, and --approve-all approves without ever withdrawing an approval', async () => {
       await applyActivityFormatsAndFocuses(db);
       const ids = await refIds();

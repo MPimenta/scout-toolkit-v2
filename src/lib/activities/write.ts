@@ -512,7 +512,8 @@ export async function updateActivity(activityId: string, data: ActivityWrite) {
         secondary_focus_id: data.secondary_focus_id ?? null,
         ...(data.external_hash !== undefined ? { external_hash: data.external_hash } : {}),
         effort_level: data.effort_level,
-        image_url: data.image_url,
+        // A reload from the sheet (which has no pictures) must not wipe the picture an activity already has.
+        ...(data.external_hash !== undefined && !data.image_url ? {} : { image_url: data.image_url }),
         physical_risk_level: data.physical_risk_level ?? null,
         physical_risk: data.physical_risk ?? null,
         physical_mitigation: data.physical_mitigation ?? null,
