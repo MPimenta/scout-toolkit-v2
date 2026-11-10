@@ -2,7 +2,7 @@
 
 ### Requirement: Cards open the activity
 
-Each activity card in the catalogue SHALL open the activity page when any part of the card is activated, by pointer or keyboard. Cards SHALL show the activity's format as their label, or the former activity type when the activity has no format yet, or no label slot at all when it has neither. The catalogue SHALL NOT show internal development notes.
+Each activity card in the catalogue SHALL open the activity page when any part of the card is activated, by pointer or keyboard. Cards SHALL show the activity's format as their label, or no label slot at all when the activity has no format. The catalogue SHALL NOT show internal development notes.
 
 #### Scenario: Click the card body
 
@@ -16,18 +16,12 @@ Each activity card in the catalogue SHALL open the activity page when any part o
 
 #### Scenario: Format as the label
 
-- **GIVEN** an activity with the format Jogo and no activity type
+- **GIVEN** an activity with the format Jogo
 - **WHEN** the catalogue lists it
 - **THEN** its card shows "Jogo" as the label
 
-#### Scenario: Former type as fallback
-
-- **GIVEN** an older activity with no format and the type "Jogos"
-- **WHEN** the catalogue lists it
-- **THEN** its card shows "Jogos" as the label
-
 #### Scenario: No label
 
-- **GIVEN** an activity with no format and no type
+- **GIVEN** an activity with no format
 - **WHEN** the catalogue lists it
 - **THEN** its card has no label slot

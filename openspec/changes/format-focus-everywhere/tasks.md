@@ -1,37 +1,58 @@
 ## 1. Shared helper
 
-- [ ] 1.1 Add `src/lib/activities/kind-label.ts` (`activityKindLabel`: format, focuses, former-type fallback) with unit tests for the three cases (format and focuses, type fallback, neither)
+- [ ] 1.1 Add `src/lib/activities/kind-label.ts` (`activityKindLabel`: format, main focus, secondary focus; no fallback) with unit tests (all three, format only, none)
 - [ ] 1.2 Move `ActivityDetail` onto the helper without changing what it shows
 
-## 2. Catalogue and admin table
+## 2. Replace the type: catalogue and admin table
 
-- [ ] 2.1 `ActivityCard`: label is the format, with the type fallback and no slot when neither — component test for the three cases
-- [ ] 2.2 `ActivitiesTable`: replace the type column with Formato and Foco, update the CSV and the mobile row, keep sorting and search — component test
+- [ ] 2.1 `ActivityCard`: label is the format, no slot without one — component test
+- [ ] 2.2 `ActivitiesTable`: Formato and Foco columns replace the type column; update the CSV and the mobile row; keep sorting and search — component test
 - [ ] 2.3 Add the new column and header strings to `pt.json` and `en.json` (Portuguese wording for approval)
 
-## 3. Program builder
+## 3. Replace the type: program builder
 
-- [ ] 3.1 `GET /api/programs/[id]`: batch-load and return `format`, `focus`, `secondary_focus` per activity entry (no per-entry query), keep `activity_types`; update `useProgram` types, swagger and `docs/api.md`
-- [ ] 3.2 `AddActivityModal`: replace the type select with format and focus selects built from the loaded activities, focus matching main or secondary — component test including the secondary-focus scenario
+- [ ] 3.1 `GET /api/programs/[id]`: batch-load and return `format`, `focus`, `secondary_focus` per activity entry (no per-entry query); update `useProgram` types, swagger and `docs/api.md`
+- [ ] 3.2 `AddActivityModal`: format and focus selects built from the loaded activities (focus matches main or secondary) replace the type select — component test including the secondary-focus scenario
 - [ ] 3.3 `ProgramScheduleRow` and `ProgramBuilder`: show `Formato · Foco · Foco secundário` using the helper — component test
-- [ ] 3.4 E2E: in the program builder, filter the add-activity dialog by a format and a focus and add an activity (sheet activity, no former type)
+- [ ] 3.4 E2E: in the program builder, filter the add-activity dialog by a format and a focus and add a sheet activity
 
-## 4. Exports
+## 4. Replace the type: exports
 
 - [ ] 4.1 `load-program.ts` and `types.ts`: load format, focus and secondary focus for each activity
-- [ ] 4.2 `excel.ts` and `labels.ts`: Formato, Foco and Foco secundário replace Tipo de Atividade on both sheets, with the former types in Formato for an activity with no format — unit tests on the workbook cells
+- [ ] 4.2 `excel.ts` and `labels.ts`: Formato, Foco and Foco secundário replace Tipo de Atividade on both sheets — unit tests on the workbook cells
 - [ ] 4.3 `pdf-html.ts`: the `Formato · Foco · Foco secundário` line under the activity name, HTML-escaped — unit test
-- [ ] 4.4 Export a program with a sheet activity, an older activity with a type and a sparse activity: all three succeed
+- [ ] 4.4 Export a program with a sheet activity and a sparse activity (no format): both succeed
 
-## 5. Edit suggestions
+## 5. Replace the type: edit suggestions
 
-- [ ] 5.1 `fields.ts` and `index.ts`: add `format_id`, `focus_id`, `secondary_focus_id` (existence check, main focus differs from secondary), reject new `activity_types`, keep the apply path for pending ones — unit and SQL-integration tests
-- [ ] 5.2 `SuggestEditForm`: format and focus selects instead of the type multi-select; admin suggestions list shows the names — component test
+- [ ] 5.1 `fields.ts` and `index.ts`: add `format_id`, `focus_id`, `secondary_focus_id` (existence check, main focus differs from secondary) — unit and SQL-integration tests
+- [ ] 5.2 `SuggestEditForm`: format and focus selects instead of the type multi-select; the admin suggestions list shows the names — component test
 - [ ] 5.3 Swagger and `docs/api.md` for the new suggestable fields
 
-## 6. Wrap-up
+## 6. Remove the type from the product
 
-- [ ] 6.1 Search `src/` for remaining reads of `activity_types` / `activityTypes` and record which are intentional (fallback, API compatibility, types admin screen)
-- [ ] 6.2 `npm run typecheck`, `npm run lint`, `npm run test:run`, `npm run test:e2e`
-- [ ] 6.3 Check the Preview: card labels, the builder dialog, an Excel export and a suggestion on a sheet activity
-- [ ] 6.4 `openspec validate format-focus-everywhere --strict`, then archive
+- [ ] 6.1 Read-only check script that lists activities with no format or no focus, and pending `activity_types` suggestions; run it on dev and Preview and record the result here
+- [ ] 6.2 API: drop `activity_types` from list, detail and program responses; ignore `activity_type` (filter) and `activity_type_ids` (writes); delete `GET /api/taxonomies/activity-types` and the `activity-types` kind of `/api/admin/taxonomies/[kind]`; update `FEATURE_ROUTES` and `feature-routes-coverage.test.ts`, swagger and `docs/api.md`
+- [ ] 6.3 Admin: remove the types tab from `/admin/taxonomias`; `ActivityEditorForm` stops keeping old types; `src/app/admin/atividades/[id]/page.tsx` and `src/app/activities/page.tsx` drop the type defaults
+- [ ] 6.4 Suggestions: remove `activity_types` from `SUGGESTABLE_FIELDS`, `CATEGORY_FIELDS` and the validation and apply code
+- [ ] 6.5 Loaders and seeds: remove the type mapping from `baseline-map/plan/db`; delete `drizzle/seeds/activity-types.ts` and the type steps of `seeds/index.ts`; give `demo-activities.ts` a format and a focus directly; delete `format-focus-backfill.ts` and its calls in `load-reference-data.ts` and the seed
+- [ ] 6.6 Types and plumbing: remove the type from `src/types/*`, `guards.ts`, `component-schemas.ts`, `usage/schemas.ts`, `categories.ts`, the hooks, query keys and `query-client.ts`; remove the unused strings from `pt.json` and `en.json`
+- [ ] 6.7 Run the typechecker: it must be clean with the field gone from the types; then `grep -rn "activity_types\|activityTypes\|activity_type\|activity-types\|ActivityType" src scripts drizzle/seeds` and record what is left and why (only the migration may name it)
+
+## 7. Database
+
+- [ ] 7.1 Edit `drizzle/schema` to drop `activityTypes` and `activityActivityTypes`; **ask before running `npm run db:generate`**; review the SQL, add the first step (`UPDATE edit_suggestions SET status = 'rejected', reviewed_at = now() WHERE field = 'activity_types' AND status = 'pending'`) before the two `DROP TABLE`s, commit the migration
+- [ ] 7.2 **Ask before applying** to `scout_toolkit_dev`; apply, run `db:load-reference` and the loader twice, and check nothing changes the second time
+- [ ] 7.3 Update `tests/setup.ts` (hand-kept schema) and the helpers (`tests/helpers/activity-categories.ts`, `database.ts`) so no table or helper creates types; delete `tests/integration/db/category-migration.integration.test.ts`
+- [ ] 7.4 Update or delete the tests that name the type (list in the search of 6.7 over `tests/`): integration, unit, component and e2e, adding format and focus where an activity is created
+
+## 8. Docs and specs
+
+- [ ] 8.1 `docs/api.md` (breaking changes: removed endpoint, fields and parameter), `docs/architecture.md` (drop the two tables), `docs/planning.md` pointer, `docs/testing.md` if it names the types
+- [ ] 8.2 Check `openspec/specs` for leftover mentions of the type after the deltas are synced (`activity-format-focus` purpose line says "replacing")
+
+## 9. Wrap-up
+
+- [ ] 9.1 `npm run typecheck`, `npm run lint`, `npm run test:run`, `npm run test:e2e`
+- [ ] 9.2 After the push, check the Preview: the deploy applies the migration; open the catalogue (card labels), the builder dialog, an Excel export, a suggestion on a sheet activity, and confirm `/api/taxonomies/activity-types` answers 404
+- [ ] 9.3 `openspec validate format-focus-everywhere --strict`, then archive

@@ -18,13 +18,13 @@ The add-activity dialog of the program builder SHALL offer a format filter and a
 
 #### Scenario: Sheet activities have options
 
-- **GIVEN** the dialog lists only activities loaded from the reference sheet (none has a former type)
+- **GIVEN** the dialog lists only activities loaded from the reference sheet
 - **WHEN** the dialog opens
 - **THEN** the format and focus filters have options
 
 ### Requirement: Schedule rows show format and focus
 
-A program schedule row for an activity SHALL show its format, main focus and secondary focus (in that order, those that exist) where it used to show the activity type, and the former types only when the activity has no format. The program API SHALL return `format`, `focus` and `secondary_focus` for each activity entry.
+A program schedule row for an activity SHALL show its format, main focus and secondary focus (in that order, those that exist) in the place where the activity type used to be shown, and nothing when it has none of them. The program API SHALL return `format`, `focus` and `secondary_focus` for each activity entry.
 
 #### Scenario: Row details
 

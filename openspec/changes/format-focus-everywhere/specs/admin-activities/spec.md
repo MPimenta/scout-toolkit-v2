@@ -2,7 +2,7 @@
 
 ### Requirement: Admin table shows format and focus
 
-The admin activities table (columns, the mobile row and the CSV export) SHALL show the activity's format and main focus in place of the former activity-type column, and SHALL fall back to the former types in the format column for an activity with no format. The table SHALL stay sortable and searchable by the same text as before.
+The admin activities table (columns, the mobile row and the CSV export) SHALL show the activity's format and main focus in place of the former activity-type column. The table SHALL stay sortable and searchable by the same text as before.
 
 #### Scenario: Columns
 
