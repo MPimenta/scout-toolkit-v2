@@ -65,8 +65,8 @@ jobs:
 
       - name: Look up registry, Key Vault and the running image
         run: |
-          ACR_NAME=$(az acr list -g "$RESOURCE_GROUP" --query '[0].name' -o tsv)
-          VAULT_NAME=$(az keyvault list -g "$RESOURCE_GROUP" --query '[0].name' -o tsv)
+          ACR_NAME=aepkit
+          VAULT_NAME=aepkit-kv
           PREVIOUS=$(az webapp config container show -g "$RESOURCE_GROUP" -n "$APP" --query "[?name=='DOCKER_CUSTOM_IMAGE_NAME'].value | [0]" -o tsv)
           echo "ACR_NAME=$ACR_NAME" >> "$GITHUB_ENV"
           echo "VAULT_NAME=$VAULT_NAME" >> "$GITHUB_ENV"
@@ -101,8 +101,8 @@ jobs:
           IP=$(curl -fsS https://api.ipify.org)
           echo "RUNNER_IP=$IP" >> "$GITHUB_ENV"
           echo "RULE=gh-runner-${GITHUB_RUN_ID}" >> "$GITHUB_ENV"
-          az postgres flexible-server firewall-rule create -g "$DB_RESOURCE_GROUP" -n "$DB_SERVER" \
-            --rule-name "gh-runner-${GITHUB_RUN_ID}" --start-ip-address "$IP" --end-ip-address "$IP" -o none
+          az postgres flexible-server firewall-rule create -g "$DB_RESOURCE_GROUP" -s "$DB_SERVER" \
+            -n "gh-runner-${GITHUB_RUN_ID}" --start-ip-address "$IP" --end-ip-address "$IP" -o none
 
       - name: Apply migrations and reference data
         env:
@@ -116,8 +116,8 @@ jobs:
       - name: Close the database firewall
         if: always()
         run: |
-          az postgres flexible-server firewall-rule delete -g "$DB_RESOURCE_GROUP" -n "$DB_SERVER" \
-            --rule-name "gh-runner-${GITHUB_RUN_ID}" --yes -o none || true
+          az postgres flexible-server firewall-rule delete -g "$DB_RESOURCE_GROUP" -s "$DB_SERVER" \
+            -n "gh-runner-${GITHUB_RUN_ID}" --yes -o none || true
 
       - name: Switch the Web App to the new image
         run: |
