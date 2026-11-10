@@ -233,6 +233,7 @@ async function createTestSchema() {
       )
     `;
     for (const column of [
+      'instructions text',
       'physical_risk_level text',
       'physical_risk text',
       'physical_mitigation text',
