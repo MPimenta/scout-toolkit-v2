@@ -57,6 +57,13 @@
       "when": 1794328222886,
       "tag": "0007_drop_activity_types",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794399199785,
+      "tag": "0008_long_mindworm",
+      "breakpoints": true
     }
   ]
 }

@@ -288,6 +288,7 @@ async function createTestSchema() {
         source_author_name text,
         orgo_event_uuid text,
         orgo_event_url text,
+        orgo_steps jsonb,
         created_at timestamp DEFAULT now(),
         updated_at timestamp DEFAULT now()
       )
@@ -297,6 +298,7 @@ async function createTestSchema() {
     await sql`ALTER TABLE programs ADD COLUMN IF NOT EXISTS source_author_name text`;
     await sql`ALTER TABLE programs ADD COLUMN IF NOT EXISTS orgo_event_uuid text`;
     await sql`ALTER TABLE programs ADD COLUMN IF NOT EXISTS orgo_event_url text`;
+    await sql`ALTER TABLE programs ADD COLUMN IF NOT EXISTS orgo_steps jsonb`;
     // Columns the app schema has that this hand-written test schema lacked.
     await sql`ALTER TABLE sdgs ADD COLUMN IF NOT EXISTS icon text`;
     await sql`ALTER TABLE educational_goals ADD COLUMN IF NOT EXISTS icon text`;

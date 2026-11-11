@@ -1,8 +1,9 @@
-import { pgTable, text, timestamp, uuid, integer, boolean, date, time, index } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid, integer, boolean, date, time, index, jsonb } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { user } from './auth';
 import { activities } from './activities';
+import type { OrgoSteps } from '../../src/types/orgo-steps';
 
 // Programs table
 export const programs = pgTable('programs', {
@@ -16,6 +17,8 @@ export const programs = pgTable('programs', {
   source_author_name: text('source_author_name'),
   orgo_event_uuid: text('orgo_event_uuid'),
   orgo_event_url: text('orgo_event_url'),
+  // Outcome of the steps after the event was created (publish, invitations, attachment): counts only.
+  orgo_steps: jsonb('orgo_steps').$type<OrgoSteps>(),
   created_at: timestamp('created_at').notNull().defaultNow(),
   updated_at: timestamp('updated_at').notNull().defaultNow(),
 }, (table) => ({
