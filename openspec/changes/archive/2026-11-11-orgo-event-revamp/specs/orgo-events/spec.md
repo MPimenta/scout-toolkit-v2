@@ -98,6 +98,41 @@ The create request SHALL run on the server and SHALL send `Api-Token: $ORGO_API_
 
 ## ADDED Requirements
 
+### Requirement: Unit list is the units of the leader's own local group
+
+The unit field SHALL list the units of the signed-in leader's own local group: the group-level unit and its divisões and patrulhas. The server SHALL identify the leader in Orgo by the Orgo user id kept at login, never by an email search, and SHALL read their permissions from Orgo on every request. Only an active leader who holds an event permission (at local-group level or higher) SHALL get units; for anyone else the list SHALL be empty. The owner SHALL pick one unit from the list. The server SHALL reject a unit that is not in the list. If the list is empty, the dialog SHALL explain that and SHALL NOT create an event.
+
+#### Scenario: Leader with an event permission
+
+- **GIVEN** the signed-in leader holds an event permission and belongs to "Grupo 312 Coimbra"
+- **WHEN** they open the dialog
+- **THEN** the unit control lists the group-level unit first, then its divisões and patrulhas
+- **AND** units of other groups are not listed
+
+#### Scenario: Leader with higher-level permissions
+
+- **GIVEN** the signed-in leader also holds parent-group or national event permissions
+- **WHEN** they open the dialog
+- **THEN** the list is still the units of their own local group
+
+#### Scenario: User has no event permission
+
+- **GIVEN** the signed-in user has an Orgo account but no event permission
+- **WHEN** they open the dialog
+- **THEN** they see a Portuguese explanation
+- **AND** submit does not create an event
+
+#### Scenario: Orgo cannot tell who the leader is
+
+- **GIVEN** the app has no Orgo account for the signed-in user, or Orgo does not know it
+- **WHEN** they open the dialog
+- **THEN** the unit list is empty and the Portuguese explanation is shown
+
+#### Scenario: Unit outside the leader's group
+
+- **WHEN** a create request names a unit that is not in the list
+- **THEN** the server returns 400 and Orgo is not contacted
+
 ### Requirement: The event belongs to the owner's scope
 The event SHALL be created in the unit the owner chose, and the dialog SHALL say which leaders will see it ("quem vê este evento"), based on the unit chosen (the group-level unit or a divisão), so that leaders of that scope find the event in eAEP. The app SHALL NOT create events outside the units offered to the owner. The app SHALL NOT claim that those leaders can edit the event: the event is owned by the account the write token belongs to.
 
@@ -117,3 +152,11 @@ The program page SHALL link to the Orgo event's attendance page (`/events/attend
 - **GIVEN** Orgo does not return counts for the event
 - **WHEN** the owner opens the program
 - **THEN** it shows the link and the sentence that attendance is checked in eAEP
+
+## REMOVED Requirements
+
+### Requirement: Unit list is the user's event-create units
+
+**Reason**: The leader is no longer identified by an email search, and units no longer come from role records. Orgo refuses that role lookup with the app's token, so it returned an empty list for every leader. Units now come from the leader's own local group, found through the Orgo user id kept at login (see "Unit list is the units of the leader's own local group").
+
+**Migration**: None for users. The dialog offers the group-level unit and its divisões and patrulhas to any leader who holds an event permission.
