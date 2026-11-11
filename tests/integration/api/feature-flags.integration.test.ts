@@ -26,6 +26,8 @@ describe('Handler guards for switched-off features', () => {
     const setup = await withTestDatabase();
     db = setup.db;
     cleanup = setup.cleanup;
+    // Start clean: the first test inserts a fixed-id user, so rows left by an interrupted run would collide.
+    await cleanup();
   });
 
   afterEach(async () => {
