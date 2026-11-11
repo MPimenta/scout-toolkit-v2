@@ -41,8 +41,18 @@ See proposal.md for why. Current state (read for this design):
 
 **D10. Routes and flags.** New routes are classified in `FEATURE_ROUTES` (coverage and ranking always on for admins; usage stays under `usage-tracking`). The home stats strip stays and links to the new area.
 
+**D11. Release notes are a Markdown file in the repository, shown read-only.** `docs/release-notes.md` is the source; the admin page `/admin/notas-de-versao` renders it. *Why a file and not a table:* it is reviewed in the same pull request as the code it describes, versioned with it, needs no migration and no editing screens. *Trade-off:* a correction needs a commit and a deploy. *Alternative:* two tables edited in the admin; rejected for now because the notes change a few times a month and the team already works in pull requests.
+
+**D12. A small, fixed format and a parser that reads only that.** Each release is `## <versão> · <data> · <planeada|lançada>`, optionally one summary line, then `### Novo`, `### Melhorado` and `### Corrigido` with `- ` items; an item may end with `(alteração: <nome-openspec>)`. The parser (`src/lib/admin/release-notes.ts`, pure) returns releases, items and a list of lines it could not read; it never interprets markup, and the page prints every value as text. A malformed section is shown with a note, and the rest of the page still works.
+
+**D13. The file must be in the deployed build.** The app is built as a standalone bundle, which only includes files the build traces. The page reads the file at request time, so the route declares it in the build's file tracing includes, and a test checks that the file is read in the built output. If it cannot be read the page says so instead of failing.
+
+**D14. Admin only, no personal data.** The page is for admins, like the rest of the area. The notes describe the product; names of people are not part of the format.
+
 ## Risks / Trade-offs
 
+- **The notes go stale** (nobody updates the file) → a task adds the convention: when a change is archived, its entry is added or moved to *lançada*; the file starts with the rule and the format.
+- **The file is missing from the deployed build** → D13: declared in the build, tested, and the page explains a missing file.
 - **Figures read as targets** (an objective with 0 activities is not necessarily a defect) → the page words them as coverage, not quality, and the export carries the filter used.
 - **Heavy query on the full set** → measure on the loaded set; add indexes on `activity_educational_goals (goal_id, age_group)` and `program_entries (activity_id)` only if needed.
 - **Bulk delete mistakes** → confirmation with the count, transaction, 409 on referenced activities, no force from the bulk UI in the first version.
@@ -55,4 +65,6 @@ No data migration. Ship behind the existing admin access; the redirect keeps old
 
 ## Open Questions
 
+- Should leaders see a "Novidades" view with the *lançada* releases? Out of scope here; the same file could feed it later.
+- Should archiving an OpenSpec change add its release note entry automatically? A convention is enough for now.
 - Should the coverage page also show the Regulamento's expected minimum per objective (a target)? Not needed for the first version; it would need a target per objective from the team.

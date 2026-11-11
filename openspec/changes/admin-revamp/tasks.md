@@ -1,6 +1,6 @@
 ## 1. Navigation and statistics shell
 
-- [ ] 1.1 Admin menu grouped as Catálogo, Estatísticas, Comunidade, Utilizadores, with pending counts; messages in `pt.json` and `en.json` (Portuguese copy for approval)
+- [ ] 1.1 Admin menu grouped as Catálogo, Estatísticas, Comunidade, Plataforma (notas de versão), Utilizadores, with pending counts; messages in `pt.json` and `en.json` (Portuguese copy for approval)
 - [ ] 1.2 Create `/admin/estatisticas` with the three views, move the usage page under it and redirect `/admin/utilizacao`; classify new routes in `FEATURE_ROUTES` and keep usage behind `usage-tracking`
 - [ ] 1.3 Tests: redirect, coverage and ranking visible with tracking off, forbidden for non-admins
 
@@ -35,8 +35,16 @@
 - [ ] 5.3 Taxonomies page sections with description, source (sheet or own), usage count and the move dialog
 - [ ] 5.4 Tests: read-only sheet values, delete in use, move then delete, duplicate-focus case
 
-## 6. Verification
+## 6. Release notes
 
-- [ ] 6.1 Measure the coverage and ranking queries on the full activity set; record the timings in the design
-- [ ] 6.2 `npm run typecheck`, `npm run lint`, `npm run test:run`, `npm run test:e2e` (Playwright: filters, gap list, export, bulk approve)
-- [ ] 6.3 Update `docs/architecture.md`, `docs/api.md` and `docs/planning.md`; `openspec validate admin-revamp --strict`
+- [ ] 6.1 Create `docs/release-notes.md` with the format and the update rule at the top (D12), and write the first entries from the archived OpenSpec changes, newest first, with the current release as *lançada* and what is next as *planeada* (Portuguese copy for approval)
+- [ ] 6.2 Pure parser `src/lib/admin/release-notes.ts`: releases, items by category, optional change name, and the lines it could not read; never interprets markup
+- [ ] 6.3 Page `/admin/notas-de-versao` (server-rendered, admin only): releases newest first, status badge that does not rely on colour alone, items grouped by category, the change name as plain text, copy a release as plain text, a clear message when the file is missing or a section is malformed
+- [ ] 6.4 Make the deployed build include the file (D13) and add the route to `FEATURE_ROUTES`; add the "Plataforma" menu entry; messages in `pt.json` and `en.json` (Portuguese copy for approval)
+- [ ] 6.5 Tests: parser (valid, planned release, item with change name, malformed section, markup left as text, empty file), page (admin sees it, non-admin does not, missing file message), and a check that the file is read from the built output
+
+## 7. Verification
+
+- [ ] 7.1 Measure the coverage and ranking queries on the full activity set; record the timings in the design
+- [ ] 7.2 `npm run typecheck`, `npm run lint`, `npm run test:run`, `npm run test:e2e` (Playwright: filters, gap list, export, bulk approve, release notes page)
+- [ ] 7.3 Update `docs/architecture.md`, `docs/api.md` and `docs/planning.md`; `openspec validate admin-revamp --strict`
