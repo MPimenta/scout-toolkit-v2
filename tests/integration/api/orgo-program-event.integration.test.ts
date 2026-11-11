@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { eq } from 'drizzle-orm';
 import { resetTestDatabase, setupTestDatabase, teardownTestDatabase } from '../../setup';
 import { requireLocalTestDatabase } from '../../helpers/local-test-db';
@@ -23,6 +23,11 @@ describe('Orgo event columns on programs', () => {
     await resetTestDatabase();
   });
 
+  // Leave nothing behind: other files reuse fixed ids such as this user's.
+  afterEach(async () => {
+    await resetTestDatabase();
+  });
+
   it('stores orgo_event_uuid and orgo_event_url on scout_toolkit_test only', async () => {
     const db = getBoundTestDb();
     await db.insert(user).values({ id: USER_ID, email: 'orgo@escoteiros.pt', name: 'Ana', role: 'user' });
@@ -34,11 +39,11 @@ describe('Orgo event columns on programs', () => {
       user_id: USER_ID,
       is_public: false,
       orgo_event_uuid: 'evt-uuid-1',
-      orgo_event_url: 'https://eaep.escoteiros.pt/events/evt-uuid-1',
+      orgo_event_url: 'https://eaep.escoteiros.pt/event/evt-uuid-1',
     });
 
     const [row] = await db.select().from(programs).where(eq(programs.id, PROGRAM_ID));
     expect(row?.orgo_event_uuid).toBe('evt-uuid-1');
-    expect(row?.orgo_event_url).toBe('https://eaep.escoteiros.pt/events/evt-uuid-1');
+    expect(row?.orgo_event_url).toBe('https://eaep.escoteiros.pt/event/evt-uuid-1');
   });
 });

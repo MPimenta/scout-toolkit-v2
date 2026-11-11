@@ -10,19 +10,29 @@ import { programs, user } from '../../../drizzle/schema';
 const mockAuth = vi.fn();
 const mockCreate = vi.fn();
 const mockPublish = vi.fn();
+const mockInvite = vi.fn();
+const mockMembers = vi.fn(() => [] as Array<{ id: string; name: string; cardId: string | null; type: string | null }>);
 const UNIT = '/api/v1/units/123';
 
 vi.mock('@/lib/auth/config', () => ({ auth: () => mockAuth() }));
-vi.mock('@/lib/orgo/config', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@/lib/orgo/config')>()),
-  isOrgoWriteConfigured: () => true,
-  isE2EOrgoStub: () => false,
+vi.mock('@/lib/orgo/leader-context', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/orgo/leader-context')>()),
+  orgoMode: () => 'live',
+  loadLeaderContext: async () => ({
+    scope: { orgoUserId: '204598', localCenterId: '3200', level: 'local' },
+    units: [{ iri: UNIT, name: 'Agrupamento 123' }],
+    localUnits: [],
+    groupName: 'Agrupamento 123',
+    stub: false,
+  }),
+  listMembersInScope: async () => mockMembers(),
 }));
 vi.mock('@/lib/orgo/client', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/orgo/client')>()),
-  listEventCreateUnitsForEmail: async () => [{ iri: UNIT, name: 'Agrupamento 123' }],
   createOrgoEvent: (...args: unknown[]) => mockCreate(...args),
   publishOrgoEvent: (...args: unknown[]) => mockPublish(...args),
+  inviteOrgoUser: (...args: unknown[]) => mockInvite(...args),
+  getOrgoEvent: async () => ({ eventId: 1, status: 'draft', hasFile: false }),
 }));
 
 const OWNER_ID = '550e8400-e29b-41d4-a716-446655440501';
@@ -89,7 +99,7 @@ describe('Create Orgo event from a program', () => {
 
   it('creates exactly one event when two requests arrive together', async () => {
     mockCreate.mockImplementation(
-      () => new Promise((resolve) => setTimeout(() => resolve({ uuid: 'evt-1', url: 'https://eaep.escoteiros.pt/events/evt-1' }), 50))
+      () => new Promise((resolve) => setTimeout(() => resolve({ uuid: 'evt-1', url: 'https://eaep.escoteiros.pt/event/evt-1' }), 50))
     );
     const [a, b] = await Promise.all([post(validBody), post(validBody)]);
     expect([a.status, b.status].sort()).toEqual([201, 409]);
@@ -104,12 +114,12 @@ describe('Create Orgo event from a program', () => {
     expect(refused.status).toBe(502);
     expect((await stored()).orgo_event_uuid).toBeNull();
 
-    mockCreate.mockResolvedValueOnce({ uuid: 'evt-2', url: 'https://eaep.escoteiros.pt/events/evt-2' });
+    mockCreate.mockResolvedValueOnce({ uuid: 'evt-2', url: 'https://eaep.escoteiros.pt/event/evt-2' });
     expect((await post(validBody)).status).toBe(201);
   });
 
   it('keeps the created event as a draft when publishing fails, and never duplicates on retry', async () => {
-    mockCreate.mockResolvedValue({ uuid: 'evt-3', url: 'https://eaep.escoteiros.pt/events/evt-3' });
+    mockCreate.mockResolvedValue({ uuid: 'evt-3', url: 'https://eaep.escoteiros.pt/event/evt-3' });
     mockPublish.mockRejectedValue(new Error('publish refused'));
 
     const response = await post({ ...validBody, publish: true });
@@ -117,11 +127,33 @@ describe('Create Orgo event from a program', () => {
     const body = await response.json();
     expect(body).toMatchObject({ orgo_event_uuid: 'evt-3', published: false });
     expect(body.warning).toMatch(/rascunho/);
-    expect((await stored()).orgo_event_url).toBe('https://eaep.escoteiros.pt/events/evt-3');
+    expect((await stored()).orgo_event_url).toBe('https://eaep.escoteiros.pt/event/evt-3');
 
     const retry = await post({ ...validBody, publish: true });
     expect(retry.status).toBe(409);
     expect(mockCreate).toHaveBeenCalledTimes(1);
+  });
+
+  it('stores the outcome of each step as counts only, never the invited members', async () => {
+    mockCreate.mockResolvedValue({ uuid: 'evt-5', url: 'https://eaep.escoteiros.pt/event/evt-5' });
+    mockPublish.mockResolvedValue(undefined);
+    mockMembers.mockReturnValue([
+      { id: '424242', name: 'Ana Exemplo', cardId: '10001', type: 'Lobito' },
+      { id: '424243', name: 'Rui Teste', cardId: '10002', type: 'Lobito' },
+    ]);
+    mockInvite.mockResolvedValueOnce('invited').mockRejectedValueOnce(new Error('refused'));
+
+    const response = await post({ ...validBody, publish: true, participants: ['424242', '424243'] });
+    expect(response.status).toBe(201);
+
+    const row = await stored();
+    expect(row.orgo_steps).toMatchObject({
+      publish: { status: 'done' },
+      invitations: { status: 'failed', requested: 2, added: 1, failed: 1 },
+    });
+    const text = JSON.stringify(row.orgo_steps);
+    expect(text).not.toContain('424242');
+    expect(text).not.toContain('Ana Exemplo');
   });
 
   it('reports a fresh claim as creation in progress', async () => {
@@ -137,7 +169,7 @@ describe('Create Orgo event from a program', () => {
       .set({ orgo_event_uuid: ORGO_PENDING, updated_at: new Date(Date.now() - 6 * 60 * 1000) })
       .where(eq(programs.id, PROGRAM_ID));
     // A stale claim still reads as pending to the owner until someone retries...
-    mockCreate.mockResolvedValue({ uuid: 'evt-4', url: 'https://eaep.escoteiros.pt/events/evt-4' });
+    mockCreate.mockResolvedValue({ uuid: 'evt-4', url: 'https://eaep.escoteiros.pt/event/evt-4' });
     const { claimProgramForOrgo } = await import('@/lib/orgo/claim');
     expect(await claimProgramForOrgo(PROGRAM_ID, OWNER_ID)).toBe(true);
   });

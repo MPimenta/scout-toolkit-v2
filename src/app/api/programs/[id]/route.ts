@@ -10,7 +10,12 @@ import {
   withApiErrorHandler 
 } from '@/lib/errors';
 import { validateUUID } from '@/lib/errors/error-handler';
-import { isE2EOrgoStub, isOrgoWriteConfigured } from '@/lib/orgo/config';
+import {
+  isE2EOrgoStub,
+  isOrgoWriteConfigured,
+  orgoAttendanceUrl,
+  orgoEventUrl,
+} from '@/lib/orgo/config';
 import { z } from 'zod';
 import { loadActivityCategories } from '@/lib/activities/categories';
 import { loadFormatFocus } from '@/lib/activities/format-focus';
@@ -47,7 +52,6 @@ export const GET = withApiErrorHandler(async (
         start_time: programs.start_time,
         is_public: programs.is_public,
         orgo_event_uuid: programs.orgo_event_uuid,
-        orgo_event_url: programs.orgo_event_url,
         created_at: programs.created_at,
         updated_at: programs.updated_at,
         user_id: user.id,
@@ -64,10 +68,13 @@ export const GET = withApiErrorHandler(async (
     const { user_id: _userId, user_name: _userName, ...programFields } = programRow;
     // While an Orgo event is being created the stored uuid is a claim marker, not an event.
     const orgoPending = isOrgoPending(programFields.orgo_event_uuid);
+    const orgoUuid = orgoPending ? null : programFields.orgo_event_uuid;
     const programData = {
       ...programFields,
-      orgo_event_uuid: orgoPending ? null : programFields.orgo_event_uuid,
-      orgo_event_url: orgoPending ? null : programFields.orgo_event_url,
+      orgo_event_uuid: orgoUuid,
+      // Links are rebuilt from the uuid: rows stored before the fix hold a page that does not exist.
+      orgo_event_url: orgoUuid ? orgoEventUrl(orgoUuid) : null,
+      orgo_event_attendance_url: orgoUuid ? orgoAttendanceUrl(orgoUuid) : null,
       orgo_event_pending: orgoPending,
       orgo_write_configured: isOrgoWriteConfigured() || isE2EOrgoStub(session.user.email),
       user: {
