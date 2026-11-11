@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" role="img" aria-label="Ilustração da atividade Rachar Lenha Miúda">
+<defs><filter id="hand" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G"/></filter></defs>
+<rect width="1200" height="900" fill="#ffffff"/>
+<g filter="url(#hand)" transform="translate(-140.6,-211.6) scale(1.234)">
+<path d="M30 850 Q600 856 1170 850" fill="none" stroke="#0b3a4a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.35" data-ground="1"/>
+<ellipse cx="379.02994368878655" cy="607.6635774357541" rx="21.518944077295693" ry="21.29310710867546" fill="none" stroke="#0b3a4a" stroke-width="4.5"/>
+<path d="M363.30839074571077 639.623263160802 L365.0839436005726 689.1400948240142 L364.673707207932 720.6970437131342" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M395.9136866476451 638.6314869703872 L397.70151129700315 686.8003687317484 L394.29727449677756 721.7924673407304" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M366.49859565496376 638.9971729764702 L395.18621553410134 639.6244816412332" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M364.4629442062522 698.7032744807672 L397.13419825450245 699.2700634230255" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M365.65595078876055 639.4649066983093 L348.586878484528 670.5666894619199 L384.04978648608073 677.061471559136" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M395.0524943975511 639.773339640523 L411.41933827005295 669.9183047800876 L447.64843893188447 679.4131281819256" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M368.9453536230351 720.4583423503016 L368.05988151717924 763.9286592317413 L363.2757078758328 805.9222691215213" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M389.6771254081172 721.1467342266565 L392.862147415598 760.2116139554473 L396.29574920227554 805.156842644865" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<g transform="translate(1640,0) scale(-1,1)"><ellipse cx="820.3883328397704" cy="608.1100380210718" rx="21.013530231413213" ry="22.80259936186606" fill="none" stroke="#0b3a4a" stroke-width="4.5"/>
+<path d="M800.2 602 Q820 584 839.8 602" fill="none" stroke="#0b3a4a" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M806.2949631615519 639.7458562018097 L801.9051838167036 688.5244073371982 L805.6141162905443 721.3524951766024" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M834.486433156294 639.58205783357 L837.5460088123782 686.870109639815 L836.0327163724846 721.7640723499302" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M804.4639852771368 640.1005528378769 L833.6915461963935 638.3169227848374" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M801.9212447620561 695.5607158778053 L837.7517582726441 699.0012883280409" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M802.7529293849379 639.9841726520025 L782.6897622060915 673.9333977787445 L772.3164673592972 711.366907707959" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M836.5178476653144 641.1657109406617 L868.203779701285 626.8254394963502 L904.8616151580409 630.4659611922065" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M812.1097574139991 721.7928570822779 L806.048981845262 763.1378733182037 L804.9368590490133 810.490036766273" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M828.1479307500869 724.7721167100464 L837.0655457491827 763.9274065119808 L840.2212468606984 808.3959877587836" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" /></g>
+<rect x="200" y="706" width="800" height="40" rx="4" fill="#fff" stroke="#0b3a4a" stroke-width="5" stroke-linejoin="round"/>
+<rect x="214" y="746" width="772" height="110" rx="0" fill="#fff" stroke="#0b3a4a" stroke-width="0" stroke-linejoin="round"/>
+<path d="M239.16626187626565 747.3633543966167 L233.22365082391707 798.8993975743183 L231.59502314952903 848.3540741341906" fill="none" stroke="#0b3a4a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M959.723973341437 744.4199495324027 L962.3978969428679 798.4539187799459 L967.8094853371426 848.8200613555592" fill="none" stroke="#0b3a4a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M317.6 648 L362.4 648 L356 689.6 L324 689.6 Z" fill="#fff" stroke="#0b3a4a" stroke-width="4" stroke-linejoin="round"/>
+<path d="M319.2 654.4 q4.5 -4 9 0 t9 0 q4.5 -4 9 0 t9 0 q4.5 -4 9 0 t9 0" fill="none" stroke="#0b3a4a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M837.6 648 L882.4 648 L876 689.6 L844 689.6 Z" fill="#fff" stroke="#0b3a4a" stroke-width="4" stroke-linejoin="round"/>
+<path d="M839.2 654.4 q4.5 -4 9 0 t9 0 q4.5 -4 9 0 t9 0 q4.5 -4 9 0 t9 0" fill="none" stroke="#0b3a4a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+<ellipse cx="600" cy="250" rx="70" ry="34" fill="#fff" stroke="#0b3a4a" stroke-width="4"/><path d="M580 278 L566 308 L606 282" fill="#fff" stroke="#0b3a4a" stroke-width="4" stroke-linejoin="round"/>
+<text x="600" y="260" font-family="Arial" font-size="24" font-weight="700" text-anchor="middle" fill="#0b3a4a">Rachar</text>
+</g>
+</svg>

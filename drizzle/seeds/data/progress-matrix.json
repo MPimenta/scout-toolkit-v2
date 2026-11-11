@@ -1,0 +1,3833 @@
+{
+  "version": 1,
+  "sources": {
+    "workbook": "Matriz Progresso Pessoal v1.0 (2023-02-02)",
+    "regulamento": "Regulamento do Programa para Jovens v1.2 (dezembro 2024)",
+    "sheet": "Folha de atividades (atividades_v2), separadores \"objetivos educativos\" e \"desafios\" (matriz v1.1)"
+  },
+  "areas": [
+    {
+      "code": "F",
+      "name": "Físico",
+      "icon": "💪",
+      "position": 1
+    },
+    {
+      "code": "A",
+      "name": "Afetivo",
+      "icon": "❤️",
+      "position": 2
+    },
+    {
+      "code": "C",
+      "name": "Carácter",
+      "icon": "🧭",
+      "position": 3
+    },
+    {
+      "code": "E",
+      "name": "Espiritual",
+      "icon": "✨",
+      "position": 4
+    },
+    {
+      "code": "I",
+      "name": "Intelectual",
+      "icon": "🧠",
+      "position": 5
+    },
+    {
+      "code": "S",
+      "name": "Social",
+      "icon": "🤝",
+      "position": 6
+    }
+  ],
+  "paths": [
+    {
+      "code": "F.1",
+      "area_code": "F",
+      "name": "Conhecimento do corpo",
+      "position": 1
+    },
+    {
+      "code": "F.2",
+      "area_code": "F",
+      "name": "Estilo de vida ativo e saudável",
+      "position": 2
+    },
+    {
+      "code": "F.3",
+      "area_code": "F",
+      "name": "Eficiência",
+      "position": 3
+    },
+    {
+      "code": "A.1",
+      "area_code": "A",
+      "name": "Consciência Emocional",
+      "position": 4
+    },
+    {
+      "code": "A.2",
+      "area_code": "A",
+      "name": "Expressão Criativa",
+      "position": 5
+    },
+    {
+      "code": "A.3",
+      "area_code": "A",
+      "name": "Regulação emocional",
+      "position": 6
+    },
+    {
+      "code": "C.1",
+      "area_code": "C",
+      "name": "Identidade",
+      "position": 7
+    },
+    {
+      "code": "C.2",
+      "area_code": "C",
+      "name": "Autonomia",
+      "position": 8
+    },
+    {
+      "code": "C.3",
+      "area_code": "C",
+      "name": "Compromisso",
+      "position": 9
+    },
+    {
+      "code": "C.4",
+      "area_code": "C",
+      "name": "Valores",
+      "position": 10
+    },
+    {
+      "code": "E.1",
+      "area_code": "E",
+      "name": "Deslumbramento",
+      "position": 11
+    },
+    {
+      "code": "E.2",
+      "area_code": "E",
+      "name": "Sabedoria",
+      "position": 12
+    },
+    {
+      "code": "E.3",
+      "area_code": "E",
+      "name": "Pertença",
+      "position": 13
+    },
+    {
+      "code": "E.4",
+      "area_code": "E",
+      "name": "Descoberta e reflexão",
+      "position": 14
+    },
+    {
+      "code": "I.1",
+      "area_code": "I",
+      "name": "Recolha de informação",
+      "position": 15
+    },
+    {
+      "code": "I.2",
+      "area_code": "I",
+      "name": "Análise Crítica",
+      "position": 16
+    },
+    {
+      "code": "I.3",
+      "area_code": "I",
+      "name": "Resolução de problemas",
+      "position": 17
+    },
+    {
+      "code": "S.1",
+      "area_code": "S",
+      "name": "Relacionamento e comunicação",
+      "position": 18
+    },
+    {
+      "code": "S.2",
+      "area_code": "S",
+      "name": "Cooperação e liderança",
+      "position": 19
+    },
+    {
+      "code": "S.3",
+      "area_code": "S",
+      "name": "Solidariedade e envolvimento",
+      "position": 20
+    }
+  ],
+  "general_objectives": [
+    {
+      "code": "1A",
+      "area_code": "A",
+      "path_code": "A.1",
+      "title": "Compreender e respeitar as suas emoções e sentimentos, bem com os dos outros.",
+      "position": 1
+    },
+    {
+      "code": "2A",
+      "area_code": "A",
+      "path_code": "A.2",
+      "title": "Compreender e utilizar a expressão criativa como meio de expressão individual.",
+      "position": 2
+    },
+    {
+      "code": "3A",
+      "area_code": "A",
+      "path_code": "A.3",
+      "title": "Estabelecer relações de intimidade equilibradas, expressando as suas emoções e sentimentos de forma responsável.",
+      "position": 3
+    },
+    {
+      "code": "4A",
+      "area_code": "A",
+      "path_code": "A.3",
+      "title": "Utilizar estratégias de regulação emocional.",
+      "position": 4
+    },
+    {
+      "code": "5A",
+      "area_code": "A",
+      "path_code": "A.3",
+      "title": "Utilizar estratégias para se motivar a si e aos outros.",
+      "position": 5
+    },
+    {
+      "code": "1C",
+      "area_code": "C",
+      "path_code": "C.1",
+      "title": "Valorizar-se enquanto indivíduo (autoestima).",
+      "position": 6
+    },
+    {
+      "code": "2C",
+      "area_code": "C",
+      "path_code": "C.1",
+      "title": "Confiar nas suas capacidades (autoconfiança).",
+      "position": 7
+    },
+    {
+      "code": "3C",
+      "area_code": "C",
+      "path_code": "C.2",
+      "title": "Tomar decisões e responsabilizar-se pelas suas consequências.",
+      "position": 8
+    },
+    {
+      "code": "4C",
+      "area_code": "C",
+      "path_code": "C.2",
+      "title": "Desenvolver competências visando a autonomia.",
+      "position": 9
+    },
+    {
+      "code": "5C",
+      "area_code": "C",
+      "path_code": "C.3",
+      "title": "Responsabilizar-se pelo seu desenvolvimento contínuo.",
+      "position": 10
+    },
+    {
+      "code": "6C",
+      "area_code": "C",
+      "path_code": "C.3",
+      "title": "Demonstrar resiliência.",
+      "position": 11
+    },
+    {
+      "code": "7C",
+      "area_code": "C",
+      "path_code": "C.3",
+      "title": "Assumir compromissos individuais e coletivos.",
+      "position": 12
+    },
+    {
+      "code": "8C",
+      "area_code": "C",
+      "path_code": "C.4",
+      "title": "Agir de forma coerente com o seu quadro de valores.",
+      "position": 13
+    },
+    {
+      "code": "9C",
+      "area_code": "C",
+      "path_code": "C.4",
+      "title": "Refletir criticamente sobre os valores universais, adequando a sua conduta aos mesmos.",
+      "position": 14
+    },
+    {
+      "code": "1E",
+      "area_code": "E",
+      "path_code": "E.1",
+      "title": "Demonstrar sensibilidade às maravilhas da natureza e da vida, reconhecendo nela uma dimensão espiritual.",
+      "position": 15
+    },
+    {
+      "code": "2E",
+      "area_code": "E",
+      "path_code": "E.2",
+      "title": "Desenvolver sobriedade na sua vida pessoal.",
+      "position": 16
+    },
+    {
+      "code": "3E",
+      "area_code": "E",
+      "path_code": "E.2",
+      "title": "Valorizar o seu próprio desenvolvimento.",
+      "position": 17
+    },
+    {
+      "code": "4E",
+      "area_code": "E",
+      "path_code": "E.3",
+      "title": "Compreender o valor da partilha, da cooperação e do seu papel nos Grupos onde intervém.",
+      "position": 18
+    },
+    {
+      "code": "5E",
+      "area_code": "E",
+      "path_code": "E.4",
+      "title": "Refletir sobre o significado das suas experiências, sendo capaz de o expressar e celebrar.",
+      "position": 19
+    },
+    {
+      "code": "6E",
+      "area_code": "E",
+      "path_code": "E.4",
+      "title": "Refletir sobre a herança e realidade espirituais das comunidades, tomando decisões para si.",
+      "position": 20
+    },
+    {
+      "code": "7E",
+      "area_code": "E",
+      "path_code": "E.4",
+      "title": "Refletir sobre o seu propósito de vida e tirar conclusões.",
+      "position": 21
+    },
+    {
+      "code": "1I",
+      "area_code": "I",
+      "path_code": "I.1",
+      "title": "Demonstrar curiosidade em diversos assuntos, desenvolvendo competências de exploração, investigação e observação para obtenção autónoma de conhecimentos.",
+      "position": 22
+    },
+    {
+      "code": "2I",
+      "area_code": "I",
+      "path_code": "I.2",
+      "title": "Analisar criticamente informação, ordenando, classificando e memorizando conteúdos.",
+      "position": 23
+    },
+    {
+      "code": "3I",
+      "area_code": "I",
+      "path_code": "I.2",
+      "title": "Desenvolver consciência crítica das suas capacidades e do seu processo de aprendizagem.",
+      "position": 24
+    },
+    {
+      "code": "4I",
+      "area_code": "I",
+      "path_code": "I.3",
+      "title": "Resolver problemas, formulando hipóteses, experimentando e tirando conclusões.",
+      "position": 25
+    },
+    {
+      "code": "5I",
+      "area_code": "I",
+      "path_code": "I.3",
+      "title": "Demonstrar criatividade e capacidade de adaptação perante novas situações/situações desconhecidas.",
+      "position": 26
+    },
+    {
+      "code": "6I",
+      "area_code": "I",
+      "path_code": "I.3",
+      "title": "Compreender a importância e implicações da ciência e tecnologia para desenvolvimento e compreensão de si e do mundo.",
+      "position": 27
+    },
+    {
+      "code": "1S",
+      "area_code": "S",
+      "path_code": "S.1",
+      "title": "Demonstrar competências de comunicação e empatia.",
+      "position": 28
+    },
+    {
+      "code": "2S",
+      "area_code": "S",
+      "path_code": "S.1",
+      "title": "Gerir conflitos.",
+      "position": 29
+    },
+    {
+      "code": "3S",
+      "area_code": "S",
+      "path_code": "S.1",
+      "title": "Demonstrar tolerância e respeito pela diferença (tal como a de género, etnia, religião, idioma ou cultura), promovendo a inclusão social.",
+      "position": 30
+    },
+    {
+      "code": "4S",
+      "area_code": "S",
+      "path_code": "S.2",
+      "title": "Liderar e participar de forma ativa e eficaz em projetos coletivos, para alcançar um objetivo comum.",
+      "position": 31
+    },
+    {
+      "code": "5S",
+      "area_code": "S",
+      "path_code": "S.2",
+      "title": "Aceitar e partilhar responsabilidades.",
+      "position": 32
+    },
+    {
+      "code": "6S",
+      "area_code": "S",
+      "path_code": "S.3",
+      "title": "Demonstrar sentido de missão e de bem comum.",
+      "position": 33
+    },
+    {
+      "code": "7S",
+      "area_code": "S",
+      "path_code": "S.3",
+      "title": "Analisar a interdependência entre os indivíduos e as suas comunidades.",
+      "position": 34
+    },
+    {
+      "code": "8S",
+      "area_code": "S",
+      "path_code": "S.3",
+      "title": "Adotar os valores da Democracia e os Direitos Humanos, exercendo cidadania participativa.",
+      "position": 35
+    },
+    {
+      "code": "1F",
+      "area_code": "F",
+      "path_code": "F.1",
+      "title": "Compreender como funciona o seu corpo e as mudanças que nele ocorrem ao longo da vida.",
+      "position": 36
+    },
+    {
+      "code": "2F",
+      "area_code": "F",
+      "path_code": "F.1",
+      "title": "Compreender a interação entre o seu corpo e o meio envolvente",
+      "position": 37
+    },
+    {
+      "code": "3F",
+      "area_code": "F",
+      "path_code": "F.2",
+      "title": "Valorizar a sua aparência e cuidar da sua higiene (pessoal e do meio envolvente).",
+      "position": 38
+    },
+    {
+      "code": "4F",
+      "area_code": "F",
+      "path_code": "F.2",
+      "title": "Manter hábitos saudáveis, incluindo os de atividade física diária, alimentação e repouso.",
+      "position": 39
+    },
+    {
+      "code": "5F",
+      "area_code": "F",
+      "path_code": "F.3",
+      "title": "Desenvolver os seus sentidos e competências motoras, movimentando-se com eficiência em diversos meios e regulando o seu esforço.",
+      "position": 40
+    }
+  ],
+  "goals": [
+    {
+      "code": "1A.1",
+      "general_objective_code": "1A",
+      "area_code": "A",
+      "title": "Descrever as suas emoções e sentimentos, e respeitar as dos outros.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 1
+    },
+    {
+      "code": "1A.2",
+      "general_objective_code": "1A",
+      "area_code": "A",
+      "title": "Identificar as causas das suas emoções e sentimentos, bem como dos outros.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 2
+    },
+    {
+      "code": "1A.3",
+      "general_objective_code": "1A",
+      "area_code": "A",
+      "title": "Aceitar as suas emoções e sentimentos.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 3
+    },
+    {
+      "code": "1A.4",
+      "general_objective_code": "1A",
+      "area_code": "A",
+      "title": "Avaliar os efeitos que as emoções e sentimentos podem ter sobre si e os outros, identificando a sua origem sociocultural e biológica.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 4
+    },
+    {
+      "code": "2A.1",
+      "general_objective_code": "2A",
+      "area_code": "A",
+      "title": "Explorar diferentes formas de exprimir sentimentos e emoções.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 5
+    },
+    {
+      "code": "2A.2",
+      "general_objective_code": "2A",
+      "area_code": "A",
+      "title": "Utilizar diferentes formas criativas de expressão para exprimir sentimentos e emoções.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 6
+    },
+    {
+      "code": "2A.3",
+      "general_objective_code": "2A",
+      "area_code": "A",
+      "title": "Reconhecer a expressão criativa de cada um como uma linguagem individual.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 7
+    },
+    {
+      "code": "2A.4",
+      "general_objective_code": "2A",
+      "area_code": "A",
+      "title": "Reconhecer a expressão criativa como uma linguagem universal.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 8
+    },
+    {
+      "code": "3A.1",
+      "general_objective_code": "3A",
+      "area_code": "A",
+      "title": "Relacionar-se com todos, expressando os seus sentimentos e emoções de forma positiva.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 9
+    },
+    {
+      "code": "3A.2",
+      "general_objective_code": "3A",
+      "area_code": "A",
+      "title": "Reconhecer diferentes relações afetivas, expressando as suas emoções e sentimentos de forma responsável.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 10
+    },
+    {
+      "code": "3A.3-4",
+      "general_objective_code": "3A",
+      "area_code": "A",
+      "title": "Estabelecer relações de intimidade equilibradas.",
+      "age_groups": [
+        "adventurers",
+        "rovers"
+      ],
+      "position": 11
+    },
+    {
+      "code": "4A.1",
+      "general_objective_code": "4A",
+      "area_code": "A",
+      "title": "Ouvir críticas que lhe são feitas.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 12
+    },
+    {
+      "code": "4A.2",
+      "general_objective_code": "4A",
+      "area_code": "A",
+      "title": "Gerir as suas emoções.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 13
+    },
+    {
+      "code": "4A.3",
+      "general_objective_code": "4A",
+      "area_code": "A",
+      "title": "Experimentar estratégias de regulação emocional.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 14
+    },
+    {
+      "code": "4A.4",
+      "general_objective_code": "4A",
+      "area_code": "A",
+      "title": "Utilizar estratégias de regulação emocional.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 15
+    },
+    {
+      "code": "5A.1",
+      "general_objective_code": "5A",
+      "area_code": "A",
+      "title": "Identificar os gostos pessoais.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 16
+    },
+    {
+      "code": "5A.2",
+      "general_objective_code": "5A",
+      "area_code": "A",
+      "title": "Experimentar estratégias de motivação pessoal, identificando causas da sua motivação e desmotivação.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 17
+    },
+    {
+      "code": "5A.3",
+      "general_objective_code": "5A",
+      "area_code": "A",
+      "title": "Utilizar estratégias de motivação pessoal e experimentar estratégias para motivar os outros.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 18
+    },
+    {
+      "code": "5A.4",
+      "general_objective_code": "5A",
+      "area_code": "A",
+      "title": "Utilizar estratégias para se motivar a si e aos outros, distinguindo entre motivação intrínseca e extrínseca.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 19
+    },
+    {
+      "code": "1C.1",
+      "general_objective_code": "1C",
+      "area_code": "C",
+      "title": "Reconhecer as suas caraterísticas e como afetam os outros.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 20
+    },
+    {
+      "code": "1C.2",
+      "general_objective_code": "1C",
+      "area_code": "C",
+      "title": "Identificar e valorizar as suas características.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 21
+    },
+    {
+      "code": "1C.3",
+      "general_objective_code": "1C",
+      "area_code": "C",
+      "title": "Analisar as suas características e demonstrar autoestima.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 22
+    },
+    {
+      "code": "1C.4",
+      "general_objective_code": "1C",
+      "area_code": "C",
+      "title": "Valorizar-se enquanto indivíduo e refletir sobre a sua individualidade e autoestima.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 23
+    },
+    {
+      "code": "2C.1",
+      "general_objective_code": "2C",
+      "area_code": "C",
+      "title": "Reconhecer as suas capacidades.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 24
+    },
+    {
+      "code": "2C.2",
+      "general_objective_code": "2C",
+      "area_code": "C",
+      "title": "Valorizar as suas capacidades e identificar as suas limitações.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 25
+    },
+    {
+      "code": "2C.3-4",
+      "general_objective_code": "2C",
+      "area_code": "C",
+      "title": "Demonstrar autoconfiança e avaliar as suas capacidades e limitações.",
+      "age_groups": [
+        "adventurers",
+        "rovers"
+      ],
+      "position": 26
+    },
+    {
+      "code": "3C.1",
+      "general_objective_code": "3C",
+      "area_code": "C",
+      "title": "Tomar decisões individuais e aceitar as suas consequências.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 27
+    },
+    {
+      "code": "3C.2",
+      "general_objective_code": "3C",
+      "area_code": "C",
+      "title": "Tomar decisões coletivas e aceitar as suas consequências.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 28
+    },
+    {
+      "code": "3C.3",
+      "general_objective_code": "3C",
+      "area_code": "C",
+      "title": "Tomar decisões individuais e coletivas e responsabilizar-se pelas suas consequências.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 29
+    },
+    {
+      "code": "3C.4",
+      "general_objective_code": "3C",
+      "area_code": "C",
+      "title": "Tomar decisões individuais e coletivas e responsabilizar-se pelas suas consequências.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 30
+    },
+    {
+      "code": "4C.1",
+      "general_objective_code": "4C",
+      "area_code": "C",
+      "title": "Realizar sozinho as tarefas pessoais do seu quotidiano.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 31
+    },
+    {
+      "code": "4C.2",
+      "general_objective_code": "4C",
+      "area_code": "C",
+      "title": "Responsabilizar-se pelos recursos pessoais.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 32
+    },
+    {
+      "code": "4C.3",
+      "general_objective_code": "4C",
+      "area_code": "C",
+      "title": "Demonstrar autonomia nos seus comportamentos de forma sistemática.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 33
+    },
+    {
+      "code": "4C.4",
+      "general_objective_code": "4C",
+      "area_code": "C",
+      "title": "Planear o futuro visando a sua autonomia.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 34
+    },
+    {
+      "code": "5C.1",
+      "general_objective_code": "5C",
+      "area_code": "C",
+      "title": "Identificar pontos a aperfeiçoar, desenvolvendo ações nesse sentido.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 35
+    },
+    {
+      "code": "5C.2",
+      "general_objective_code": "5C",
+      "area_code": "C",
+      "title": "Implementar um plano de desenvolvimento próprio a curto-prazo.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 36
+    },
+    {
+      "code": "5C.3",
+      "general_objective_code": "5C",
+      "area_code": "C",
+      "title": "Implementar um plano de desenvolvimento próprio a médio-prazo.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 37
+    },
+    {
+      "code": "5C.4",
+      "general_objective_code": "5C",
+      "area_code": "C",
+      "title": "Implementar um plano de desenvolvimento contínuo, numa ótica de projeto de vida.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 38
+    },
+    {
+      "code": "6C.1",
+      "general_objective_code": "6C",
+      "area_code": "C",
+      "title": "Adaptar o seu comportamento face a obstáculos do quotidiano.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 39
+    },
+    {
+      "code": "6C.2",
+      "general_objective_code": "6C",
+      "area_code": "C",
+      "title": "Adaptar o seu comportamento face a novas realidades.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 40
+    },
+    {
+      "code": "6C.3",
+      "general_objective_code": "6C",
+      "area_code": "C",
+      "title": "Adaptar o seu comportamento face a novas realidades.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 41
+    },
+    {
+      "code": "6C.4",
+      "general_objective_code": "6C",
+      "area_code": "C",
+      "title": "Demonstrar resiliência no seu quotidiano.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 42
+    },
+    {
+      "code": "7C.1",
+      "general_objective_code": "7C",
+      "area_code": "C",
+      "title": "Manter projetos individuais de forma sistemática.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 43
+    },
+    {
+      "code": "7C.2",
+      "general_objective_code": "7C",
+      "area_code": "C",
+      "title": "Assumir compromissos individuais e colaborar em projetos coletivos.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 44
+    },
+    {
+      "code": "7C.3-4",
+      "general_objective_code": "7C",
+      "area_code": "C",
+      "title": "Assumir compromissos em projetos individuais e coletivos.",
+      "age_groups": [
+        "adventurers",
+        "rovers"
+      ],
+      "position": 45
+    },
+    {
+      "code": "8C.1",
+      "general_objective_code": "8C",
+      "area_code": "C",
+      "title": "Agir com os outros de forma adequada.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 46
+    },
+    {
+      "code": "8C.2",
+      "general_objective_code": "8C",
+      "area_code": "C",
+      "title": "Agir de forma adequada identificando a origem dos seus valores.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 47
+    },
+    {
+      "code": "8C.3",
+      "general_objective_code": "8C",
+      "area_code": "C",
+      "title": "Agir de forma adequada, refletindo sobre o seu quadro de valores.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 48
+    },
+    {
+      "code": "8C.4",
+      "general_objective_code": "8C",
+      "area_code": "C",
+      "title": "Agir de forma coerente com o seu quadro de valores.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 49
+    },
+    {
+      "code": "9C.1",
+      "general_objective_code": "9C",
+      "area_code": "C",
+      "title": "Avaliar as suas ações.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 50
+    },
+    {
+      "code": "9C.2",
+      "general_objective_code": "9C",
+      "area_code": "C",
+      "title": "Avaliar a sua conduta.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 51
+    },
+    {
+      "code": "9C.3",
+      "general_objective_code": "9C",
+      "area_code": "C",
+      "title": "Adequar a sua conduta aos valores universais, utilizando-os para avaliar a sua conduta e a dos outros.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 52
+    },
+    {
+      "code": "9C.4",
+      "general_objective_code": "9C",
+      "area_code": "C",
+      "title": "Refletir criticamente sobre os valores universais.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 53
+    },
+    {
+      "code": "1E.1",
+      "general_objective_code": "1E",
+      "area_code": "E",
+      "title": "Admirar as maravilhas da natureza.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 54
+    },
+    {
+      "code": "1E.2",
+      "general_objective_code": "1E",
+      "area_code": "E",
+      "title": "Reconhecer que faz parte de algo maior.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 55
+    },
+    {
+      "code": "1E.3",
+      "general_objective_code": "1E",
+      "area_code": "E",
+      "title": "Relacionar a natureza e os fenómenos humanos* com uma dimensão espiritual.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 56
+    },
+    {
+      "code": "1E.4",
+      "general_objective_code": "1E",
+      "area_code": "E",
+      "title": "Analisar a influência da natureza e dos fenómenos humanos* na sua dimensão espiritual.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 57
+    },
+    {
+      "code": "2E.1",
+      "general_objective_code": "2E",
+      "area_code": "E",
+      "title": "Superar situações quotidianas de dificuldade.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 58
+    },
+    {
+      "code": "2E.2",
+      "general_objective_code": "2E",
+      "area_code": "E",
+      "title": "Demonstrar sobriedade em situações de dificuldade.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 59
+    },
+    {
+      "code": "2E.3",
+      "general_objective_code": "2E",
+      "area_code": "E",
+      "title": "Demonstrar sobriedade perante situações de adversidade ou de felicidade, refletindo sobre o caráter temporário desses estados.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 60
+    },
+    {
+      "code": "2E.4",
+      "general_objective_code": "2E",
+      "area_code": "E",
+      "title": "Demonstrar sobriedade no seu quotidiano e refletir sobre a sua importância no mesmo.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 61
+    },
+    {
+      "code": "3E.1",
+      "general_objective_code": "3E",
+      "area_code": "E",
+      "title": "Experimentar coisas novas.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 62
+    },
+    {
+      "code": "3E.2",
+      "general_objective_code": "3E",
+      "area_code": "E",
+      "title": "Procurar ativamente por novas experiências.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 63
+    },
+    {
+      "code": "3E.3",
+      "general_objective_code": "3E",
+      "area_code": "E",
+      "title": "Partilhar e refletir sobre as suas experiências de vida.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 64
+    },
+    {
+      "code": "3E.4",
+      "general_objective_code": "3E",
+      "area_code": "E",
+      "title": "Retirar conclusões das experiências de vida e atuar sobre elas, numa perspetiva de melhoria contínua.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 65
+    },
+    {
+      "code": "4E.1.1",
+      "general_objective_code": "4E",
+      "area_code": "E",
+      "title": "Participar em momentos de partilha.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 66
+    },
+    {
+      "code": "4E.1.2",
+      "general_objective_code": "4E",
+      "area_code": "E",
+      "title": "Retirar significado da participação em momentos de partilha.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 67
+    },
+    {
+      "code": "4E.1.3-4",
+      "general_objective_code": "4E",
+      "area_code": "E",
+      "title": "Refletir sobre o valor da cooperação e partilha.",
+      "age_groups": [
+        "adventurers",
+        "rovers"
+      ],
+      "position": 68
+    },
+    {
+      "code": "4E.2.1",
+      "general_objective_code": "4E",
+      "area_code": "E",
+      "title": "Identificar o seu papel dentro de comunidades de pequena dimensão.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 69
+    },
+    {
+      "code": "4E.2.2",
+      "general_objective_code": "4E",
+      "area_code": "E",
+      "title": "Identificar o seu papel dentro de comunidades de média dimensão.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 70
+    },
+    {
+      "code": "4E.2.3",
+      "general_objective_code": "4E",
+      "area_code": "E",
+      "title": "Refletir sobre o seu papel dentro da comunidade alargada.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 71
+    },
+    {
+      "code": "4E.2.4",
+      "general_objective_code": "4E",
+      "area_code": "E",
+      "title": "Refletir sobre a sua ligação às comunidades onde intervém e o seu papel nas mesmas.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 72
+    },
+    {
+      "code": "5E.1",
+      "general_objective_code": "5E",
+      "area_code": "E",
+      "title": "Celebrar momentos importantes da sua vida.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 73
+    },
+    {
+      "code": "5E.2",
+      "general_objective_code": "5E",
+      "area_code": "E",
+      "title": "Celebrar momentos importantes individuais e coletivos.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 74
+    },
+    {
+      "code": "5E.3",
+      "general_objective_code": "5E",
+      "area_code": "E",
+      "title": "Celebrar experiências individuais e coletivas, expressando o seu significado.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 75
+    },
+    {
+      "code": "5E.4",
+      "general_objective_code": "5E",
+      "area_code": "E",
+      "title": "Refletir sobre o significado das suas experiências de vida, sendo capaz de o expressar.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 76
+    },
+    {
+      "code": "6E.1",
+      "general_objective_code": "6E",
+      "area_code": "E",
+      "title": "Explorar a realidade espiritual da sua família.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 77
+    },
+    {
+      "code": "6E.2",
+      "general_objective_code": "6E",
+      "area_code": "E",
+      "title": "Explorar a herança e realidade espirituais da sua família e comunidade local.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 78
+    },
+    {
+      "code": "6E.3",
+      "general_objective_code": "6E",
+      "area_code": "E",
+      "title": "Explorar e estabelecer contato com diferentes opções espirituais.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 79
+    },
+    {
+      "code": "6E.4",
+      "general_objective_code": "6E",
+      "area_code": "E",
+      "title": "Tomar decisões quanto às suas opções espirituais.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 80
+    },
+    {
+      "code": "7E.2",
+      "general_objective_code": "7E",
+      "area_code": "E",
+      "title": "Colocar questões sobre o seu propósito de vida.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 81
+    },
+    {
+      "code": "7E.3",
+      "general_objective_code": "7E",
+      "area_code": "E",
+      "title": "Refletir sobre o seu propósito de vida.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 82
+    },
+    {
+      "code": "7E.4",
+      "general_objective_code": "7E",
+      "area_code": "E",
+      "title": "Refletir sobre o seu propósito de vida e tirar conclusões.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 83
+    },
+    {
+      "code": "1I.1",
+      "general_objective_code": "1I",
+      "area_code": "I",
+      "title": "Explorar a sua curiosidade utilizando métodos simples para recolha e registo de informação.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 84
+    },
+    {
+      "code": "1I.2",
+      "general_objective_code": "1I",
+      "area_code": "I",
+      "title": "Recolher e selecionar informação pertinente utilizando diversos métodos e fontes.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 85
+    },
+    {
+      "code": "1I.3-4",
+      "general_objective_code": "1I",
+      "area_code": "I",
+      "title": "Demonstrar interesse em diversos assuntos e recolher sistematicamente informação para aumentar o seu conhecimento.",
+      "age_groups": [
+        "adventurers",
+        "rovers"
+      ],
+      "position": 86
+    },
+    {
+      "code": "2I.1",
+      "general_objective_code": "2I",
+      "area_code": "I",
+      "title": "Explicar as suas conclusões obtidas da informação recolhida.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 87
+    },
+    {
+      "code": "2I.2",
+      "general_objective_code": "2I",
+      "area_code": "I",
+      "title": "Analisar situações através de várias perspetivas.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 88
+    },
+    {
+      "code": "2I.3",
+      "general_objective_code": "2I",
+      "area_code": "I",
+      "title": "Formular e comunicar opiniões críticas fundamentadas em informação analisada.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 89
+    },
+    {
+      "code": "2I.4",
+      "general_objective_code": "2I",
+      "area_code": "I",
+      "title": "Analisar criticamente informação proveniente de diversas fontes, enquadrando-a com a sua experiência e o meio envolvente.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 90
+    },
+    {
+      "code": "3I.1",
+      "general_objective_code": "3I",
+      "area_code": "I",
+      "title": "Identificar dificuldades nas suas capacidades e explicá-las.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 91
+    },
+    {
+      "code": "3I.2",
+      "general_objective_code": "3I",
+      "area_code": "I",
+      "title": "Identificar e testar estratégias de aprendizagem eficazes.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 92
+    },
+    {
+      "code": "3I.3-4",
+      "general_objective_code": "3I",
+      "area_code": "I",
+      "title": "Avaliar as suas capacidades e processo de aprendizagem, implementando estratégias adequadas.",
+      "age_groups": [
+        "adventurers",
+        "rovers"
+      ],
+      "position": 93
+    },
+    {
+      "code": "4I.1",
+      "general_objective_code": "4I",
+      "area_code": "I",
+      "title": "Utilizar a tentativa - erro em situações do dia-a-dia para resolução de problemas.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 94
+    },
+    {
+      "code": "4I.2",
+      "general_objective_code": "4I",
+      "area_code": "I",
+      "title": "Resolver problemas simples através da experimentação e dedução.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 95
+    },
+    {
+      "code": "4I.3",
+      "general_objective_code": "4I",
+      "area_code": "I",
+      "title": "Resolver problemas simples através da formulação de hipóteses, experimentação e dedução.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 96
+    },
+    {
+      "code": "4I.4",
+      "general_objective_code": "4I",
+      "area_code": "I",
+      "title": "Resolver problemas, formulando hipóteses, experimentando e tirando conclusões.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 97
+    },
+    {
+      "code": "5I.1",
+      "general_objective_code": "5I",
+      "area_code": "I",
+      "title": "Experimentar formas criativas de adaptação a situações desconhecidas.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 98
+    },
+    {
+      "code": "5I.2",
+      "general_objective_code": "5I",
+      "area_code": "I",
+      "title": "Demonstrar criatividade na implementação de diferentes estratégias para a adaptação a situações desconhecidas.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 99
+    },
+    {
+      "code": "5I.3-4",
+      "general_objective_code": "5I",
+      "area_code": "I",
+      "title": "Demonstrar criatividade e capacidade de adaptação na resolução coletiva de problemas.",
+      "age_groups": [
+        "adventurers",
+        "rovers"
+      ],
+      "position": 100
+    },
+    {
+      "code": "6I.1",
+      "general_objective_code": "6I",
+      "area_code": "I",
+      "title": "Explorar várias tecnologias e ramos da Ciência.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 101
+    },
+    {
+      "code": "6I.2",
+      "general_objective_code": "6I",
+      "area_code": "I",
+      "title": "Explorar várias tecnologias e ramos da Ciência, reconhecendo os seus riscos e benefícios.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 102
+    },
+    {
+      "code": "6I.3",
+      "general_objective_code": "6I",
+      "area_code": "I",
+      "title": "Analisar a importância da ciência e da tecnologia como meio de desenvolvimento e compreensão de si e do mundo.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 103
+    },
+    {
+      "code": "6I.4",
+      "general_objective_code": "6I",
+      "area_code": "I",
+      "title": "Analisar as implicações da ciência e da tecnologia como meio de desenvolvimento e compreensão de si e do mundo.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 104
+    },
+    {
+      "code": "1S.1",
+      "general_objective_code": "1S",
+      "area_code": "S",
+      "title": "Expressar a sua opinião, ouvindo a opinião dos outros.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 105
+    },
+    {
+      "code": "1S.2",
+      "general_objective_code": "1S",
+      "area_code": "S",
+      "title": "Expressar as suas ideias, de forma estruturada e empática, respeitando o direto à opinião dos outros.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 106
+    },
+    {
+      "code": "1S.3",
+      "general_objective_code": "1S",
+      "area_code": "S",
+      "title": "Comunicar as suas ideias de forma assertiva e empática, considerando a opinião dos outros para fundamentar e adaptar as suas ideias.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 107
+    },
+    {
+      "code": "1S.4",
+      "general_objective_code": "1S",
+      "area_code": "S",
+      "title": "Comunicar de forma assertiva, escutando e demonstrando empatia para compreender e relacionar-se com os outros.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 108
+    },
+    {
+      "code": "2S.1",
+      "general_objective_code": "2S",
+      "area_code": "S",
+      "title": "Identificar conflitos do dia-a-dia e aceitar os seus resultados de uma forma humilde.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 109
+    },
+    {
+      "code": "2S.2",
+      "general_objective_code": "2S",
+      "area_code": "S",
+      "title": "Identificar conflitos e criar compromissos.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 110
+    },
+    {
+      "code": "2S.3",
+      "general_objective_code": "2S",
+      "area_code": "S",
+      "title": "Identificar as causas de conflitos e ser capaz de os gerir.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 111
+    },
+    {
+      "code": "2S.4",
+      "general_objective_code": "2S",
+      "area_code": "S",
+      "title": "Prevenir e gerir conflitos identificando as suas causas.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 112
+    },
+    {
+      "code": "3S.1",
+      "general_objective_code": "3S",
+      "area_code": "S",
+      "title": "Respeitar as diferenças dos outros.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 113
+    },
+    {
+      "code": "3S.2",
+      "general_objective_code": "3S",
+      "area_code": "S",
+      "title": "Reconhecer preconceitos e respeitar a diferença.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 114
+    },
+    {
+      "code": "3S.3",
+      "general_objective_code": "3S",
+      "area_code": "S",
+      "title": "Analisar e questionar estereótipos e preconceitos sociais.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 115
+    },
+    {
+      "code": "3S.4",
+      "general_objective_code": "3S",
+      "area_code": "S",
+      "title": "Adotar e promover comportamentos de inclusão social, de tolerância e respeito pela diferença.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 116
+    },
+    {
+      "code": "4S.1.1",
+      "general_objective_code": "4S",
+      "area_code": "S",
+      "title": "Demonstrar preocupação e cuidado pelos outros.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 117
+    },
+    {
+      "code": "4S.1.2",
+      "general_objective_code": "4S",
+      "area_code": "S",
+      "title": "Expressar apreço pelo trabalho dos outros.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 118
+    },
+    {
+      "code": "4S.1.3-4",
+      "general_objective_code": "4S",
+      "area_code": "S",
+      "title": "Demonstrar preocupação pelo bem-estar dos elementos da sua equipa e expressar apreço pelo trabalho em Grupo, desenvolvido por si e pelos outros.",
+      "age_groups": [
+        "adventurers",
+        "rovers"
+      ],
+      "position": 119
+    },
+    {
+      "code": "4S.2.1",
+      "general_objective_code": "4S",
+      "area_code": "S",
+      "title": "Liderar a execução de tarefas.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 120
+    },
+    {
+      "code": "4S.2.2-3",
+      "general_objective_code": "4S",
+      "area_code": "S",
+      "title": "Liderar equipas em projetos.",
+      "age_groups": [
+        "scouts",
+        "adventurers"
+      ],
+      "position": 121
+    },
+    {
+      "code": "4S.2.4",
+      "general_objective_code": "4S",
+      "area_code": "S",
+      "title": "Liderar equipas em diversos contextos adaptando o seu comportamento às necessidades destas.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 122
+    },
+    {
+      "code": "5S.1",
+      "general_objective_code": "5S",
+      "area_code": "S",
+      "title": "Cumprir as tarefas que lhe foram delegadas.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 123
+    },
+    {
+      "code": "5S.2",
+      "general_objective_code": "5S",
+      "area_code": "S",
+      "title": "Assegurar o cumprimento das suas tarefas.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 124
+    },
+    {
+      "code": "5S.3",
+      "general_objective_code": "5S",
+      "area_code": "S",
+      "title": "Assegurar o cumprimento das suas tarefas, demonstrando espírito de iniciativa.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 125
+    },
+    {
+      "code": "5S.4",
+      "general_objective_code": "5S",
+      "area_code": "S",
+      "title": "Criar oportunidades para os outros assumirem responsabilidades.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 126
+    },
+    {
+      "code": "6S.1",
+      "general_objective_code": "6S",
+      "area_code": "S",
+      "title": "Participar em atividades em prol da sua comunidade local.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 127
+    },
+    {
+      "code": "6S.2",
+      "general_objective_code": "6S",
+      "area_code": "S",
+      "title": "Participar em atividades em prol da sua comunidade local, identificando as suas vantagens.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 128
+    },
+    {
+      "code": "6S.3",
+      "general_objective_code": "6S",
+      "area_code": "S",
+      "title": "Desenvolver atividades em prol da sua comunidade local, relacionando o seu impacto no contexto global.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 129
+    },
+    {
+      "code": "6S.4",
+      "general_objective_code": "6S",
+      "area_code": "S",
+      "title": "Desenvolver projetos para comunidades, responsabilizando-se no processo de melhoria para o bem comum.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 130
+    },
+    {
+      "code": "7S.1.1",
+      "general_objective_code": "7S",
+      "area_code": "S",
+      "title": "Aplicar práticas de proteção do ambiente.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 131
+    },
+    {
+      "code": "7S.1.2",
+      "general_objective_code": "7S",
+      "area_code": "S",
+      "title": "Identificar os principais impactos que o seu estilo de vida provoca no ambiente, procurando minimizar os negativos.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 132
+    },
+    {
+      "code": "7S.1.3",
+      "general_objective_code": "7S",
+      "area_code": "S",
+      "title": "Analisar o seu estilo de vida, implementando ações para potenciar o desenvolvimento sustentável.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 133
+    },
+    {
+      "code": "7S.1.4",
+      "general_objective_code": "7S",
+      "area_code": "S",
+      "title": "Implementar ações para o desenvolvimento sustentável, relacionando a interdependência entre fatores humanos e naturais.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 134
+    },
+    {
+      "code": "7S.2.1",
+      "general_objective_code": "7S",
+      "area_code": "S",
+      "title": "Identificar factos históricos e geográficos da sua comunidade local.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 135
+    },
+    {
+      "code": "7S.2.2",
+      "general_objective_code": "7S",
+      "area_code": "S",
+      "title": "Identificar as origens socioculturais da sua comunidade e família.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 136
+    },
+    {
+      "code": "7S.2.3",
+      "general_objective_code": "7S",
+      "area_code": "S",
+      "title": "Analisar as principais correntes culturais, ideológicas e políticas da comunidade onde está inserido.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 137
+    },
+    {
+      "code": "7S.2.4",
+      "general_objective_code": "7S",
+      "area_code": "S",
+      "title": "Analisar criticamente as implicações sociais das principais correntes culturais, ideológicas e políticas de diversas comunidades globais.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 138
+    },
+    {
+      "code": "8S.1.1",
+      "general_objective_code": "8S",
+      "area_code": "S",
+      "title": "Identificar os Direitos da Criança e a sua importância.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 139
+    },
+    {
+      "code": "8S.1.2",
+      "general_objective_code": "8S",
+      "area_code": "S",
+      "title": "Aplicar princípios básicos da Democracia e dos Direitos Humanos.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 140
+    },
+    {
+      "code": "8S.1.3",
+      "general_objective_code": "8S",
+      "area_code": "S",
+      "title": "Analisar os princípios e estruturas da Democracia e dos Direitos Humanos.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 141
+    },
+    {
+      "code": "8S.1.4",
+      "general_objective_code": "8S",
+      "area_code": "S",
+      "title": "Adotar os princípios da democracia e dos Direitos Humanos, analisando as várias formas como estes podem ser negados ou promovidos.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 142
+    },
+    {
+      "code": "8S.2.1",
+      "general_objective_code": "8S",
+      "area_code": "S",
+      "title": "Respeitar regras.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 143
+    },
+    {
+      "code": "8S.2.2",
+      "general_objective_code": "8S",
+      "area_code": "S",
+      "title": "Avaliar e definir regras em conjunto com outros, fazendo por cumpri-las.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 144
+    },
+    {
+      "code": "8S.2.3",
+      "general_objective_code": "8S",
+      "area_code": "S",
+      "title": "Avaliar regras comunitárias, fazendo por cumpri-las.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 145
+    },
+    {
+      "code": "8S.2.4",
+      "general_objective_code": "8S",
+      "area_code": "S",
+      "title": "Exercer cidadania participativa, respeitando as regras comunitárias definidas e participando na sua definição e avaliação.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 146
+    },
+    {
+      "code": "1F.1",
+      "general_objective_code": "1F",
+      "area_code": "F",
+      "title": "Identificar os órgãos vitais do corpo, o esqueleto e os órgãos dos sentidos.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 147
+    },
+    {
+      "code": "1F.2",
+      "general_objective_code": "1F",
+      "area_code": "F",
+      "title": "Identificar as mudanças no corpo humano decorrente do desenvolvimento físico na puberdade.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 148
+    },
+    {
+      "code": "1F.3",
+      "general_objective_code": "1F",
+      "area_code": "F",
+      "title": "Analisar o impacto físico, psicológico e emocional que a adolescência tem no seu corpo.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 149
+    },
+    {
+      "code": "1F.4",
+      "general_objective_code": "1F",
+      "area_code": "F",
+      "title": "Explicar o impacto das mudanças do seu corpo ao longo da sua vida e relacioná-las com os processos biológicos que o regulam.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 150
+    },
+    {
+      "code": "2F.1",
+      "general_objective_code": "2F",
+      "area_code": "F",
+      "title": "Reconhecer a relação entre o meio envolvente e o seu corpo.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 151
+    },
+    {
+      "code": "2F.2",
+      "general_objective_code": "2F",
+      "area_code": "F",
+      "title": "Descrever a relação entre o meio envolvente e o seu corpo.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 152
+    },
+    {
+      "code": "2F.3",
+      "general_objective_code": "2F",
+      "area_code": "F",
+      "title": "Analisar a relação entre o meio envolvente e o seu corpo.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 153
+    },
+    {
+      "code": "2F.4",
+      "general_objective_code": "2F",
+      "area_code": "F",
+      "title": "Refletir sobre o corpo como meio de interação com os outros e o meu envolvimento.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 154
+    },
+    {
+      "code": "3F.1",
+      "general_objective_code": "3F",
+      "area_code": "F",
+      "title": "Demonstrar hábitos de higiene pessoal de forma autónoma, identificando consequências da sua ausência.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 155
+    },
+    {
+      "code": "3F.2",
+      "general_objective_code": "3F",
+      "area_code": "F",
+      "title": "Demonstrar cuidados com a sua aparência, bem como hábitos autónomos de higiene pessoal e do meio envolvente.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 156
+    },
+    {
+      "code": "3F.3-4",
+      "general_objective_code": "3F",
+      "area_code": "F",
+      "title": "Avaliar os seus cuidados com a aparência e hábitos de higiene (pessoal e do meio envolvente), implementando melhorias.",
+      "age_groups": [
+        "adventurers",
+        "rovers"
+      ],
+      "position": 157
+    },
+    {
+      "code": "4F.1.1",
+      "general_objective_code": "4F",
+      "area_code": "F",
+      "title": "Identificar os principais Grupos de alimentos e suas recomendações gerais de consumo.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 158
+    },
+    {
+      "code": "4F.1.2",
+      "general_objective_code": "4F",
+      "area_code": "F",
+      "title": "Relacionar a alimentação com a saúde e fazer escolhas alimentares equilibradas.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 159
+    },
+    {
+      "code": "4F.1.3",
+      "general_objective_code": "4F",
+      "area_code": "F",
+      "title": "Planear a sua alimentação de acordo com as suas necessidades pessoais.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 160
+    },
+    {
+      "code": "4F.1.4",
+      "general_objective_code": "4F",
+      "area_code": "F",
+      "title": "Avaliar os seus hábitos alimentares e implementar melhorias consoante as suas metas de desenvolvimento.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 161
+    },
+    {
+      "code": "4F.2.1",
+      "general_objective_code": "4F",
+      "area_code": "F",
+      "title": "Identificar doenças que podem afetar o corpo e as suas causas.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 162
+    },
+    {
+      "code": "4F.2.2",
+      "general_objective_code": "4F",
+      "area_code": "F",
+      "title": "Identificar os riscos associados a vários comportamentos de risco (incluindo o consumo de álcool, drogas e relações sexuais) e suas formas de prevenção.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 163
+    },
+    {
+      "code": "4F.2.3",
+      "general_objective_code": "4F",
+      "area_code": "F",
+      "title": "Demonstrar comportamentos responsáveis de saúde pessoal e pública.",
+      "age_groups": [
+        "adventurers"
+      ],
+      "position": 164
+    },
+    {
+      "code": "4F.2.4",
+      "general_objective_code": "4F",
+      "area_code": "F",
+      "title": "Demonstrar comportamentos responsáveis de saúde pessoal e pública.",
+      "age_groups": [
+        "rovers"
+      ],
+      "position": 165
+    },
+    {
+      "code": "4F.3.1",
+      "general_objective_code": "4F",
+      "area_code": "F",
+      "title": "Experimentar diferentes atividades físicas, identificando as suas preferências.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 166
+    },
+    {
+      "code": "4F.3.2",
+      "general_objective_code": "4F",
+      "area_code": "F",
+      "title": "Relacionar a prática de atividade física com a saúde, praticando diariamente atividade física.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 167
+    },
+    {
+      "code": "4F.3.3-4",
+      "general_objective_code": "4F",
+      "area_code": "F",
+      "title": "Planear a sua prática de atividade física de acordo com as suas preferências e necessidades.",
+      "age_groups": [
+        "adventurers",
+        "rovers"
+      ],
+      "position": 168
+    },
+    {
+      "code": "4F.4.1",
+      "general_objective_code": "4F",
+      "area_code": "F",
+      "title": "Respeitar os momentos de repouso e explicar a sua importância.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 169
+    },
+    {
+      "code": "4F.4.2",
+      "general_objective_code": "4F",
+      "area_code": "F",
+      "title": "Fazer escolhas equilibradas na gestão do tempo de atividade e de momentos de repouso.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 170
+    },
+    {
+      "code": "4F.4.3-4",
+      "general_objective_code": "4F",
+      "area_code": "F",
+      "title": "Planear, de forma equilibrada, tempos de atividade (física, intelectual ou social) e momentos de repouso na sua vida diária.",
+      "age_groups": [
+        "adventurers",
+        "rovers"
+      ],
+      "position": 171
+    },
+    {
+      "code": "5F.1",
+      "general_objective_code": "5F",
+      "area_code": "F",
+      "title": "Explorar os seus sentidos e competências motoras.",
+      "age_groups": [
+        "cub_scouts"
+      ],
+      "position": 172
+    },
+    {
+      "code": "5F.2",
+      "general_objective_code": "5F",
+      "area_code": "F",
+      "title": "Regular o seu esforço na prática de atividade física e avaliar as suas competências motoras.",
+      "age_groups": [
+        "scouts"
+      ],
+      "position": 173
+    },
+    {
+      "code": "5F.3-4",
+      "general_objective_code": "5F",
+      "area_code": "F",
+      "title": "Planear o desenvolvimento das suas competências motoras para se movimentar com eficiência em diversos meios.",
+      "age_groups": [
+        "adventurers",
+        "rovers"
+      ],
+      "position": 174
+    }
+  ],
+  "challenge_types": [
+    {
+      "code": "EVAS",
+      "name": "Estilo de Vida Ativo e Saudável",
+      "position": 1
+    },
+    {
+      "code": "VAL",
+      "name": "Vida ao Ar Livre",
+      "position": 2
+    },
+    {
+      "code": "CC",
+      "name": "Comunidade e Cidadania",
+      "position": 3
+    },
+    {
+      "code": "VA",
+      "name": "Valores e Atitudes",
+      "position": 4
+    },
+    {
+      "code": "VE",
+      "name": "Vivência Escotista",
+      "position": 5
+    },
+    {
+      "code": "TU",
+      "name": "Técnicas Úteis",
+      "position": 6
+    },
+    {
+      "code": "CR",
+      "name": "Criatividade",
+      "position": 7
+    }
+  ],
+  "challenges": [
+    {
+      "code": "EVAS-A",
+      "type_code": "EVAS",
+      "age_group": "cub_scouts",
+      "position": 1,
+      "title": "Participa em 3 atividades físicas diferentes durante 30 minutos cada e partilha com a tua divisão ou pequeno grupo o que gostaste em cada uma delas.",
+      "goal_codes": [
+        "4F.3.1"
+      ],
+      "short_title": "Experimenta 3 atividades físicas e partilha a experiência.",
+      "integration_age_groups": [
+        "cub_scouts"
+      ]
+    },
+    {
+      "code": "EVAS-B",
+      "type_code": "EVAS",
+      "age_group": "cub_scouts",
+      "position": 2,
+      "title": "Participa com sucesso em 3 jogos do KIM que estimulem os sentidos e competências motoras.\n\nPor exemplo, jogos de camuflagem/aproximação, notas musicais com vários instrumentos, memória visual com vários objetos numa sala, identificar objetos pelo tacto, cheiros de alimentos ou produtos não tóxicos, detetar diferentes sabores de ingredientes).",
+      "goal_codes": [
+        "5F.1"
+      ],
+      "short_title": "Participa em 3 jogos de sentidos e motricidade.",
+      "integration_age_groups": [
+        "cub_scouts"
+      ]
+    },
+    {
+      "code": "EVAS-C",
+      "type_code": "EVAS",
+      "age_group": "cub_scouts",
+      "position": 3,
+      "title": "Demonstra, ao longo de 1 trimestre, que consegues ultrapassar dificuldades com uma atitude positiva - seja por iniciativa própria ou por aconselhamento de um Dirigente.\n\nPor exemplo, quando perdes um jogo, quando uma atividade está a correr menos bem, ou um desentendimento com outro elementos.",
+      "goal_codes": [
+        "1C.1",
+        "6C.1"
+      ],
+      "short_title": "Supera dificuldades com atitude positiva durante 1 trimestre.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "EVAS-D",
+      "type_code": "EVAS",
+      "age_group": "cub_scouts",
+      "position": 4,
+      "title": "Em contexto real ou simulado trata uma pequena ferida e queimadura ligeira utilizando um estojo de primeiro socorros.\n\nPor exemplo no contexto de um jogo, atividade ou então num simulacro sobre este tema.",
+      "goal_codes": [
+        "1F.1",
+        "4F.2.1"
+      ],
+      "short_title": "Trata uma ferida e queimadura ligeira.",
+      "integration_age_groups": [
+        "scouts"
+      ]
+    },
+    {
+      "code": "EVAS-E",
+      "type_code": "EVAS",
+      "age_group": "scouts",
+      "position": 5,
+      "title": "Participa ativamente na elaboração de um programa equilibrado e com tempos de descanso adequados para uma atividade de 2 dias em que participes.",
+      "goal_codes": [
+        "4F.4.1",
+        "4F.4.2",
+        "5F.2"
+      ],
+      "short_title": "Planeia uma atividade de 2 dias com descanso adequado.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "EVAS-F",
+      "type_code": "EVAS",
+      "age_group": "scouts",
+      "position": 6,
+      "title": "Dinamiza um jogo sobre alimentação saudável para outra divisão.",
+      "goal_codes": [
+        "4F.1.2"
+      ],
+      "short_title": "Dinamiza um jogo sobre alimentação saudável.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "EVAS-G",
+      "type_code": "EVAS",
+      "age_group": "scouts",
+      "position": 7,
+      "title": "Dinamiza um debate sobre um comportamento de risco com a tua divisão ou pequeno grupo.",
+      "goal_codes": [
+        "4F.2.2",
+        "1F.2"
+      ],
+      "short_title": "Dinamiza um debate sobre comportamentos de risco.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "EVAS-H",
+      "type_code": "EVAS",
+      "age_group": "scouts",
+      "position": 8,
+      "title": "Em atividade, protege-te adequadamente de situações de frio, calor, sol e chuva.",
+      "goal_codes": [
+        "2F.2",
+        "6C.2"
+      ],
+      "short_title": "Protege-te adequadamente das condições meteorológicas.",
+      "integration_age_groups": [
+        "adventurers"
+      ]
+    },
+    {
+      "code": "EVAS-I",
+      "type_code": "EVAS",
+      "age_group": "adventurers",
+      "position": 9,
+      "title": "Realiza uma competição de atividade física, durante 1 mês, com o teu pequeno grupo ou divisão. Nesta competição são atribuídos pontos por cada dia em que realizes mais de 60 minutos de atividade física.",
+      "goal_codes": [
+        "4F.3.2",
+        "4F.3.3-4"
+      ],
+      "short_title": "Compete em atividade física durante 1 mês.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "EVAS-J",
+      "type_code": "EVAS",
+      "age_group": "adventurers",
+      "position": 10,
+      "title": "Com o teu pequeno grupo, participa numa discussão sobre a diferença entre a tua imagem na vida real e nas redes sociais.",
+      "goal_codes": [
+        "2F.3"
+      ],
+      "short_title": "Debate imagem real vs. redes sociais.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "EVAS-K",
+      "type_code": "EVAS",
+      "age_group": "adventurers",
+      "position": 11,
+      "title": "Dinamiza com a tua divisão uma sessão que promova o bem-estar individual e avalia o seu impacto.\n\nEsta sessão pode ser, por exemplo, um momento de massagem, meditação, etc.",
+      "goal_codes": [
+        "2F.3",
+        "4F.2.3",
+        "4F.4.3-4"
+      ],
+      "short_title": "Dinamiza e avalia uma sessão de bem-estar.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "EVAS-L",
+      "type_code": "EVAS",
+      "age_group": "adventurers",
+      "position": 12,
+      "title": "Experimenta durante 2 meses uma alteração significativa ao teu estilo de vida. No final, analisa o impacto na sustentabilidade que esta mudança teve a nível pessoal e na sociedade.\n\nPor exemplo, mudanças na alimentação, mobilidade ativa, consumo responsável.",
+      "goal_codes": [
+        "4F.1.3",
+        "4F.1.4",
+        "4F.3.3-4",
+        "4F.4.3-4",
+        "6C.3",
+        "7S.1.3"
+      ],
+      "short_title": "Adota um estilo de vida mais sustentável por 2 meses.",
+      "integration_age_groups": [
+        "rovers"
+      ]
+    },
+    {
+      "code": "EVAS-M",
+      "type_code": "EVAS",
+      "age_group": "rovers",
+      "position": 13,
+      "title": "Realiza os seguintes desafios:\n\n- Corre 2 km sem parar;\n- Faz uma caminhada de 20 km;\n- Nada 100 metros sem parar;\n- Faz 30 km de bicicleta num dia.",
+      "goal_codes": [
+        "5F.3-4"
+      ],
+      "short_title": "Completa desafios de corrida, caminhada, natação e bicicleta.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "EVAS-N",
+      "type_code": "EVAS",
+      "age_group": "rovers",
+      "position": 14,
+      "title": "Pergunta a um elemento da tua Divisão, preferencialmente de outro género, quais as mudanças que foi sentindo ao longo da sua adolescência, como estas o afetaram e como se conseguiu lidar com elas. Em grupo, discutam descobertas que tenham feito e partilhem experiências.",
+      "goal_codes": [
+        "1F.3",
+        "1F.4"
+      ],
+      "short_title": "Explora e debate as mudanças da adolescência.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "EVAS-O",
+      "type_code": "EVAS",
+      "age_group": "rovers",
+      "position": 15,
+      "title": "Analisa os teus hábitos diários (higiene, alimentação, atividade fisica e sono), define e executa um plano de melhoria com duração de um trimestre e avalia-o no final.",
+      "goal_codes": [
+        "3F.3-4",
+        "4F.4.3-4",
+        "4F.1.4",
+        "6C.4",
+        "2C.3-4"
+      ],
+      "short_title": "Melhora os teus hábitos diários durante 1 trimestre.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "EVAS-P",
+      "type_code": "EVAS",
+      "age_group": "rovers",
+      "position": 16,
+      "title": "Participa num Projeto que inclua objetivos com impacto na Saúde Pública.\n\nExemplos incluem Projetos relacionados com higiene e segurança, doenças transmissíveis, vacinação.",
+      "goal_codes": [
+        "4F.2.4",
+        "2F.4"
+      ],
+      "short_title": "Participa num projeto de Saúde Pública.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VAL-A",
+      "type_code": "VAL",
+      "age_group": "cub_scouts",
+      "position": 1,
+      "title": "Em atividade demonstra que tens hábitos de higiene pessoal e traz regularmente um kit pessoal de higiene completo.",
+      "goal_codes": [
+        "3F.1",
+        "2F.1"
+      ],
+      "short_title": "Mantém bons hábitos e um kit de higiene.",
+      "integration_age_groups": [
+        "cub_scouts"
+      ]
+    },
+    {
+      "code": "VAL-B",
+      "type_code": "VAL",
+      "age_group": "cub_scouts",
+      "position": 2,
+      "title": "Colabora na escolha e confeção de uma refeição quente equilibrada para a tua Divisão.\n\n[Indicador: Ter em conta os cuidados de higiene a ter com os alimentos]",
+      "goal_codes": [
+        "3F.1",
+        "4C.1",
+        "5S.1",
+        "4F.1.1"
+      ],
+      "short_title": "Confeciona uma refeição quente equilibrada.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VAL-C",
+      "type_code": "VAL",
+      "age_group": "cub_scouts",
+      "position": 3,
+      "title": "Realiza 2 dos seguintes desafios:\n- Em atividade identifica duas constelações e a estrela polar;\n- Desenha um esquema simples do ciclo da água ou de outro ciclo natural à tua escolha;\n- Planta e cuida de uma planta durante pelo menos 3 meses.",
+      "goal_codes": [
+        "1E.1"
+      ],
+      "short_title": "Completa 2 desafios de contacto com a natureza.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VAL-D",
+      "type_code": "VAL",
+      "age_group": "cub_scouts",
+      "position": 4,
+      "title": "Acumula 3 noites de campo (tenda ou abrigo) em atividade, deixando o campo limpo.",
+      "goal_codes": [
+        "1E.1"
+      ],
+      "short_title": "Acumula 3 noites de campo.",
+      "integration_age_groups": [
+        "scouts",
+        "adventurers",
+        "rovers"
+      ]
+    },
+    {
+      "code": "VAL-E",
+      "type_code": "VAL",
+      "age_group": "scouts",
+      "position": 5,
+      "title": "Em campo, observa e explica 2 fenómenos naturais.",
+      "goal_codes": [
+        "1E.2"
+      ],
+      "short_title": "Observa e explica 2 fenómenos naturais.",
+      "integration_age_groups": [
+        "scouts"
+      ]
+    },
+    {
+      "code": "VAL-F",
+      "type_code": "VAL",
+      "age_group": "scouts",
+      "position": 6,
+      "title": "Idealiza e prepara uma ementa equilibrada, adequada ao programa e seguindo os conceitos do lixo zero, para uma atividadade em campo com 2 dias.\n\nLixo zero é um conceito que promove o máximo aproveitamento e correto encaminhamento dos resíduos recicláveis e orgânicos. Dentro deste conceito estão também o 5 R's repensar, reduzir, reutilizar, reciclar e recuperar.",
+      "goal_codes": [
+        "1E.2",
+        "4F.1.2",
+        "7S.1.2"
+      ],
+      "short_title": "Planeia uma ementa equilibrada e lixo zero.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VAL-G",
+      "type_code": "VAL",
+      "age_group": "scouts",
+      "position": 7,
+      "title": "Acumula 18 noites de campo (tenda ou abrigo) em atividade na tua divisão atual, cumprindo o Código de Campo da AEP.",
+      "goal_codes": [
+        "1E.2",
+        "4C.2",
+        "4C.3"
+      ],
+      "short_title": "Acumula 18 noites de campo.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VAL-H",
+      "type_code": "VAL",
+      "age_group": "scouts",
+      "position": 8,
+      "title": "Atualiza o teu kit pessoal de higiene de forma a que seja mais sustentável e em campo, lava a tua roupa e loiça utilizando sabão biodegradável.",
+      "goal_codes": [
+        "3F.2",
+        "7S.1.1",
+        "7S.1.2"
+      ],
+      "short_title": "Torna a higiene em campo mais sustentável.",
+      "integration_age_groups": [
+        "adventurers"
+      ]
+    },
+    {
+      "code": "VAL-I",
+      "type_code": "VAL",
+      "age_group": "adventurers",
+      "position": 9,
+      "title": "Participa ativamente na criação e implementação de um projeto de higiene em campo que inclua a construção de 4 elementos diferentes.\n\nExemplos destes elementos são: lavatório, latrina, chuveiro, sistema de separação de lixo, despensa.",
+      "goal_codes": [
+        "3F.3-4",
+        "4F.2.3"
+      ],
+      "short_title": "Implementa um projeto de higiene em campo.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VAL-J",
+      "type_code": "VAL",
+      "age_group": "adventurers",
+      "position": 10,
+      "title": "Coordena a análise de risco para uma atividade de pequeno grupo. Deves identificar os perigos derivados do meio ambiente numa atividade e os riscos a que podem estar expostos. Para cada risco identificado, deves também analisar como o podes mitigar.",
+      "goal_codes": [
+        "2F.3"
+      ],
+      "short_title": "Coordena uma análise de risco de atividade.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VAL-K",
+      "type_code": "VAL",
+      "age_group": "adventurers",
+      "position": 11,
+      "title": "Realiza as seguintes tarefas:\n- Mantém um registo de 15 animais (local e espécie) que observes em atividade;\n- Realiza um percurso de 10 km, de dia ou de noite, recorrendo a meios naturais para orientação;\n- Aprende e demonstra 3 métodos de fazer fogo.",
+      "goal_codes": [
+        "1E.3",
+        "3F.3-4"
+      ],
+      "short_title": "Domina desafios de natureza, orientação, fogo e cozinha.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VAL-L",
+      "type_code": "VAL",
+      "age_group": "adventurers",
+      "position": 12,
+      "title": "Acumula 25 noites de campo (tenda ou abrigo) em atividade na tua divisão atual em pelo menos 5 concelhos diferentes, cumprindo o Código de Campo da AEP. No final, partilha a tua experiência.",
+      "goal_codes": [
+        "1E.3",
+        "2F.3"
+      ],
+      "short_title": "Acumula 25 noites de campo em 5 concelhos.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VAL-M",
+      "type_code": "VAL",
+      "age_group": "rovers",
+      "position": 13,
+      "title": "Organiza, utiliza e mantém o material individual necessário para teres conforto e segurança em campo durante 3 meses.\n\nPara facilitar o processo, utiliza uma sistematização do material (e.g., os 10 C [em inglês] ou os 5 C + 5 K [em português]).",
+      "goal_codes": [
+        "2F.4",
+        "3F.3-4"
+      ],
+      "short_title": "Gere o teu material de campo durante 3 meses.",
+      "integration_age_groups": [
+        "rovers"
+      ]
+    },
+    {
+      "code": "VAL-N",
+      "type_code": "VAL",
+      "age_group": "rovers",
+      "position": 14,
+      "title": "Implementa um plano para uma atividade de Grupo ou acampamento de Divisão para a tornar mais sustentável. No final avalia a eficácia das medidas tomadas e o seu impacto ambiental e social.\n\nNeste plano deves considerar soluções no âmbito dos transportes, alimentação, montagem e permanência em campo, material, atividades e jogos.",
+      "goal_codes": [
+        "1E.4",
+        "2F.4",
+        "3F.3-4"
+      ],
+      "short_title": "Torna uma atividade mais sustentável e avalia o impacto.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VAL-O",
+      "type_code": "VAL",
+      "age_group": "rovers",
+      "position": 15,
+      "title": "Participa num Projeto que inclua uma componente de sobrevivência em campo, bem como conservação ambiental.\n\nPor exemplo podes fazer abrigos artificais para espécies ameaçadas na tua zona, entre outras hipóteses.",
+      "goal_codes": [
+        "1E.4",
+        "3F.3-4",
+        "7S.1.4"
+      ],
+      "short_title": "Participa num projeto de sobrevivência e conservação.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VAL-P",
+      "type_code": "VAL",
+      "age_group": "rovers",
+      "position": 16,
+      "title": "Acumula 25 noites de campo (em tenda ou abrigo) em atividade na tua divisão atual a mais de 50km da tua sede em 5 concelhos diferentes, pelo menos 5 das quais em autonomia individual. No final, partilha a tua experiência com o Grupo.",
+      "goal_codes": [
+        "1E.4",
+        "2F.4"
+      ],
+      "short_title": "Acumula 25 noites de campo, incluindo 5 em autonomia.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CC-A",
+      "type_code": "CC",
+      "age_group": "cub_scouts",
+      "position": 1,
+      "title": "Partilha algo com a tua divisão.\n\nPodes, por exemplo, trazer um lanche saudável para todos, ensinar um jogo novo que tenhas aprendido, etc.",
+      "goal_codes": [
+        "4E.1.1",
+        "4S.2.1"
+      ],
+      "short_title": "Partilha algo com a tua Divisão.",
+      "integration_age_groups": [
+        "cub_scouts"
+      ]
+    },
+    {
+      "code": "CC-B",
+      "type_code": "CC",
+      "age_group": "cub_scouts",
+      "position": 2,
+      "title": "Visita, com a tua divisão, um museu perto do teu grupo.",
+      "goal_codes": [
+        "7S.2.1"
+      ],
+      "short_title": "Visita um museu com a tua Divisão.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CC-C",
+      "type_code": "CC",
+      "age_group": "cub_scouts",
+      "position": 3,
+      "title": "Experimenta uma nova comida e partilha a tua opinião com a tua divisão.",
+      "goal_codes": [
+        "3E.1"
+      ],
+      "short_title": "Experimenta uma nova comida e partilha a opinião.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CC-D",
+      "type_code": "CC",
+      "age_group": "cub_scouts",
+      "position": 4,
+      "title": "Fica responsável por tarefas em 3 atividades diferentes.",
+      "goal_codes": [
+        "4E.2.1"
+      ],
+      "short_title": "Assume tarefas em 3 atividades.",
+      "integration_age_groups": [
+        "scouts"
+      ]
+    },
+    {
+      "code": "CC-E",
+      "type_code": "CC",
+      "age_group": "scouts",
+      "position": 5,
+      "title": "Visita um templo religioso com a tua divisão.",
+      "goal_codes": [
+        "6E.2"
+      ],
+      "short_title": "Visita um templo religioso.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CC-F",
+      "type_code": "CC",
+      "age_group": "scouts",
+      "position": 6,
+      "title": "Participa em 6 boas ações coletivas na localidade do teu grupo.\n\nEstas boas ações coletivas ou momentos de serviço à comunidade devem ser diversificadas.\n[Indicador: estas ações devem ser diversificadas]",
+      "goal_codes": [
+        "4E.2.2",
+        "6S.2"
+      ],
+      "short_title": "Participa em 6 boas ações locais.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CC-G",
+      "type_code": "CC",
+      "age_group": "scouts",
+      "position": 7,
+      "title": "Coordena a realização de uma boa ação coletiva.",
+      "goal_codes": [
+        "4S.2.2-3",
+        "6S.3"
+      ],
+      "short_title": "Coordena uma boa ação coletiva.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CC-H",
+      "type_code": "CC",
+      "age_group": "scouts",
+      "position": 8,
+      "title": "Participa numa atividade cultural fora do contexto da localidade do teu grupo ou residência.",
+      "goal_codes": [
+        "7S.2.3"
+      ],
+      "short_title": "Participa numa atividade cultural fora da tua localidade.",
+      "integration_age_groups": [
+        "adventurers"
+      ]
+    },
+    {
+      "code": "CC-I",
+      "type_code": "CC",
+      "age_group": "adventurers",
+      "position": 9,
+      "title": "Assiste, com outras pessoas do grupo, a uma Assembleia de Freguesia.",
+      "goal_codes": [
+        "8S.1.3",
+        "7S.2.2"
+      ],
+      "short_title": "Assiste a uma Assembleia de Freguesia.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CC-J",
+      "type_code": "CC",
+      "age_group": "adventurers",
+      "position": 10,
+      "title": "Cria e dinamiza um momento de animação sobre estereótipos e preconceitos à tua volta.\n\nPor exemplo jogo, dinâmica de grupo, reflexão.",
+      "goal_codes": [
+        "3S.3",
+        "8S.2.3"
+      ],
+      "short_title": "Dinamiza uma animação sobre estereótipos e preconceitos.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CC-K",
+      "type_code": "CC",
+      "age_group": "adventurers",
+      "position": 11,
+      "title": "Participa em 3 boas ações coletivas fora do contexto da localidade do teu grupo ou residência\n\n[Indicador: estas ações devem ser diversificadas]",
+      "goal_codes": [
+        "4E.2.3",
+        "4E.1.3-4"
+      ],
+      "short_title": "Participa em 3 boas ações fora da tua localidade.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CC-L",
+      "type_code": "CC",
+      "age_group": "adventurers",
+      "position": 12,
+      "title": "Cria um conteúdo multimedia sobre violações a 10 artigos da carta universal dos direitos humanos. Partilha com a tua divisão ou grupo o conteúdo que produziste.",
+      "goal_codes": [
+        "8S.1.3"
+      ],
+      "short_title": "Cria conteúdo sobre violações dos Direitos Humanos.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CC-M",
+      "type_code": "CC",
+      "age_group": "rovers",
+      "position": 13,
+      "title": "Identifica e debate com o teu pequeno grupo uma notícia falsa que tenha tido um impacto social significativo.",
+      "goal_codes": [
+        "4E.2.4",
+        "2I.4"
+      ],
+      "short_title": "Identifica e debate uma notícia falsa.",
+      "integration_age_groups": [
+        "rovers"
+      ]
+    },
+    {
+      "code": "CC-N",
+      "type_code": "CC",
+      "age_group": "rovers",
+      "position": 14,
+      "title": "Participa num ato eleitoral nacional ou internacional, analisando previamente as várias hipóteses e formulando a tua decisão.\n\nPor exemplo eleições autarquicas, legislativas, presidenciais, europeias.",
+      "goal_codes": [
+        "7S.2.4",
+        "8S.2.4"
+      ],
+      "short_title": "Participa conscientemente num ato eleitoral.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CC-O",
+      "type_code": "CC",
+      "age_group": "rovers",
+      "position": 15,
+      "title": "Coordena 6 equipas ou Grupos de Trabalho, ao longo do teu percurso escotista.",
+      "goal_codes": [
+        "4S.2.4"
+      ],
+      "short_title": "Coordena 6 equipas ou Grupos de Trabalho.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CC-P",
+      "type_code": "CC",
+      "age_group": "rovers",
+      "position": 16,
+      "title": "Coordena um Projeto, com duração de um ano, com impacto na comunidade seguindo o mote \"pensar global, agir local\".",
+      "goal_codes": [
+        "4E.2.4",
+        "6S.4"
+      ],
+      "short_title": "Coordena um projeto anual de impacto comunitário.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VA-A",
+      "type_code": "VA",
+      "age_group": "cub_scouts",
+      "position": 1,
+      "title": "Identifica dificuldades que tens a cumprir as Máximas da Selva, a Lei da Alcateia e a Promessa do Lobito*. Num espaço de 2 meses, mostra que conseguiste ultrapassar essas dificuldades.\n\n*Quando realizado em Divisões seguintes à Alcateia, deve ser considerada a Lei do Escoteiro e o Compromisso de Honra.",
+      "goal_codes": [
+        "8C.1",
+        "5C.1",
+        "7C.1",
+        "9C.1",
+        "8S.2.1",
+        "1C.1"
+      ],
+      "short_title": "Supera dificuldades no cumprimento da Lei e Promessa.",
+      "integration_age_groups": [
+        "cub_scouts",
+        "scouts",
+        "adventurers",
+        "rovers"
+      ]
+    },
+    {
+      "code": "VA-B",
+      "type_code": "VA",
+      "age_group": "cub_scouts",
+      "position": 2,
+      "title": "Realiza um trabalho criativo sobre os Direitos da Criança, onde incluas não só a importância dos mesmos como situações onde crianças não usufruam destes direitos.",
+      "goal_codes": [
+        "8S.1.1",
+        "4S.1.1"
+      ],
+      "short_title": "Cria um trabalho sobre os Direitos da Criança.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VA-C",
+      "type_code": "VA",
+      "age_group": "cub_scouts",
+      "position": 3,
+      "title": "Num acampamento, assume a responsabilidade de uma tarefa com a qual não te sintas confortável. No final, avalia a tua participação com o teu Dirigente/Divisão.",
+      "goal_codes": [
+        "4S.2.1",
+        "6C.1",
+        "2E.1",
+        "5S.1",
+        "3C.1",
+        "4A.1"
+      ],
+      "short_title": "Assume e avalia uma tarefa desconfortável em campo.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VA-D",
+      "type_code": "VA",
+      "age_group": "cub_scouts",
+      "position": 4,
+      "title": "Demonstra que consegues gerir um conflito respeitando a opinião dos outros e aceitando a resolução do mesmo.",
+      "goal_codes": [
+        "8C.1",
+        "2S.1",
+        "1S.2"
+      ],
+      "short_title": "Gere um conflito respeitando os outros.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VA-E",
+      "type_code": "VA",
+      "age_group": "scouts",
+      "position": 5,
+      "title": "Participa numa atividade em que experiencies algo novo/desafiante. No final, avalia a experiência, como te sentiste e possíveis dificuldades que tenhas encontrado.",
+      "goal_codes": [
+        "3E.2",
+        "1A.2",
+        "9C.2"
+      ],
+      "short_title": "Experimenta e avalia algo novo ou desafiante.",
+      "integration_age_groups": [
+        "scouts"
+      ]
+    },
+    {
+      "code": "VA-F",
+      "type_code": "VA",
+      "age_group": "scouts",
+      "position": 6,
+      "title": "Com o teu pequeno grupo, apresenta um momento de animação de um fogo de conselho onde explores um valor e a importância que ele tem na vossa vida e no Escotismo.\n\nAlguns destes valores podem ser, por exemplo, o respeito, a empatia, a responsabilidade, etc.",
+      "goal_codes": [
+        "8C.2",
+        "9C.2",
+        "1C.2",
+        "3C.2"
+      ],
+      "short_title": "Dinamiza uma animação sobre um valor escotista.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VA-G",
+      "type_code": "VA",
+      "age_group": "scouts",
+      "position": 7,
+      "title": "Conversa com o teu pequeno grupo e identifica o tipo de relação que mantêm dentro do mesmo. Procura identificar conflitos e o teu papel nos mesmos e formas como podes alterar o teu comportamento de forma a os diminuir.",
+      "goal_codes": [
+        "3A.2",
+        "2S.2",
+        "5C.2",
+        "1C.1"
+      ],
+      "short_title": "Analisa relações, conflitos e o teu comportamento.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VA-H",
+      "type_code": "VA",
+      "age_group": "scouts",
+      "position": 8,
+      "title": "Ensina a um novo elemento a Lei do Escoteiro e o Compromisso de Honra, identificando os valores que estão por detrás dos mesmos.",
+      "goal_codes": [
+        "8C.2",
+        "9C.2"
+      ],
+      "short_title": "Ensina a Lei, Compromisso e respetivos valores.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VA-I",
+      "type_code": "VA",
+      "age_group": "adventurers",
+      "position": 9,
+      "title": "Em conjunto com o teu pequeno grupo, elege uma atividade/acampamento a realizar e assume responsabilidade sobre uma área da sua preparação. No final, analisa o teu desempenho e como lidaste com situações de pressão.",
+      "goal_codes": [
+        "3C.4",
+        "2E.2"
+      ],
+      "short_title": "Prepara uma atividade e avalia o desempenho sob pressão.",
+      "integration_age_groups": [
+        "adventurers"
+      ]
+    },
+    {
+      "code": "VA-J",
+      "type_code": "VA",
+      "age_group": "adventurers",
+      "position": 10,
+      "title": "Lidera uma avaliação de uma atividade/trimestre. Procura que sejam identificados pontos altos e baixos e que se reflita de que forma foram temporários. Garante que todos têm espaço para expor o seu ponto de vista, especialmente na presença de opiniões distintas.",
+      "goal_codes": [
+        "2S.3",
+        "2E.3"
+      ],
+      "short_title": "Lidera uma avaliação e propõe melhorias.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VA-K",
+      "type_code": "VA",
+      "age_group": "adventurers",
+      "position": 11,
+      "title": "Identifica os teus pontos fortes e fracos dentro e fora dos escoteiros, tanto a nivel técnico/conhecimento, emocional e na relação com os outros. De seguida, reflete sobre como melhorá-los, definindo objetivos para os mesmos. Cria um plano anual com estes objetivos onde incluas também o progresso escotista.",
+      "goal_codes": [
+        "8C.3",
+        "5C.3",
+        "1C.3"
+      ],
+      "short_title": "Avalia-te e cria um plano anual de desenvolvimento.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VA-L",
+      "type_code": "VA",
+      "age_group": "adventurers",
+      "position": 12,
+      "title": "Partilha de forma artística com a tua divisão uma experiência nova que tiveste nos Escoteiros que consideres importante e como ela te fez sentir.\n\nPor forma artística queremos dizer, por exemplo, um desenho, uma canção, uma dança, etc.",
+      "goal_codes": [
+        "3E.4",
+        "5E.4",
+        "3A.1"
+      ],
+      "short_title": "Partilha artisticamente uma experiência escotista marcante.",
+      "integration_age_groups": [
+        "rovers"
+      ]
+    },
+    {
+      "code": "VA-M",
+      "type_code": "VA",
+      "age_group": "rovers",
+      "position": 13,
+      "title": "Em Divisão, escolham um filme sobre a vida de uma personagem histórica que dedicou a sua vida a uma causa. Após verem o filme discutam as posições e decisão de vida da personagem - reflitam sobre o vosso proposito de vida e a forma como as vossas decisões podem impactar na comunidade.",
+      "goal_codes": [
+        "7E.4"
+      ],
+      "short_title": "Reflete sobre propósito e impacto através de uma personagem histórica.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VA-N",
+      "type_code": "VA",
+      "age_group": "rovers",
+      "position": 14,
+      "title": "Em Grupo identifica algumas coisas a melhorar na tua sede. Depois implementa uma plano onde procures colmatar as questões identificadas. No final partilha com o teu Grupo as melhorias alcançadas.",
+      "goal_codes": [
+        "3C.4"
+      ],
+      "short_title": "Identifica e implementa melhorias na sede.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VA-O",
+      "type_code": "VA",
+      "age_group": "rovers",
+      "position": 15,
+      "title": "Em Divisão, participa num debate sobre o equilíbrio que tem de existir entre as emoções e a racionalidade, e fatores internos e externos que o podem influenciar. Partilha como sentes esse equilíbrio na tua vida pessoal.",
+      "goal_codes": [
+        "2E.4",
+        "4A.4",
+        "1A.4",
+        "1S.4"
+      ],
+      "short_title": "Debate o equilíbrio entre emoção e razão.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VA-P",
+      "type_code": "VA",
+      "age_group": "rovers",
+      "position": 16,
+      "title": "Implementa um plano semestral ou anual onde defines objetivos pessoais para a tua vida pessoal e escotista. No final partilha com o teu Grupo ou Divisão os resultados alcançados.",
+      "goal_codes": [
+        "5C.4",
+        "1C.4"
+      ],
+      "short_title": "Define e avalia objetivos pessoais e escotistas.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VE-A",
+      "type_code": "VE",
+      "age_group": "cub_scouts",
+      "position": 1,
+      "title": "Participa:\n- Numa cerimónia de grupo;\n- Em mais de 70% das atividades da tua divisão ao longo de um Trimestre;\n- No orgão de decisão da tua divisão, partilhando a tua opinião;\n- Em todas as danças da Selva*.\n\n*aplicável a Lobitos",
+      "goal_codes": [
+        "2A.1",
+        "3S.1",
+        "4E.1.1",
+        "4E.2.1",
+        "4S.1.1",
+        "8S.2.1",
+        "9C.1"
+      ],
+      "short_title": "Participa ativamente na vida da Divisão.",
+      "integration_age_groups": [
+        "cub_scouts"
+      ]
+    },
+    {
+      "code": "VE-B",
+      "type_code": "VE",
+      "age_group": "cub_scouts",
+      "position": 2,
+      "title": "Ensina um elemento mais novo como fazer e o significado:\n- Da saudação de Lobito/Escoteiro;\n- Do aperto de mão escotista.",
+      "goal_codes": [
+        "4S.2.1",
+        "5S.1",
+        "6E.1",
+        "7S.2.1"
+      ],
+      "short_title": "Ensina a saudação e o aperto de mão escotista.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VE-C",
+      "type_code": "VE",
+      "age_group": "cub_scouts",
+      "position": 3,
+      "title": "Em acampamento, realiza as seguintes tarefas:\n- Participa ativamente na montagem de uma tenda;\n- Participa ativamente na apanha de lenha para uma fogueira;\n- Participa na lavagem de loiça comum (e.g., panela de cozinha, utensílios);\n- Explica as regras de um jogo e aplica-o.",
+      "goal_codes": [
+        "5S.1",
+        "4S.2.1"
+      ],
+      "short_title": "Executa tarefas básicas de acampamento e animação.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VE-D",
+      "type_code": "VE",
+      "age_group": "cub_scouts",
+      "position": 4,
+      "title": "Lidera, com a ajuda da tua chefia, uma tarefa durante um acampamento.\n\nEsta tarefa pode ser, por exemplo, uma construção, uma refeição, montagem e limpeza de campo, etc.",
+      "goal_codes": [
+        "4S.2.1",
+        "5S.1"
+      ],
+      "short_title": "Lidera uma tarefa em acampamento.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VE-E",
+      "type_code": "VE",
+      "age_group": "scouts",
+      "position": 5,
+      "title": "Participa na tua divisão atual:\n- Numa cerimónia de grupo;\n- Em mais de 70% das atividades da tua divisão ao longo de um Trimestre, justificando as tuas faltas;\n- No orgão de decisão da tua divisão, partilhando a tua opinião e aceitando criticas;\n- Na reunião de um pequeno grupo.",
+      "goal_codes": [
+        "2A.2",
+        "3S.2",
+        "4E.1.1",
+        "4E.2.2",
+        "4S.1.2",
+        "8S.2.2",
+        "9C.2"
+      ],
+      "short_title": "Participa ativamente na vida e decisões da Divisão.",
+      "integration_age_groups": [
+        "scouts"
+      ]
+    },
+    {
+      "code": "VE-F",
+      "type_code": "VE",
+      "age_group": "scouts",
+      "position": 6,
+      "title": "Ensina, através de momentos de animação, elementos mais novos, 3 dos seguintes pontos:\n- Fazer a saudação escotista;\n- Usar o aperto de mão escotista;\n- Conhecer o hino associativo;\n- Conhecer a origem do Escotismo;\n- Conhecer a lenda de São Jorge;\n- Aprender o significado da saudação escotista e do aperto de mão;\n- Identificar a insignia associativa e o seu significado.\n\nO momento de animação pode ser, por exemplo, um jogo, dramatização, canção, etc.",
+      "goal_codes": [
+        "5S.2",
+        "6E.2",
+        "7S.2.2"
+      ],
+      "short_title": "Ensina 3 elementos da identidade e tradição escotista.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VE-G",
+      "type_code": "VE",
+      "age_group": "scouts",
+      "position": 7,
+      "title": "Assume a responsabilidade de coordenar uma reunião de pequeno grupo e um ponto no órgão da tua divisão, de avaliação de uma atividade ou acampamento, partilhando a tua opinião e aceitando criticas.",
+      "goal_codes": [
+        "4E.1.2",
+        "4E.2.2",
+        "5S.2",
+        "8S.2.2",
+        "9C.2"
+      ],
+      "short_title": "Coordena uma reunião e um momento de avaliação.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VE-H",
+      "type_code": "VE",
+      "age_group": "scouts",
+      "position": 8,
+      "title": "Participa ativamente nas responsabilidades do teu pequeno grupo durante um período de 3 meses:\n- Cumprir as tarefas, cargos e funções;\n- Avaliar pontos de melhoria;\n- Coordenar uma atividade de pequeno grupo.",
+      "goal_codes": [
+        "5S.2",
+        "4S.2.2-3",
+        "5I.2",
+        "7C.2"
+      ],
+      "short_title": "Assume responsabilidades no Pequeno Grupo durante 3 meses.",
+      "integration_age_groups": [
+        "adventurers"
+      ]
+    },
+    {
+      "code": "VE-I",
+      "type_code": "VE",
+      "age_group": "adventurers",
+      "position": 9,
+      "title": "Lidera, com o apoio da Chefia de Divisão, uma atividade de Divisão ou Pequeno Grupo.",
+      "goal_codes": [
+        "7C.3-4"
+      ],
+      "short_title": "Lidera uma atividade de Divisão ou Pequeno Grupo.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VE-J",
+      "type_code": "VE",
+      "age_group": "adventurers",
+      "position": 10,
+      "title": "Participa ativamente nas responsabilidades do teu pequeno grupo ou divisão durante um período de um ano:\n- Cria uma lista com as tuas responsabilidades;\n- Cumpre as responsabilidades listadas;\n- Avalia pontos de melhoria trimestralmente;\n- Coordena uma atividade de pequeno grupo, uma equipa de expedição ou um grupo de trabalho.",
+      "goal_codes": [
+        "4E.1.3-4",
+        "4E.2.3",
+        "4S.1.3-4",
+        "4S.2.2-3",
+        "5I.3-4",
+        "5S.3",
+        "7C.3-4",
+        "9C.3"
+      ],
+      "short_title": "Assume responsabilidades de equipa durante 1 ano.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VE-K",
+      "type_code": "VE",
+      "age_group": "adventurers",
+      "position": 11,
+      "title": "Participa em 2 atividades regionais, nacionais ou internacionais, ao longo do teu percurso escotista.",
+      "goal_codes": [
+        "3S.4"
+      ],
+      "short_title": "Participa em 2 atividades além do Grupo.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VE-L",
+      "type_code": "VE",
+      "age_group": "adventurers",
+      "position": 12,
+      "title": "Organiza um momento social, fora dos Escoteiros, para os elementos da tua Divisão ou Pequeno Grupo.",
+      "goal_codes": [
+        "2A.2",
+        "4E.1.3-4"
+      ],
+      "short_title": "Organiza um momento social fora dos Escoteiros.",
+      "integration_age_groups": [
+        "rovers"
+      ]
+    },
+    {
+      "code": "VE-M",
+      "type_code": "VE",
+      "age_group": "rovers",
+      "position": 13,
+      "title": "Participa na revisão/criação do Regulamento de Tribo/Carta de Clã.",
+      "goal_codes": [
+        "8S.1.4",
+        "9C.4",
+        "8S.2.4",
+        "5I.3-4"
+      ],
+      "short_title": "Participa na criação ou revisão do regulamento da Divisão.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VE-N",
+      "type_code": "VE",
+      "age_group": "rovers",
+      "position": 14,
+      "title": "Coordena uma atividade de Grupo.\n\nPor exmeplo uma angariação de fundos, aniversário, atividade tradicional, JOTA/JOTI, etc.",
+      "goal_codes": [
+        "5S.4",
+        "4S.2.4",
+        "5I.3-4"
+      ],
+      "short_title": "Coordena uma atividade de Grupo.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VE-O",
+      "type_code": "VE",
+      "age_group": "rovers",
+      "position": 15,
+      "title": "Participa ativamente num ciclo de planificação de divisão completo (1 ano), incluíndo:\n- Conselho de planificação, incluíndo definição de objetivos e ações;\n- Ser responsável pela implementação de pelos menos 5 ações;\n- Conselho de avaliação.",
+      "goal_codes": [
+        "8S.2.4",
+        "5I.3-4"
+      ],
+      "short_title": "Participa num ciclo anual completo de planificação.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "VE-P",
+      "type_code": "VE",
+      "age_group": "rovers",
+      "position": 16,
+      "title": "Participa num Projeto, com duração mínima de 1 trimestre, com impacto no Grupo.",
+      "goal_codes": [
+        "4E.2.4",
+        "4E.2.3",
+        "6S.4",
+        "6S.3"
+      ],
+      "short_title": "Participa num projeto trimestral com impacto no Grupo.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "TU-A",
+      "type_code": "TU",
+      "age_group": "cub_scouts",
+      "position": 1,
+      "title": "Avalia em divisão uma grande atividade.",
+      "goal_codes": [
+        "1S.1"
+      ],
+      "short_title": "Avalia uma grande atividade em Divisão.",
+      "integration_age_groups": [
+        "cub_scouts",
+        "scouts",
+        "adventurers",
+        "rovers"
+      ]
+    },
+    {
+      "code": "TU-B",
+      "type_code": "TU",
+      "age_group": "cub_scouts",
+      "position": 2,
+      "title": "Identifica os teus pontos fortes e fracos e procura melhorar alguns dos pontos identificados.",
+      "goal_codes": [
+        "3I.1",
+        "4I.1",
+        "6C.1",
+        "2C.1"
+      ],
+      "short_title": "Identifica e melhora pontos fortes e fracos.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "TU-C",
+      "type_code": "TU",
+      "age_group": "cub_scouts",
+      "position": 3,
+      "title": "Fica responsável pela integração de um novo elemento na divisão, motivando-o para o progresso pessoal de forma a obter o seu compromisso/promessa.",
+      "goal_codes": [
+        "4S.1.1",
+        "4S.1.2"
+      ],
+      "short_title": "Integra e acompanha um novo elemento.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "TU-D",
+      "type_code": "TU",
+      "age_group": "cub_scouts",
+      "position": 4,
+      "title": "Ensina um jogo à tua divisão e arbitra esse jogo.",
+      "goal_codes": [
+        "2S.1",
+        "4A.1"
+      ],
+      "short_title": "Dinamiza e arbitra um jogo.",
+      "integration_age_groups": [
+        "scouts"
+      ]
+    },
+    {
+      "code": "TU-E",
+      "type_code": "TU",
+      "age_group": "scouts",
+      "position": 5,
+      "title": "Constrói um herbário, recolhendo 10 plantas comestíveis ou medicinais (não hortícolas), identifica-as e adiciona a forma de utilização/preparação e a sua utilidade.",
+      "goal_codes": [
+        "1I.2",
+        "1I.3-4"
+      ],
+      "short_title": "Cria um herbário de 10 plantas úteis.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "TU-F",
+      "type_code": "TU",
+      "age_group": "scouts",
+      "position": 6,
+      "title": "Prepara um jogo para a tua divisão, recorrendo a aplicações de GPS.",
+      "goal_codes": [
+        "3I.2",
+        "5I.2",
+        "6I.2"
+      ],
+      "short_title": "Prepara um jogo utilizando GPS.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "TU-G",
+      "type_code": "TU",
+      "age_group": "scouts",
+      "position": 7,
+      "title": "Durante o ano escotista, lidera uma equipa em 2 projectos diferentes, fora do teu pequeno grupo.",
+      "goal_codes": [
+        "4S.2.1",
+        "4S.2.2-3",
+        "4S.2.4"
+      ],
+      "short_title": "Lidera equipas em 2 projetos.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "TU-H",
+      "type_code": "TU",
+      "age_group": "scouts",
+      "position": 8,
+      "title": "Identifica um assunto com o qual sintas dificuldade e define ações para ultrapassar a dificuldade, ajusta as ações de forma a obter sucesso.",
+      "goal_codes": [
+        "3I.2",
+        "4I.2",
+        "4I.3"
+      ],
+      "short_title": "Define e ajusta ações para superar uma dificuldade.",
+      "integration_age_groups": [
+        "adventurers"
+      ]
+    },
+    {
+      "code": "TU-I",
+      "type_code": "TU",
+      "age_group": "adventurers",
+      "position": 9,
+      "title": "Prepara e dinamiza uma ação de formação prática sobre um tema que seja um desafio e uma novidade para ti, utilizando diversas fontes.",
+      "goal_codes": [
+        "1I.1",
+        "1I.2",
+        "2I.1",
+        "2I.3",
+        "2I.4"
+      ],
+      "short_title": "Dinamiza formação sobre um tema novo e desafiante.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "TU-J",
+      "type_code": "TU",
+      "age_group": "adventurers",
+      "position": 10,
+      "title": "Participa numa avaliação de uma atividade de pelo menos 4 dias, dando e recebendo feedback sobre o trabalho das varias equipas envolvidas, de forma assertiva e empática e identificando ações de melhoria para o futuro.",
+      "goal_codes": [
+        "1S.2",
+        "1S.3",
+        "1S.4",
+        "4A.1"
+      ],
+      "short_title": "Avalia uma grande atividade com feedback construtivo.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "TU-K",
+      "type_code": "TU",
+      "age_group": "adventurers",
+      "position": 11,
+      "title": "Ao longo da preparação, execução e avaliação de uma atividade de pelos menos 4 dias, obtém uma avaliação positiva por parte da equipa em relação a:\n- Preocupação pelo bem-estar dos elementos da sua equipa;\n- Gestão de conflitos e criação de compromisso;\n- Capacidade de motivar os membros a atingir os objetivos propostos;\n- Criatividade na resolução de problemas;\n- Apreço pelo trabalho em grupo, desenvolvido por si e pelos outros.",
+      "goal_codes": [
+        "4S.1.3-4",
+        "5A.3",
+        "2S.2",
+        "2S.3",
+        "5I.1"
+      ],
+      "short_title": "Demonstra liderança positiva numa grande atividade.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "TU-L",
+      "type_code": "TU",
+      "age_group": "adventurers",
+      "position": 12,
+      "title": "Dinamiza um debate demonstrando exemplos práticos de vantagens e desvantagens da utilização de uma ou mais tecnologias emergentes escolhidas por ti.\n\nPor exemplo, inteligência artificial, robótica, cibernética, \"wearables\", etc.",
+      "goal_codes": [
+        "2I.2",
+        "2I.3",
+        "2I.4",
+        "6I.3",
+        "6I.4"
+      ],
+      "short_title": "Debate vantagens e desvantagens de tecnologias emergentes.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "TU-M",
+      "type_code": "TU",
+      "age_group": "rovers",
+      "position": 13,
+      "title": "Define um plano pessoal de desenvolvimento, com duração minima de 3 meses, que te permita desenvolver ou melhorar uma competência ou habilidade. Ajusta o plano de forma a obteres sucesso.",
+      "goal_codes": [
+        "3I.3-4",
+        "4I.4",
+        "6C.4"
+      ],
+      "short_title": "Desenvolve uma competência com um plano de 3 meses.",
+      "integration_age_groups": [
+        "rovers"
+      ]
+    },
+    {
+      "code": "TU-N",
+      "type_code": "TU",
+      "age_group": "rovers",
+      "position": 14,
+      "title": "Coordena harmoniosamente um grupo de trabalho ou equipa de projeto, potenciando as mais valias dos elementos da equipa e adoptando uma gestão positiva.",
+      "goal_codes": [
+        "2S.4",
+        "5A.4",
+        "5I.3-4",
+        "4A.4"
+      ],
+      "short_title": "Coordena uma equipa potenciando os seus elementos.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "TU-O",
+      "type_code": "TU",
+      "age_group": "rovers",
+      "position": 15,
+      "title": "Prepara e realiza uma atividade, com duração minima de 4 noites, a uma distância superior a 100 km da sede em que tu garantas a tua autonomia pessoal, de recursos materiais e financeiros.",
+      "goal_codes": [
+        "4C.1",
+        "4C.2",
+        "4C.3"
+      ],
+      "short_title": "Realiza uma atividade autónoma de 4 noites a +100 km.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "TU-P",
+      "type_code": "TU",
+      "age_group": "rovers",
+      "position": 16,
+      "title": "Promove uma discussão na tua divisão sobre a visão de cada um num futuro a 3 anos e o que precisas para alcançar a tua visão.",
+      "goal_codes": [
+        "4C.4"
+      ],
+      "short_title": "Debate a tua visão pessoal a 3 anos.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CR-A",
+      "type_code": "CR",
+      "age_group": "cub_scouts",
+      "position": 1,
+      "title": "Identifica alguma coisa que gostes e que tenhas jeito para fazer e apresenta-a à tua divisão.",
+      "goal_codes": [
+        "1I.1",
+        "2I.1",
+        "5A.1"
+      ],
+      "short_title": "Partilha algo que gostas e sabes fazer.",
+      "integration_age_groups": [
+        "cub_scouts"
+      ]
+    },
+    {
+      "code": "CR-B",
+      "type_code": "CR",
+      "age_group": "cub_scouts",
+      "position": 2,
+      "title": "Aprende uma dança e uma música da tua divisão ou grupo.",
+      "goal_codes": [
+        "2A.1",
+        "5F.1"
+      ],
+      "short_title": "Aprende uma dança e uma música.",
+      "integration_age_groups": [
+        "cub_scouts"
+      ]
+    },
+    {
+      "code": "CR-C",
+      "type_code": "CR",
+      "age_group": "cub_scouts",
+      "position": 3,
+      "title": "Cria um projeto pessoal pelo qual és responsável e leva-o até ao fim.\n\nPor exemplo, tomar conta de uma planta, animal domestico, etc.",
+      "goal_codes": [
+        "4I.1",
+        "4C.1"
+      ],
+      "short_title": "Cria e conclui um projeto pessoal.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CR-D",
+      "type_code": "CR",
+      "age_group": "cub_scouts",
+      "position": 4,
+      "title": "Faz um trabalho manual à tua escolha para ajudar a decorar o espaço da tua divisão ou pequeno grupo.",
+      "goal_codes": [
+        "2A.1"
+      ],
+      "short_title": "Cria algo manual para decorar o espaço.",
+      "integration_age_groups": [
+        "scouts"
+      ]
+    },
+    {
+      "code": "CR-E",
+      "type_code": "CR",
+      "age_group": "scouts",
+      "position": 5,
+      "title": "Visita uma exposição ou monumento e cria um teatro sobre o que aprendeste.",
+      "goal_codes": [
+        "1I.1",
+        "2A.2"
+      ],
+      "short_title": "Visita património e cria um teatro sobre ele.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CR-F",
+      "type_code": "CR",
+      "age_group": "scouts",
+      "position": 6,
+      "title": "Assiste a uma apresentação artística sobre a qual tenhas interesse. Cria uma apresentação para o teu pequeno grupo ou divisão sobre a tua experiência.\n\nEsta apresentação artística pode ser, por exemplo, uma dança, teatro, cinema, música, artes plásticas, etc.",
+      "goal_codes": [
+        "2A.3"
+      ],
+      "short_title": "Assiste a arte e apresenta a tua experiência.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CR-G",
+      "type_code": "CR",
+      "age_group": "scouts",
+      "position": 7,
+      "title": "Ensina uma dança e uma música à tua divisão ou grupo. Podes ser tu a criá-las ou utilizar alguma que já exista.",
+      "goal_codes": [
+        "2A.1",
+        "5F.1"
+      ],
+      "short_title": "Ensina uma dança e uma música.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CR-H",
+      "type_code": "CR",
+      "age_group": "scouts",
+      "position": 8,
+      "title": "Cria um trabalho artistico à tua escolha em que exprimas uma situação que te tenha acontecido e os sentimentos que isso gerou.",
+      "goal_codes": [
+        "2A.2",
+        "2A.3",
+        "5E.3"
+      ],
+      "short_title": "Expressa artisticamente uma experiência e emoções.",
+      "integration_age_groups": [
+        "adventurers"
+      ]
+    },
+    {
+      "code": "CR-I",
+      "type_code": "CR",
+      "age_group": "adventurers",
+      "position": 9,
+      "title": "Participa ativamente na criação e implementação um projeto de pioneirismo com três construções em que cada uma tenha várias funções.\n\nDeves utilizar várias fontes de informação para a criares o teu projeto (manuais de nós, internet, etc).",
+      "goal_codes": [
+        "1I.3-4",
+        "1I.2"
+      ],
+      "short_title": "Implementa um projeto de pioneirismo multifuncional.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CR-J",
+      "type_code": "CR",
+      "age_group": "adventurers",
+      "position": 10,
+      "title": "Desmonta um pequeno electrodoméstico estragado ou brinquedo usado e tenta criar algo novo.",
+      "goal_codes": [
+        "4I.1",
+        "5F.1",
+        "5I.1"
+      ],
+      "short_title": "Repara um objeto avariado.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CR-K",
+      "type_code": "CR",
+      "age_group": "adventurers",
+      "position": 11,
+      "title": "Organiza e dinamiza um Fogo de Conselho.",
+      "goal_codes": [
+        "2A.1",
+        "5F.1"
+      ],
+      "short_title": "Organiza e dinamiza um Fogo de Conselho.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CR-L",
+      "type_code": "CR",
+      "age_group": "adventurers",
+      "position": 12,
+      "title": "Assume a responsabilidade por ações dentro de dois objetivos do Plano Anual da tua Divisão.",
+      "goal_codes": [
+        "4I.3",
+        "5I.3-4",
+        "5A.3"
+      ],
+      "short_title": "Assume ações de 2 objetivos do Plano Anual.",
+      "integration_age_groups": [
+        "rovers"
+      ]
+    },
+    {
+      "code": "CR-M",
+      "type_code": "CR",
+      "age_group": "rovers",
+      "position": 13,
+      "title": "Aprofunda os teus conhecimentos sobre um tema à tua escolha e desenvolve um projeto utilizando duas vertentes artísticas.\n\nPor exemplo, literatura, escultura, pintura, cinema, etc.",
+      "goal_codes": [
+        "1I.3-4",
+        "2A.4",
+        "1I.2"
+      ],
+      "short_title": "Desenvolve um projeto com 2 vertentes artísticas.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CR-N",
+      "type_code": "CR",
+      "age_group": "rovers",
+      "position": 14,
+      "title": "Coordena um Grupo de Trabalho ou Projeto com duração minima de 6 meses.",
+      "goal_codes": [
+        "4I.4"
+      ],
+      "short_title": "Experimenta e compara técnicas de campo.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CR-O",
+      "type_code": "CR",
+      "age_group": "rovers",
+      "position": 15,
+      "title": "Escolhe uma ferramenta tecnológica que seja desafiante para ti e cria algo com utilidade.\n\nPor exemplo, uma ferramenta para simplificar uma tarefa burocrática, uma forma de divulgação uma atividade, um jogo interativo.",
+      "goal_codes": [
+        "6I.4",
+        "1I.2",
+        "2I.4"
+      ],
+      "short_title": "Cria algo útil com uma tecnologia desafiante.",
+      "integration_age_groups": []
+    },
+    {
+      "code": "CR-P",
+      "type_code": "CR",
+      "age_group": "rovers",
+      "position": 16,
+      "title": "Debate com o teu Clã dificuldades que encontras no teu dia-a-dia e encontrem formas de as superar. Com base nisto, implementa um plano individual a 3 meses focado em melhorar os pontos críticos encontrados\n\nPor exemplo, problemas escolares, gestão de tarefas e de tempo, medo de falar em público.",
+      "goal_codes": [
+        "3I.3-4"
+      ],
+      "short_title": "Implementa um plano de melhoria pessoal de 3 meses.",
+      "integration_age_groups": []
+    }
+  ]
+}

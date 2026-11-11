@@ -2,8 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import { ProgramBuilder } from '@/components/features/programs/ProgramBuilder';
-import { ProgramEntry } from '../../../drizzle/schema/programs';
-import { Activity } from '../../../drizzle/schema/activities';
+import type { ProgramEntry } from '@/hooks/useProgram';
 
 // Mock the hooks and components
 vi.mock('@/hooks/useProgramMutations', () => ({
@@ -29,17 +28,8 @@ vi.mock('@/components/features/programs/DeleteProgramModal', () => ({
   DeleteProgramModal: () => null,
 }));
 
-vi.mock('@/hooks/useActivities', () => ({
-  useActivities: () => ({
-    activities: [],
-    loading: false,
-    error: null,
-  }),
-  useAllActivities: () => ({
-    activities: [],
-    loading: false,
-    error: null,
-  }),
+vi.mock('@/hooks/queries/useActivities', () => ({
+  useActivitiesByIds: () => ({ data: { activities: [] } }),
 }));
 
 vi.mock('@/components/features/programs/AddActivityModal', () => ({
@@ -65,7 +55,7 @@ vi.mock('@/components/features/programs/AddCustomBlockModal', () => ({
 }));
 
 vi.mock('@/components/features/programs/ProgramScheduleTable', () => ({
-  ProgramScheduleTable: ({ entries, onReorder, onEdit, onDelete }: any) => (
+  ProgramScheduleTable: ({ entries, onEdit, onDelete }: any) => (
     <div data-testid="schedule-table">
       {entries.map((entry: any, index: number) => (
         <div key={entry.id} data-testid={`entry-${index}`}>
@@ -79,15 +69,16 @@ vi.mock('@/components/features/programs/ProgramScheduleTable', () => ({
 }));
 
 vi.mock('@/components/features/programs/ProgramSummary', () => ({
-  ProgramSummary: ({ entries, totalDuration }: any) => (
+  ProgramSummary: ({ totalDuration, programStartTime }: any) => (
     <div data-testid="program-summary">
+      <span>Start: {programStartTime}</span>
       <span>Total: {Math.floor(totalDuration / 60)}h {totalDuration % 60}min</span>
     </div>
   ),
 }));
 
 // Mock data
-const mockActivity: Activity = {
+const mockActivity = {
   id: 'activity-1',
   title: 'Test Activity',
   description: 'A test activity',
@@ -107,27 +98,27 @@ const mockActivity: Activity = {
 const mockEntries: ProgramEntry[] = [
   {
     id: 'entry-1',
-    program_id: 'program-1',
     position: 0,
     start_time: '09:00',
     end_time: '09:30',
     entry_type: 'activity',
-    activity_id: 'activity-1',
-    custom_title: null,
-    custom_duration_minutes: null,
-    created_at: new Date(),
+    activity: {
+      id: 'activity-1',
+      name: 'Test Activity',
+      approximate_duration_minutes: 30,
+      group_sizes: ['medium'],
+      effort_level: 'low',
+      locations: ['inside'],
+    },
   },
   {
     id: 'entry-2',
-    program_id: 'program-1',
     position: 1,
     start_time: '09:30',
     end_time: '10:00',
     entry_type: 'custom',
-    activity_id: null,
     custom_title: 'Break',
     custom_duration_minutes: 30,
-    created_at: new Date(),
   },
 ];
 
@@ -160,11 +151,10 @@ describe('ProgramBuilder', () => {
     render(<ProgramBuilder {...defaultProps} />);
     
     expect(screen.getByText('Programa de Teste')).toBeInTheDocument();
-    expect(screen.getByText('Program Builder')).toBeInTheDocument();
-    expect(screen.getByText('Drag and drop to reorder, add activities and custom blocks')).toBeInTheDocument();
+    expect(screen.getByText('Horário do programa')).toBeInTheDocument();
+    expect(screen.getByText(/As alterações ficam guardadas/)).toBeInTheDocument();
     expect(screen.getByText('Adicionar Atividade')).toBeInTheDocument();
     expect(screen.getByText('Adicionar Bloco Personalizado')).toBeInTheDocument();
-    expect(screen.getByText('Save Program')).toBeInTheDocument();
     expect(screen.getByText('Exportar Excel')).toBeInTheDocument();
     expect(screen.getByText('Exportar PDF')).toBeInTheDocument();
   });
@@ -265,14 +255,36 @@ describe('ProgramBuilder', () => {
     expect(screen.getByText(/Total: 1h 0min/)).toBeInTheDocument();
   });
 
-  it('calls onSave when save button is clicked', async () => {
-    const onSave = vi.fn();
-    render(<ProgramBuilder {...defaultProps} onSave={onSave} />);
-    
-    fireEvent.click(screen.getByText('Save Program'));
-    
-    await waitFor(() => {
-      expect(onSave).toHaveBeenCalledWith([]);
-    });
+  it('starts the schedule at the program start time, not 09:00', () => {
+    render(
+      <ProgramBuilder
+        {...defaultProps}
+        program={{ ...mockProgram, start_time: '09:30:00' }}
+        initialEntries={[
+          { ...mockEntries[0]!, activity: { ...mockEntries[0]!.activity!, approximate_duration_minutes: 90 } },
+          { ...mockEntries[1]!, custom_duration_minutes: 15 },
+        ]}
+      />
+    );
+    expect(screen.getByText('Start: 09:30')).toBeInTheDocument();
+    expect(screen.getByText(/Total: 1h 45min/)).toBeInTheDocument();
+  });
+
+  it('has no separate save button (changes are saved as they happen)', () => {
+    render(<ProgramBuilder {...defaultProps} />);
+    expect(screen.queryByText('Save Program')).not.toBeInTheDocument();
+  });
+
+  it('shows creation in progress instead of a link while the Orgo event is being created', () => {
+    render(
+      <ProgramBuilder
+        {...defaultProps}
+        program={{ ...mockProgram, orgo_event_pending: true, orgo_event_uuid: null, orgo_event_url: null }}
+      />
+    );
+    const button = screen.getByRole('button', { name: 'A criar o evento no eAEP…' });
+    expect(button).toBeDisabled();
+    expect(screen.queryByRole('link', { name: /ver evento no eaep/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Criar evento no eAEP' })).not.toBeInTheDocument();
   });
 });

@@ -95,11 +95,11 @@ b {
 }
 
 a {
-	color: var(--accent);
+	color: var(--accent-dark); /* Azul AEP: teal is never a small-text link colour on white */
 }
 
 a:hover {
-	color: var(--accent-dark);
+	color: #007D80; /* Verde-água escuro */
 }
 
 p {

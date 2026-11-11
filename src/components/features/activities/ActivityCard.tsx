@@ -1,18 +1,24 @@
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ObjectivePill } from './ObjectivePill';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Users, TrendingUp, MapPin, Calendar } from 'lucide-react';
+import { Fact } from '@/components/ui/Fact';
+import { DivisionPill } from '@/components/ui/DivisionPill';
+import { AGE_GROUP_VALUES } from '@/lib/activities/category-values';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale } from '@/components/locale/LocaleProvider';
-import { enumLabel } from '@/lib/locale/labels';
+import { enumLabel, enumLabelList } from '@/lib/locale/labels';
+import { formatDuration } from '@/lib/activities/duration-range';
+import { activityKindLabel } from '@/lib/activities/kind-label';
 
 /**
  * Interface for educational goal data
  */
 interface EducationalGoal {
   id: string;
+  age_groups?: string[];
   title: string; // Now simple string after migration
   code: string;
 }
@@ -28,14 +34,6 @@ interface Sdg {
 }
 
 /**
- * Interface for activity type data
- */
-interface ActivityType {
-  id: string;
-  name: string; // Now simple string after migration
-}
-
-/**
  * Interface for activity data
  */
 interface Activity {
@@ -44,13 +42,17 @@ interface Activity {
   description: string; // Now simple string after migration
   materials: string; // Now simple string after migration
   approximate_duration_minutes: number;
-  group_size: string; // API returns string, not union type
+  duration_min_minutes?: number | null;
+  duration_max_minutes?: number | null;
+  group_sizes: string[]; // API returns strings, not union types
   effort_level: string; // API returns string, not union type
-  location: string; // API returns string, not union type
-  age_group: string; // API returns string, not union type
+  locations: string[];
+  age_groups: string[];
   image_url?: string;
   created_at: string;
-  activity_type: ActivityType;
+  format?: { id: string; code: string; name: string } | null;
+  focus?: { id: string; code: string; name: string } | null;
+  secondary_focus?: { id: string; code: string; name: string } | null;
   educational_goals: EducationalGoal[];
   sdgs: Sdg[];
 }
@@ -78,142 +80,129 @@ export function ActivityCard({ activity }: ActivityCardProps) {
   const { t } = useLocale();
   const name = activity.name;
   const description = activity.description;
-  const activityTypeName = activity.activity_type.name;
+  // Every division of the activity, always in the same order.
+  const divisions = AGE_GROUP_VALUES.filter((value) => activity.age_groups.includes(value));
+  const kindLabel = activityKindLabel(activity);
+
+  const sdgBadges = activity.sdgs.length > 0 && (
+    <div className="flex gap-1">
+      {activity.sdgs.slice(0, 4).map((sdg) => (
+        <div
+          key={sdg.id}
+          className="w-7 h-7 rounded-md flex items-center justify-center border border-white bg-white overflow-hidden shadow-sm"
+          title={t('activities.sdgTitle', { number: sdg.number, name: sdg.name })}
+        >
+          {sdg.icon_url ? (
+            <img
+              src={sdg.icon_url}
+              alt={t('activities.sdgPrefix', { number: sdg.number })}
+              className="w-full h-full object-contain"
+            />
+          ) : (
+            <div
+              className="w-full h-full flex items-center justify-center text-white text-xs font-bold"
+              style={{ backgroundColor: `hsl(${(sdg.number * 20) % 360}, 70%, 40%)` }}
+            >
+              {sdg.number}
+            </div>
+          )}
+        </div>
+      ))}
+      {activity.sdgs.length > 4 && (
+        <div
+          className="w-7 h-7 rounded-md flex items-center justify-center text-white text-xs font-bold bg-muted-foreground"
+          title={t('activities.sdgMore', { count: activity.sdgs.length - 4 })}
+        >
+          +{activity.sdgs.length - 4}
+        </div>
+      )}
+    </div>
+  );
 
   return (
-    <Card className="h-full flex flex-col hover:shadow-lg transition-shadow duration-200">
-      <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
-        {activity.image_url ? (
+    // The title link stretches over the whole card (after:inset-0), so a click or
+    // Enter anywhere on the card opens the activity.
+    <Card className="group relative h-full flex flex-col card-lift focus-within:ring-2 focus-within:ring-ring">
+      {activity.image_url ? (
+        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-t-lg">
           <Image
             src={activity.image_url}
-            alt={name}
+            alt=""
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-            <div className="text-center text-muted-foreground">
-              <Calendar className="w-12 h-12 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">{t('activities.noImage')}</p>
-            </div>
-          </div>
-        )}
-        
-        {/* Activity type badge */}
-        <div className="absolute top-3 left-3">
-          <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm">
-            {activityTypeName}
-          </Badge>
+          {kindLabel && (
+            <Badge variant="outline" className="absolute top-3 left-3 bg-background text-foreground">
+              {kindLabel}
+            </Badge>
+          )}
+          {sdgBadges && <div className="absolute bottom-3 right-3">{sdgBadges}</div>}
         </div>
-
-                 {/* SDG Icons Overlay - Bottom Right */}
-         {activity.sdgs.length > 0 && (
-           <div className="absolute bottom-3 right-3 flex gap-1">
-             {activity.sdgs.slice(0, 4).map((sdg) => (
-               <div
-                 key={sdg.id}
-                 className="w-8 h-8 rounded-md flex items-center justify-center shadow-lg border-2 border-white bg-white overflow-hidden"
-                                   title={t('activities.sdgTitle', { number: sdg.number, name: sdg.name })}
-               >
-                 {sdg.icon_url ? (
-                   <img
-                     src={sdg.icon_url}
-                     alt={t('activities.sdgPrefix', { number: sdg.number })}
-                     className="w-full h-full object-contain"
-                   />
-                 ) : (
-                   // Fallback to colored square if no icon
-                   <div
-                     className="w-full h-full rounded-md flex items-center justify-center text-white text-xs font-bold"
-                     style={{
-                       backgroundColor: `hsl(${(sdg.number * 20) % 360}, 70%, 50%)`
-                     }}
-                   >
-                     {sdg.number}
-                   </div>
-                 )}
-               </div>
-             ))}
-             {activity.sdgs.length > 4 && (
-               <div
-                 className="w-8 h-8 rounded-md flex items-center justify-center text-white text-xs font-bold shadow-lg border-2 border-white bg-gray-600"
-                 title={t('activities.sdgMore', { count: activity.sdgs.length - 4 })}
-               >
-                 +{activity.sdgs.length - 4}
-               </div>
-             )}
-           </div>
-         )}
-      </div>
+      ) : (
+        <div className="flex items-center justify-between gap-2 rounded-t-lg border-b bg-muted px-4 py-3 min-h-14">
+          {kindLabel ? (
+            <Badge variant="outline" className="bg-background text-foreground">
+              {kindLabel}
+            </Badge>
+          ) : (
+            <span />
+          )}
+          {sdgBadges}
+        </div>
+      )}
 
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg overflow-hidden text-ellipsis display-webkit-box [-webkit-line-clamp:2] [-webkit-box-orient:vertical]">{name}</CardTitle>
-        <CardDescription className="overflow-hidden text-ellipsis display-webkit-box [-webkit-line-clamp:2] [-webkit-box-orient:vertical]">{description}</CardDescription>
-      </CardHeader>
-
-      <CardContent className="flex-1 flex flex-col justify-between">
-        {/* Activity details */}
-        <div className="space-y-3">
-          {/* Duration, Group Size, Effort */}
-          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <Clock className="w-4 h-4" />
-              <span>{activity.approximate_duration_minutes} min</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Users className="w-4 h-4" />
-              <span>{enumLabel(t, 'groupSize', activity.group_size)}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <TrendingUp className="w-4 h-4" />
-              <span>{enumLabel(t, 'effort', activity.effort_level)}</span>
-            </div>
-          </div>
-
-          {/* Location and Age Group */}
-          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <MapPin className="w-4 h-4" />
-              <span>{enumLabel(t, 'location', activity.location)}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Users className="w-4 h-4" />
-              <span>{enumLabel(t, 'ageGroup', activity.age_group)}</span>
-            </div>
-          </div>
-
-          {/* Educational Goals */}
-          {activity.educational_goals.length > 0 && (
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">{t('activities.goalsColon')}</p>
-              <div className="flex flex-wrap gap-1">
-                {activity.educational_goals.slice(0, 3).map((goal) => (
-                  <Badge key={goal.id} variant="outline" className="text-xs">
-                                         {goal.title}
-                  </Badge>
-                ))}
-                {activity.educational_goals.length > 3 && (
-                  <Badge variant="outline" className="text-xs">
-                    +{activity.educational_goals.length - 3}
-                  </Badge>
-                )}
-              </div>
-            </div>
-          )}
-
-
-        </div>
-
-        {/* View Details Button */}
-        <div className="mt-4 pt-3 border-t">
+        <CardTitle className="text-lg overflow-hidden text-ellipsis display-webkit-box [-webkit-line-clamp:2] [-webkit-box-orient:vertical]">
           <Link
             href={`/activities/${activity.id}`}
-            className="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded-md transition-colors"
+            className="outline-none after:absolute after:inset-0 after:rounded-lg group-hover:underline"
           >
-            {t('activities.viewDetails')}
+            {name}
           </Link>
+        </CardTitle>
+        <CardDescription className="overflow-hidden text-ellipsis display-webkit-box [-webkit-line-clamp:2] [-webkit-box-orient:vertical]">
+          {description}
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent className="flex-1 space-y-3">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
+          <Fact kind="duration">{formatDuration(activity.approximate_duration_minutes, activity.duration_min_minutes, activity.duration_max_minutes)}</Fact>
+          <Fact kind="groupSize">{enumLabelList(t, 'groupSize', activity.group_sizes, 2)}</Fact>
+          <Fact kind="effort">{enumLabel(t, 'effort', activity.effort_level)}</Fact>
+          <Fact kind="location">{enumLabelList(t, 'location', activity.locations, 2)}</Fact>
         </div>
+
+        {divisions.length > 0 && (
+          <div className="flex flex-wrap gap-1" data-testid="card-divisions">
+            {divisions.map((division) => {
+              const full = enumLabel(t, 'ageGroup', division);
+              return (
+                <DivisionPill
+                  key={division}
+                  ageGroup={division}
+                  code={t(`enums.ageGroupShort.${division}`)}
+                  accessibleName={full}
+                  title={full}
+                />
+              );
+            })}
+          </div>
+        )}
+
+        {activity.educational_goals.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {activity.educational_goals.slice(0, 3).map((goal) => (
+              <ObjectivePill key={goal.id} objective={goal} activityAgeGroups={activity.age_groups} />
+            ))}
+            {activity.educational_goals.length > 3 && (
+              <Badge variant="outline" className="text-xs">
+                +{activity.educational_goals.length - 3}
+              </Badge>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

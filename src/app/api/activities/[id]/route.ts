@@ -1,7 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db/server';
-import { activities, activityTypes, educationalGoals, sdgs, activityEducationalGoals, activitySdgs, educationalAreas, user } from '../../../../../drizzle/schema';
-import { eq } from 'drizzle-orm';
+import {
+  activities,
+  activityChallenges,
+  activitySources,
+  challengeTypes,
+  challenges,
+  educationalGoals,
+  generalObjectives,
+  sdgs,
+  activityEducationalGoals,
+  activitySdgs,
+  educationalAreas,
+  user,
+} from '../../../../../drizzle/schema';
+import { asc, eq } from 'drizzle-orm';
 import { auth } from '@/lib/auth/config';
 import { getEffectiveRole } from '@/lib/auth/view-as';
 import { 
@@ -11,7 +24,10 @@ import {
   withApiErrorHandler 
 } from '@/lib/errors';
 import { validateUUID } from '@/lib/errors/error-handler';
-import { parseActivityWrite, replaceRelations } from '@/lib/activities/write';
+import { loadActivityCategoriesFor } from '@/lib/activities/categories';
+import { loadGoalAgeGroups } from '@/lib/activities/goals';
+import { loadFormatFocus } from '@/lib/activities/format-focus';
+import { parseActivityWrite, updateActivity, verifyActivityExtras, verifyActivityGoals, verifyFormatAndFocus } from '@/lib/activities/write';
 
 export const GET = withApiErrorHandler(async (
   _request: NextRequest,
@@ -38,25 +54,31 @@ export const GET = withApiErrorHandler(async (
         name: activities.name,
         description: activities.description,
         materials: activities.materials,
+        instructions: activities.instructions,
         approximate_duration_minutes: activities.approximate_duration_minutes,
-        group_size: activities.group_size,
+        duration_min_minutes: activities.duration_min_minutes,
+        duration_max_minutes: activities.duration_max_minutes,
+        external_id: activities.external_id,
+        format_id: activities.format_id,
+        focus_id: activities.focus_id,
+        secondary_focus_id: activities.secondary_focus_id,
         effort_level: activities.effort_level,
-        location: activities.location,
-        age_group: activities.age_group,
         image_url: activities.image_url,
+        physical_risk_level: activities.physical_risk_level,
+        physical_risk: activities.physical_risk,
+        physical_mitigation: activities.physical_mitigation,
+        psychological_risk_level: activities.psychological_risk_level,
+        psychological_risk: activities.psychological_risk,
+        psychological_mitigation: activities.psychological_mitigation,
+        source_id: activities.source_id,
+        source_url: activities.source_url,
         created_by: activities.created_by,
         is_approved: activities.is_approved,
         created_at: activities.created_at,
         updated_at: activities.updated_at,
         author_name: user.name,
-        activity_type: {
-          id: activityTypes.id,
-          name: activityTypes.name,
-          description: activityTypes.description,
-        },
       })
       .from(activities)
-      .leftJoin(activityTypes, eq(activities.activity_type_id, activityTypes.id))
       .leftJoin(user, eq(activities.created_by, user.id))
       .where(eq(activities.id, id))
       .limit(1);
@@ -95,6 +117,54 @@ export const GET = withApiErrorHandler(async (
       .leftJoin(educationalAreas, eq(educationalGoals.area_id, educationalAreas.id))
       .where(eq(activityEducationalGoals.activity_id, id));
 
+    // Distinct objectives (a goal linked for two divisions appears once here)
+    const distinctGoals = goals.filter((goal, index) => goals.findIndex((other) => other.id === goal.id) === index);
+    const goalAgeGroups = await loadGoalAgeGroups(distinctGoals.flatMap((g) => (g.id ? [g.id] : [])));
+
+    // Objectives per division with the behaviour that shows each was reached
+    const objectives = await db
+      .select({
+        goal_id: educationalGoals.id,
+        code: educationalGoals.code,
+        title: educationalGoals.title,
+        age_group: activityEducationalGoals.age_group,
+        behaviour: activityEducationalGoals.observable_behaviour,
+        area_name: educationalAreas.name,
+        general_objective_code: generalObjectives.code,
+        general_objective_title: generalObjectives.title,
+      })
+      .from(activityEducationalGoals)
+      .innerJoin(educationalGoals, eq(activityEducationalGoals.goal_id, educationalGoals.id))
+      .leftJoin(educationalAreas, eq(educationalGoals.area_id, educationalAreas.id))
+      .leftJoin(generalObjectives, eq(educationalGoals.general_objective_id, generalObjectives.id))
+      .where(eq(activityEducationalGoals.activity_id, id))
+      .orderBy(asc(educationalGoals.position), asc(educationalGoals.code));
+
+    // Matriz desafios linked to the activity
+    const linkedChallenges = await db
+      .select({
+        id: challenges.id,
+        code: challenges.code,
+        title: challenges.title,
+        short_title: challenges.short_title,
+        integration_age_groups: challenges.integration_age_groups,
+        age_group: challenges.age_group,
+        type_code: challengeTypes.code,
+        type_name: challengeTypes.name,
+      })
+      .from(activityChallenges)
+      .innerJoin(challenges, eq(activityChallenges.challenge_id, challenges.id))
+      .innerJoin(challengeTypes, eq(challenges.type_id, challengeTypes.id))
+      .where(eq(activityChallenges.activity_id, id))
+      .orderBy(asc(challengeTypes.position), asc(challenges.position));
+
+    const [source] = activity.source_id
+      ? await db
+          .select({ id: activitySources.id, code: activitySources.code, name: activitySources.name, url: activitySources.url, license: activitySources.license })
+          .from(activitySources)
+          .where(eq(activitySources.id, activity.source_id))
+      : [];
+
     // Fetch SDGs
     const sdgData = await db
       .select({
@@ -103,15 +173,23 @@ export const GET = withApiErrorHandler(async (
         name: sdgs.name,
         description: sdgs.description,
         icon_url: sdgs.icon_url,
+        justification: activitySdgs.justification,
       })
       .from(activitySdgs)
       .leftJoin(sdgs, eq(activitySdgs.sdg_id, sdgs.id))
       .where(eq(activitySdgs.activity_id, id));
 
     // Combine all data
+    const categories = await loadActivityCategoriesFor(id);
+    const formatFocus = (await loadFormatFocus([activity])).get(id)!;
     const activityWithDetails = {
       ...activity,
-      educational_goals: goals,
+      ...categories,
+      ...formatFocus,
+      educational_goals: distinctGoals.map((goal) => ({ ...goal, age_groups: goal.id ? goalAgeGroups.get(goal.id) ?? [] : [] })),
+      objectives,
+      challenges: linkedChallenges,
+      source: source ?? null,
       sdgs: sdgData,
     };
 
@@ -137,24 +215,17 @@ export const PATCH = withApiErrorHandler(async (
   const parsed = parseActivityWrite(await request.json());
   if (typeof parsed === 'string') return apiErrors.validation('body', parsed);
 
-  const [updated] = await db
-    .update(activities)
-    .set({
-      name: parsed.name,
-      description: parsed.description,
-      materials: parsed.materials,
-      approximate_duration_minutes: parsed.approximate_duration_minutes,
-      group_size: parsed.group_size,
-      effort_level: parsed.effort_level,
-      location: parsed.location,
-      age_group: parsed.age_group,
-      activity_type_id: parsed.activity_type_id,
-      image_url: parsed.image_url,
-      updated_at: new Date(),
-    })
-    .where(eq(activities.id, id))
-    .returning();
-  await replaceRelations(id, parsed);
+  const formatFocusError = await verifyFormatAndFocus(parsed);
+  if (formatFocusError) return apiErrors.validation('body', formatFocusError);
+
+  const goalError = await verifyActivityGoals(parsed);
+  if (goalError) return apiErrors.validation('body', goalError);
+
+  const extrasError = await verifyActivityExtras(parsed);
+  if (extrasError) return apiErrors.validation('body', extrasError);
+
+  const updated = await updateActivity(id, parsed);
+  if (!updated) return apiErrors.notFound('atividade', id);
   return NextResponse.json({ activity: updated });
 });
 

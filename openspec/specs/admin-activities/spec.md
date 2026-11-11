@@ -8,23 +8,53 @@ Lets admins create, update, delete, illustrate, classify, and approve catalogue 
 
 ### Requirement: Admin CRUD for activities
 
-An admin SHALL create, update, and delete activities with name, description, materials, duration, group size, effort, location, age group, activity type, educational goals, and SDGs. A non-admin SHALL receive 403. Deletes SHALL fail with 409 when the activity is still referenced by a program entry, unless the admin confirms a force that nulls those references (the default is 409).
+An admin SHALL create, update, and delete activities with name, description, materials, optional instructions, duration, one or more group sizes, effort, one or more locations, one or more age groups, one format, one main focus and optionally a secondary focus, educational goals, and SDGs. Each of group sizes, locations and age groups SHALL contain at least one value, and the format and the main focus SHALL be present, otherwise the request SHALL fail with 400. A non-admin SHALL receive 403. Deletes SHALL fail with 409 when the activity is still referenced by a program entry, unless the admin confirms a force that nulls those references (the default is 409).
 
 #### Scenario: Admin creates an activity
 
 - **WHEN** an admin submits a valid activity with one goal and one SDG
 - **THEN** the activity is stored and those relations exist
 
+#### Scenario: Create with several values
+
+- **WHEN** an admin creates an activity with two age groups and two locations
+- **THEN** the activity is stored with both of each
+
+#### Scenario: Update replaces the set
+
+- **WHEN** an admin changes an activity's locations from `inside, outside` to `outside`
+- **THEN** only `outside` remains linked
+
 #### Scenario: Non-admin cannot create
 
 - **WHEN** a signed-in user with role `user` posts an admin create
 - **THEN** the API returns 403 and stores nothing
+
+#### Scenario: Admin saves instructions
+
+- **WHEN** an admin creates or edits an activity with multi-line instructions text
+- **THEN** the instructions are stored as written, line breaks included, and returned by the activity API
+
+#### Scenario: Instructions are optional
+
+- **WHEN** an admin submits an activity without instructions
+- **THEN** the activity is stored with no instructions and no validation error occurs
 
 #### Scenario: Delete blocked while referenced
 
 - **GIVEN** an activity used in a program entry
 - **WHEN** an admin deletes it without force
 - **THEN** the API returns 409 and the activity remains
+
+#### Scenario: Format and focus required
+
+- **WHEN** an admin submits an activity without a format or without a main focus
+- **THEN** the API returns 400 and stores nothing
+
+#### Scenario: External id is not editable
+
+- **WHEN** an admin edits an activity that came from the reference sheet
+- **THEN** its external id is shown read-only and cannot be changed
 
 ### Requirement: Image URL or upload
 
@@ -73,3 +103,34 @@ An admin SHALL set `is_approved` true or false. Public list and guest detail SHA
 
 - **WHEN** an admin creates an activity
 - **THEN** the row is stored without inserting into `users`
+
+### Requirement: Activity objectives must match its age groups
+
+When an admin creates or updates an activity, every `educational_goal_ids` entry SHALL belong to at least one of the activity's age groups, as defined by the `activity-objectives` capability. Otherwise the API SHALL return 400 with a Portuguese message that names the offending objectives and SHALL change nothing. The same rule SHALL apply to user-submitted activities.
+
+#### Scenario: Admin links a mismatched objective
+
+- **GIVEN** an admin creating an activity for `cub_scouts`
+- **WHEN** the payload includes objective `1A.2` (an Escoteiros objective)
+- **THEN** the API returns 400 naming `1A.2` and stores nothing
+
+#### Scenario: Admin updates age groups and objectives together
+
+- **GIVEN** an activity for `scouts` linked to `1A.2`
+- **WHEN** an admin changes it to `scouts` and `rovers`, adding `1A.4`
+- **THEN** both objectives are linked
+
+### Requirement: Admin table shows format and focus
+
+The admin activities table (columns, the mobile row and the CSV export) SHALL show the activity's format and main focus in place of the former activity-type column. The table SHALL stay sortable and searchable by the same text as before.
+
+#### Scenario: Columns
+
+- **GIVEN** an activity with the format Jogo and the focus Cooperação
+- **WHEN** an admin opens the activities table
+- **THEN** the row shows "Jogo" and "Cooperação" in the format and focus columns
+
+#### Scenario: CSV
+
+- **WHEN** an admin exports the table to CSV
+- **THEN** the file has Formato and Foco columns in place of the type column

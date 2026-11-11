@@ -10,21 +10,22 @@ export interface Activity {
   name: string;
   description: string;
   materials: string;
+  instructions?: string | null;
   approximate_duration_minutes: number;
-  group_size: string;
+  group_sizes: string[];
   effort_level: string;
-  location: string;
-  age_group: string;
+  locations: string[];
+  age_groups: string[];
   image_url?: string;
   created_at: string;
-  activity_type: {
-    id: string;
-    name: string;
-  };
+  format?: { id: string; code: string; name: string } | null;
+  focus?: { id: string; code: string; name: string } | null;
+  secondary_focus?: { id: string; code: string; name: string } | null;
   educational_goals: Array<{
     id: string;
     title: string;
     code: string;
+    age_groups?: string[];
   }>;
   sdgs: Array<{
     id: string;

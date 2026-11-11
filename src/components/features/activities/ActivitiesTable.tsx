@@ -2,7 +2,10 @@
 
 import { useState, useMemo } from 'react';
 import { useLocale } from '@/components/locale/LocaleProvider';
-import { enumLabel } from '@/lib/locale/labels';
+import { enumLabel, enumLabelList } from '@/lib/locale/labels';
+import { activityKindLabel } from '@/lib/activities/kind-label';
+import { DivisionPill } from '@/components/ui/DivisionPill';
+import { AGE_GROUP_VALUES } from '@/lib/activities/category-values';
 import {
   useReactTable,
   getCoreRowModel,
@@ -40,12 +43,14 @@ import {
   Edit,
   Trash2,
 } from 'lucide-react';
+import { formatDuration } from '@/lib/activities/duration-range';
 
 /**
  * Interface for educational goal data
  */
 interface EducationalGoal {
   id: string;
+  age_groups?: string[];
   title: string;
   code: string;
 }
@@ -61,14 +66,6 @@ interface Sdg {
 }
 
 /**
- * Interface for activity type data
- */
-interface ActivityType {
-  id: string;
-  name: string;
-}
-
-/**
  * Interface for activity data
  */
 interface Activity {
@@ -76,12 +73,16 @@ interface Activity {
   name: string;
   description: string;
   approximate_duration_minutes: number;
-  group_size: string; // API returns string, not union type
+  duration_min_minutes?: number | null;
+  duration_max_minutes?: number | null;
+  group_sizes: string[]; // API returns strings, not union types
   effort_level: string; // API returns string, not union type
-  location: string; // API returns string, not union type
-  age_group: string; // API returns string, not union type
+  locations: string[];
+  age_groups: string[];
   created_at: string;
-  activity_type: ActivityType;
+  format?: { id: string; code: string; name: string } | null;
+  focus?: { id: string; code: string; name: string } | null;
+  secondary_focus?: { id: string; code: string; name: string } | null;
   educational_goals: EducationalGoal[];
   sdgs: Sdg[];
 }
@@ -123,35 +124,44 @@ export function ActivitiesTable({
         accessorKey: 'name',
         header: t('activities.csvName'),
         cell: ({ row }) => (
-          <div className="font-medium">
+          <div className="font-bold">
             {row.original.name}
           </div>
         ),
       },
       {
-        accessorKey: 'activity_type.name',
-        header: t('activities.csvType'),
-        cell: ({ row }) => (
-          <Badge variant="secondary" className="text-xs">
-            {row.original.activity_type.name}
-          </Badge>
-        ),
+        id: 'format',
+        accessorFn: (row) => row.format?.name ?? '',
+        header: t('activities.csvFormat'),
+        cell: ({ row }) =>
+          row.original.format ? (
+            <Badge variant="secondary" className="text-xs">
+              {row.original.format.name}
+            </Badge>
+          ) : null,
+      },
+      {
+        id: 'focus',
+        accessorFn: (row) => row.focus?.name ?? '',
+        header: t('activities.csvFocus'),
+        cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.focus?.name ?? ''}</span>,
       },
       {
         accessorKey: 'approximate_duration_minutes',
         header: t('activities.colDuration'),
         cell: ({ row }) => (
           <span className="text-sm text-muted-foreground">
-            {row.original.approximate_duration_minutes} min
+            {formatDuration(row.original.approximate_duration_minutes, row.original.duration_min_minutes, row.original.duration_max_minutes)}
           </span>
         ),
       },
       {
-        accessorKey: 'group_size',
+        id: 'group_sizes',
+        accessorFn: (row) => row.group_sizes.join(', '),
         header: t('activities.colGroup'),
         cell: ({ row }) => (
           <span className="text-sm text-muted-foreground">
-            {enumLabel(t, 'groupSize', row.original.group_size)}
+            {enumLabelList(t, 'groupSize', row.original.group_sizes)}
           </span>
         ),
       },
@@ -165,20 +175,29 @@ export function ActivitiesTable({
         ),
       },
       {
-        accessorKey: 'location',
+        id: 'locations',
+        accessorFn: (row) => row.locations.join(', '),
         header: t('activities.colLocation'),
         cell: ({ row }) => (
           <span className="text-sm text-muted-foreground">
-            {enumLabel(t, 'location', row.original.location)}
+            {enumLabelList(t, 'location', row.original.locations)}
           </span>
         ),
       },
       {
-        accessorKey: 'age_group',
+        id: 'age_groups',
+        accessorFn: (row) => row.age_groups.join(', '),
         header: t('filters.age'),
         cell: ({ row }) => (
-          <span className="text-sm text-muted-foreground">
-            {enumLabel(t, 'ageGroup', row.original.age_group)}
+          <span className="flex flex-wrap gap-1">
+            {AGE_GROUP_VALUES.filter((value) => row.original.age_groups.includes(value)).map((value) => (
+              <DivisionPill
+                key={value}
+                ageGroup={value}
+                code={t(`enums.ageGroupShort.${value}`)}
+                accessibleName={enumLabel(t, 'ageGroup', value)}
+              />
+            ))}
           </span>
         ),
       },
@@ -190,7 +209,7 @@ export function ActivitiesTable({
             {row.original.sdgs.slice(0, 3).map((sdg) => (
               <div
                 key={sdg.id}
-                className="w-6 h-6 rounded-md flex items-center justify-center shadow-sm border border-gray-200 bg-white overflow-hidden"
+                className="w-6 h-6 rounded-md flex items-center justify-center shadow-sm border border-border bg-white overflow-hidden"
                 title={t('activities.sdgTitle', { number: sdg.number, name: sdg.name })}
               >
                 {sdg.icon_url ? (
@@ -292,7 +311,8 @@ export function ActivitiesTable({
   const exportToCSV = () => {
     const headers = [
       t('activities.csvName'),
-      t('activities.csvType'),
+      t('activities.csvFormat'),
+      t('activities.csvFocus'),
       t('activities.csvDuration'),
       t('filters.groupSize'),
       t('filters.effort'),
@@ -306,12 +326,13 @@ export function ActivitiesTable({
       headers.join(','),
       ...activities.map(activity => [
         activity.name,
-        activity.activity_type.name,
+        activity.format?.name ?? '',
+        activity.focus?.name ?? '',
         activity.approximate_duration_minutes,
-        enumLabel(t, 'groupSize', activity.group_size),
+        enumLabelList(t, 'groupSize', activity.group_sizes).replace(/, /g, '; '),
         enumLabel(t, 'effort', activity.effort_level),
-        enumLabel(t, 'location', activity.location),
-        enumLabel(t, 'ageGroup', activity.age_group),
+        enumLabelList(t, 'location', activity.locations).replace(/, /g, '; '),
+        enumLabelList(t, 'ageGroup', activity.age_groups).replace(/, /g, '; '),
         activity.sdgs.map(sdg => t('activities.sdgPrefix', { number: sdg.number })).join('; '),
         activity.educational_goals.map(goal => goal.title).join('; '),
       ].join(','))
@@ -356,9 +377,9 @@ export function ActivitiesTable({
               className="w-full text-left border rounded-md p-3 min-h-11"
               onClick={() => onViewActivity?.(activity)}
             >
-              <p className="font-medium">{activity.name}</p>
+              <p className="font-bold">{activity.name}</p>
               <p className="text-sm text-muted-foreground">
-                {activity.activity_type.name} · {activity.approximate_duration_minutes} {t('common.minutes')} · {enumLabel(t, 'location', activity.location)}
+                {[activityKindLabel(activity), `${activity.approximate_duration_minutes} ${t('common.minutes')}`, enumLabelList(t, 'location', activity.locations)].filter(Boolean).join(' · ')} {t('common.minutes')} · {enumLabelList(t, 'location', activity.locations)}
               </p>
             </button>
           ))}
@@ -435,7 +456,7 @@ export function ActivitiesTable({
               {t('common.previous')}
             </Button>
             <div className="flex items-center gap-1">
-              <span className="text-sm font-medium">
+              <span className="text-sm font-bold">
                 {t('activities.pageOf', {
                   current: table.getState().pagination.pageIndex + 1,
                   total: table.getPageCount(),

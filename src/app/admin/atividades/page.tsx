@@ -35,7 +35,7 @@ export default function AdminActivitiesPage() {
         {activities.map((activity) => (
           <li key={activity.id} className="border rounded-md p-3 flex justify-between gap-3">
             <div>
-              <Link href={`/admin/atividades/${activity.id}`} className="font-medium underline">
+              <Link href={`/admin/atividades/${activity.id}`} className="font-bold underline">
                 {activity.name}
               </Link>
               <p className="text-sm text-muted-foreground">

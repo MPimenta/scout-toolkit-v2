@@ -1,5 +1,6 @@
 'use client';
 
+import { BackControl } from '@/components/pwa/BackControl';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
@@ -61,6 +62,7 @@ export default function PublicProgramPreviewPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <BackControl fallbackHref="/programs/public" label="Voltar aos programas públicos" />
       <h1 className="text-3xl font-bold mb-2">{program.name}</h1>
       <p className="text-muted-foreground mb-6">
         Por {program.author_name}
@@ -73,7 +75,7 @@ export default function PublicProgramPreviewPage() {
       <ol className="space-y-3 mb-8">
         {program.entries.map((entry) => (
           <li key={entry.id} className="border rounded-md p-3">
-            <p className="font-medium">
+            <p className="font-bold">
               {entry.entry_type === 'activity'
                 ? entry.activity_name
                 : entry.custom_title}
@@ -91,7 +93,7 @@ export default function PublicProgramPreviewPage() {
         </form>
       ) : (
         <Link className="text-primary underline" href={`/auth/signin?callbackUrl=/programs/public/${program.id}`}>
-          Inicie sessão para usar como modelo
+          Inicia sessão para usar como modelo
         </Link>
       )}
     </div>

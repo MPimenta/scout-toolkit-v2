@@ -17,12 +17,13 @@ export interface ProgramEntry {
     id: string;
     name: string;
     approximate_duration_minutes: number;
-    group_size: string;
+    group_sizes: string[];
     effort_level: string;
-    location: string;
-    activity_type: {
-      name: string;
-    };
+    locations: string[];
+    age_groups?: string[];
+    format?: { id: string; code: string; name: string } | null;
+    focus?: { id: string; code: string; name: string } | null;
+    secondary_focus?: { id: string; code: string; name: string } | null;
   } | null;
 }
 
@@ -54,6 +55,7 @@ export interface Program {
   is_public: boolean;
   orgo_event_uuid?: string | null;
   orgo_event_url?: string | null;
+  orgo_event_attendance_url?: string | null;
   orgo_write_configured?: boolean;
   created_at: string;
   updated_at: string;
@@ -85,6 +87,7 @@ export function toProgramDetail(
     is_public: Boolean(program.is_public),
     orgo_event_uuid: program.orgo_event_uuid ?? null,
     orgo_event_url: program.orgo_event_url ?? null,
+    orgo_event_attendance_url: program.orgo_event_attendance_url ?? null,
     orgo_write_configured: Boolean(program.orgo_write_configured),
     created_at: program.created_at ?? '',
     updated_at: program.updated_at ?? '',

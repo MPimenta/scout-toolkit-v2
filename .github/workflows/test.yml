@@ -12,7 +12,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:15
+        image: postgres:16
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
@@ -27,6 +27,7 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://postgres:password@localhost:5432/scout_toolkit_dev
+      E2E_DATABASE_URL: postgresql://postgres:password@localhost:5432/scout_toolkit_e2e
       NEXTAUTH_SECRET: ci-test-secret
       AUTH_SECRET: ci-test-secret
       NEXTAUTH_URL: http://localhost:3000
@@ -34,19 +35,21 @@ jobs:
       ORGO_ISSUER: https://eaep.escoteiros.pt
       ORGO_CLIENT_ID: ci-client-id
       ORGO_CLIENT_SECRET: ci-client-secret
+      FEATURES: all
+      E2E_LOGIN: '1'
 
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .nvmrc
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Create scout_toolkit_test
+      - name: Create scout_toolkit_test and scout_toolkit_e2e
         env:
           PGPASSWORD: password
         run: |
@@ -55,17 +58,17 @@ jobs:
           psql -h localhost -U postgres -c "CREATE USER test_user WITH PASSWORD 'test_password';"
           psql -h localhost -U postgres -c "CREATE DATABASE scout_toolkit_test OWNER test_user;"
           psql -h localhost -U postgres -d scout_toolkit_test -c "GRANT ALL ON SCHEMA public TO test_user; ALTER SCHEMA public OWNER TO test_user;"
+          psql -h localhost -U postgres -c "CREATE DATABASE scout_toolkit_e2e;"
+
+      - name: Type check
+        run: npm run typecheck
 
       - name: Vitest (unit + SQL-integration)
         run: npm run test:run
 
-      - name: Apply app schema and seed
-        run: |
-          npx drizzle-kit push --force --strict=false
-          npm run db:seed
-
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
+      # Global setup applies the schema to scout_toolkit_e2e and seeds it.
       - name: Playwright Chromium
         run: npx playwright test --project=chromium

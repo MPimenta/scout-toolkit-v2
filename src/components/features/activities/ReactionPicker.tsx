@@ -31,9 +31,9 @@ export function ReactionPicker({
             aria-pressed={active}
             className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs ${
               active
-                ? 'border-secondary bg-secondary/10 text-secondary'
+                ? 'border-primary bg-primary/10 text-primary'
                 : 'border-border text-muted-foreground'
-            } ${canWrite ? 'hover:border-secondary' : 'cursor-default opacity-80'}`}
+            } ${canWrite ? 'hover:border-primary' : 'cursor-default opacity-80'}`}
           >
             <span aria-hidden="true">{emoji}</span>
             <span>{label}</span>

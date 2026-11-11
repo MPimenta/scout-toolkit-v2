@@ -18,28 +18,54 @@ export interface PaginationParams {
   limit?: number;
 }
 
+/**
+ * A specific objective (Matriz de Progresso) as embedded in an activity. The catalogue list and
+ * the activity detail carry this lean shape; `general_objective` and `description` come only from
+ * GET /api/taxonomies/educational-goals, and `area` only from the activity detail.
+ */
+export interface ApiEducationalGoal {
+  id: string;
+  code: string;
+  title: string;
+  /** Age groups the objective belongs to (pills take their colour from these). */
+  age_groups: string[];
+  area?: { id: string; name: string; icon?: string; code?: string } | null;
+}
+
+/** Full shape returned by GET /api/taxonomies/educational-goals. */
+export interface ApiTaxonomyGoal extends ApiEducationalGoal {
+  description?: string | null;
+  is_managed?: boolean;
+  general_objective: { id: string; code: string; title: string; path?: string | null } | null;
+}
+
 // Activities API Types
+/** A format or a focus as embedded in an activity. */
+export interface ApiValueRef {
+  id: string;
+  code: string;
+  name: string;
+}
+
 export interface ApiActivity {
   id: string;
   name: string;
   description: string;
   materials: string;
+  instructions?: string | null;
   approximate_duration_minutes: number;
-  group_size: string; // API returns string, not union type
+  duration_min_minutes?: number | null;
+  duration_max_minutes?: number | null;
+  format?: ApiValueRef | null;
+  focus?: ApiValueRef | null;
+  secondary_focus?: ApiValueRef | null;
+  group_sizes: string[]; // API returns strings, not union types
   effort_level: string; // API returns string, not union type
-  location: string; // API returns string, not union type
-  age_group: string; // API returns string, not union type
+  locations: string[];
+  age_groups: string[];
   image_url?: string;
   created_at: string;
-  activity_type: {
-    id: string;
-    name: string;
-  };
-  educational_goals: Array<{
-    id: string;
-    title: string;
-    code: string;
-  }>;
+  educational_goals: ApiEducationalGoal[];
   sdgs: Array<{
     id: string;
     number: number;
@@ -94,18 +120,6 @@ export interface ApiProgramsResponse {
 }
 
 // Taxonomy API Types
-export interface ApiActivityType {
-  id: string;
-  name: string;
-}
-
-export interface ApiEducationalGoal {
-  id: string;
-  title: string;
-  code: string;
-  area: string;
-}
-
 export interface ApiSdg {
   id: string;
   number: number;
@@ -129,12 +143,12 @@ export interface ApiUser {
 // Filter and Search API Types
 export interface ApiFilterState {
   search?: string;
-  activityType?: string[];
+  format?: string[];
+  focus?: string[];
   sdgs?: string[];
   educationalGoals?: string[];
   durationMin?: number;
   durationMax?: number;
-  durationOperator?: string;
   groupSize?: string[];
   effortLevel?: string[];
   location?: string[];
@@ -150,21 +164,20 @@ export interface ApiActivitiesResponse {
       search?: string;
       group_size?: string[];
       effort_level?: string[];
-      location?: string;
+      location?: string[];
       age_group?: string[];
-      activity_type?: string[];
       sdgs?: string[];
       educational_goals?: string[];
+      educational_areas?: string[];
+      general_objectives?: string[];
       duration_min?: string;
       duration_max?: string;
-      duration_operator?: string;
     };
     available: {
       group_sizes: string[];
       effort_levels: string[];
       locations: string[];
       age_groups: string[];
-      activity_types: string[];
     };
   };
 }

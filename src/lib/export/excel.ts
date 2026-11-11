@@ -11,7 +11,22 @@ import {
   translateEffortLevel,
   translateGroupSize,
   translateLocation,
+  translateList,
 } from './labels';
+
+function formatRisk(risk: { level: string | null; risk: string | null; mitigation: string | null } | undefined): string {
+  if (!risk || (!risk.level && !risk.risk && !risk.mitigation)) return '';
+  const level = risk.level ? exportLabels.riskLevels[risk.level] ?? risk.level : '';
+  const parts = [[level, risk.risk].filter(Boolean).join(': ')];
+  if (risk.mitigation) parts.push(`${exportLabels.mitigation}: ${risk.mitigation}`);
+  return parts.filter(Boolean).join('\n');
+}
+
+function formatObjectives(objectives: Array<{ code: string; age_group: string; behaviour: string | null }>): string {
+  return objectives
+    .map((row) => `${row.age_group} ${row.code}${row.behaviour ? `: ${row.behaviour}` : ''}`)
+    .join('\n');
+}
 
 /**
  * Builds a Portuguese Excel workbook for a program: Resumo, Cronograma,
@@ -61,7 +76,9 @@ export function buildProgramExcelWorkbook(program: ProgramForExport): {
       exportLabels.groupSize,
       exportLabels.effortLevel,
       exportLabels.location,
-      exportLabels.activityType,
+      exportLabels.format,
+      exportLabels.focus,
+      exportLabels.secondaryFocus,
       exportLabels.educationalGoals,
       exportLabels.sdgs,
     ],
@@ -81,17 +98,19 @@ export function buildProgramExcelWorkbook(program: ProgramForExport): {
         ? entry.activity?.approximate_duration_minutes || 0
         : entry.custom_duration_minutes || 0
       ).toString(),
-      isActivity ? translateGroupSize(entry.activity?.group_size) : '',
+      isActivity ? translateList(entry.activity?.group_sizes, translateGroupSize) : '',
       isActivity ? translateEffortLevel(entry.activity?.effort_level) : '',
-      isActivity ? translateLocation(entry.activity?.location) : '',
-      isActivity ? entry.activity?.activityType?.name || '' : '',
+      isActivity ? translateList(entry.activity?.locations, translateLocation) : '',
+      isActivity ? entry.activity?.format ?? '' : '',
+      isActivity ? entry.activity?.focus ?? '' : '',
+      isActivity ? entry.activity?.secondaryFocus ?? '' : '',
       isActivity ? formatGoalsList(entry.activity?.educationalGoals ?? []) : '',
       isActivity ? formatSdgsList(entry.activity?.sdgs ?? []) : '',
     ]);
   });
 
   const scheduleSheet = XLSX.utils.aoa_to_sheet(scheduleData);
-  scheduleSheet['!cols'] = Array(12).fill({ wch: 18 });
+  scheduleSheet['!cols'] = Array(14).fill({ wch: 18 });
   XLSX.utils.book_append_sheet(workbook, scheduleSheet, exportLabels.scheduleSheet);
 
   const activityEntries = program.entries
@@ -104,12 +123,20 @@ export function buildProgramExcelWorkbook(program: ProgramForExport): {
         exportLabels.activityName,
         exportLabels.description,
         exportLabels.materials,
+        exportLabels.instructions,
         exportLabels.groupSize,
         exportLabels.effortLevel,
         exportLabels.location,
-        exportLabels.activityType,
+        exportLabels.format,
+        exportLabels.focus,
+        exportLabels.secondaryFocus,
         exportLabels.educationalGoals,
         exportLabels.sdgs,
+        exportLabels.physicalRisk,
+        exportLabels.psychologicalRisk,
+        exportLabels.objectivesByDivision,
+        exportLabels.challenges,
+        exportLabels.source,
       ],
     ];
 
@@ -118,17 +145,25 @@ export function buildProgramExcelWorkbook(program: ProgramForExport): {
         activity.name || '',
         activity.description || '',
         activity.materials || '',
-        translateGroupSize(activity.group_size),
+        activity.instructions || '',
+        translateList(activity.group_sizes, translateGroupSize),
         translateEffortLevel(activity.effort_level),
-        translateLocation(activity.location),
-        activity.activityType?.name || '',
+        translateList(activity.locations, translateLocation),
+        activity.format ?? '',
+        activity.focus ?? '',
+        activity.secondaryFocus ?? '',
         formatGoalsList(activity.educationalGoals),
         formatSdgsList(activity.sdgs),
+        formatRisk(activity.physicalRisk),
+        formatRisk(activity.psychologicalRisk),
+        formatObjectives(activity.objectives ?? []),
+        (activity.challenges ?? []).map((challenge) => `${challenge.code} - ${challenge.title}`).join('\n'),
+        activity.source ? [activity.source.name, activity.source.license].filter(Boolean).join(' · ') : '',
       ]);
     });
 
     const activityDetailsSheet = XLSX.utils.aoa_to_sheet(activityDetailsData);
-    activityDetailsSheet['!cols'] = Array(9).fill({ wch: 22 });
+    activityDetailsSheet['!cols'] = Array(17).fill({ wch: 22 });
     XLSX.utils.book_append_sheet(workbook, activityDetailsSheet, exportLabels.detailsSheet);
   }
 

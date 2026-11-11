@@ -8,8 +8,8 @@ test.describe('Activity ratings (guest)', () => {
 
     await expect(page.getByRole('heading', { name: 'Avaliações' }).first()).toBeVisible();
     await expect(page.getByText(/Média/)).toBeVisible();
-    await expect(page.getByText('Inicie sessão para avaliar esta atividade')).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Iniciar Sessão' })).toBeVisible();
+    await expect(page.getByText('Inicia sessão para avaliar esta atividade')).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Entrar com o eAEP' })).toBeVisible();
     await expect(page.getByText('Enviar Avaliação')).toHaveCount(0);
   });
 
@@ -45,25 +45,29 @@ test.describe('Activity ratings (signed-in)', () => {
 
     try {
       await page.goto(`/activities/${activityId}`);
-      await expect(page.getByText('Avalie esta atividade')).toBeVisible();
+      await expect(page.getByText('Avalia esta atividade')).toBeVisible();
 
       await page.getByLabel('4 estrelas').click();
       await page
-        .getByPlaceholder('Partilhe a sua experiência com esta atividade...')
+        .getByPlaceholder('Partilha a tua experiência com esta atividade...')
         .fill(comment);
       await page.getByRole('button', { name: 'Enviar Avaliação' }).click();
 
       await expect(page.getByText(comment).first()).toBeVisible();
-      await expect(page.getByLabel('Voto positivo')).toBeVisible();
-      await expect(page.getByLabel('Adorei')).toBeVisible();
 
-      await page.getByLabel('Voto positivo').click();
-      await expect(page.getByLabel('Voto positivo')).toHaveAttribute('aria-pressed', 'true');
+      // The activity may already carry reviews from other runs: work inside this review's card
+      // (the last match is the innermost card, since the reviews section is a card too).
+      const post = page.locator('[data-slot="card"]').filter({ hasText: comment }).last();
+      await expect(post.getByLabel('Voto positivo')).toBeVisible();
+      await expect(post.getByLabel('Adorei')).toBeVisible();
 
-      await page.getByLabel('Adorei').click();
-      await expect(page.getByLabel('Adorei')).toHaveAttribute('aria-pressed', 'true');
+      await post.getByLabel('Voto positivo').click();
+      await expect(post.getByLabel('Voto positivo')).toHaveAttribute('aria-pressed', 'true');
 
-      const threadToggle = page.getByRole('button', { name: /respostas?$/ }).first();
+      await post.getByLabel('Adorei').click();
+      await expect(post.getByLabel('Adorei')).toHaveAttribute('aria-pressed', 'true');
+
+      const threadToggle = post.getByRole('button', { name: /respostas?$/ });
       await threadToggle.click();
       await expect(page.getByPlaceholder('Escreva uma resposta...')).toBeVisible();
       await page.getByPlaceholder('Escreva uma resposta...').fill(reply);

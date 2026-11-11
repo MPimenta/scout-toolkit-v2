@@ -11,7 +11,7 @@ module.exports = {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: "var(--gutter)",
       screens: {
         "2xl": "1400px",
       },
@@ -54,11 +54,65 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Brand variants (see docs/design-system.md)
+        "blue-dark": "hsl(var(--blue-dark))",
+        "blue-tint": "hsl(var(--blue-tint))",
+        "teal-dark": "hsl(var(--teal-dark))",
+        "teal-light": "hsl(var(--teal-light))",
+        "teal-tint": "hsl(var(--teal-tint))",
+        "near-black": "hsl(var(--near-black))",
+        // Division colours: identify divisions only (DivisionPill)
+        division: {
+          "cub-scouts": {
+            DEFAULT: "hsl(var(--division-cub-scouts))",
+            foreground: "hsl(var(--division-cub-scouts-foreground))",
+          },
+          scouts: {
+            DEFAULT: "hsl(var(--division-scouts))",
+            foreground: "hsl(var(--division-scouts-foreground))",
+          },
+          adventurers: {
+            DEFAULT: "hsl(var(--division-adventurers))",
+            foreground: "hsl(var(--division-adventurers-foreground))",
+          },
+          rovers: {
+            DEFAULT: "hsl(var(--division-rovers))",
+            foreground: "hsl(var(--division-rovers-foreground))",
+          },
+          leaders: {
+            DEFAULT: "hsl(var(--division-leaders))",
+            foreground: "hsl(var(--division-leaders-foreground))",
+            border: "hsl(var(--division-leaders-border))",
+          },
+          outline: "var(--division-outline)",
+        },
       },
+      // One 4 px radius for controls, cards, chips and callouts; panels only for heroes.
       borderRadius: {
         lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        md: "var(--radius)",
+        sm: "var(--radius)",
+        panel: "var(--radius-panel)",
+      },
+      boxShadow: {
+        "card-hover": "var(--shadow-card-hover)",
+        menu: "var(--shadow-menu)",
+        callout: "var(--shadow-callout)",
+      },
+      // Scale: 0.75, 0.875, 1, 1.25 rem, then two fluid display sizes.
+      fontSize: {
+        display: ["clamp(1.5rem, 4vw, 2rem)", { lineHeight: "1.15" }],
+        hero: ["clamp(2.1rem, 6vw, 3rem)", { lineHeight: "1.1" }],
+      },
+      transitionDuration: {
+        DEFAULT: "180ms",
+        ui: "var(--duration-ui)",
+      },
+      backgroundImage: {
+        // The two sanctioned gradients (Brand Book p. 41); palette colours only.
+        "gradient-brand": "linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent)))",
+        "gradient-brand-vertical":
+          "linear-gradient(180deg, hsl(var(--accent)), hsl(var(--blue-dark)))",
       },
       keyframes: {
         "accordion-down": {

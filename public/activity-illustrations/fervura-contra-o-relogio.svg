@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" role="img" aria-label="Ilustração da atividade Fervura Contra o Relógio">
+<defs><filter id="hand" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G"/></filter></defs>
+<rect width="1200" height="900" fill="#ffffff"/>
+<g filter="url(#hand)" transform="translate(-140.6,-211.6) scale(1.234)">
+<path d="M30 850 Q600 856 1170 850" fill="none" stroke="#0b3a4a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.35" data-ground="1"/>
+<ellipse cx="379.0278305690865" cy="608.1483746370991" rx="21.498788588307235" ry="21.5398036796785" fill="none" stroke="#0b3a4a" stroke-width="4.5"/>
+<path d="M363.64465172288226 637.1615064819164 L363.5394415691678 686.2944530042328 L365.97164214098433 724.2894635242827" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M396.91345261866854 638.0981619620221 L396.90809570625805 688.2645350784363 L393.3410632803296 723.9505524996438" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M363.83586151308185 638.8244503670486 L396.2373189856938 639.5201925552078" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M362.8762753783149 695.5602833386325 L394.8820723975459 696.590785554699" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M364.63281782666814 643.2692128121244 L346.75973337453775 669.3388258564001 L383.3461685165978 678.55425845904" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M395.5219210866941 640.2277040673549 L413.9222600335359 668.1243836377396 L450.41579948818116 678.041997860671" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M371.558044297834 724.3505136951574 L364.5836745099554 762.5174888207193 L361.7346098291849 807.4873991103318" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M391.61684734742937 722.4533682462077 L393.0601140119881 761.0361994839442 L395.1047266501024 803.2408082710768" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<g transform="translate(1640,0) scale(-1,1)"><ellipse cx="820.7566418134405" cy="608.2789584952774" rx="22.583145191559172" ry="21.32123453497013" fill="none" stroke="#0b3a4a" stroke-width="4.5"/>
+<path d="M800.2 602 Q820 584 839.8 602" fill="none" stroke="#0b3a4a" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M805.8569495563195 639.251193061588 L804.1017861087814 686.4191302904017 L802.6227907812795 720.5446609639305" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M835.6168207798696 638.8068472703019 L836.9820719646673 686.3835101618355 L837.3552899687808 721.4585052996215" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M803.5985707384993 637.0784019580476 L834.001708906005 637.2215832260538" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M802.1492802859048 695.7537652016401 L835.1317439669426 695.2208524031662" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M805.3663400138106 642.776612114616 L784.8198103515058 675.2525777577667 L772.1743747855883 708.0170213825148" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M837.3783759273022 641.2642101685816 L869.280303350175 627.1584063902303 L904.2362006016709 630.7235122842359" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M811.1709611511188 721.8440668543075 L804.3316203454657 763.4431462413833 L800.8588789279381 810.6781418559506" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M830.430172960614 723.2169490384017 L835.3624884171703 762.6428273801891 L841.0997788386418 807.4829410533807" fill="none" stroke="#0b3a4a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" /></g>
+<rect x="200" y="706" width="800" height="40" rx="4" fill="#fff" stroke="#0b3a4a" stroke-width="5" stroke-linejoin="round"/>
+<rect x="214" y="746" width="772" height="110" rx="0" fill="#fff" stroke="#0b3a4a" stroke-width="0" stroke-linejoin="round"/>
+<path d="M240.79028416936765 744.706034562041 L237.07666030576297 798.4297589582529 L229.23646166223867 852.0111572454736" fill="none" stroke="#0b3a4a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M960.71982467385 744.0932933970789 L963.8847155067533 797.4135220024798 L970.780483496832 851.1861312546703" fill="none" stroke="#0b3a4a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+<rect x="327.2" y="652.8" width="25.6" height="32" rx="6" fill="#fff" stroke="#0b3a4a" stroke-width="4" stroke-linejoin="round"/>
+<rect x="330.4" y="646.4" width="19.200000000000003" height="8" rx="0" fill="#bfe3f2" stroke="#0b3a4a" stroke-width="3" stroke-linejoin="round"/>
+<rect x="847.2" y="652.8" width="25.6" height="32" rx="6" fill="#fff" stroke="#0b3a4a" stroke-width="4" stroke-linejoin="round"/>
+<rect x="850.4" y="646.4" width="19.200000000000003" height="8" rx="0" fill="#bfe3f2" stroke="#0b3a4a" stroke-width="3" stroke-linejoin="round"/>
+<ellipse cx="600" cy="250" rx="70" ry="34" fill="#fff" stroke="#0b3a4a" stroke-width="4"/><path d="M580 278 L566 308 L606 282" fill="#fff" stroke="#0b3a4a" stroke-width="4" stroke-linejoin="round"/>
+<text x="600" y="260" font-family="Arial" font-size="24" font-weight="700" text-anchor="middle" fill="#0b3a4a">Fervura</text>
+</g>
+</svg>

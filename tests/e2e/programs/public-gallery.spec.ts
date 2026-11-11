@@ -47,7 +47,7 @@ test.describe('Copy public program', () => {
       expect(created.program.is_public).toBe(false);
 
       await page.goto(`/programs/${created.program.id}`);
-      await expect(page.getByText(/cópia|privado|Program Builder/i).first()).toBeVisible();
+      await expect(page.getByText(/cópia|privado|Horário do programa/i).first()).toBeVisible();
     } finally {
       await page.request.delete('/api/e2e/session');
     }

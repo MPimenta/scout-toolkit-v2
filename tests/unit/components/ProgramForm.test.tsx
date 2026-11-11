@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
+import { renderWithFeatures as render } from '../../helpers/render-with-features';
 import { ProgramForm } from '@/components/features/programs/ProgramForm';
 
 // Mock ResizeObserver
@@ -166,6 +167,14 @@ describe('ProgramForm', () => {
       
       expect(screen.getByRole('button', { name: /criar programa/i })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /cancelar/i })).toBeInTheDocument();
+    });
+  });
+
+  describe('with public-programs off (MVP default)', () => {
+    it('does not offer the public toggle', () => {
+      render(<ProgramForm mode="create" onSuccess={vi.fn()} />, { features: [] });
+      expect(screen.getByLabelText(/nome/i)).toBeInTheDocument();
+      expect(screen.queryByLabelText(/programa público/i)).not.toBeInTheDocument();
     });
   });
 });

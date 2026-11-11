@@ -20,13 +20,11 @@ ORGO_API_TOKEN=
 # First admin (comma-separated). Promotes matching Orgo emails on sign-in.
 ADMIN_EMAILS=
 
-# File Upload (Development)
-UPLOADTHING_SECRET=your-dev-uploadthing-secret
-UPLOADTHING_APP_ID=your-dev-uploadthing-app-id
+# Image uploads (Azure Blob). Azurite locally: docker compose --profile storage up -d azurite
+AZURE_STORAGE_CONNECTION_STRING=UseDevelopmentStorage=true
 
 # App Configuration
 NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_UPLOADTHING_URL=https://uploadthing.com
 
 # Development Settings
 NODE_ENV=development
@@ -39,7 +37,7 @@ if (fs.existsSync(envPath)) {
 } else {
   fs.writeFileSync(envPath, envContent);
   console.log('✅ Created .env.local with default development configuration');
-  console.log('📝 Please update the OAuth and UploadThing credentials as needed');
+  console.log('📝 Please update the OAuth credentials as needed');
 }
 
 console.log('\n🚀 Next steps:');

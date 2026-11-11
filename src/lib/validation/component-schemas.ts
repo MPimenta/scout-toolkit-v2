@@ -2,6 +2,7 @@
 // Pre-defined Zod schemas for common component prop patterns
 
 import { z } from 'zod';
+import { GROUP_SIZE_VALUES, LOCATION_VALUES, AGE_GROUP_VALUES } from '@/lib/activities/category-values';
 
 /**
  * Common prop schemas for reusable component validation
@@ -49,10 +50,20 @@ export const componentSchemas = {
       name: z.string(),
       description: z.string(),
       approximate_duration_minutes: z.number(),
-      group_size: z.enum(['small', 'medium', 'large']),
+      group_sizes: z.array(z.enum(GROUP_SIZE_VALUES)).min(1),
       effort_level: z.enum(['low', 'medium', 'high']),
-      location: z.enum(['inside', 'outside']),
-      age_group: z.enum(['cub_scouts', 'scouts', 'adventurers', 'rovers', 'leaders']),
+      locations: z.array(z.enum(LOCATION_VALUES)).min(1),
+      age_groups: z.array(z.enum(AGE_GROUP_VALUES)).min(1),
+      educational_goals: z
+        .array(
+          z.object({
+            id: z.string(),
+            code: z.string(),
+            title: z.string(),
+            age_groups: z.array(z.enum(AGE_GROUP_VALUES)),
+          })
+        )
+        .optional(),
     }),
   }),
 
@@ -95,14 +106,16 @@ export const componentSchemas = {
       search: z.string(),
       groupSize: z.array(z.string()),
       effortLevel: z.array(z.string()),
-      location: z.string(),
+      location: z.array(z.string()),
       ageGroup: z.array(z.string()),
-      activityType: z.array(z.string()),
+      format: z.array(z.string()),
+      focus: z.array(z.string()),
       sdgs: z.array(z.string()),
       educationalGoals: z.array(z.string()),
+      educationalAreas: z.array(z.string()),
+      generalObjectives: z.array(z.string()),
       durationMin: z.string(),
       durationMax: z.string(),
-      durationOperator: z.string(),
     }),
     onFiltersChange: z.function(),
     onClearFilters: z.function(),
@@ -204,19 +217,20 @@ export const specificSchemas = {
       search: z.string(),
       groupSize: z.array(z.string()),
       effortLevel: z.array(z.string()),
-      location: z.string(),
+      location: z.array(z.string()),
       ageGroup: z.array(z.string()),
-      activityType: z.array(z.string()),
+      format: z.array(z.string()),
+      focus: z.array(z.string()),
       sdgs: z.array(z.string()),
       educationalGoals: z.array(z.string()),
+      educationalAreas: z.array(z.string()),
+      generalObjectives: z.array(z.string()),
       durationMin: z.string(),
       durationMax: z.string(),
-      durationOperator: z.string(),
     }),
     onFiltersChange: z.function(),
     onClearFilters: z.function(),
     availableFilters: z.object({
-      activity_types: z.array(z.string()),
       sdgs: z.array(z.object({
         id: z.string(),
         number: z.number(),

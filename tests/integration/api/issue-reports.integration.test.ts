@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm';
 import { POST } from '@/app/api/reports/route';
 import { GET as listReports } from '@/app/api/admin/reports/route';
 import { PATCH as closeReport } from '@/app/api/admin/reports/[id]/route';
-import { withTestDatabase } from '../../helpers/database';
+import { withTestDatabase, type TestDatabaseHandle } from '../../helpers/database';
 import { requireLocalTestDatabase } from '../../helpers/local-test-db';
 import { issueReports, notifications, user } from '../../../drizzle/schema';
 import { resetReportRateLimit } from '@/lib/reports';
@@ -38,7 +38,7 @@ const validBody = {
 };
 
 describe('Issue reports API', () => {
-  let db: Awaited<ReturnType<typeof withTestDatabase>>['db'];
+  let db: TestDatabaseHandle['db'];
   let cleanup: () => Promise<void>;
 
   beforeAll(async () => {

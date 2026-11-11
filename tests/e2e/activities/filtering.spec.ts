@@ -8,7 +8,7 @@ test.describe('Activities filtering', () => {
   });
 
   test('shows search before advanced filters are expanded', async ({ page }) => {
-    await expect(page.getByText('Filtros de Atividades')).toBeVisible();
+    await expect(page.getByRole('searchbox', { name: 'Pesquisar atividades...' })).toBeVisible();
     await expect(
       page.getByPlaceholder('Pesquisar atividades por nome, descrição ou materiais...')
     ).toBeVisible();
@@ -32,7 +32,7 @@ test.describe('Activities filtering', () => {
     await expect(page.getByText('Duração (minutos)')).toBeVisible();
 
     await page.getByRole('checkbox', { name: 'Pequeno (2-6)' }).check();
-    await expect(page.getByText('Grupo: Pequeno (2-6)')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Remover filtro: Pequeno (2-6)' })).toBeVisible();
   });
 
   test('clears filters', async ({ page }, testInfo) => {
@@ -41,9 +41,9 @@ test.describe('Activities filtering', () => {
     await expandActivityFilters(page);
     await page.getByRole('checkbox', { name: 'Pequeno (2-6)' }).check();
     await page.getByRole('checkbox', { name: 'Baixo' }).check();
-    await expect(page.getByText('Grupo: Pequeno (2-6)')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Remover filtro: Pequeno (2-6)' })).toBeVisible();
 
-    await page.getByRole('button', { name: 'Limpar Filtros' }).click();
+    await page.getByRole('button', { name: 'Limpar Todos' }).click();
     await expect(page.getByText('Pesquisa:')).toHaveCount(0);
     await expect(page.getByRole('checkbox', { name: 'Pequeno (2-6)' })).not.toBeChecked();
   });
@@ -52,10 +52,31 @@ test.describe('Activities filtering', () => {
     test.skip(testInfo.project.name !== 'chromium', 'Advanced filters are in a sheet on mobile');
 
     await expandActivityFilters(page);
-    await expect(page.getByRole('checkbox', { name: 'Lobitos (6-10)' })).toBeVisible();
-    await expect(page.getByRole('checkbox', { name: 'Escoteiros (10-14)' })).toBeVisible();
-    await expect(page.getByRole('checkbox', { name: 'Exploradores (14-17)' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Lobitos (6-10)' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Escoteiros (10-14)' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Exploradores (14-17)' })).toBeVisible();
     await expect(page.getByRole('checkbox', { name: 'Baixo' })).toBeVisible();
     await expect(page.getByRole('checkbox', { name: 'Alto' })).toBeVisible();
+  });
+});
+
+test.describe('Catalogue filter refresh', () => {
+  test('division toggles, duration range and objective tree', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'chromium', 'Advanced filters are in a sheet on mobile');
+    await page.goto('/activities');
+    await expandActivityFilters(page);
+
+    const scouts = page.getByRole('button', { name: 'Escoteiros (10-14)', exact: true });
+    await expect(scouts).toHaveAttribute('aria-pressed', 'false');
+    await scouts.click();
+    await expect(scouts).toHaveAttribute('aria-pressed', 'true');
+
+    await page.getByLabel('Mínimo (minutos)').fill('15');
+    await page.getByLabel('Máximo (minutos)').fill('45');
+    await expect(page.getByTestId('duration-readout')).toHaveText('15–45 min');
+    await page.getByLabel('Mínimo (minutos)').fill('60');
+    await expect(page.getByText('O mínimo não pode ser superior ao máximo.')).toBeVisible();
+
+    await expect(page.getByTestId('objective-tree')).toBeVisible();
   });
 });

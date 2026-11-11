@@ -13,6 +13,11 @@ vi.mock('@/lib/auth/config', () => ({
 vi.mock('@/lib/activities/write', () => ({
   parseActivityWrite: (...args: unknown[]) => mockParse(...args),
   createActivity: (...args: unknown[]) => mockCreate(...args),
+  verifyActivityTypes: async () => null,
+  verifyFormatAndFocus: async () => null,
+  verifyActivityGoals: async () => null,
+  verifyActivityExtras: async () => null,
+  updateActivity: vi.fn(),
   replaceRelations: vi.fn(),
 }));
 
@@ -44,11 +49,11 @@ const body = {
   description: 'Desc',
   materials: 'Nada',
   approximate_duration_minutes: 30,
-  group_size: 'small',
+  group_sizes: ['small'],
   effort_level: 'low',
-  location: 'outside',
-  age_group: 'scouts',
-  activity_type_id: '550e8400-e29b-41d4-a716-446655440000',
+  locations: ['outside'],
+  age_groups: ['scouts'],
+  activity_type_ids: ['550e8400-e29b-41d4-a716-446655440000'],
 };
 
 describe('User-generated activities API', () => {

@@ -29,7 +29,7 @@ This document outlines the technical architecture, stack choices, and key design
 - **Hardcoded Portuguese content** - No translation system complexity
 
 ### File Storage & Media
-- **UploadThing** - File upload service with S3 backend
+- **Azure Blob Storage** - Private storage for uploaded activity images, served by the app
 - **Next.js Image** - Optimized image serving with fallbacks
 
 ### Search & Filtering
@@ -40,7 +40,16 @@ This document outlines the technical architecture, stack choices, and key design
 ### Export Functionality
 - **SheetJS (xlsx)** - Excel export generation (Portuguese sheets: Resumo, Cronograma, Detalhes das Atividades)
 - **Playwright Chromium** - Server-side HTML to PDF, with Chrome/Edge fallback if the bundled browser is missing
-- **Local/server runtime** - PDF generation runs in the Next.js Node process, not on Vercel Edge (Playwright needs a full browser)
+- **Local/server runtime** - PDF generation runs in the Next.js Node process, not in an edge runtime (Playwright needs a full browser)
+
+### eAEP (Orgo) events
+A program can be handed to eAEP as an event. The API findings are in [orgo-api.md](./orgo-api.md); the code is in `src/lib/orgo/`.
+- **One admin token, rights decided here.** The write token acts as one Orgo admin, so Orgo never limits what a leader may do through the app. `scope.ts` finds the signed-in leader's Orgo user id (the login's `sub`, kept by the auth adapter), reads their permissions through the token on every request, and resolves their own local group; `leader-context.ts` builds the units and the member list from it. Unknown or missing permissions mean no access.
+- **Steps, not one call** (`steps.ts`). Create the event, publish, invite (Orgo only accepts invitations to a published event), attach the PDF. Each step is recorded as counts in `programs.orgo_steps` and can be repeated on its own through `/orgo/retry` without creating a second event or inviting anyone twice.
+- **Description** (`description.ts`, `description-data.ts`) is HTML limited to the tags Orgo renders, with every stored value escaped. The program is a list, not a table.
+- **Attachment** goes up in three Orgo calls (`attachFileToOrgoEvent`), to storage where anyone with the link can open the file, so it is offered for public programs only. The PDF comes from the same renderer as the download (`src/lib/export/pdf.ts`).
+- **Links** are rebuilt from the event uuid (`orgoEventUrl`, `orgoAttendanceUrl`), never stored as text.
+- **No participant data is kept.** Member names and card numbers go to the owner's browser for the dialog and are not stored or logged; the app keeps counts only.
 
 ### Development Tools
 - **ESLint + Prettier** - Code linting and formatting
@@ -161,7 +170,14 @@ activities {
   effort_level: 'low' | 'medium' | 'high'
   location: 'inside' | 'outside'
   age_group: 'cub_scouts' | 'scouts' | 'adventurers' | 'rovers' | 'leaders'
-  activity_type_id: string (foreign key)
+  format_id?: string (foreign key to activity_formats)
+  focus_id?: string (foreign key to activity_focuses) // main focus
+  secondary_focus_id?: string (foreign key to activity_focuses)
+  approximate_duration_minutes: number // what programs use
+  duration_min_minutes?: number // optional range, shown in lists and the detail
+  duration_max_minutes?: number
+  external_id?: string // id in the reference sheet (ATV-0001); the loader's upsert key
+  external_hash?: string // hash of the loaded content, to tell unchanged rows
   image_url?: string
   created_at: timestamp
   updated_at: timestamp
@@ -172,11 +188,13 @@ activities {
 
 #### Taxonomies
 ```typescript
-activity_types {
+activity_formats / activity_focuses {
   id: string (primary key)
-  name: text // Portuguese activity type name
-  description?: text // Portuguese activity type description
-  created_at: timestamp
+  code: string (unique) // for example 'jogo', 'cooperacao'
+  name: text
+  description?: text
+  position: number
+  is_managed: boolean // true for the values of the reference sheet: read-only for admins
 }
 
 educational_areas {
@@ -188,14 +206,67 @@ educational_areas {
   created_at: timestamp
 }
 
+educational_paths {
+  id: string (primary key)
+  area_id: string (foreign key)
+  code: string (unique)
+  name: text
+  position: number
+}
+
+general_objectives {
+  id: string (primary key)
+  area_id: string (foreign key)
+  path_id?: string (foreign key to educational_paths)
+  code: string (unique) // e.g. '4F.1'
+  title: text
+  position: number
+  is_managed: boolean // true for the Matriz objectives loaded by db:load-reference
+}
+
+// The specific objectives of the Matriz Progresso Pessoal (e.g. '4F.1.1'); 174 in the dataset
 educational_goals {
   id: string (primary key)
   area_id: string (foreign key)
-  title: text // Portuguese educational goal title
-  description?: text // Portuguese educational goal description
+  general_objective_id?: string (foreign key; required by the API for new goals)
+  title: text // Portuguese objective text, as in the sheet
+  description?: text
   code: string (unique)
-  icon: string // Icon for educational goal
+  icon: string
+  position: number
+  is_managed: boolean
   created_at: timestamp
+}
+
+// An objective can belong to several divisions (a "3-4" objective has two rows).
+// Dirigentes (leaders) have no objectives.
+educational_goal_age_groups {
+  goal_id: string (foreign key)
+  age_group: string // 'cub_scouts' | 'scouts' | 'adventurers' | 'rovers'
+  primary key: (goal_id, age_group)
+}
+
+// Desafios of the Matriz, each linked to the objectives it serves
+challenge_types {
+  id: string (primary key)
+  code: string (unique)
+  name: text
+}
+
+challenges {
+  id: string (primary key)
+  type_id: string (foreign key)
+  code: string (unique)
+  title: text // full text, without the integration marker
+  short_title?: text // from the sheet, shown first
+  age_group: string
+  integration_age_groups: string[] // divisions for which the desafio is mandatory for the first etapa
+}
+
+challenge_goals {
+  challenge_id: string (foreign key)
+  goal_id: string (foreign key)
+  primary key: (challenge_id, goal_id)
 }
 
 sdgs {
@@ -240,10 +311,19 @@ age_groups {
 
 #### Many-to-Many Relationships
 ```typescript
+// One row per objective and division: the same objective on a two-division activity has two rows
 activity_educational_goals {
   activity_id: string (foreign key)
   goal_id: string (foreign key)
-  primary key: (activity_id, goal_id)
+  age_group: string
+  observable_behaviour?: text // what a leader can observe for this objective in this division
+  primary key: (activity_id, goal_id, age_group)
+}
+
+activity_challenges {
+  activity_id: string (foreign key)
+  challenge_id: string (foreign key)
+  primary key: (activity_id, challenge_id)
 }
 
 activity_sdgs {
@@ -324,7 +404,6 @@ CREATE INDEX idx_activities_effort_level ON activities(effort_level);
 CREATE INDEX idx_activities_location ON activities(location);
 CREATE INDEX idx_activities_age_group ON activities(age_group);
 CREATE INDEX idx_activities_duration ON activities(approximate_duration_minutes);
-CREATE INDEX idx_activities_type ON activities(activity_type_id);
 
 -- Program indexes
 CREATE INDEX idx_programs_user ON programs(user_id);
@@ -392,9 +471,9 @@ const activityDescription = "Descrição da atividade em português";
 - **Debouncing:** 300ms delay on search input
 
 ### Filter Types
-- **Text Search:** Name, description, materials
+- **Text Search:** Name, description, materials, instructions
 - **Duration:** Number input with operator (>, <, =)
-- **Multi-select:** Effort level, group size, activity type, SDGs, educational goals
+- **Multi-select:** Effort level, group size, format, focus, SDGs, educational goals
 - **Single-select:** Location
 - **Clear Filters:** Reset all applied filters
 
@@ -413,9 +492,9 @@ ORDER BY rank DESC, name;
 ## File Storage Strategy
 
 ### Image Upload Flow
-1. **Client:** UploadThing widget for file selection
-2. **UploadThing:** Processes and stores in S3
-3. **Database:** Stores URL and metadata
+1. **Client:** file input posts to `POST /api/uploads/activity-image`
+2. **Server:** checks session, type (by content) and size, stores in Azure Blob with a random name
+3. **Database:** Stores the relative address `/media/activity-images/<name>`
 4. **Serving:** Next.js Image component with optimization
 
 ### Image Requirements
@@ -549,7 +628,7 @@ SDGs: [SDG Icons]
 - **Query Optimization:** Proper indexing strategy
 
 ### Application Scaling
-- **CDN:** Vercel Edge Network for static assets
+- **Static assets:** served by the App Service (no CDN)
 - **Caching:** TanStack Query for API responses
 - **Image Optimization:** Next.js automatic optimization
 
@@ -615,7 +694,7 @@ Epic 5 focuses on improving code quality, type safety, performance, and architec
 ## Monitoring & Observability
 
 ### Application Monitoring
-- **Error Tracking:** Vercel Analytics
+- **Error Tracking:** application logs (`src/lib/errors`)
 - **Performance Monitoring:** Core Web Vitals tracking
 - **User Analytics:** Privacy-compliant analytics
 
@@ -626,5 +705,5 @@ Epic 5 focuses on improving code quality, type safety, performance, and architec
 
 ### Deployment Monitoring
 - **Build Status:** GitHub Actions integration
-- **Deployment Health:** Vercel deployment monitoring
+- **Deployment Health:** `GET /api/health`, checked after each deploy
 - **Environment Health:** Health check endpoints

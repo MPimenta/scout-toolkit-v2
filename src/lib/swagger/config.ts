@@ -113,32 +113,66 @@ const swaggerOptions: swaggerJSDoc.Options = {
               type: 'integer',
               description: 'Duration of the activity in minutes',
             },
-            group_size: {
-              type: 'string',
-              enum: ['individual', 'small', 'medium', 'large'],
-              description: 'Recommended group size for the activity',
+            group_sizes: {
+              type: 'array',
+              minItems: 1,
+              items: { type: 'string', enum: ['small', 'medium', 'large'] },
+              description: 'Recommended group sizes (one or more)',
             },
             effort_level: {
               type: 'string',
               enum: ['low', 'medium', 'high'],
               description: 'Physical effort level required',
             },
-            location: {
-              type: 'string',
-              enum: ['indoor', 'outdoor', 'both'],
-              description: 'Location type for the activity',
+            locations: {
+              type: 'array',
+              minItems: 1,
+              items: { type: 'string', enum: ['inside', 'outside'] },
+              description: 'Locations where the activity can run (one or more)',
             },
-            age_group: {
-              type: 'string',
-              enum: ['cub', 'scout', 'explorer', 'all'],
-              description: 'Target age group for the activity',
+            age_groups: {
+              type: 'array',
+              minItems: 1,
+              items: { type: 'string', enum: ['cub_scouts', 'scouts', 'adventurers', 'rovers', 'leaders'] },
+              description: 'Target age groups (one or more)',
             },
+            format: {
+              type: 'object',
+              nullable: true,
+              properties: { id: { type: 'string', format: 'uuid' }, code: { type: 'string' }, name: { type: 'string' } },
+              description: 'What kind of activity it is (reference sheet formats)',
+            },
+            focus: {
+              type: 'object',
+              nullable: true,
+              properties: { id: { type: 'string', format: 'uuid' }, code: { type: 'string' }, name: { type: 'string' } },
+              description: 'Main focus',
+            },
+            secondary_focus: {
+              type: 'object',
+              nullable: true,
+              properties: { id: { type: 'string', format: 'uuid' }, code: { type: 'string' }, name: { type: 'string' } },
+              description: 'Optional secondary focus, different from the main one',
+            },
+            duration_min_minutes: { type: 'integer', nullable: true, description: 'Optional lower bound of the duration' },
+            duration_max_minutes: { type: 'integer', nullable: true, description: 'Optional upper bound of the duration' },
             educational_goals: {
               type: 'array',
               items: {
-                type: 'string',
+                type: 'object',
+                properties: {
+                  id: { type: 'string', format: 'uuid' },
+                  code: { type: 'string', description: 'Matriz code, for example 1A.2' },
+                  title: { type: 'string' },
+                  age_groups: {
+                    type: 'array',
+                    items: { type: 'string', enum: ['cub_scouts', 'scouts', 'adventurers', 'rovers'] },
+                    description: 'Age groups the objective belongs to',
+                  },
+                },
+                required: ['id', 'code', 'title', 'age_groups'],
               },
-              description: 'Educational goals addressed by the activity',
+              description: 'Specific objectives (Matriz de Progresso) the activity develops',
             },
             sdgs: {
               type: 'array',

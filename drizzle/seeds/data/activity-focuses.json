@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "source": "Folha de atividades, separadores \"formatos\" e \"focos\"",
+  "focuses": [
+    {
+      "code": "cooperacao",
+      "name": "Cooperação",
+      "description": "Trabalhar em conjunto, partilhar e entreajudar-se para um resultado comum.",
+      "position": 1
+    },
+    {
+      "code": "bem-estar-fisico",
+      "name": "Bem-estar físico",
+      "description": "Movimento, energia, saúde e coordenação do corpo.",
+      "position": 2
+    },
+    {
+      "code": "competencias-tecnicas",
+      "name": "Competências técnicas",
+      "description": "Aprender e praticar técnicas e saberes escotistas.",
+      "position": 3
+    },
+    {
+      "code": "valores-reflexao",
+      "name": "Valores/Reflexão",
+      "description": "Pensar sobre valores, atitudes e experiências; debriefing.",
+      "position": 4
+    },
+    {
+      "code": "criatividade",
+      "name": "Criatividade",
+      "description": "Imaginar, criar e expressar-se de forma original.",
+      "position": 5
+    },
+    {
+      "code": "competicao-amigavel",
+      "name": "Competição amigável",
+      "description": "Competir com respeito, regras claras e espírito desportivo.",
+      "position": 6
+    },
+    {
+      "code": "lideranca",
+      "name": "Liderança",
+      "description": "Orientar, decidir e assumir papéis de responsabilidade.",
+      "position": 7
+    },
+    {
+      "code": "resolucao-de-problemas",
+      "name": "Resolução de problemas",
+      "description": "Analisar situações, planear e encontrar soluções.",
+      "position": 8
+    },
+    {
+      "code": "comunicacao",
+      "name": "Comunicação",
+      "description": "Expressar ideias, escutar e dialogar com os outros.",
+      "position": 9
+    },
+    {
+      "code": "confianca",
+      "name": "Confiança",
+      "description": "Construir confiança em si, nos outros e no grupo.",
+      "position": 10
+    }
+  ]
+}

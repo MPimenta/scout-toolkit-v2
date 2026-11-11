@@ -84,7 +84,7 @@ describe('AddToProgramModal', () => {
     id: 'test-activity-id',
     name: 'Atividade de Teste',
     approximate_duration_minutes: 60,
-    group_size: 'medium' as const,
+    group_sizes: ['medium' as const],
   };
 
   const mockSession = {
@@ -120,7 +120,7 @@ describe('AddToProgramModal', () => {
 
       render(<AddToProgramModal {...defaultProps} />);
 
-      expect(screen.getByText('Inicie sessão para adicionar atividades aos seus programas')).toBeInTheDocument();
+      expect(screen.getByText('Inicia sessão para adicionar atividades aos teus programas')).toBeInTheDocument();
       expect(screen.getByText('Iniciar Sessão')).toBeInTheDocument();
     });
   });
@@ -136,7 +136,7 @@ describe('AddToProgramModal', () => {
       expect(screen.getByText('Atividade Selecionada')).toBeInTheDocument();
       expect(screen.getByText('Atividade de Teste')).toBeInTheDocument();
       expect(screen.getByText('60 min')).toBeInTheDocument();
-      expect(screen.getByText('6-15')).toBeInTheDocument();
+      expect(screen.getByText('Médio (7-15)')).toBeInTheDocument();
     });
 
     it('shows program selection by default', () => {
@@ -301,10 +301,10 @@ describe('AddToProgramModal', () => {
         id: 'test-activity-id',
         name: undefined,
         approximate_duration_minutes: 0,
-        group_size: 'small' as const,
+        group_sizes: ['small' as const],
       };
 
-      render(<AddToProgramModal {...defaultProps} activity={activityWithMissingData} />);
+      render(<AddToProgramModal {...defaultProps} activity={activityWithMissingData as unknown as typeof defaultProps.activity} />);
 
       // Should still render without crashing
       expect(screen.getByText('Atividade Selecionada')).toBeInTheDocument();

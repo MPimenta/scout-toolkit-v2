@@ -3,14 +3,14 @@ import { auth } from '@/lib/auth/config';
 import { db } from '@/lib/db/server';
 import { programs, programEntries, activities } from '../../../../drizzle/schema';
 import { eq, desc, asc, sql, count } from 'drizzle-orm';
-import { ensureOrgoProgramColumns } from '@/lib/orgo/ensure-columns';
+import { apiErrors, handleApiError } from '@/lib/errors';
 
 export async function GET(request: NextRequest) {
   try {
     // Check authentication
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return apiErrors.unauthorized();
     }
 
     const { searchParams } = new URL(request.url);
@@ -52,14 +52,14 @@ export async function GET(request: NextRequest) {
         is_public: programs.is_public,
         created_at: programs.created_at,
         updated_at: programs.updated_at,
-        entry_count: sql<number>`COUNT(${programEntries.id})`,
+        entry_count: sql<number>`COUNT(${programEntries.id})::int`,
         total_duration_minutes: sql<number>`COALESCE(SUM(
           CASE 
             WHEN ${programEntries.entry_type} = 'activity' THEN ${activities.approximate_duration_minutes}
             WHEN ${programEntries.entry_type} = 'custom' THEN ${programEntries.custom_duration_minutes}
             ELSE 0
           END
-        ), 0)`
+        ), 0)::int`
       })
       .from(programs)
       .leftJoin(programEntries, eq(programs.id, programEntries.program_id))
@@ -89,11 +89,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error fetching programs:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Error fetching programs:');
   }
 }
 
@@ -102,7 +98,7 @@ export async function POST(request: NextRequest) {
     // Check authentication
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return apiErrors.unauthorized();
     }
 
     const body = await request.json();
@@ -110,13 +106,9 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!name || !start_time) {
-      return NextResponse.json(
-        { error: 'Name and start time are required' },
-        { status: 400 }
-      );
+      return apiErrors.validation('name, start_time', 'Indica o nome e a hora de início do programa');
     }
 
-    await ensureOrgoProgramColumns();
 
     // Create new program
     const [newProgram] = await db
@@ -155,10 +147,6 @@ export async function POST(request: NextRequest) {
     }, { status: 201 });
 
   } catch (error) {
-    console.error('Error creating program:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'Error creating program:');
   }
 }

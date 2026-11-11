@@ -36,7 +36,7 @@ describe('SessionProvider', () => {
   })
 
   it('renders without children', () => {
-    const { getByTestId } = render(<SessionProvider>{}</SessionProvider>)
+    const { getByTestId } = render(<SessionProvider>{null}</SessionProvider>)
 
     expect(getByTestId('session-provider')).toBeInTheDocument()
   })

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" role="img" aria-label="Ilustração da atividade O Urso Adormecido">
+<defs><filter id="hand" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G"/></filter></defs>
+<rect width="1200" height="900" fill="#ffffff"/>
+<g filter="url(#hand)" transform="translate(-313.7,-316.3) scale(1.407)">
+<path d="M30 850 Q600 856 1170 850" fill="none" stroke="#0b3a4a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.35" data-ground="1"/>
+<ellipse cx="879.0026766182867" cy="584.5859235449628" rx="25.52553028605205" ry="26.187517676729485" fill="none" stroke="#0b3a4a" stroke-width="5.5"/>
+<path d="M855.8 578 Q880 556 904.2 578" fill="none" stroke="#0b3a4a" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M859.554069428916 621.7448917932552 L857.0963692397794 681.7778129717232 L859.802615751467 726.8629349058788" fill="none" stroke="#0b3a4a" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M899.0469631033703 623.408878343929 L899.1183264149438 685.4120559608621 L897.1245342075008 725.7464254653764" fill="none" stroke="#0b3a4a" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M862.472796579717 621.1921153052673 L898.9819356279829 621.6920995089654" fill="none" stroke="#0b3a4a" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M859.7164471820539 694.3277887800373 L900.7460260854782 692.8604186332135" fill="none" stroke="#0b3a4a" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M862.1559684186502 624.6612122558342 L824.8943838059876 660.8086272336584 L844.2979160946784 700.7758032601214" fill="none" stroke="#0b3a4a" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M899.4253928604189 625.6778050593463 L937.7696324329216 657.7123001136409 L915.7280099620242 697.3634317402558" fill="none" stroke="#0b3a4a" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M866.497258478588 724.7232496298493 L858.9565288758168 773.6808158539612 L846.972057525754 824.4708353475066" fill="none" stroke="#0b3a4a" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M892.429685543538 726.8249302419019 L900.5025756445725 773.4888583305707 L909.7419618994193 825.6536435401317" fill="none" stroke="#0b3a4a" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M854.5869789933726 583.1559416118804 L877.4236421009635 583.7527908948031 L906.701483899961 580.439906644281" fill="none" stroke="#0b3a4a" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
+<ellipse cx="1000" cy="790" rx="20" ry="14" fill="#bfe3f2" stroke="#0b3a4a" stroke-width="4"/>
+<ellipse cx="999.868622922743" cy="769.945462542095" rx="4.083417485274103" ry="4.997675001852994" fill="#0b3a4a" stroke="#0b3a4a" stroke-width="3"/>
+<ellipse cx="399.9491707621837" cy="575.7130000212755" rx="24.58703636847764" ry="23.320245003709683" fill="none" stroke="#0b3a4a" stroke-width="5"/>
+<path d="M378.91961190623 610.2403849303911 L373.6418327745818 665.868057781117 L371.2317426191074 704.0674301077926" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M411.95936013133024 610.488804189809 L411.2243258128629 666.8285521715081 L404.66096192137667 702.9562433473562" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M380.24347747734697 609.6490386932385 L415.65485572156973 610.2831893455625" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M371.5325616373796 676.9019009779682 L409.0189674806368 675.7249086010852" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M380.43116613037614 614.9937686167628 L338.6229880868278 622.6684676220959 L279.19686302794713 633.9999876306392" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M415.28441584566957 615.9617335530751 L443.3019803794862 633.4765457174166 L440.22694954362595 671.187133566936" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M375.3384748792204 704.7165258268437 L353.3418794543785 745.7526051237959 L325.280469483017 787.942908758923" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M400.8521266018498 701.8610280590416 L411.7908960045846 743.9737644380767 L429.93583383313614 795.1130796732907" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M300 800 q40 -14 90 0" fill="none" stroke="#0b3a4a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<ellipse cx="880" cy="400" rx="70" ry="34" fill="#fff" stroke="#0b3a4a" stroke-width="4"/><path d="M860 428 L846 458 L886 432" fill="#fff" stroke="#0b3a4a" stroke-width="4" stroke-linejoin="round"/>
+<text x="880" y="410" font-family="Arial" font-size="24" font-weight="700" text-anchor="middle" fill="#0b3a4a">Zzz...</text>
+<text x="500" y="300" font-family="Arial" font-size="40" font-weight="700" text-anchor="middle" fill="#0b3a4a">shh!</text>
+<path d="M528.7300689977268 600.6696447944593 L534.3455370144665 610.440602138378 L539.4134357940468 626.0153905448575" fill="none" stroke="#0b3a4a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M561.4688874207758 599.1908809785689 L567.095372918572 614.9326424393489 L569.2090839673807 623.4742397679362" fill="none" stroke="#0b3a4a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M588.7477797032091 599.1334718349079 L595.3560854072479 614.727439613886 L600.0568997591067 625.514251307265" fill="none" stroke="#0b3a4a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+</g>
+</svg>

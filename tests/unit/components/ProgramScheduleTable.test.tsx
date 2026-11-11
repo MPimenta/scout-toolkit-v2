@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ProgramScheduleTable } from '@/components/features/programs/ProgramScheduleTable';
-import { ProgramEntry } from '../../../../drizzle/schema/programs';
+import { ProgramEntry } from '../../../drizzle/schema/programs';
 import { ActivitiesResponse } from '@/hooks/useActivities';
 
 // Mock the ProgramScheduleRow component
@@ -77,12 +77,11 @@ describe('ProgramScheduleTable', () => {
       description: 'Test description',
       materials: 'Test materials',
       approximate_duration_minutes: 30,
-      group_size: 'medium',
+      group_sizes: ['medium'],
       effort_level: 'low',
-      location: 'outside',
-      age_group: 'scouts',
+      locations: ['outside'],
+      age_groups: ['scouts'],
       created_at: '2024-01-01T00:00:00Z',
-      activity_type: { id: 'type-1', name: 'Game' },
       educational_goals: [],
       sdgs: []
     },
@@ -92,12 +91,11 @@ describe('ProgramScheduleTable', () => {
       description: 'Test description 2',
       materials: 'Test materials 2',
       approximate_duration_minutes: 45,
-      group_size: 'large',
+      group_sizes: ['large'],
       effort_level: 'high',
-      location: 'inside',
-      age_group: 'cub_scouts',
+      locations: ['inside'],
+      age_groups: ['cub_scouts'],
       created_at: '2024-01-01T00:00:00Z',
-      activity_type: { id: 'type-2', name: 'Craft' },
       educational_goals: [],
       sdgs: []
     }
@@ -165,7 +163,8 @@ describe('ProgramScheduleTable', () => {
     expect(screen.getByText('Início')).toBeInTheDocument();
     expect(screen.getByText('Fim')).toBeInTheDocument();
     expect(screen.getByText('Nome')).toBeInTheDocument();
-    expect(screen.getByText('Tipo')).toBeInTheDocument();
+    // Type, group, effort, location, age, goals and SDGs moved into the expandable row.
+    expect(screen.queryByRole('columnheader', { name: 'Tipo' })).not.toBeInTheDocument();
     expect(screen.getByText('Duração')).toBeInTheDocument();
     expect(screen.getByText('Ações')).toBeInTheDocument();
   });

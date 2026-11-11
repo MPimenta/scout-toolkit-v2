@@ -6,8 +6,12 @@ import { session, user } from '../../../../../drizzle/schema';
 const COOKIE = 'authjs.session-token';
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+/**
+ * Test-only login. It answers only when explicitly enabled (E2E_LOGIN=1, set by
+ * playwright.config.ts and CI) and never in production; otherwise it is a 404.
+ */
 function e2eLoginAllowed() {
-  return process.env.NODE_ENV !== 'production';
+  return process.env['NODE_ENV'] !== 'production' && process.env['E2E_LOGIN'] === '1';
 }
 
 export async function POST(request: NextRequest) {

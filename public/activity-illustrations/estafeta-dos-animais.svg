@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" role="img" aria-label="Ilustração da atividade Estafeta dos Animais">
+<defs><filter id="hand" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G"/></filter></defs>
+<rect width="1200" height="900" fill="#ffffff"/>
+<g filter="url(#hand)" transform="translate(18.9,-79.6) scale(0.923)">
+<path d="M30 850 Q600 856 1170 850" fill="none" stroke="#0b3a4a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.35" data-ground="1"/>
+<ellipse cx="219.00228529982374" cy="596.1090341378045" rx="22.25513112142455" ry="24.188757782470784" fill="none" stroke="#0b3a4a" stroke-width="4.75"/>
+<path d="M209.57198100588522 631.0593812971653 L215.40992299464745 680.5026941162081 L219.26693418636273 718.1467163523878" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M242.7840422717934 630.473077416454 L249.10059988104516 680.2091238028413 L254.33067742952605 717.5794041985085" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M210.46867202352814 627.3453148220411 L242.72852173725218 630.1394533819237" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M218.0468361455413 690.6827904203827 L252.4124415250732 693.212404213153" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M209.02607200116884 634.6990467213556 L200.4882458226561 670.6775413807843 L235.08337145645507 704.4448378712148" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M242.93856304501796 631.8360206939449 L268.93595697601677 676.4912036057987 L301.1936180422501 712.5576668659494" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M225.7939390878813 718.018096175193 L201.360108774764 736.5935620741424 L184.87701087893885 775.0903038639531" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M247.32396453514843 720.4557883936707 L275.9055324216818 745.3934112062183 L300.0090659851992 790.9358593968377" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<ellipse cx="280" cy="430" rx="64" ry="34" fill="#fff" stroke="#0b3a4a" stroke-width="4"/><path d="M260 458 L246 488 L286 462" fill="#fff" stroke="#0b3a4a" stroke-width="4" stroke-linejoin="round"/>
+<text x="280" y="440" font-family="Arial" font-size="28" font-weight="700" text-anchor="middle" fill="#0b3a4a">sapo</text>
+<ellipse cx="600.6313102951419" cy="597.1321304501184" rx="24.024712709768075" ry="23.546513072050413" fill="none" stroke="#0b3a4a" stroke-width="4.75"/>
+<path d="M579.1 591 Q600 572 620.9 591" fill="none" stroke="#0b3a4a" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M584.7962961952884 627.4001542109065 L581.7418227063455 681.3642255469059 L581.7887668470568 716.3543984818526" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M617.2252844959847 630.5065240165715 L616.1991465167837 682.9055075835928 L615.6159574440056 718.6467614025562" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M581.8688927603042 627.3306224330005 L617.7212314399757 627.8868116709808" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M582.3437541742081 692.8764059164452 L615.3542376935735 689.8729158891239" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M583.6473485050711 632.4363247293218 L558.4597257094038 605.6599979486131 L541.535522338974 552.1739511371469" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M614.7467620277762 632.5794008349905 L642.4398336834228 637.6347172851371 L672.343411298 623.3636854856572" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M590.7119574398556 720.1186916539533 L583.8006279923724 761.9046678015984 L580.0017414642739 806.7187900511636" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M608.4543899056523 719.2811442967417 L616.9421953368429 762.027026320308 L624.7813654164464 805.758554214732" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<ellipse cx="660" cy="330" rx="91" ry="34" fill="#fff" stroke="#0b3a4a" stroke-width="4"/><path d="M640 358 L626 388 L666 362" fill="#fff" stroke="#0b3a4a" stroke-width="4" stroke-linejoin="round"/>
+<text x="660" y="340" font-family="Arial" font-size="24" font-weight="700" text-anchor="middle" fill="#0b3a4a">canguru</text>
+<g transform="translate(1960,0) scale(-1,1)"><ellipse cx="979.3275850006974" cy="597.4211067200272" rx="22.260965243149997" ry="23.242841622020507" fill="none" stroke="#0b3a4a" stroke-width="4.75"/>
+<path d="M960.6325354432348 628.190117524094 L955.9629197556012 680.1577170056095 L952.3750978926192 718.1310504812892" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M991.6339005657604 630.4337318128132 L988.0882702590502 683.4236284733861 L984.8491368138106 717.2031989447322" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M962.9331256521064 627.0097580284857 L991.9716462976143 630.9262470789841" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M953.3654257175388 689.7715731351971 L987.6604524861407 689.686473028635" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M959.5698845743746 630.9954261286164 L921.543097500128 640.3419923442146 L865.4537907528637 654.2881064571385" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M994.7229174341866 630.7187009895774 L1019.1713779797684 651.1873982746096 L1020.2097244394427 684.6824998656672" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M960.3006268839465 718.1968077209299 L935.0650579741746 756.7747565680532 L912.9174854232772 800.1752013260383" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M980.2340713413703 718.0978036396195 L991.303463392961 756.25463011123 L1008.0013563639959 804.3725635267667" fill="none" stroke="#0b3a4a" stroke-width="4.75" stroke-linecap="round" stroke-linejoin="round" /></g>
+<ellipse cx="940" cy="430" rx="118" ry="34" fill="#fff" stroke="#0b3a4a" stroke-width="4"/><path d="M920 458 L906 488 L946 462" fill="#fff" stroke="#0b3a4a" stroke-width="4" stroke-linejoin="round"/>
+<text x="940" y="440" font-family="Arial" font-size="24" font-weight="700" text-anchor="middle" fill="#0b3a4a">caranguejo</text>
+<path d="M1120.27519436687 830.7917239853142 L1121.2341197860585 769.8512442870305 L1121.3660035548573 709.2217464872737" fill="none" stroke="#0b3a4a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M1123 712 L1220 742 L1123 776 Z" fill="#bfe3f2" stroke="none"/>
+<path d="M1123 712 L1220 742 L1123 776 Z" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M44 850 L60 812 L76 850 Z" fill="#bfe3f2" stroke="#0b3a4a" stroke-width="4" stroke-linejoin="round"/>
+<path d="M39.09321160935481 849.2075184262393 L59.40298609547456 847.9873066409432 L82.48599051026906 851.6425060921547" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+</g>
+</svg>

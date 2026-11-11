@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { formatAndFocus } from '../helpers/activity';
 
 test.describe('User-generated activities', () => {
   test.beforeEach(({}, testInfo) => {
@@ -6,10 +7,7 @@ test.describe('User-generated activities', () => {
   });
 
   test('user submits, guest cannot see it, admin approves', async ({ page }) => {
-    const types = await page.request.get('/api/taxonomies/activity-types');
-    const typeBody = (await types.json()) as { activity_types: { id: string }[] };
-    const typeId = typeBody.activity_types[0]?.id;
-    if (!typeId) test.skip(true, 'No activity types available');
+    const refs = await formatAndFocus(page.request);
 
     const login = await page.request.post('/api/e2e/session', {
       data: {
@@ -29,12 +27,13 @@ test.describe('User-generated activities', () => {
           name,
           description: 'Proposta de teste',
           materials: 'Nada',
+          instructions: 'Passo 1\nPasso 2',
           approximate_duration_minutes: 15,
-          group_size: 'small',
+          group_sizes: ['small'],
           effort_level: 'low',
-          location: 'outside',
-          age_group: 'scouts',
-          activity_type_id: typeId,
+          locations: ['outside'],
+          age_groups: ['scouts'],
+          ...refs,
         },
       });
       expect(created.status()).toBe(201);
@@ -60,6 +59,8 @@ test.describe('User-generated activities', () => {
 
       const published = await page.request.get(`/api/activities/${activity.activity.id}`);
       expect(published.ok()).toBeTruthy();
+      const detail = (await published.json()) as { instructions: string | null };
+      expect(detail.instructions).toBe('Passo 1\nPasso 2');
     } finally {
       await page.request.delete('/api/e2e/session');
     }

@@ -12,3 +12,13 @@ export async function firstActivityId(request: APIRequestContext): Promise<strin
   }
   return id;
 }
+
+/** Ids of the format Jogo and the focus Cooperação, which an activity write needs. */
+export async function formatAndFocus(request: APIRequestContext): Promise<{ format_id: string; focus_id: string }> {
+  const formats = (await (await request.get('/api/taxonomies/activity-formats')).json()) as { activity_formats: { id: string; code: string }[] };
+  const focuses = (await (await request.get('/api/taxonomies/activity-focuses')).json()) as { activity_focuses: { id: string; code: string }[] };
+  const format = formats.activity_formats.find((f) => f.code === 'jogo');
+  const focus = focuses.activity_focuses.find((f) => f.code === 'cooperacao');
+  if (!format || !focus) throw new Error('Formats and focuses are not loaded in the E2E database');
+  return { format_id: format.id, focus_id: focus.id };
+}

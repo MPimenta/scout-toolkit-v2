@@ -2384,6 +2384,7 @@ npm run test:watch
 - **Epic 15**: Orgo event-from-program implemented and archived (✅ COMPLETED — 2026-09-06)
 - **Epic 16**: Preview environment — specced, not applied
 - **Epic 17**: English locale implemented and archived (✅ COMPLETED — 2026-09-06)
+- **Reference sheet baseline** (2026-11): the curated Google Sheet is the definitive reference for the catalogue (objectives, *desafios*, formats, focuses, risk levels, labels and the activities). Specified and tracked in `openspec/changes/reference-sheet-alignment/`; follow-ups: `admin-revamp` (statistics, activity management at scale) and `orgo-event-revamp` (the full program in the Orgo event).
 
 ### Testing Enforcement:
 **No epic can be marked complete without meeting all testing requirements.**

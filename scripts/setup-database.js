@@ -73,7 +73,7 @@ try {
 
 console.log('\n🎉 Database setup completed successfully!');
 console.log('\n📋 Next steps:');
-console.log('1. Update .env.local with your actual Orgo/eAEP and UploadThing credentials');
+console.log('1. Update .env.local with your actual Orgo/eAEP credentials');
 console.log('2. Run: npm run playwright:install  (Chromium for PDF export)');
 console.log('3. Run: npm run dev');
 console.log('4. Visit: http://localhost:3000');

@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
+import { useFeature } from '@/components/providers/FeaturesProvider';
 import { useProgramMutations, CreateProgramData, UpdateProgramData } from '@/hooks/useProgramMutations';
 import { log } from '@/lib/errors';
 import { validateProps } from '@/lib/validation';
@@ -32,6 +33,7 @@ interface ProgramFormProps {
  */
 export function ProgramForm({ mode, initialData, onSuccess }: ProgramFormProps) {
   const { t } = useLocale();
+  const showPublicToggle = useFeature('public-programs');
   // Validate props in development
   if (process.env.NODE_ENV === 'development') {
     validateProps({ mode, initialData, onSuccess }, specificSchemas.programForm, 'ProgramForm');
@@ -139,14 +141,16 @@ export function ProgramForm({ mode, initialData, onSuccess }: ProgramFormProps) 
             </div>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="is_public"
-              checked={formData.is_public || false}
-              onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_public: checked }))}
-            />
-            <Label htmlFor="is_public">{t('programs.makePublic')}</Label>
-          </div>
+          {showPublicToggle && (
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="is_public"
+                checked={formData.is_public || false}
+                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_public: checked }))}
+              />
+              <Label htmlFor="is_public">{t('programs.makePublic')}</Label>
+            </div>
+          )}
 
           <div className="flex gap-3 pt-4">
             <Button

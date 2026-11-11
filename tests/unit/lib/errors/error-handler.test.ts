@@ -5,10 +5,6 @@ import {
   createAuthError,
   createAuthzError,
   createNotFoundError,
-  createConflictError,
-  createInternalError,
-  createNetworkError,
-  createTimeoutError,
   handleError,
   safeAsync,
   safeSync,
@@ -16,7 +12,6 @@ import {
   validateEmail,
   validateUUID,
 } from '@/lib/errors/error-handler';
-import { AppError, ErrorCode } from '@/types/errors';
 
 // Mock the logger to avoid console output during tests
 vi.mock('@/lib/errors/error-logger', () => ({
@@ -191,6 +186,8 @@ describe('Error Handler Utilities', () => {
       }, 'test context');
       
       expect(result.success).toBe(false);
+      
+      if (result.success) throw new Error('expected failure');
       expect(result.error).toBeDefined();
       expect(result.error?.code).toBe('INTERNAL_ERROR');
     });
@@ -214,6 +211,8 @@ describe('Error Handler Utilities', () => {
       }, 'test context');
       
       expect(result.success).toBe(false);
+      
+      if (result.success) throw new Error('expected failure');
       expect(result.error).toBeDefined();
       expect(result.error?.code).toBe('INTERNAL_ERROR');
     });
@@ -235,6 +234,8 @@ describe('Error Handler Utilities', () => {
       const result = validateRequired(data, ['name', 'email']);
       
       expect(result.success).toBe(false);
+      
+      if (result.success) throw new Error('expected failure');
       expect(result.error?.code).toBe('VALIDATION_ERROR');
       expect(result.error?.details?.missingFields).toEqual(['email']);
     });
@@ -244,6 +245,8 @@ describe('Error Handler Utilities', () => {
       const result = validateRequired(data, ['name', 'email']);
       
       expect(result.success).toBe(false);
+      
+      if (result.success) throw new Error('expected failure');
       expect(result.error?.details?.missingFields).toEqual(['email']);
     });
 
@@ -252,6 +255,8 @@ describe('Error Handler Utilities', () => {
       const result = validateRequired(data, ['name', 'email']);
       
       expect(result.success).toBe(false);
+      
+      if (result.success) throw new Error('expected failure');
       expect(result.error?.details?.missingFields).toEqual(['email']);
     });
   });
@@ -285,6 +290,7 @@ describe('Error Handler Utilities', () => {
       invalidEmails.forEach(email => {
         const result = validateEmail(email);
         expect(result.success).toBe(false);
+        if (result.success) throw new Error('expected failure');
         expect(result.error?.code).toBe('VALIDATION_ERROR');
         expect(result.error?.details?.field).toBe('email');
       });
@@ -319,6 +325,7 @@ describe('Error Handler Utilities', () => {
       invalidUUIDs.forEach(uuid => {
         const result = validateUUID(uuid);
         expect(result.success).toBe(false);
+        if (result.success) throw new Error('expected failure');
         expect(result.error?.code).toBe('VALIDATION_ERROR');
         expect(result.error?.details?.field).toBe('id');
       });

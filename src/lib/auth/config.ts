@@ -5,6 +5,7 @@ import { log } from '@/lib/errors';
 import type { NextAuthConfig } from 'next-auth';
 import { loadUserRole, promoteAdminEmail } from './roles';
 import { OrgoProvider } from './orgo-provider';
+import { linkVisitorOnSignIn } from '@/lib/usage/link-on-sign-in';
 
 export const authConfig: NextAuthConfig = {
   providers: [
@@ -18,6 +19,12 @@ export const authConfig: NextAuthConfig = {
   pages: {
     signIn: '/auth/signin',
     error: '/auth/error',
+  },
+  events: {
+    // Usage tracking: events recorded in this browser before sign-in become the user's.
+    async signIn({ user }) {
+      if (user.id) await linkVisitorOnSignIn(user.id);
+    },
   },
   callbacks: {
     async signIn({ user, account }) {

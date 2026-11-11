@@ -5,9 +5,11 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { ProgramEntry } from '../../../../drizzle/schema/programs';
 import { Button } from '@/components/ui/button';
+import { FactIcon } from '@/components/ui/Fact';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Clock, MapPin, Target, Users, GripVertical, Edit, Trash2 } from 'lucide-react';
-import { useAllActivities } from '@/hooks/useActivities';
+import { Target, Users, GripVertical, Edit, Trash2 } from 'lucide-react';
+import { useActivitiesByIds } from '@/hooks/queries/useActivities';
+import { ObjectivePill } from '../activities/ObjectivePill';
 
 /**
  * Props for the ProgramEntryCard component
@@ -30,8 +32,8 @@ interface ProgramEntryCardProps {
  * @returns JSX element representing the program entry card
  */
 export function ProgramEntryCard({ entry, index, onRemove, onUpdate, onEdit }: ProgramEntryCardProps) {
-  const { activities } = useAllActivities();
-  const activity = activities?.find(a => a.id === entry.activity_id);
+  const { data } = useActivitiesByIds(entry.activity_id ? [entry.activity_id] : []);
+  const activity = data?.activities.find((a) => a.id === entry.activity_id);
 
   const {
     attributes,
@@ -88,18 +90,18 @@ export function ProgramEntryCard({ entry, index, onRemove, onUpdate, onEdit }: P
               <GripVertical className="w-4 h-4 text-muted-foreground" />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-muted-foreground">
+              <span className="text-sm font-bold text-muted-foreground">
                 #{index + 1}
               </span>
               {entry.entry_type === 'activity' ? (
                 <div className="flex items-center gap-2">
-                  <Target className="w-4 h-4 text-blue-500" />
-                  <span className="font-medium">Activity</span>
+                  <Target className="w-4 h-4 text-primary" />
+                  <span className="font-bold">Activity</span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <Users className="w-4 h-4 text-green-500" />
-                  <span className="font-medium">Custom Block</span>
+                  <Users className="w-4 h-4 text-teal-dark" />
+                  <span className="font-bold">Custom Block</span>
                 </div>
               )}
             </div>
@@ -129,7 +131,7 @@ export function ProgramEntryCard({ entry, index, onRemove, onUpdate, onEdit }: P
         <div className="space-y-4">
           {/* Title */}
           <div>
-            <h3 className="font-semibold text-lg">
+            <h3 className="font-bold text-lg">
               {entry.entry_type === 'activity' 
                 ? activity?.name || 'Unknown Activity'
                 : entry.custom_title || 'Untitled Block'
@@ -145,7 +147,7 @@ export function ProgramEntryCard({ entry, index, onRemove, onUpdate, onEdit }: P
           {/* Time and Duration */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">
+              <label className="text-sm font-bold text-muted-foreground">
                 Start Time
               </label>
               <input
@@ -156,7 +158,7 @@ export function ProgramEntryCard({ entry, index, onRemove, onUpdate, onEdit }: P
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">
+              <label className="text-sm font-bold text-muted-foreground">
                 End Time
               </label>
               <input
@@ -170,7 +172,7 @@ export function ProgramEntryCard({ entry, index, onRemove, onUpdate, onEdit }: P
 
           {/* Duration Display */}
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Clock className="w-4 h-4" />
+            <FactIcon kind="duration" />
             <span>Duration: {getDuration()}</span>
           </div>
 
@@ -179,21 +181,21 @@ export function ProgramEntryCard({ entry, index, onRemove, onUpdate, onEdit }: P
             <div className="space-y-3 pt-3 border-t">
               <div className="flex items-center gap-4 text-sm">
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-muted-foreground" />
-                  <span>{activity.location || 'No location'}</span>
+                  <FactIcon kind="location" />
+                  <span>{activity.locations.join(', ') || 'No location'}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Users className="w-4 h-4 text-muted-foreground" />
-                  <span>{activity.group_size} group</span>
+                  <FactIcon kind="groupSize" />
+                  <span>{activity.group_sizes.join(', ')} group</span>
                 </div>
               </div>
               
               {activity.educational_goals && activity.educational_goals.length > 0 && (
-                <div className="flex items-center gap-2">
-                  <Target className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">
-                    {activity.educational_goals.map(goal => goal.title).join(', ')}
-                  </span>
+                <div className="flex flex-wrap items-center gap-1">
+                  <Target className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+                  {activity.educational_goals.map(goal => (
+                    <ObjectivePill key={goal.id} objective={goal} activityAgeGroups={activity.age_groups} />
+                  ))}
                 </div>
               )}
             </div>

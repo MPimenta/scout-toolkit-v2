@@ -1,4 +1,4 @@
-import { useQuery, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { queryKeys } from '@/lib/query-client';
 
@@ -9,14 +9,18 @@ export interface ActivityFilters {
   search?: string;
   group_size?: string[];
   effort_level?: string[];
-  location?: string;
+  location?: string[];
   age_group?: string[];
-  activity_type?: string[];
+  format?: string[];
+  focus?: string[];
+  /** Exactly these activities (at most 100), whatever page and limit say. */
+  ids?: string[];
   sdgs?: string[];
   educational_goals?: string[];
+  educational_areas?: string[];
+  general_objectives?: string[];
   duration_min?: string;
   duration_max?: string;
-  duration_operator?: '>=' | '<=' | '=' | '>' | '<';
   page?: number;
   limit?: number;
   sort?: 'name' | 'duration' | 'created_at';
@@ -33,20 +37,23 @@ export interface ActivityResponse {
     description: string;
     materials: string;
     approximate_duration_minutes: number;
-    group_size: string;
+    group_sizes: string[];
     effort_level: string;
-    location: string;
-    age_group: string;
+    locations: string[];
+    age_groups: string[];
     image_url?: string;
     created_at: string;
-    activity_type: {
-      id: string;
-      name: string;
-    };
+    instructions?: string | null;
+    duration_min_minutes?: number | null;
+    duration_max_minutes?: number | null;
+    format?: { id: string; code: string; name: string } | null;
+    focus?: { id: string; code: string; name: string } | null;
+    secondary_focus?: { id: string; code: string; name: string } | null;
     educational_goals: Array<{
       id: string;
       title: string;
       code: string;
+      age_groups?: string[];
     }>;
     sdgs: Array<{
       id: string;
@@ -69,7 +76,6 @@ export interface ActivityResponse {
       effort_levels: string[];
       locations: string[];
       age_groups: string[];
-      activity_types: string[];
     };
   };
 }
@@ -113,6 +119,21 @@ export function useActivities(filters: ActivityFilters = {}) {
     queryFn: () => fetchActivities(filters),
     staleTime: 2 * 60 * 1000, // 2 minutes for activities list
     gcTime: 5 * 60 * 1000, // 5 minutes cache
+  });
+}
+
+/**
+ * The activities with these ids (at most 100), complete with goals, SDGs, format and focus.
+ * A program page uses it to show its own activities, whichever page of the catalogue they are on.
+ */
+export function useActivitiesByIds(ids: readonly string[]) {
+  const unique = [...new Set(ids)].sort().slice(0, 100);
+  return useQuery({
+    queryKey: queryKeys.activities.list({ ids: unique }),
+    queryFn: () => fetchActivities({ ids: unique, limit: 100 }),
+    enabled: unique.length > 0,
+    placeholderData: keepPreviousData,
+    staleTime: 60 * 1000,
   });
 }
 

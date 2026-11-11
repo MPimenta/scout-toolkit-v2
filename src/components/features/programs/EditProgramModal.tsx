@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { useFeature } from '@/components/providers/FeaturesProvider';
 import {
   Dialog,
   DialogContent,
@@ -55,6 +56,7 @@ interface EditProgramModalProps {
  * @returns JSX element representing the edit program modal
  */
 export function EditProgramModal({ isOpen, onClose, program, onSuccess }: EditProgramModalProps) {
+  const showPublicToggle = useFeature('public-programs');
   // Validate props in development
   if (process.env.NODE_ENV === 'development') {
     validateProps({ isOpen, onClose, program, onSuccess }, specificSchemas.editProgramModal, 'EditProgramModal');
@@ -209,18 +211,22 @@ export function EditProgramModal({ isOpen, onClose, program, onSuccess }: EditPr
             )}
           </div>
 
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="is_public"
-              checked={formData.is_public}
-              onCheckedChange={(checked) => handleInputChange('is_public', checked)}
-              disabled={isLoading}
-            />
-            <Label htmlFor="is_public">Programa público</Label>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Programas públicos podem ser visualizados e usados como modelo por outros utilizadores.
-          </p>
+          {showPublicToggle && (
+            <>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="is_public"
+                  checked={formData.is_public}
+                  onCheckedChange={(checked) => handleInputChange('is_public', checked)}
+                  disabled={isLoading}
+                />
+                <Label htmlFor="is_public">Programa público</Label>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Programas públicos podem ser visualizados e usados como modelo por outros utilizadores.
+              </p>
+            </>
+          )}
 
           <DialogFooter>
             <Button

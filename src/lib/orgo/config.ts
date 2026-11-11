@@ -10,6 +10,19 @@ export function getOrgoApiToken(): string | undefined {
   return token || undefined;
 }
 
+/**
+ * Address of an event page in eAEP. Built from the uuid every time, never read from
+ * stored text: the app used to store `/events/<uuid>`, which is not a page in eAEP.
+ */
+export function orgoEventUrl(uuid: string): string {
+  return `${getOrgoIssuer()}/event/${encodeURIComponent(uuid)}`;
+}
+
+/** Address of the attendance page of an event in eAEP. */
+export function orgoAttendanceUrl(uuid: string): string {
+  return `${getOrgoIssuer()}/events/attend/${encodeURIComponent(uuid)}`;
+}
+
 export function isOrgoWriteConfigured(): boolean {
   return Boolean(getOrgoApiToken());
 }

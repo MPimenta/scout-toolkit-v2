@@ -18,7 +18,7 @@ vi.mock('@/lib/programs/public', () => ({
 
 vi.mock('@/lib/db/server', () => ({
   db: {
-    insert: (table: { _: { name?: string } } | unknown) => ({
+    insert: (_table: { _: { name?: string } } | unknown) => ({
       values: (values: unknown) => ({
         returning: async () => {
           mockInsert(values);

@@ -1,15 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useActivities } from '@/hooks/useActivities';
 import { ActivityCard } from '@/components/features/activities/ActivityCard';
 import { ActivitiesTable } from '@/components/features/activities/ActivitiesTable';
 import { ViewToggle, ViewMode } from '@/components/features/activities/ViewToggle';
-import { ActivityFilters, FilterState } from '@/components/features/activities/ActivityFilters';
+import { ActivityFilters } from '@/components/features/activities/ActivityFilters';
+import { EMPTY_FILTERS, type FilterState } from '@/lib/activities/filters';
+import { readCatalogueSession, writeCatalogueSession } from '@/lib/activities/catalogue-session';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, AlertCircle, Filter } from 'lucide-react';
+import { AlertCircle, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLocale } from '@/components/locale/LocaleProvider';
+import { useFeature } from '@/components/providers/FeaturesProvider';
+import { useTrackSearch } from '@/hooks/useUsageTracking';
 
 /**
  * ActivitiesPage component for displaying and managing activities
@@ -18,48 +22,51 @@ import { useLocale } from '@/components/locale/LocaleProvider';
  */
 export default function ActivitiesPage() {
   const { t } = useLocale();
-  const [filters, setFilters] = useState<FilterState>({
-    search: '',
-    groupSize: [],
-    effortLevel: [],
-    location: '',
-    ageGroup: [],
-    activityType: [],
-    sdgs: [],
-    educationalGoals: [],
-    durationMin: '',
-    durationMax: '',
-    durationOperator: '>=',
-  });
+  const showProposals = useFeature('activity-proposals');
+  const showTableView = useFeature('activities-table-view');
+  const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS);
   const [viewMode, setViewMode] = useState<ViewMode>('tiles');
+  const [page, setPage] = useState(1);
+
+  // With the installed app there is no browser chrome, so keep the list as it was left while the
+  // session lasts (filters, page, view). Restored after mount to match the server-rendered page.
+  const keepSession = useFeature('pwa');
+  const [sessionReady, setSessionReady] = useState(false);
+  const restoredFilters = useRef<FilterState | null>(null);
+  useEffect(() => {
+    if (!keepSession) return;
+    const saved = readCatalogueSession(window.sessionStorage);
+    if (saved) {
+      restoredFilters.current = saved.filters;
+      setFilters(saved.filters);
+      setPage(saved.page);
+      setViewMode(saved.viewMode);
+    }
+    setSessionReady(true);
+  }, [keepSession]);
+  useEffect(() => {
+    if (!keepSession || !sessionReady) return;
+    writeCatalogueSession(window.sessionStorage, { filters, page, viewMode });
+  }, [keepSession, sessionReady, filters, page, viewMode]);
 
   const { activities, pagination, filterInfo, loading, error, refresh } = useActivities({
     filters,
-    page: 1,
+    page,
     limit: 20,
     sort: 'name',
     order: 'asc',
   });
 
+  useTrackSearch(filters, pagination?.total, loading, restoredFilters.current);
+
   const handleFiltersChange = (newFilters: FilterState) => {
     setFilters(newFilters);
+    setPage(1);
   };
 
   const handleClearFilters = () => {
-    const clearedFilters: FilterState = {
-      search: '',
-      groupSize: [],
-      effortLevel: [],
-      location: '',
-      ageGroup: [],
-      activityType: [],
-      sdgs: [],
-      educationalGoals: [],
-      durationMin: '',
-      durationMax: '',
-      durationOperator: '>=',
-    };
-    setFilters(clearedFilters);
+    setPage(1);
+    setFilters(EMPTY_FILTERS);
   };
 
   if (error) {
@@ -103,14 +110,16 @@ export default function ActivitiesPage() {
       <div className="mb-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <h1 className="text-3xl font-bold">{t('activities.title')}</h1>
-          <div className="flex flex-wrap gap-3">
-            <Button asChild variant="outline">
-              <a href="/atividades/propor">{t('activities.propose')}</a>
-            </Button>
-            <Button asChild variant="ghost">
-              <a href="/atividades/minhas">{t('activities.mine')}</a>
-            </Button>
-          </div>
+          {showProposals && (
+            <div className="flex flex-wrap gap-3">
+              <Button asChild variant="outline">
+                <a href="/atividades/propor">{t('activities.propose')}</a>
+              </Button>
+              <Button asChild variant="ghost">
+                <a href="/atividades/minhas">{t('activities.mine')}</a>
+              </Button>
+            </div>
+          )}
         </div>
         <p className="text-muted-foreground mt-4">
           {t('activities.lead')}
@@ -122,12 +131,12 @@ export default function ActivitiesPage() {
         filters={filters}
         onFiltersChange={handleFiltersChange}
         onClearFilters={handleClearFilters}
+        resultCount={pagination?.total}
         availableFilters={filterInfo?.available || {
           group_sizes: [],
           effort_levels: [],
           locations: [],
           age_groups: [],
-          activity_types: [],
         }}
       />
 
@@ -136,7 +145,7 @@ export default function ActivitiesPage() {
         <div className="flex items-center justify-between mb-4">
           <p className="text-sm text-muted-foreground">
             {loading
-              ? t('common.loading')
+              ? '\u00a0'
               : (pagination?.total || 0) === 1
                 ? t('activities.foundOne')
                 : t('activities.foundMany', { count: pagination?.total || 0 })}
@@ -153,22 +162,23 @@ export default function ActivitiesPage() {
               </div>
             )}
             
-            {/* View Toggle */}
-            <ViewToggle 
-              currentView={viewMode} 
-              onViewChange={setViewMode} 
-            />
+            {showTableView && (
+              <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
+            )}
           </div>
         </div>
       </div>
 
       {/* Loading State */}
       {loading && (
-        <div className="flex justify-center items-center py-12">
-          <div className="text-center">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-muted-foreground" />
-            <p className="text-muted-foreground">{t('activities.loading')}</p>
-          </div>
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          aria-busy="true"
+          aria-label={t('activities.loading')}
+        >
+          {Array.from({ length: 6 }, (_, i) => (
+            <div key={i} className="h-56 rounded-lg border bg-muted/40 animate-pulse" />
+          ))}
         </div>
       )}
 
@@ -198,7 +208,7 @@ export default function ActivitiesPage() {
       {/* Activities Display - Conditional based on view mode */}
       {!loading && activities.length > 0 && (
         <>
-          {viewMode === 'tiles' ? (
+          {viewMode === 'tiles' || !showTableView ? (
             /* Activities Grid */
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {activities.map((activity) => (
@@ -217,33 +227,24 @@ export default function ActivitiesPage() {
         </>
       )}
 
-      {/* Pagination (Future Story 3.3) */}
-      {!loading && pagination?.total_pages && pagination.total_pages > 1 && (
-        <div className="mt-8 flex justify-center">
-          <p className="text-sm text-muted-foreground">
-            Paginação será implementada em Story 3.3: Table View
-          </p>
-        </div>
+      {!loading && pagination && pagination.total_pages > 1 && (
+        <nav className="mt-8 flex items-center justify-center gap-4" aria-label={t('activities.pageOf', { current: page, total: pagination.total_pages })}>
+          <Button variant="outline" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
+            {t('common.previous')}
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            {t('activities.pageOf', { current: page, total: pagination.total_pages })}
+          </span>
+          <Button
+            variant="outline"
+            disabled={page >= pagination.total_pages}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            {t('common.next')}
+          </Button>
+        </nav>
       )}
 
-      {/* Development Notice */}
-      {!loading && activities.length > 0 && (
-        <div className="mt-8">
-          <Card className="bg-muted/50">
-            <CardHeader>
-              <CardTitle className="text-sm">Funcionalidade em Desenvolvimento</CardTitle>
-              <CardDescription className="text-xs">
-                Esta é a implementação da página de atividades com filtros avançados e visualização em tabela. Funcionalidades adicionais serão adicionadas em breve.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xs text-muted-foreground">
-                Funcionalidades implementadas: filtros avançados (Story 3.2), visualização em tabela (Story 3.3), páginas de detalhes (Story 3.4). Próximas: sistema de avaliações e programa construtor.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      )}
     </div>
   );
 }

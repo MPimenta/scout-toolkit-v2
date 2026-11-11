@@ -1,20 +1,9 @@
 import { useState, useEffect } from 'react';
 import { log } from '@/lib/errors';
+import type { FilterState } from '@/lib/activities/filters';
 import { useActivities as useTanStackActivities, ActivityFilters as TanStackActivityFilters } from '@/hooks/queries/useActivities';
 
-export interface FilterState {
-  search: string;
-  groupSize: string[];
-  effortLevel: string[];
-  location: string;
-  ageGroup: string[];
-  activityType: string[];
-  sdgs: string[];
-  educationalGoals: string[];
-  durationMin: string;
-  durationMax: string;
-  durationOperator: string;
-}
+export type { FilterState } from '@/lib/activities/filters';
 
 export interface PaginationInfo {
   page: number;
@@ -30,7 +19,6 @@ export interface FilterInfo {
     effort_levels: string[];
     locations: string[];
     age_groups: string[];
-    activity_types: string[];
   };
 }
 
@@ -41,13 +29,18 @@ export interface ActivitiesResponse {
     description: string;
     materials: string;
     approximate_duration_minutes: number;
-    group_size: string;
+    group_sizes: string[];
     effort_level: string;
-    location: string;
-    age_group: string;
+    locations: string[];
+    age_groups: string[];
     created_at: string;
-    activity_type: { id: string; name: string };
-    educational_goals: Array<{ id: string; title: string; code: string }>;
+    instructions?: string | null;
+    duration_min_minutes?: number | null;
+    duration_max_minutes?: number | null;
+    format?: { id: string; code: string; name: string } | null;
+    focus?: { id: string; code: string; name: string } | null;
+    secondary_focus?: { id: string; code: string; name: string } | null;
+    educational_goals: Array<{ id: string; title: string; code: string; age_groups?: string[] }>;
     sdgs: Array<{ id: string; number: number; name: string; icon_url: string; icon: string }>;
   }>;
   pagination: PaginationInfo;
@@ -95,14 +88,16 @@ export function useActivities(options: UseActivitiesOptions) {
     search: debouncedFilters.search || undefined,
     group_size: debouncedFilters.groupSize.length > 0 ? debouncedFilters.groupSize : undefined,
     effort_level: debouncedFilters.effortLevel.length > 0 ? debouncedFilters.effortLevel : undefined,
-    location: debouncedFilters.location || undefined,
+    location: debouncedFilters.location.length > 0 ? debouncedFilters.location : undefined,
     age_group: debouncedFilters.ageGroup.length > 0 ? debouncedFilters.ageGroup : undefined,
-    activity_type: debouncedFilters.activityType.length > 0 ? debouncedFilters.activityType : undefined,
+    format: debouncedFilters.format.length > 0 ? debouncedFilters.format : undefined,
+    focus: debouncedFilters.focus.length > 0 ? debouncedFilters.focus : undefined,
     sdgs: debouncedFilters.sdgs.length > 0 ? debouncedFilters.sdgs : undefined,
     educational_goals: debouncedFilters.educationalGoals.length > 0 ? debouncedFilters.educationalGoals : undefined,
+    educational_areas: debouncedFilters.educationalAreas.length > 0 ? debouncedFilters.educationalAreas : undefined,
+    general_objectives: debouncedFilters.generalObjectives.length > 0 ? debouncedFilters.generalObjectives : undefined,
     duration_min: debouncedFilters.durationMin || undefined,
     duration_max: debouncedFilters.durationMax || undefined,
-    duration_operator: (debouncedFilters.durationOperator as '>=' | '<=' | '=' | '>' | '<') || undefined,
     page,
     limit,
     sort,
@@ -136,27 +131,6 @@ export function useActivities(options: UseActivitiesOptions) {
     error,
     pagination: response?.pagination || null,
     filterInfo: response?.filters || null,
-    refresh: () => refetch(),
-  };
-}
-
-// Simple hook for getting all activities without filters
-export function useAllActivities() {
-  // Use TanStack Query for data fetching with high limit
-  const { 
-    data: response, 
-    isLoading: loading, 
-    error: queryError, 
-    refetch 
-  } = useTanStackActivities({ limit: 1000 });
-
-  // Transform error to string format for backward compatibility
-  const error = queryError ? (queryError instanceof Error ? queryError.message : 'Erro desconhecido') : null;
-
-  return {
-    activities: response?.activities || [],
-    loading,
-    error,
     refresh: () => refetch(),
   };
 }

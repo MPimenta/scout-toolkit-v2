@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { insertActivities } from '../../helpers/activity-categories'
 import { setupTestDatabase, teardownTestDatabase, resetTestDatabase } from '../../setup';
 import { db } from '@/lib/db/server';
-import { activities, activityTypes, educationalGoals, sdgs, activityEducationalGoals, activitySdgs, educationalAreas } from '../../../drizzle/schema';
+import { educationalGoals, sdgs, activityEducationalGoals, activitySdgs, educationalAreas } from '../../../drizzle/schema';
 import { requireLocalTestDatabase } from '../../helpers/local-test-db';
 
 describe('Activity Detail API Integration', () => {
@@ -36,49 +37,44 @@ describe('Activity Detail API Integration', () => {
 
     it.skip('returns complete activity data with all related information', async () => {
       // Create test data
-      const activityType = await db.insert(activityTypes).values({
-        name: { pt: 'Tipo de Atividade', en: 'Activity Type' },
-        description: { pt: 'Descrição do tipo', en: 'Type description' },
-      }).returning();
-
       const educationalArea = await db.insert(educationalAreas).values({
-        name: { pt: 'Área Educativa', en: 'Educational Area' },
-        description: { pt: 'Descrição da área', en: 'Area description' },
+        name: 'Área Educativa',
+        description: 'Descrição da área',
         icon: '🎯',
         code: 'AREA_1',
       }).returning();
 
       const educationalGoal = await db.insert(educationalGoals).values({
         area_id: educationalArea[0].id,
-        title: { pt: 'Objetivo Educativo', en: 'Educational Goal' },
-        description: { pt: 'Descrição do objetivo', en: 'Goal description' },
+        title: 'Objetivo Educativo',
+        description: 'Descrição do objetivo',
         code: 'GOAL_1',
       }).returning();
 
       const sdg = await db.insert(sdgs).values({
         number: 1,
-        name: { pt: 'Erradicar a Pobreza', en: 'No Poverty' },
-        description: { pt: 'Acabar com a pobreza', en: 'End poverty' },
+        name: 'Erradicar a Pobreza',
+        description: 'Acabar com a pobreza',
         icon_url: 'https://example.com/sdg-1.png',
       }).returning();
 
-      const activity = await db.insert(activities).values({
-        name: { pt: 'Atividade de Teste', en: 'Test Activity' },
-        description: { pt: 'Descrição da atividade', en: 'Activity description' },
-        materials: { pt: 'Materiais necessários', en: 'Required materials' },
+      const activity = await insertActivities(db, {
+        name: 'Atividade de Teste',
+        description: 'Descrição da atividade',
+        materials: 'Materiais necessários',
         approximate_duration_minutes: 60,
-        group_size: 'medium',
+        group_sizes: ['medium'],
         effort_level: 'medium',
-        location: 'outside',
-        age_group: 'scouts',
+        locations: ['outside'],
+        age_groups: ['scouts'],
         image_url: 'https://example.com/test.jpg',
-        activity_type_id: activityType[0].id,
-      }).returning();
+      });
 
       // Create relationships
       await db.insert(activityEducationalGoals).values({
         activity_id: activity[0].id,
         goal_id: educationalGoal[0].id,
+        age_group: 'scouts',
       });
 
       await db.insert(activitySdgs).values({
@@ -94,10 +90,10 @@ describe('Activity Detail API Integration', () => {
 
       // Check main activity data
       expect(data.id).toBe(activity[0].id);
-      expect(data.name.pt).toBe('Atividade de Teste');
+      expect(data.name).toBe('Atividade de Teste');
       expect(data.name.en).toBe('Test Activity');
-      expect(data.description.pt).toBe('Descrição da atividade');
-      expect(data.materials.pt).toBe('Materiais necessários');
+      expect(data.description).toBe('Descrição da atividade');
+      expect(data.materials).toBe('Materiais necessários');
       expect(data.approximate_duration_minutes).toBe(60);
       expect(data.group_size).toBe('medium');
       expect(data.effort_level).toBe('medium');
@@ -105,16 +101,13 @@ describe('Activity Detail API Integration', () => {
       expect(data.age_group).toBe('scouts');
       expect(data.image_url).toBe('https://example.com/test.jpg');
 
-      // Check activity type
-      expect(data.activity_type.id).toBe(activityType[0].id);
-      expect(data.activity_type.name.pt).toBe('Tipo de Atividade');
 
       // Check educational goals
       expect(data.educational_goals).toHaveLength(1);
       expect(data.educational_goals[0].id).toBe(educationalGoal[0].id);
-      expect(data.educational_goals[0].title.pt).toBe('Objetivo Educativo');
+      expect(data.educational_goals[0].title).toBe('Objetivo Educativo');
       expect(data.educational_goals[0].area.id).toBe(educationalArea[0].id);
-      expect(data.educational_goals[0].area.name.pt).toBe('Área Educativa');
+      expect(data.educational_goals[0].area.name).toBe('Área Educativa');
       expect(data.educational_goals[0].area.icon).toBe('🎯');
       expect(data.educational_goals[0].area.code).toBe('AREA_1');
 
@@ -122,27 +115,22 @@ describe('Activity Detail API Integration', () => {
       expect(data.sdgs).toHaveLength(1);
       expect(data.sdgs[0].id).toBe(sdg[0].id);
       expect(data.sdgs[0].number).toBe(1);
-      expect(data.sdgs[0].name.pt).toBe('Erradicar a Pobreza');
+      expect(data.sdgs[0].name).toBe('Erradicar a Pobreza');
       expect(data.sdgs[0].icon_url).toBe('https://example.com/sdg-1.png');
     });
 
     it.skip('handles activities without educational goals gracefully', async () => {
       // Create test data without educational goals
-      const activityType = await db.insert(activityTypes).values({
-        name: { pt: 'Tipo de Atividade', en: 'Activity Type' },
-      }).returning();
-
-      const activity = await db.insert(activities).values({
-        name: { pt: 'Atividade Simples', en: 'Simple Activity' },
-        description: { pt: 'Descrição simples', en: 'Simple description' },
-        materials: { pt: 'Materiais básicos', en: 'Basic materials' },
+      const activity = await insertActivities(db, {
+        name: 'Atividade Simples',
+        description: 'Descrição simples',
+        materials: 'Materiais básicos',
         approximate_duration_minutes: 30,
-        group_size: 'small',
+        group_sizes: ['small'],
         effort_level: 'low',
-        location: 'inside',
-        age_group: 'cub_scouts',
-        activity_type_id: activityType[0].id,
-      }).returning();
+        locations: ['inside'],
+        age_groups: ['cub_scouts'],
+      });
 
       const response = await fetch(`/api/activities/${activity[0].id}`);
       expect(response.status).toBe(200);
@@ -155,21 +143,16 @@ describe('Activity Detail API Integration', () => {
 
     it.skip('handles activities without SDGs gracefully', async () => {
       // Create test data without SDGs
-      const activityType = await db.insert(activityTypes).values({
-        name: { pt: 'Tipo de Atividade', en: 'Activity Type' },
-      }).returning();
-
-      const activity = await db.insert(activities).values({
-        name: { pt: 'Atividade Sem ODS', en: 'Activity Without SDGs' },
-        description: { pt: 'Descrição sem ODS', en: 'Description without SDGs' },
-        materials: { pt: 'Materiais sem ODS', en: 'Materials without SDGs' },
+      const activity = await insertActivities(db, {
+        name: 'Atividade Sem ODS',
+        description: 'Descrição sem ODS',
+        materials: 'Materiais sem ODS',
         approximate_duration_minutes: 45,
-        group_size: 'large',
+        group_sizes: ['large'],
         effort_level: 'high',
-        location: 'outside',
-        age_group: 'rovers',
-        activity_type_id: activityType[0].id,
-      }).returning();
+        locations: ['outside'],
+        age_groups: ['rovers'],
+      });
 
       const response = await fetch(`/api/activities/${activity[0].id}`);
       expect(response.status).toBe(200);
@@ -181,22 +164,17 @@ describe('Activity Detail API Integration', () => {
 
     it.skip('handles activities without image gracefully', async () => {
       // Create test data without image
-      const activityType = await db.insert(activityTypes).values({
-        name: { pt: 'Tipo de Atividade', en: 'Activity Type' },
-      }).returning();
-
-      const activity = await db.insert(activities).values({
-        name: { pt: 'Atividade Sem Imagem', en: 'Activity Without Image' },
-        description: { pt: 'Descrição sem imagem', en: 'Description without image' },
-        materials: { pt: 'Materiais sem imagem', en: 'Materials without image' },
+      const activity = await insertActivities(db, {
+        name: 'Atividade Sem Imagem',
+        description: 'Descrição sem imagem',
+        materials: 'Materiais sem imagem',
         approximate_duration_minutes: 20,
-        group_size: 'medium',
+        group_sizes: ['medium'],
         effort_level: 'low',
-        location: 'inside',
-        age_group: 'leaders',
-        activity_type_id: activityType[0].id,
+        locations: ['inside'],
+        age_groups: ['leaders'],
         image_url: null,
-      }).returning();
+      });
 
       const response = await fetch(`/api/activities/${activity[0].id}`);
       expect(response.status).toBe(200);

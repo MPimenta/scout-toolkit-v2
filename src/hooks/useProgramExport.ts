@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { log } from '@/lib/errors';
+import { deliverFile } from '@/lib/export/deliver-file';
 
 /**
  * Hook for program export functionality
@@ -30,14 +31,8 @@ export function useProgramExport() {
 
       // Convert response to blob and download
       const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      // Hand it over: a download, or the share sheet in the installed iOS app.
+      await deliverFile(blob, filename);
 
       log.info('Excel export completed successfully', { programId, filename });
       return { success: true, filename };

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { ProgramSummary } from '@/components/features/programs/ProgramSummary';
-import { ProgramEntry } from '../../../../drizzle/schema/programs';
+import { ProgramEntry } from '../../../drizzle/schema/programs';
 import { ActivitiesResponse } from '@/hooks/useActivities';
 
 // Mock the IconDisplay component
@@ -20,19 +20,17 @@ describe('ProgramSummary', () => {
       description: 'Test description',
       materials: 'Test materials',
       approximate_duration_minutes: 30,
-      group_size: 'medium',
+      group_sizes: ['medium'],
       effort_level: 'low',
-      location: 'outside',
-      age_group: 'scouts',
+      locations: ['outside'],
+      age_groups: ['scouts'],
       created_at: '2024-01-01T00:00:00Z',
-      activity_type: { id: 'type-1', name: 'Game' },
       educational_goals: [
         {
           id: 'goal-1',
           title: 'Teamwork',
-          code: 'TW',
-          icon: '🤝',
-          area: { id: 'area-1', name: 'Social Skills', code: 'SS' }
+          code: '1S.1',
+          age_groups: ['scouts', 'adventurers'],
         }
       ],
       sdgs: [
@@ -51,19 +49,17 @@ describe('ProgramSummary', () => {
       description: 'Test description 2',
       materials: 'Test materials 2',
       approximate_duration_minutes: 45,
-      group_size: 'large',
+      group_sizes: ['large'],
       effort_level: 'high',
-      location: 'inside',
-      age_group: 'cub_scouts',
+      locations: ['inside'],
+      age_groups: ['cub_scouts'],
       created_at: '2024-01-01T00:00:00Z',
-      activity_type: { id: 'type-2', name: 'Craft' },
       educational_goals: [
         {
           id: 'goal-2',
           title: 'Creativity',
-          code: 'CR',
-          icon: '🎨',
-          area: { id: 'area-2', name: 'Artistic', code: 'AR' }
+          code: '2S.1',
+          age_groups: ['cub_scouts'],
         }
       ],
       sdgs: [
@@ -145,8 +141,26 @@ describe('ProgramSummary', () => {
     );
 
     expect(screen.getByText('Objetivos Educativos')).toBeInTheDocument();
-    expect(screen.getByText(/Teamwork/)).toBeInTheDocument();
-    expect(screen.getByText(/Creativity/)).toBeInTheDocument();
+    // Each objective is a pill: its code as text, the division and title in the accessible name.
+    expect(screen.getByText('1S.1')).toBeInTheDocument();
+    expect(screen.getByText('2S.1')).toBeInTheDocument();
+    expect(screen.getByLabelText(/1S.1.*Escoteiros|Escoteiros.*1S.1/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/2S.1.*Lobitos|Alcateia.*2S.1|2S.1.*Alcateia/)).toBeInTheDocument();
+  });
+
+  it('shows a shared objective once, in each division the program uses it for', () => {
+    const shared = { id: 'goal-3', title: 'Orientação', code: '3A.3-4', age_groups: ['adventurers', 'rovers'] };
+    const activities = mockActivities.map((activity, index) => ({
+      ...activity,
+      age_groups: [index === 0 ? 'adventurers' : 'rovers'],
+      educational_goals: [shared],
+    }));
+    render(<ProgramSummary entries={mockEntries} activities={activities} programStartTime="09:00" totalDuration={105} />);
+
+    // One pill per division the program's activities use (Exploradores and Clã), not one per activity.
+    expect(screen.getAllByText('3A.3-4')).toHaveLength(2);
+    expect(screen.getByLabelText(/3A.3-4.*Exploradores|Exploradores.*3A.3-4/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/3A.3-4.*Clã|Clã.*3A.3-4/)).toBeInTheDocument();
   });
 
   it('displays SDGs correctly', () => {

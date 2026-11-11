@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth/config';
-import { chromium } from 'playwright';
-import { generateProgramPDFHTML } from '@/lib/export/pdf-html';
+import { renderProgramPdf } from '@/lib/export/pdf';
 import { canAccessProgramExport } from '@/lib/export/access';
 import { loadProgramForExport } from '@/lib/export/load-program';
 import { buildExportFilename } from '@/lib/export/labels';
@@ -45,25 +44,7 @@ export const GET = withApiErrorHandler(async (
   }
 
   try {
-    const browser = await launchPdfBrowser();
-    const page = await browser.newPage();
-    const htmlContent = generateProgramPDFHTML(program);
-
-    await page.setContent(htmlContent, { waitUntil: 'networkidle' });
-
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      printBackground: true,
-      margin: {
-        top: '20mm',
-        right: '15mm',
-        bottom: '20mm',
-        left: '15mm',
-      },
-    });
-
-    await browser.close();
-
+    const pdfBuffer = await renderProgramPdf(program);
     const filename = buildExportFilename(program.name, 'pdf');
 
     const response = new NextResponse(pdfBuffer as BodyInit, {
@@ -84,28 +65,3 @@ export const GET = withApiErrorHandler(async (
     return apiErrors.internal('Erro ao gerar PDF');
   }
 });
-
-/**
- * Launches Chromium for PDF rendering. Uses Playwright's bundled browser,
- * then falls back to an installed Chrome or Edge if browsers were not downloaded.
- */
-async function launchPdfBrowser() {
-  try {
-    return await chromium.launch();
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    if (!message.includes("Executable doesn't exist")) {
-      throw error;
-    }
-
-    for (const channel of ['chrome', 'msedge'] as const) {
-      try {
-        return await chromium.launch({ channel });
-      } catch {
-        // try next channel
-      }
-    }
-
-    throw error;
-  }
-}

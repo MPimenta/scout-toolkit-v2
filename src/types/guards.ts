@@ -11,7 +11,6 @@ import {
   Activity,
   Program,
   ProgramEntry,
-  ActivityType,
   EducationalGoal,
   Sdg,
   Review
@@ -19,6 +18,7 @@ import {
 
 import { 
   ApiActivity,
+  ApiEducationalGoal,
   ApiProgram,
   ApiProgramEntry
 } from './api';
@@ -47,6 +47,10 @@ export function isArray(value: unknown): value is unknown[] {
 }
 
 // Union type guards
+export function isArrayOf<T>(value: unknown, guard: (item: unknown) => item is T): value is T[] {
+  return Array.isArray(value) && value.length > 0 && value.every(guard);
+}
+
 export function isAgeGroup(value: unknown): value is AgeGroup {
   return isString(value) && ['cub_scouts', 'scouts', 'adventurers', 'rovers', 'leaders'].includes(value);
 }
@@ -88,12 +92,12 @@ export function isActivity(value: unknown): value is Activity {
     isString(value['name']) &&
     isString(value['description']) &&
     isString(value['materials']) &&
+    (value['instructions'] == null || isString(value['instructions'])) &&
     isNumber(value['approximate_duration_minutes']) &&
-    isGroupSize(value['group_size']) &&
+    isArrayOf(value['group_sizes'], isGroupSize) &&
     isEffortLevel(value['effort_level']) &&
-    isLocation(value['location']) &&
-    isAgeGroup(value['age_group']) &&
-    isString(value['activity_type_id']) &&
+    isArrayOf(value['locations'], isLocation) &&
+    isArrayOf(value['age_groups'], isAgeGroup) &&
     isString(value['created_at']) &&
     isString(value['updated_at']) &&
     isBoolean(value['is_approved']);
@@ -119,12 +123,6 @@ export function isProgramEntry(value: unknown): value is ProgramEntry {
     isString(value.end_time) &&
     isEntryType(value.entry_type) &&
     isString(value.created_at);
-}
-
-export function isActivityType(value: unknown): value is ActivityType {
-  return isObject(value) &&
-    isString(value.id) &&
-    isString(value.name);
 }
 
 export function isEducationalGoal(value: unknown): value is EducationalGoal {
@@ -154,22 +152,28 @@ export function isReview(value: unknown): value is Review {
 }
 
 // API response type guards
+export function isApiEducationalGoal(value: unknown): value is ApiEducationalGoal {
+  return isObject(value) &&
+    isString(value.id) &&
+    isString(value.code) &&
+    isString(value.title) &&
+    isArrayOf(value.age_groups, isString);
+}
+
 export function isApiActivity(value: unknown): value is ApiActivity {
   return isObject(value) &&
     isString(value.id) &&
     isString(value.name) &&
     isString(value.description) &&
     isString(value.materials) &&
+    (value.instructions == null || isString(value.instructions)) &&
     isNumber(value.approximate_duration_minutes) &&
-    isGroupSize(value.group_size) &&
+    isArrayOf(value.group_sizes, isGroupSize) &&
     isEffortLevel(value.effort_level) &&
-    isLocation(value.location) &&
-    isAgeGroup(value.age_group) &&
+    isArrayOf(value.locations, isLocation) &&
+    isArrayOf(value.age_groups, isAgeGroup) &&
     isString(value.created_at) &&
-    isObject(value.activity_type) &&
-    isString(value.activity_type.id) &&
-    isString(value.activity_type.name) &&
-    isArray(value.educational_goals) &&
+    isArray(value.educational_goals) && value.educational_goals.every(isApiEducationalGoal) &&
     isArray(value.sdgs);
 }
 

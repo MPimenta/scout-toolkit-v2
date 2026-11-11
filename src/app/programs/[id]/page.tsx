@@ -37,7 +37,7 @@ export default function ProgramDetailPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2">Erro ao carregar programa</h2>
+          <h2 className="text-xl font-bold mb-2">Erro ao carregar programa</h2>
           <p className="text-muted-foreground mb-4">{error}</p>
           <Button onClick={handleBack}>
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -52,7 +52,7 @@ export default function ProgramDetailPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2">Programa não encontrado</h2>
+          <h2 className="text-xl font-bold mb-2">Programa não encontrado</h2>
           <p className="text-muted-foreground mb-4">
             O programa que está a procurar não existe ou não tem acesso.
           </p>
@@ -81,7 +81,7 @@ export default function ProgramDetailPage() {
         </Button>
       </div>
 
-      {/* Program Builder */}
+      {/* Schedule builder */}
       <ProgramBuilder
         programId={programId}
         program={program}

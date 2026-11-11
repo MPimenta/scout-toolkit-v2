@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
-import { Plus, Calendar, Users, Target, FileText, Download, Share2 } from 'lucide-react';
+import { Plus, Calendar, FileText, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { usePrograms } from '@/hooks/usePrograms';
@@ -50,85 +50,29 @@ export function ProgramsList() {
           </p>
         </div>
 
-        {/* Feature Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          <Card className="text-center p-6">
-            <div className="mx-auto w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-              <Calendar className="h-6 w-6 text-primary" />
-            </div>
-            <CardTitle className="text-lg mb-2">{t('programs.featSchedule')}</CardTitle>
-            <CardContent className="p-0">
-              <p className="text-muted-foreground">
-                {t('programs.featScheduleBody')}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="text-center p-6">
-            <div className="mx-auto w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-              <Users className="h-6 w-6 text-primary" />
-            </div>
-            <CardTitle className="text-lg mb-2">{t('programs.featActivities')}</CardTitle>
-            <CardContent className="p-0">
-              <p className="text-muted-foreground">
-                {t('programs.featActivitiesBody')}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="text-center p-6">
-            <div className="mx-auto w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-              <Target className="h-6 w-6 text-primary" />
-            </div>
-            <CardTitle className="text-lg mb-2">{t('programs.featGoals')}</CardTitle>
-            <CardContent className="p-0">
-              <p className="text-muted-foreground">
-                {t('programs.featGoalsBody')}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="text-center p-6">
-            <div className="mx-auto w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-              <FileText className="h-6 w-6 text-primary" />
-            </div>
-            <CardTitle className="text-lg mb-2">{t('programs.featExport')}</CardTitle>
-            <CardContent className="p-0">
-              <p className="text-muted-foreground">
-                {t('programs.featExportBody')}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="text-center p-6">
-            <div className="mx-auto w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-              <Download className="h-6 w-6 text-primary" />
-            </div>
-            <CardTitle className="text-lg mb-2">{t('programs.featTemplates')}</CardTitle>
-            <CardContent className="p-0">
-              <p className="text-muted-foreground">
-                {t('programs.featTemplatesBody')}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="text-center p-6">
-            <div className="mx-auto w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-              <Share2 className="h-6 w-6 text-primary" />
-            </div>
-            <CardTitle className="text-lg mb-2">{t('programs.featShare')}</CardTitle>
-            <CardContent className="p-0">
-              <p className="text-muted-foreground">
-                {t('programs.featShareBody')}
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Three points that matter for the MVP */}
+        <ul className="mx-auto mb-10 grid max-w-3xl gap-4 sm:grid-cols-3">
+          <li className="rounded-lg border p-4 text-center">
+            <Calendar className="mx-auto mb-2 h-6 w-6 text-primary" aria-hidden />
+            <p className="font-bold">{t('programs.featSchedule')}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{t('programs.featScheduleBody')}</p>
+          </li>
+          <li className="rounded-lg border p-4 text-center">
+            <FileText className="mx-auto mb-2 h-6 w-6 text-primary" aria-hidden />
+            <p className="font-bold">{t('programs.featExport')}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{t('programs.featExportBody')}</p>
+          </li>
+          <li className="rounded-lg border p-4 text-center">
+            <Share2 className="mx-auto mb-2 h-6 w-6 text-primary" aria-hidden />
+            <p className="font-bold">{t('programs.featEaep')}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{t('programs.featEaepBody')}</p>
+          </li>
+        </ul>
 
         {/* CTA Section */}
         <div className="text-center">
           <div className="bg-primary/5 border border-primary/20 rounded-lg p-8 mb-8">
-            <h2 className="text-2xl font-semibold mb-4">
+            <h2 className="text-2xl font-bold mb-4">
               {t('programs.ctaTitle')}
             </h2>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">

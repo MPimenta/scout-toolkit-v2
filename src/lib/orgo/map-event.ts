@@ -80,7 +80,9 @@ function entryTitle(entry: ProgramEntryForOrgo): string {
 
 export function toOrgoEventPayload(
   program: ProgramForOrgo,
-  dialog: OrgoDialogInput
+  dialog: OrgoDialogInput,
+  /** The built HTML description. Without it the event gets the old one-line text. */
+  description?: string
 ): OrgoEventPayload {
   const timezone = resolveTimezone(dialog.timezone);
   const dateTimeBegin = dialog.dateTimeBegin || defaultBeginDateTime(program);
@@ -104,7 +106,7 @@ export function toOrgoEventPayload(
 
   const payload: OrgoEventPayload = {
     name: program.name,
-    description: descriptionParts.join(' '),
+    description: description ?? descriptionParts.join(' '),
     dateTimeBegin,
     dateTimeEnd,
     timezone,

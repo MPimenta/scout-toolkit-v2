@@ -5,7 +5,7 @@ test.describe('Admin taxonomies', () => {
     test.skip(testInfo.project.name !== 'chromium', 'Admin E2E runs on desktop Chromium only');
   });
 
-  test('creates an activity type visible in filters', async ({ page }) => {
+  test('has no activity-types tab, and the catalogue filters are by format and focus', async ({ page }) => {
     const login = await page.request.post('/api/e2e/session', {
       data: {
         email: `e2e.admin.${crypto.randomUUID()}@example.com`,
@@ -18,21 +18,25 @@ test.describe('Admin taxonomies', () => {
     }
     expect(login.ok()).toBeTruthy();
 
-    const name = `Tipo E2E ${Date.now()}`;
-    const code = `E2E${Date.now().toString().slice(-6)}`;
-
     try {
       await page.goto('/admin/taxonomias');
       await expect(page.getByRole('heading', { name: 'Taxonomias' })).toBeVisible();
-      await page.getByRole('button', { name: 'Tipos' }).click();
-      await page.getByPlaceholder('Nome').fill(name);
-      await page.getByPlaceholder('Código').fill(code);
-      await page.getByRole('button', { name: 'Adicionar' }).click();
-      await expect(page.getByText(name)).toBeVisible();
+      for (const tab of ['Áreas', 'Objetivos', 'ODS']) {
+        await expect(page.getByRole('button', { name: tab })).toBeVisible();
+      }
+      await expect(page.getByRole('button', { name: 'Tipos' })).toHaveCount(0);
 
+      // The taxonomy of activity types no longer exists, for readers or for admins
+      expect((await page.request.get('/api/taxonomies/activity-types')).status()).toBe(404);
+      const write = await page.request.post('/api/admin/taxonomies/activity-types', { data: { name: 'Tipo', code: 'TIPO' } });
+      expect(write.status()).toBe(404);
+
+      // Filters are by format and focus
       await page.goto('/activities');
       await page.getByRole('button', { name: /Expandir|Filtros/ }).first().click();
-      await expect(page.getByText(name)).toBeVisible();
+      await expect(page.getByText('Formato').first()).toBeVisible();
+      await expect(page.getByText('Foco').first()).toBeVisible();
+      await expect(page.getByText(/^Tipo de [Aa]tividade$/)).toHaveCount(0);
     } finally {
       await page.request.delete('/api/e2e/session');
     }

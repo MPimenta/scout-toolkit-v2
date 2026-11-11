@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" role="img" aria-label="Ilustração da atividade Empurra Palmas">
+<defs><filter id="hand" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G"/></filter></defs>
+<rect width="1200" height="900" fill="#ffffff"/>
+<g filter="url(#hand)" transform="translate(-233.3,-251.3) scale(1.367)">
+<path d="M30 850 Q600 856 1170 850" fill="none" stroke="#0b3a4a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.35" data-ground="1"/>
+<ellipse cx="469.00527497288084" cy="585.6564692084941" rx="24.41698073917859" ry="24.19528337460723" fill="none" stroke="#0b3a4a" stroke-width="5"/>
+<path d="M453.18725963476453 621.2726814872924 L452.55775692284004 677.2206021723433 L454.8607105745285 716.1626261010592" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M485.8568805019636 617.990596502363 L486.9554152154156 676.6635254901198 L484.87291244402195 714.039446677379" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M451.5803067097349 620.4148705138895 L485.7287269393582 620.1136697925225" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M452.84820292603604 685.7465778881435 L487.9345660281063 686.2512343824149" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M451.49626524611205 624.3299914047727 L421.1655400153089 637.4310372967418 L385.6438463386352 611.1254134424614" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M488.2237274500652 625.5872532456123 L520.7652990052314 640.1803809257133 L551.0622184631704 612.5057105056502" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M457.67646846365017 715.8054685687672 L431.1102352698847 752.3241809519586 L423.9092595682988 800.3255643983025" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M481.16084227001335 715.6760321141575 L511.2717426445669 753.9786272362707 L516.58796000061 800.4437302516046" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<g transform="translate(1480,0) scale(-1,1)"><ellipse cx="740.8065175990604" cy="585.141287408835" rx="23.426220432820834" ry="25.48681441973281" fill="none" stroke="#0b3a4a" stroke-width="5"/>
+<path d="M718 580 Q740 560 762 580" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M721.3719302589874 620.631862801887 L719.1181113153315 674.2968767760773 L725.007975530535 714.0447417012624" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M756.5737731174444 619.6047848875656 L760.6196053161377 673.9065483265122 L759.1577236892458 714.0620451552151" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M722.9929237001543 619.8686284926108 L757.8390753100808 620.3387365282227" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M721.5448298404667 687.5551287249453 L759.0484801557141 685.8059770865393" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M722.4568934671846 626.0085029711055 L689.109435370336 638.080269237552 L655.2850755358511 613.6645310494418" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M757.5733479682232 624.2593019273409 L793.0874928172154 636.8917789389807 L822.3286274481233 609.8415206073046" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M729.436846967338 712.4869800505634 L697.27370981801 753.8409112954703 L696.3961429689061 801.7748784057679" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M751.3813657411288 712.8140111506982 L780.0854097843568 756.0822456845465 L783.7032201735783 800.221457331265" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" /></g>
+<path d="M369.6838174653134 572.0206610527172 L359.2733565432855 578.3188191430924 L345.49154820796576 579.9810020373312" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M367.79504084926515 552.3202813489844 L357.5054447734922 553.0718595161443 L344.45797783268443 548.6878090432413" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M372.2367133833221 540.2915417879939 L368.2674566991498 529.1222977045921 L358.83844136546264 522.5894312246749" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M846.3720402703908 539.3215587063951 L856.5219305384984 532.2581205768209 L864.4704289315134 526.0014377661151" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M854.2039347933187 554.255267475377 L861.3815420180771 552.8868103985153 L873.2013981772694 548.9961943524031" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M850.0636646384235 573.1684261983299 L865.0576955692618 572.4558493376696 L874.4525405939361 580.2257475791816" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<ellipse cx="600" cy="250" rx="30" ry="26" fill="#fff" stroke="#0b3a4a" stroke-width="4"/><path d="M586 270 L576 294 L606 274" fill="#fff" stroke="#0b3a4a" stroke-width="4" stroke-linejoin="round"/>
+<text x="600" y="260" font-family="Arial" font-size="30" font-weight="700" text-anchor="middle" fill="#0b3a4a">empurra!</text>
+</g>
+</svg>

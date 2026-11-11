@@ -36,7 +36,7 @@ export default function AdminUsersPage() {
         {users.map((item) => (
           <li key={item.id} className="border rounded-md p-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
             <div>
-              <p className="font-medium">{item.name || item.email}</p>
+              <p className="font-bold">{item.name || item.email}</p>
               <p className="text-sm text-muted-foreground">
                 {item.email} · {item.program_count} programas · {item.review_count} avaliações · {item.activity_count} atividades
               </p>

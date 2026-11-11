@@ -14,6 +14,7 @@ import {
 import { LogIn, LogOut, User } from 'lucide-react';
 import { useLocale } from '@/components/locale/LocaleProvider';
 import { useViewAs } from '@/components/auth/ViewAsProvider';
+import { clearPwaCaches } from '@/lib/pwa/clear-caches';
 
 export function SignInButton() {
   const { data: session, status } = useSession();
@@ -48,7 +49,7 @@ export function SignInButton() {
         <DropdownMenuContent className="w-56" align="end" forceMount>
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">{session.user.name}</p>
+              <p className="text-sm font-bold leading-none">{session.user.name}</p>
               <p className="text-xs leading-none text-muted-foreground">
                 {session.user.email}
               </p>
@@ -62,7 +63,11 @@ export function SignInButton() {
               <span>{viewingAsMember ? t('admin.backToAdmin') : t('admin.viewAsMember')}</span>
             </DropdownMenuItem>
           ) : null}
-          <DropdownMenuItem onClick={() => signOut()}>
+          <DropdownMenuItem onClick={async () => {
+            // Shared phones: nothing the worker stored outlives the session.
+            await clearPwaCaches();
+            await signOut();
+          }}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>{t('auth.signOut')}</span>
           </DropdownMenuItem>

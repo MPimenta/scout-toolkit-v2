@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" role="img" aria-label="Ilustração da atividade Colher e Bola">
+<defs><filter id="hand" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G"/></filter></defs>
+<rect width="1200" height="900" fill="#ffffff"/>
+<g filter="url(#hand)" transform="translate(-231.5,-250.2) scale(1.363)">
+<path d="M30 850 Q600 856 1170 850" fill="none" stroke="#0b3a4a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.35" data-ground="1"/>
+<ellipse cx="469.02080248949153" cy="586.6274408845359" rx="23.098419591597477" ry="24.13807597879231" fill="none" stroke="#0b3a4a" stroke-width="5"/>
+<path d="M451.00969749140074 622.1857379721412 L451.09809777582905 674.7293183591819 L454.2536627701734 712.7101783035836" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M487.7667483297022 619.1391773045711 L488.3529579266687 677.9638735203836 L485.0222570863656 716.0748505466967" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M455.01313833008203 618.8159136883057 L487.2613593543234 621.4666681135384" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M453.49098423947163 686.9721127992366 L489.0998167695942 686.2204465704134" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M453.2455089379314 623.0687198128871 L417.7738951939037 636.0565239387828 L388.5978391217989 613.6821200742769" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M488.3920883713253 626.0292568647438 L522.3201257506014 636.153490356893 L551.9124283013458 610.7824607181282" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M460.2172895792021 712.9859576495298 L427.19021564889243 754.1544109351721 L424.1845874370004 803.3610536657093" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M480.6289595752158 712.7235806519741 L512.6200177288707 754.4379691305747 L514.7471775691711 803.2134050575147" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<g transform="translate(1480,0) scale(-1,1)"><ellipse cx="739.8630916592027" cy="586.9815162205982" rx="24.51467939234091" ry="25.216547073664398" fill="none" stroke="#0b3a4a" stroke-width="5"/>
+<path d="M718 580 Q740 560 762 580" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M720.8097783803985 619.3452393581836 L720.8378929913221 675.0675051495747 L723.3590489023175 716.1349012491921" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M756.2852951723548 619.9559617672842 L758.0494227452434 676.0480793054439 L755.4688865964622 716.1770267397059" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M721.8884142359199 619.9780631058748 L757.9066204364908 620.3696761009143" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M722.3462280652235 683.8550922120246 L757.7348074983502 686.1096247715454" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M721.8635353646537 623.8388737347158 L686.9508593684765 636.8934059842925 L657.2743780034009 612.2711031593714" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M755.0307995542096 624.4481076007002 L789.5444449675942 638.4865703558021 L821.1879699660409 614.0112192495778" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M730.7619276545764 714.7180904664649 L698.7464698757727 752.1192021118101 L694.0298931919177 803.8148765616188" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M752.830371127478 712.2475395230798 L780.9967644018107 752.4193012307488 L785.3957851949128 801.1617708998555" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" /></g>
+<path d="M368.73396476340827 571.046300133451 L360.2497609433512 572.7475710478094 L345.5159407664251 580.746732064052" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M367.4195999473862 556.2850434692893 L354.44674836331177 553.5612936142658 L344.3984950592633 552.1608361549584" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M373.00338001172696 538.0575653879863 L366.5746999821996 530.9601559222849 L355.0860221924192 525.280389883975" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M845.7142271270994 536.2560594074381 L853.4582247621163 532.555136922855 L864.4364959817087 523.2903503990317" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M855.3585562217351 555.977614869811 L867.2351669067046 552.7603135628447 L876.1110322915636 549.6167532940564" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M851.7977970047408 573.1311068946361 L861.7501448654775 572.4511708359199 L873.9893827283154 579.5315000911122" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<ellipse cx="600" cy="250" rx="30" ry="26" fill="#fff" stroke="#0b3a4a" stroke-width="4"/><path d="M586 270 L576 294 L606 274" fill="#fff" stroke="#0b3a4a" stroke-width="4" stroke-linejoin="round"/>
+<text x="600" y="260" font-family="Arial" font-size="30" font-weight="700" text-anchor="middle" fill="#0b3a4a">Colher</text>
+</g>
+</svg>

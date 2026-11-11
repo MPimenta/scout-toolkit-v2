@@ -28,12 +28,8 @@ export const indexes = [
   `,
 
   // Filter indexes
-  sql`CREATE INDEX IF NOT EXISTS idx_activities_group_size ON activities(group_size);`,
   sql`CREATE INDEX IF NOT EXISTS idx_activities_effort_level ON activities(effort_level);`,
-  sql`CREATE INDEX IF NOT EXISTS idx_activities_location ON activities(location);`,
-  sql`CREATE INDEX IF NOT EXISTS idx_activities_age_group ON activities(age_group);`,
   sql`CREATE INDEX IF NOT EXISTS idx_activities_duration ON activities(approximate_duration_minutes);`,
-  sql`CREATE INDEX IF NOT EXISTS idx_activities_type ON activities(activity_type_id);`,
   sql`CREATE INDEX IF NOT EXISTS idx_activities_approved ON activities(is_approved) WHERE is_approved = true;`,
 
   // Program indexes

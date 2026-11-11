@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" role="img" aria-label="Ilustração da atividade Prancha do Equilíbrio">
+<defs><filter id="hand" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G"/></filter></defs>
+<rect width="1200" height="900" fill="#ffffff"/>
+<g filter="url(#hand)" transform="translate(-237.1,-252.8) scale(1.374)">
+<path d="M30 850 Q600 856 1170 850" fill="none" stroke="#0b3a4a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.35" data-ground="1"/>
+<ellipse cx="469.0251539507998" cy="585.7624510921363" rx="23.273258302255186" ry="22.652286002949012" fill="none" stroke="#0b3a4a" stroke-width="5"/>
+<path d="M449.9213515247353 621.6166146886612 L447.28922617554235 677.9166400325097 L447.6613340818251 712.026528618404" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M484.4972587460675 620.8892836180931 L484.23592313746803 676.2524791175744 L482.9088367651365 712.8041270342675" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M451.59383416413397 619.4323350617813 L483.88615258848006 619.6280930462424" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M449.1444435808764 686.6324945585953 L483.32066169668303 684.7303669214856" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M452.5230032541717 625.2080005562901 L424.66534956855014 665.5301986227419 L394.74056011422704 637.3784551989187" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M486.9426820724291 625.5498990080087 L534.6757045236913 617.0120835240987 L596.6570202953877 629.8785661204153" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M453.7530935115536 714.2272640653082 L439.6732994802924 752.2366729667581 L411.56255230343083 796.0165637628253" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M474.2794694961992 714.6284380043057 L499.58830759818477 751.3473411533737 L521.1781493660677 798.9871647309452" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<g transform="translate(1480,0) scale(-1,1)"><ellipse cx="739.4898331800894" cy="585.6262577626045" rx="24.771324141077383" ry="24.644839087568613" fill="none" stroke="#0b3a4a" stroke-width="5"/>
+<path d="M718.276923076923 580 Q740 560 762.276923076923 580" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M719.6862348871277 621.211286417307 L716.1369695249007 676.3391126977928 L718.5594194951851 714.1480709612127" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M753.6594143338348 619.2382472234956 L756.0672391370538 677.1804841563946 L751.889524216397 714.8181203692304" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M721.5798148869944 621.4103441769305 L756.2853509022822 621.3541531182613" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M715.4360740007284 686.0649610118312 L753.9843412310026 685.192300231658" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M720.2361473232032 624.0203687672598 L692.5378713356973 663.4035390645282 L663.1733652178648 635.9338320369524" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M756.3611989053072 624.9623091906134 L802.6536435618458 617.8334977891452 L864.9665729328333 629.3297436674729" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M722.094126910445 714.7755992322116 L707.5424496252109 755.0431586107441 L677.7667707745762 795.9164083028754" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M746.1666541195892 712.9404033209851 L765.5893850273904 751.4556938132531 L795.0613039594215 797.966415226537" fill="none" stroke="#0b3a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" /></g>
+<path d="M366.791163300576 570.782114311318 L359.47097104740186 575.6257898275587 L347.14616368099337 581.1032572126694" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M366.737772759158 554.4154909183264 L352.8516701354588 553.0815180893442 L344.70118033042155 548.5921885108629" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M375.5424256999291 536.1984470016939 L364.1164475957962 531.1122976405497 L355.8529853677155 523.6304770888997" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M844.4298802986367 536.638913434545 L855.9504523772027 533.4246636811187 L863.0697284816627 524.4289771247885" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M852.2579360171985 553.0538372242995 L866.2385013008967 553.8014767480096 L873.7861112066581 551.0680792877858" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M850.6337736154628 571.7900032994477 L863.4845207771186 574.1071177880506 L872.1563606651677 580.7296847668347" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<ellipse cx="600" cy="250" rx="30" ry="26" fill="#fff" stroke="#0b3a4a" stroke-width="4"/><path d="M586 270 L576 294 L606 274" fill="#fff" stroke="#0b3a4a" stroke-width="4" stroke-linejoin="round"/>
+<text x="600" y="260" font-family="Arial" font-size="30" font-weight="700" text-anchor="middle" fill="#0b3a4a">Equilíbrio</text>
+</g>
+</svg>

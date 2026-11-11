@@ -1,6 +1,6 @@
 # Deployment
 
-Kit de Atividades runs locally on Docker Postgres and on Vercel with Neon. Chrome defaults to Portuguese; English is a header cookie (`kit-locale`), not `/pt` or `/en` URLs. Auth is eAEP/Orgo, not Google.
+Kit de Atividades runs locally on Docker Postgres and on Azure (App Service with the AEP's PostgreSQL server). Chrome defaults to Portuguese; English is a header cookie (`kit-locale`), not `/pt` or `/en` URLs. Auth is eAEP/Orgo, not Google.
 
 The root [README](../README.md) has the short path. This page is the hosted checklist.
 
@@ -9,15 +9,25 @@ The root [README](../README.md) has the short path. This page is the hosted chec
 | Environment | Database | Who sets env | Schema / seed |
 |---|---|---|---|
 | Local | Docker `scout_toolkit_dev` | `.env.local` | `npm run db:push` then `npm run db:seed` (or `npm run setup:db`) |
-| Vitest SQL | Docker `scout_toolkit_test` | hardcoded DSN in tests | `tests/setup.ts` — never Neon |
-| Preview | Dedicated Neon | Vercel **Preview** scope | `scripts/ensure-hosted-db.mjs` on Vercel builds |
-| Production | A **second** Neon | Vercel **Production** scope | Same build hook; not fully configured yet |
+| Vitest SQL | Docker `scout_toolkit_test` | hardcoded DSN in tests | `tests/setup.ts`, never a hosted database |
+| Preview | `kit_preview` on the AEP's PostgreSQL server | Web App `aep-kit-preview` settings and Key Vault | `scripts/ensure-hosted-db.mjs` during the deploy |
+| Production | `kit` on the same server | Web App `aep-kit` settings and Key Vault | Same step; the app is not deployed yet |
 
-Do **not** add a `.env.preview` file. Next.js never loads it. Do not point `npm run test:run` or Playwright at Neon.
+Do **not** add a `.env.preview` file. Next.js never loads it. Do not point `npm run test:run` or Playwright at a hosted database.
+
+## Azure
+
+Kit runs on Azure App Service (Linux container) with the AEP's PostgreSQL server (openspec `migrate-hosting-to-azure`). The Preview, `aep-kit-preview`, is live. Production, `aep-kit`, is provisioned but still runs a placeholder image. What is in place:
+
+- `Dockerfile` builds the app (Next.js standalone, with the Chromium that PDF export needs). Build it with `docker build -t kit-de-atividades .`.
+- `infra/` describes the Azure resources (Bicep) and the database, Key Vault and deploy-identity steps; see `infra/README.md`.
+- `.github/workflows/deploy.yml` builds the image, applies migrations, switches the Web App image and checks `/api/health`; `.github/workflows/usage-purge.yml` calls the daily usage purge. Neither has run yet, so deploys are done by hand (below).
+- `scripts/ensure-hosted-db.mjs` runs when `ENSURE_HOSTED_DB=1`.
+- CI uses PostgreSQL 16, the version of the shared server. The local `docker-compose` database stays on 17 so existing data volumes keep working.
 
 ## Required environment variables
 
-Copy names from `.env.example`. Values for hosted deploys stay in the Vercel dashboard.
+Copy names from `.env.example`. Hosted values are Web App settings; secrets are Key Vault references (see `infra/README.md`).
 
 ```env
 DATABASE_URL=
@@ -30,13 +40,34 @@ ORGO_CLIENT_ID=
 ORGO_CLIENT_SECRET=
 ORGO_API_TOKEN=                 # optional; program → eAEP event
 ADMIN_EMAILS=                   # comma-separated; promote on Orgo sign-in
-UPLOADTHING_SECRET=
-UPLOADTHING_APP_ID=
 NEXT_PUBLIC_APP_URL=
-NEXT_PUBLIC_UPLOADTHING_URL=https://uploadthing.com
+FEATURES=                       # non-MVP features to switch on; unset = all off
+CRON_SECRET=                    # bearer secret for the daily usage purge cron (flag usage-tracking)
+# E2E_LOGIN=1                   # test-only login; local Playwright/CI only, never on a hosted environment
 ```
 
-There is no Google OAuth. `ENABLE_USER_GENERATED_CONTENT` / `ENABLE_EDIT_SUGGESTIONS` feature flags are not used — those features are always on.
+There is no Google OAuth. The old `ENABLE_USER_GENERATED_CONTENT` / `ENABLE_EDIT_SUGGESTIONS` variables are not used.
+
+### Feature flags (`FEATURES`)
+
+Non-MVP features are off unless `FEATURES` lists them (comma-separated, or `all`). Off means hidden, not deleted: menu entries and buttons disappear, pages show the 404 page, APIs answer 404, and the data stays. See `src/lib/features.ts` for the exact routes.
+
+| Flag | Covers |
+| --- | --- |
+| `english-locale` | PT/EN switcher (off: Portuguese only) |
+| `public-programs` | Public gallery, "use as template", the public toggle |
+| `activity-proposals` | Propor atividade, As minhas propostas |
+| `edit-suggestions` | Suggestions, notifications, admin suggestion queue |
+| `review-discussion` | Votes, reactions, replies on reviews (stars + comment stay) |
+| `activities-table-view` | Mosaicos/Tabela toggle |
+| `admin-taxonomies` | Admin taxonomy pages |
+| `api-docs` | Swagger UI, OpenAPI JSON, `/api/metrics` |
+| `issue-reports` | Reportar button and the admin report queue |
+| `usage-tracking` | Records searches, activity views and additions to programs (anonymous visitor id; 13-month retention). `/privacy` explains it; the `usage-purge` workflow calls `/api/usage/purge` daily. Keep it off in Production until the AEP has confirmed the privacy wording. |
+
+**`pwa`** (installable app, service worker, offline page; openspec `mobile-pwa`) is on for the Preview only. To roll it back, set `FEATURES` on the Web App without `pwa` (for example `az webapp config appsettings set -g rg-kit-de-atividades -n aep-kit-preview --settings FEATURES=usage-tracking`): `/sw.js` then serves a worker that deletes its caches and unregisters itself on each phone's next visit, and the manifest and install entries disappear. To try it locally, build for production (the worker is not registered under `npm run dev`) with `FEATURES=pwa` and open it on `localhost`.
+
+The Preview runs with `FEATURES=usage-tracking,pwa`. Leave `FEATURES` unset on Production for the MVP. Changing an app setting restarts the Web App; no new image is needed. CI runs the full suite with `FEATURES=all`.
 
 `ORGO_API_TOKEN` is minted in eAEP: **Settings → Developers → API Tokens** (at least `HR_LOCAL`). It never goes to the browser.
 
@@ -60,45 +91,63 @@ npm run playwright:install
 npm run dev
 ```
 
-Schema is **push**, not a migrations folder. `npm run db:migrate` is not the supported local path. After `npm run db:reset`, run `db:push` and `db:seed` again.
+Locally, `npm run db:push` is fine for your own throwaway database. Schema changes that ship are **migrations**: `npm run db:generate`, review the SQL, and commit it (see README, "Changing the schema"). After `npm run db:reset`, run `db:push` and `db:seed` again.
 
 `db:seed` writes taxonomies (SDGs, activity types, educational areas, group sizes, effort, locations, age groups) and demo activities. It uses whatever `DATABASE_URL` is in the environment. Locally that must be `scout_toolkit_dev`.
 
-## Preview (Vercel + Neon)
+## Preview (Azure)
 
-1. Create a Neon project used only for Preview. Copy the **pooled** connection string.
-2. In Vercel → Settings → Environment Variables, add the table above on the **Preview** scope only.
-3. Do **not** set `NEXTAUTH_URL` on Preview. Set `AUTH_TRUST_HOST=true`.
-4. Create a **Preview** Orgo OAuth app (one Redirect URL per app). Callback:
+The Preview is the Web App `aep-kit-preview` (`https://aep-kit-preview.azurewebsites.net`) with database `kit_preview`. Its settings are Web App application settings; secrets are Key Vault references, listed in `infra/README.md`.
+
+1. Do **not** set `NEXTAUTH_URL`. Set `AUTH_TRUST_HOST=true`.
+2. Use a **Preview** Orgo OAuth app (one Redirect URL per app). Callback:
 
 ```text
-https://<preview-host>/api/auth/callback/orgo
+https://aep-kit-preview.azurewebsites.net/api/auth/callback/orgo
 ```
 
-Prefer a stable alias (for example the git-branch host) over adding every unique `*.vercel.app` deployment URL.
+3. Restart the Web App after changing settings. `ADMIN_EMAILS` is read at sign-in; after a change the user must **sign out and sign in**.
 
-5. Redeploy after changing env vars. `ADMIN_EMAILS` is read at sign-in; an existing deploy keeps the old value until you redeploy, then the user must **sign out and sign in**.
+During a deploy (`ENSURE_HOSTED_DB=1`), `scripts/ensure-hosted-db.mjs` runs:
 
-On Vercel, `npm run build` runs `scripts/ensure-hosted-db.mjs`:
+- If the database has app tables but no migration history, it is compared with `0000_baseline`; a match is recorded as applied, a mismatch fails the deploy with the differences
+- `drizzle-kit migrate` applies committed migrations not yet applied (never `push --force`)
+- `npm run db:load-reference` on **every** deploy: loads the Matriz Progresso Pessoal (areas, educational paths, general and specific objectives, challenge types, *desafios* and their links). It is idempotent, only touches rows it owns (`is_managed`), and retires the old placeholder objectives
+- `npm run db:seed` only if `activities` is empty (it also runs the reference loader)
 
-- `drizzle-kit push --force` against that environment’s `DATABASE_URL`
-- `npm run db:seed` only if `activities` is empty
+A local `npm run build` skips that step (`ENSURE_HOSTED_DB` is unset). `/api/e2e/session` returns 404 on the Preview because `NODE_ENV` is `production`.
 
-A local `npm run build` skips that hook (`VERCEL` is unset). `/api/e2e/session` returns 404 on Preview because `NODE_ENV` is `production`.
+### Deploying by hand
 
-This project’s **Production Branch is still `master`**. Pushing `master` creates a Production deploy and can steal the `git-master` Preview alias. Change **Settings → Git → Production Branch** to `main` before treating `master` as Preview-only.
+Until the GitHub workflow has run, deploy from a clean export of the commit, so the image holds exactly that commit and no untracked files:
+
+```bash
+SHA=$(git rev-parse --short=12 HEAD)
+mkdir /tmp/kit-src && git archive HEAD | tar -x -C /tmp/kit-src
+docker build -t aepkit.azurecr.io/kit:$SHA /tmp/kit-src
+# Chromium for PDF export must start inside the image:
+docker run --rm --entrypoint node aepkit.azurecr.io/kit:$SHA -e "require('playwright').chromium.launch().then(b => b.close())"
+az acr login -n aepkit && docker push aepkit.azurecr.io/kit:$SHA
+# Only if drizzle/migrations changed: apply them first (workflow step "Apply migrations and reference data").
+az webapp config container set -g rg-kit-de-atividades -n aep-kit-preview \
+  --container-image-name aepkit.azurecr.io/kit:$SHA --container-registry-url https://aepkit.azurecr.io
+az webapp restart -g rg-kit-de-atividades -n aep-kit-preview
+curl -s -o /dev/null -w '%{http_code}\n' https://aep-kit-preview.azurewebsites.net/api/health
+```
+
+Roll back by setting the previous image tag the same way (`az webapp config container show` lists the running one; note it before you switch).
 
 ## Production
 
-Not fully set up. When you launch it:
+Provisioned (`aep-kit`) but not deployed: it runs a placeholder image and has no database or Orgo app yet. When you launch it:
 
-1. A second Neon project (not Preview, not Docker).
-2. The same variable names, scoped to **Production**.
-3. A third Orgo app whose Redirect URL is `https://<production-host>/api/auth/callback/orgo`.
-4. New `NEXTAUTH_SECRET` (do not reuse the local or Preview secret).
-5. Redeploy Production after saving vars.
+1. Create the `kit` database and its roles (`infra/README.md`).
+2. Use the same setting names, with Production values and Key Vault secrets.
+3. Create a third Orgo app whose Redirect URL is `https://<production-host>/api/auth/callback/orgo`.
+4. Use a new `NEXTAUTH_SECRET` (do not reuse the local or Preview secret).
+5. Deploy the image as above, to `aep-kit`.
 
-There is no `db:seed:production` script. The first Production build seeds if the catalogue is empty. Do not run seed against a database that already has real activities unless you intend to insert the demo set again.
+There is no `db:seed:production` script. The first Production deploy seeds if the catalogue is empty. Do not run seed against a database that already has real activities unless you intend to insert the demo set again.
 
 ## Orgo checklist
 
@@ -112,20 +161,27 @@ Same `ORGO_ISSUER`. Different client id and secret per app.
 
 ## CI
 
-GitHub Actions (`.github/workflows/test.yml`) runs on `main` and `master`: workflow Postgres, `drizzle-kit push`, `npm run test:run`, Playwright Chromium. It does not deploy and does not write to Preview or Production.
+GitHub Actions (`.github/workflows/test.yml`) runs on `main` and `master`: workflow Postgres 17, `npm run typecheck`, `npm run test:run`, Playwright Chromium against `scout_toolkit_e2e` (its global setup pushes the schema and seeds). It does not deploy and does not write to Preview or Production.
 
 ## Health
 
-`GET /api/health` reports process liveness. It is not a substitute for checking Neon or Orgo.
+`GET /api/health` reports process liveness. It is not a substitute for checking the database or Orgo.
 
 ## Troubleshooting
 
-**Not admin on Preview** — Confirm `ADMIN_EMAILS` on the Preview scope, redeploy so the running build sees it, then sign out and sign in on the Preview host. Promotion does not run on refresh. Preview uses its own Neon; changing a leftover local Neon URL does not help.
-
-**Vercel login page** — Deployment Protection, not Kit. Continue with Vercel, then use **Entrar com o eAEP**.
+**Not admin on Preview** — Confirm `ADMIN_EMAILS` on the Web App, restart it, then sign out and sign in on the Preview host. Promotion does not run on refresh. The Preview uses its own database (`kit_preview`); a leftover local `DATABASE_URL` does not help.
 
 **Orgo callback error** — The Redirect URL on that Orgo app must match the host you opened, path `/api/auth/callback/orgo`.
 
-**Empty catalogue on a new Preview** — The build seeds only when `activities` is empty. If push failed, check the Vercel build log for `ensure-hosted-db`.
+**Empty catalogue on a new Preview** — The deploy seeds only when `activities` is empty. If the schema step failed, check its output for `ensure-hosted-db` (a baseline mismatch lists the differing columns).
 
 **PDF export fails locally** — `npm run playwright:install` (this repo’s Playwright, not a global CLI).
+
+## Dependencies and security
+
+- Run `npm audit --omit=dev` before a release. The target is no critical or high advisory in production dependencies.
+- `package.json` `overrides` pin a patched transitive package inside their current majors:
+  - `postcss` `^8.5.32` under `next`: Next 15.5 bundles PostCSS 8.4.31, which has several advisories. Next 16 removes the need for this override.
+  - Remove each override once the parent package ships the fix.
+- `xlsx` (SheetJS) is installed from SheetJS's own CDN (`https://cdn.sheetjs.com/xlsx-<version>/xlsx-<version>.tgz`). The npm registry copy stopped at 0.18.5 and has unfixed advisories. Dependabot cannot update a tarball URL, so check https://docs.sheetjs.com/docs/getting-started/installation/nodejs and bump it by hand.
+- Major upgrades (Next 16, Tailwind 4, Vitest 5, ESLint 10, TypeScript 7) are planned separately; Dependabot ignores them (`.github/dependabot.yml`).

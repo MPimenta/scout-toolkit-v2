@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -19,7 +23,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     },
     // Enhanced strict TypeScript options
     "noImplicitAny": true,
@@ -34,6 +40,21 @@
     "allowUnusedLabels": false,
     "allowUnreachableCode": false
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "devlog", "eminent-eclipse"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".next-e2e/types/**/*.ts",
+    ".next/types/**/*.ts",
+    "next-env.d.ts",
+    ".next-e2e-mvp/types/**/*.ts",
+    ".next-e2e-pwa/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "devlog",
+    "eminent-eclipse",
+    ".next-e2e",
+    ".next-e2e-mvp",
+    ".next-e2e-pwa"
+  ]
 }

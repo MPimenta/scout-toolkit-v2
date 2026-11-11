@@ -80,7 +80,7 @@ export function ReportLauncher() {
       {!open ? (
         <Button
           type="button"
-          className="fixed bottom-4 right-4 z-40 min-h-11 shadow-md"
+          className="fixed bottom-[calc(1rem+var(--safe-bottom))] right-[calc(1rem+var(--safe-right))] z-40 min-h-11 shadow-md"
           onClick={() => {
             reset();
             setOpen(true);

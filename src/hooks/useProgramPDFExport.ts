@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { log } from '@/lib/errors';
+import { deliverFile } from '@/lib/export/deliver-file';
 
 /**
  * Custom hook for exporting program data to PDF.
@@ -43,14 +44,7 @@ export function useProgramPDFExport() {
       }
 
       const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
+      await deliverFile(blob, filename);
       log.info('Program PDF exported successfully', { programId, filename });
     } catch (error) {
       log.error('Error during PDF export', error instanceof Error ? error : new Error(String(error)));

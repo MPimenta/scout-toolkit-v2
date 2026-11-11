@@ -13,12 +13,14 @@ import { usePrograms } from '@/hooks/usePrograms';
 import { useProgramMutations } from '@/hooks/useProgramMutations';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { useLocale } from '@/components/locale/LocaleProvider';
+import { enumLabelList } from '@/lib/locale/labels';
 
 interface Activity {
   id: string;
   name: string; // Now simple string after migration
   approximate_duration_minutes: number;
-  group_size: 'small' | 'medium' | 'large';
+  group_sizes: string[];
 }
 
 interface AddToProgramModalProps {
@@ -27,6 +29,7 @@ interface AddToProgramModalProps {
 }
 
 export function AddToProgramModal({ onClose, activity }: AddToProgramModalProps) {
+  const { t } = useLocale();
   const { data: session } = useSession();
   const { programs, loading: programsLoading, error: programsError, refetch: refetchPrograms } = usePrograms();
   const { createProgram, invalidateProgram } = useProgramMutations();
@@ -41,36 +44,22 @@ export function AddToProgramModal({ onClose, activity }: AddToProgramModalProps)
 
     setIsSubmitting(true);
     try {
-      // Get the current program to determine the next position
-      const currentProgram = programs?.find(p => p.id === selectedProgram);
-      const nextPosition = (currentProgram?.entry_count || 0) + 1;
-      
-      // Calculate start and end times
-      const programStartTime = currentProgram?.start_time || '09:00';
-      const startTime = new Date(`2000-01-01T${programStartTime}`);
-      const endTime = new Date(startTime.getTime() + activity.approximate_duration_minutes * 60000);
-      
-      const startTimeStr = startTime.toTimeString().slice(0, 5);
-      const endTimeStr = endTime.toTimeString().slice(0, 5);
-
       // Add activity to program via API
       const response = await fetch(`/api/programs/${selectedProgram}/entries`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        // The server places the entry last and computes its times from the program start.
         body: JSON.stringify({
           entry_type: 'activity',
           activity_id: activity.id,
-          position: nextPosition,
-          start_time: startTimeStr,
-          end_time: endTimeStr,
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to add activity to program');
+        throw new Error(errorData.error?.message ?? 'Não foi possível adicionar a atividade ao programa');
       }
 
       toast.success('Atividade adicionada ao programa com sucesso!');
@@ -133,7 +122,7 @@ export function AddToProgramModal({ onClose, activity }: AddToProgramModalProps)
           </DialogHeader>
           <div className="text-center py-8">
             <p className="text-muted-foreground mb-4">
-              Inicie sessão para adicionar atividades aos seus programas
+              Inicia sessão para adicionar atividades aos teus programas
             </p>
             <Button variant="outline">Iniciar Sessão</Button>
           </div>
@@ -157,7 +146,7 @@ export function AddToProgramModal({ onClose, activity }: AddToProgramModalProps)
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <h3 className="font-semibold text-foreground">
+                <h3 className="font-bold text-foreground">
                   {activity.name}
                 </h3>
                 <div className="flex gap-4 text-sm text-muted-foreground">
@@ -167,8 +156,7 @@ export function AddToProgramModal({ onClose, activity }: AddToProgramModalProps)
                   </div>
                   <div className="flex items-center gap-1">
                     <Users className="w-4 h-4" />
-                    {activity.group_size === 'small' ? '2-5' : 
-                     activity.group_size === 'medium' ? '6-15' : '16+'}
+                    {enumLabelList(t, 'groupSize', activity.group_sizes)}
                   </div>
                 </div>
               </div>
@@ -192,13 +180,13 @@ export function AddToProgramModal({ onClose, activity }: AddToProgramModalProps)
                 ) : programs && programs.length > 0 ? (
                   <Select value={selectedProgram} onValueChange={setSelectedProgram}>
                     <SelectTrigger id="program-select">
-                      <SelectValue placeholder="Escolha um programa existente" />
+                      <SelectValue placeholder="Escolhe um programa" />
                     </SelectTrigger>
                     <SelectContent>
                       {programs.map((program) => (
                         <SelectItem key={program.id} value={program.id}>
                           <div>
-                            <div className="font-medium">{program.name}</div>
+                            <div className="font-bold">{program.name}</div>
                             {program.date && (
                               <div className="text-sm text-muted-foreground">
                                 {new Date(program.date).toLocaleDateString('pt-PT')}
@@ -212,7 +200,7 @@ export function AddToProgramModal({ onClose, activity }: AddToProgramModalProps)
                 ) : (
                   <div className="p-3 border border-muted rounded-md bg-muted/20">
                     <p className="text-sm text-muted-foreground text-center">
-                      Ainda não tem programas. Crie o seu primeiro programa!
+                      Ainda não tens programas. Cria o teu primeiro!
                     </p>
                   </div>
                 )}

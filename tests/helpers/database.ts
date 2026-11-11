@@ -1,10 +1,28 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
+import { insertActivities } from './activity-categories'
 import { setupTestDatabase, resetTestDatabase } from '../setup'
 import * as schema from '../../drizzle/schema'
 
-export async function withTestDatabase() {
+export type TestDatabaseHandle = { db: Awaited<ReturnType<typeof setupTestDatabase>>; cleanup(): Promise<void> }
+
+/**
+ * Without a callback: sets up the test DB and returns it with a cleanup().
+ * With a callback: sets up the DB, runs the callback, then resets the DB.
+ */
+export async function withTestDatabase(): Promise<TestDatabaseHandle>
+export async function withTestDatabase(fn: () => Promise<void>): Promise<void>
+export async function withTestDatabase(fn?: () => Promise<void>): Promise<TestDatabaseHandle | void> {
   const db = await setupTestDatabase()
-  
+
+  if (fn) {
+    try {
+      await fn()
+    } finally {
+      await resetTestDatabase()
+    }
+    return
+  }
+
   return {
     db,
     async cleanup() {
@@ -22,28 +40,20 @@ export async function createTestUser(db: ReturnType<typeof drizzle>) {
 }
 
 export async function createTestActivity(db: ReturnType<typeof drizzle>) {
-  // First create required dependencies
-  const activityType = await db.insert(schema.activityTypes).values({
-    id: '550e8400-e29b-41d4-a716-446655440002',
-    name: 'Test Activity Type',
-    description: 'Test description'
-  }).returning()
-
-  const activity = await db.insert(schema.activities).values({
+  const activity = await insertActivities(db, {
     id: '550e8400-e29b-41d4-a716-446655440003',
     name: 'Test Activity',
     description: 'Test activity description',
     materials: 'Test materials',
     approximate_duration_minutes: 30,
-    group_size: 'medium',
+    group_sizes: ['medium'],
     effort_level: 'low',
-    location: 'inside',
-    age_group: 'scouts',
-    activity_type_id: activityType[0].id,
+    locations: ['inside'],
+    age_groups: ['scouts'],
     is_approved: true
-  }).returning()
+  })
 
-  return { activity: activity[0], activityType: activityType[0] }
+  return { activity: activity[0] }
 }
 
 export async function createTestProgram(db: ReturnType<typeof drizzle>, userId: string) {

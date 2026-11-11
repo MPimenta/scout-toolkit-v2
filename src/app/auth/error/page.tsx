@@ -22,13 +22,13 @@ function AuthErrorContent() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-muted py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-bold text-foreground">
             Erro de Autenticação
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-muted-foreground">
             {getErrorMessage(error)}
           </p>
         </div>
@@ -36,7 +36,7 @@ function AuthErrorContent() {
           <div className="text-center">
             <Link
               href="/auth/signin"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-bold rounded-md text-primary-foreground bg-primary hover:bg-blue-dark"
             >
               Tentar Novamente
             </Link>
@@ -44,7 +44,7 @@ function AuthErrorContent() {
           <div className="text-center">
             <Link
               href="/home"
-              className="text-sm text-blue-600 hover:text-blue-500"
+              className="text-sm text-primary hover:text-teal-dark"
             >
               Voltar à Página Inicial
             </Link>
@@ -58,9 +58,9 @@ function AuthErrorContent() {
 export default function AuthErrorPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-muted">
         <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900 mb-4">
+          <h2 className="text-3xl font-bold text-foreground mb-4">
             Carregando...
           </h2>
         </div>

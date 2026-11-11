@@ -5,12 +5,24 @@ import { db } from '@/lib/db/server';
 import { editSuggestions } from '../../../../../../drizzle/schema';
 import { apiErrors, withApiErrorHandler } from '@/lib/errors';
 import { validateUUID } from '@/lib/errors/error-handler';
-import { findPendingDuplicate, isSuggestableField, notifyAdmins } from '@/lib/suggestions';
+import {
+  findPendingDuplicate,
+  checkValueSuggestion,
+  isCategoryField,
+  isSuggestableField,
+  isValueField,
+  normalizeCategorySuggestion,
+  notifyAdmins,
+} from '@/lib/suggestions';
+import { featureOffResponse } from '@/lib/feature-gate';
 
 export const POST = withApiErrorHandler(async (
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) => {
+  const hidden = featureOffResponse('edit-suggestions');
+  if (hidden) return hidden;
+
   const session = await auth();
   if (!session?.user?.id) return apiErrors.unauthorized();
 
@@ -19,9 +31,18 @@ export const POST = withApiErrorHandler(async (
 
   const body = await request.json();
   const field = String(body.field ?? '');
-  const suggested_value = String(body.suggested_value ?? '').trim();
   if (!isSuggestableField(field)) return apiErrors.validation('field', 'Campo inválido');
+  let suggested_value = Array.isArray(body.suggested_value) ? '' : String(body.suggested_value ?? '').trim();
+  if (isCategoryField(field)) {
+    const normalized = await normalizeCategorySuggestion(field, body.suggested_value);
+    if ('error' in normalized) return apiErrors.validation('suggested_value', normalized.error);
+    suggested_value = normalized.value;
+  }
   if (!suggested_value) return apiErrors.validation('suggested_value', 'Valor obrigatório');
+  if (isValueField(field)) {
+    const valueError = await checkValueSuggestion(field, suggested_value, id);
+    if (valueError) return apiErrors.validation('suggested_value', valueError);
+  }
 
   if (await findPendingDuplicate(id, session.user.id, field)) {
     return apiErrors.conflict('Já tem uma sugestão pendente neste campo');
@@ -47,6 +68,9 @@ export const GET = withApiErrorHandler(async (
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) => {
+  const hidden = featureOffResponse('edit-suggestions');
+  if (hidden) return hidden;
+
   const session = await auth();
   if (!session?.user?.id) return apiErrors.unauthorized();
   const { id } = await params;

@@ -17,6 +17,7 @@
 
 # next.js
 /.next/
+/.next-e2e*/
 /out/
 
 # production
@@ -36,15 +37,12 @@ yarn-error.log*
 .env*
 !.env.example
 
-# vercel
-.vercel
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts
 
 # database
-drizzle/migrations/*.sql
+# drizzle/migrations/*.sql is committed: deploys apply these migrations.
 
 # testing
 /test-results/
@@ -60,3 +58,9 @@ Thumbs.db
 
 # unpacked brand zip (source files live in public/brand)
 .tmp-brand-assets/
+
+# Claude Code (personal settings)
+.claude/settings.local.json
+
+# Local exports of the curated activities sheet (some sources are copyrighted)
+/data/

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" role="img" aria-label="Ilustração da atividade A Palavra Escondida">
+<defs><filter id="hand" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G"/></filter></defs>
+<rect width="1200" height="900" fill="#ffffff"/>
+<g filter="url(#hand)" transform="translate(-70.7,-212.3) scale(1.237)">
+<path d="M30 850 Q600 856 1170 850" fill="none" stroke="#0b3a4a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.35" data-ground="1"/>
+<path d="M30 590 Q600 596 1170 590" fill="none" stroke="#0b3a4a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.2" data-ground="1"/>
+<ellipse cx="199.02909844090655" cy="457.3774963162921" rx="15.390881881700308" ry="15.271785737076673" fill="none" stroke="#0b3a4a" stroke-width="4"/>
+<path d="M186.36 453.59999999999997 Q200 441.2 213.64 453.59999999999997" fill="none" stroke="#0b3a4a" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M189.08289513657937 476.3985604892478 L188.0261427880107 510.9618380961017 L190.83288118115294 537.0940116375936" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M212.43359303605445 478.81815696704115 L212.9441450607051 512.1060352704236 L210.03479001019838 537.6157014042957" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M190.19350199821102 477.56808393270154 L211.7266569147383 477.342766006823" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M187.1082766750773 520.2460780239132 L212.95334791171985 520.1183522756949" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M187.3666976039236 481.14662914383536 L176.6160204405319 503.7955440197119 L167.68833929828756 528.0585863190976" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M209.60026507320825 482.7550854112558 L227.18050697544612 502.04073632314834 L231.07538315440314 526.6246760534237" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M191.31042989295463 535.2152108882437 L189.9893987142897 562.4841910673325 L187.0992686571736 593.9883211170455" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M206.49301418384212 536.6293878344769 L207.86133405415404 562.3014481668461 L210.49934018140627 594.4704288953499" fill="none" stroke="#0b3a4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M172.0584441443246 589.070733663659 L173.48275243094318 532.6201068622154 L169.8997577194589 478.02799094572106" fill="none" stroke="#0b3a4a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M191.64382473353476 590.1622965184796 L188.61489011841587 536.4582202157277 L186.7585882057243 480.39197360826284" fill="none" stroke="#0b3a4a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+<ellipse cx="146.50019730604262" cy="440.81612265846513" rx="44.86028123477487" ry="42.74671286123186" fill="#fff" stroke="#0b3a4a" stroke-width="5"/>
+<ellipse cx="209.33537248258264" cy="431.6053147663387" rx="48.787916781980506" ry="48.517354746357235" fill="#fff" stroke="#0b3a4a" stroke-width="5"/>
+<ellipse cx="180.78748135072527" cy="389.19906163969966" rx="52.94346764797506" ry="50.86075951688027" fill="#fff" stroke="#0b3a4a" stroke-width="5"/>
+<ellipse cx="173.19013347113045" cy="464.57324928956723" rx="40.9012146347208" ry="39.71436575251369" fill="#fff" stroke="#0b3a4a" stroke-width="5"/>
+<path d="M410.03963032981363 590.2669531777813 L412.83008041378577 544.3615144979495 L414.614389160841 491.0386262539023" fill="none" stroke="#0b3a4a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M428.9914493354929 593.4889816290182 L425.52850760297315 541.4272831696678 L427.82203724534344 493.1799824874755" fill="none" stroke="#0b3a4a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+<ellipse cx="390.38439409117416" cy="457.71149036461094" rx="39.62783702338479" ry="39.45685202821943" fill="#fff" stroke="#0b3a4a" stroke-width="5"/>
+<ellipse cx="447.0746921892626" cy="449.1516249360291" rx="44.34044976264259" ry="43.73916073406076" fill="#fff" stroke="#0b3a4a" stroke-width="5"/>
+<ellipse cx="419.1163049061393" cy="411.73655748308477" rx="47.28242730832772" ry="45.95577106394609" fill="#fff" stroke="#0b3a4a" stroke-width="5"/>
+<ellipse cx="415.2961811611877" cy="479.316776081229" rx="37.28339582345607" ry="36.03360482609533" fill="#fff" stroke="#0b3a4a" stroke-width="5"/>
+<path d="M651.1679245368429 592.907690717237 L652.0334790013886 536.681576338914 L652.1859206272223 482.76798172619567" fill="none" stroke="#0b3a4a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M667.8688721703686 590.1345673853227 L671.8282433430795 539.2858671384332 L668.4172634744166 481.3472145193942" fill="none" stroke="#0b3a4a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+<ellipse cx="625.0156488446592" cy="442.01013218658517" rx="44.4374899053655" ry="43.89283947804609" fill="#fff" stroke="#0b3a4a" stroke-width="5"/>
+<ellipse cx="689.3020716804555" cy="433.91873341562166" rx="48.22877453022114" ry="47.01352942665738" fill="#fff" stroke="#0b3a4a" stroke-width="5"/>
+<ellipse cx="660.9260492203413" cy="392.10924627590424" rx="52.15323868377751" ry="53.48255824855648" fill="#fff" stroke="#0b3a4a" stroke-width="5"/>
+<ellipse cx="653.570988992495" cy="465.6119968633223" rx="41.2469227876267" ry="39.03129164200802" fill="#fff" stroke="#0b3a4a" stroke-width="5"/>
+<path d="M870.8806532688815 590.5394900904687 L870.2772052365249 542.1884102740737 L870.6817493278913 489.96095387058375" fill="none" stroke="#0b3a4a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M889.3517029014191 591.8706641510458 L885.171436309289 538.1300502189575 L888.8529553470449 490.6205177825971" fill="none" stroke="#0b3a4a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+<ellipse cx="850.3283509589398" cy="455.794566901305" rx="40.028865350284086" ry="38.53994222462175" fill="#fff" stroke="#0b3a4a" stroke-width="5"/>
+<ellipse cx="907.4059794784552" cy="447.0970943955225" rx="43.59825832093985" ry="43.72760003601555" fill="#fff" stroke="#0b3a4a" stroke-width="5"/>
+<ellipse cx="879.5825368755416" cy="409.6972672271995" rx="46.75543131346602" ry="47.734085423328956" fill="#fff" stroke="#0b3a4a" stroke-width="5"/>
+<ellipse cx="874.7158065931479" cy="476.9614110375575" rx="36.35296234295376" ry="37.23809802380302" fill="#fff" stroke="#0b3a4a" stroke-width="5"/>
+<rect x="687.4" y="541.8" width="25.2" height="36.4" rx="4" fill="#fff" stroke="#0b3a4a" stroke-width="4" stroke-linejoin="round"/>
+<g transform="translate(1520,0) scale(-1,1)"><ellipse cx="760.4756573715599" cy="619.2134438081149" rx="23.2651244788827" ry="23.587116581577394" fill="none" stroke="#0b3a4a" stroke-width="4.699999999999999"/>
+<path d="M745.1176336379059 649.5285522841516 L743.7182397354851 701.3152342991882 L743.482866454787 740.356505605521" fill="none" stroke="#0b3a4a" stroke-width="4.699999999999999" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M777.649711990035 650.4494165183276 L777.203423530433 703.5592759884146 L774.2515372832826 737.6871201291714" fill="none" stroke="#0b3a4a" stroke-width="4.699999999999999" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M743.7280109828655 649.3405890200011 L777.6596591575628 650.4314611586889" fill="none" stroke="#0b3a4a" stroke-width="4.699999999999999" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M744.2476940836793 714.274464398415 L778.3631441616468 714.9639247975517" fill="none" stroke="#0b3a4a" stroke-width="4.699999999999999" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M743.6240724509414 653.0056829731566 L720.8537298418926 683.5774526869401 L708.547309401672 712.129113901504" fill="none" stroke="#0b3a4a" stroke-width="4.699999999999999" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M774.1173425760946 654.8766764218905 L793.1606227111167 631.6459057390159 L811.8777556394868 612.3790328551918" fill="none" stroke="#0b3a4a" stroke-width="4.699999999999999" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M750.0651972077252 738.1094702379916 L739.3262899235758 778.8147455391729 L719.0882768789252 823.3295040953203" fill="none" stroke="#0b3a4a" stroke-width="4.699999999999999" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M768.5953300492723 738.0921381197927 L783.5453793547327 782.0108149933865 L796.6675938475167 824.9097952137654" fill="none" stroke="#0b3a4a" stroke-width="4.699999999999999" stroke-linecap="round" stroke-linejoin="round" /></g>
+<g transform="translate(1860,0) scale(-1,1)"><ellipse cx="929.5673444338922" cy="609.1979004264241" rx="21.40870036381702" ry="22.667014672647703" fill="none" stroke="#0b3a4a" stroke-width="4.699999999999999"/>
+<path d="M911.9602180119139 641.2441262372976 L914.1696702589046 692.9080414105151 L914.1919865273553 728.9375652618975" fill="none" stroke="#0b3a4a" stroke-width="4.699999999999999" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M947.5193567100816 640.7682263417953 L946.240126553299 695.4269812956951 L945.1746367467729 727.8198030114826" fill="none" stroke="#0b3a4a" stroke-width="4.699999999999999" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M912.9292139862055 642.7594661558791 L944.7276818575281 642.688979473379" fill="none" stroke="#0b3a4a" stroke-width="4.699999999999999" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M915.1580090802713 700.7386121187446 L947.6938797400956 703.036791787444" fill="none" stroke="#0b3a4a" stroke-width="4.699999999999999" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M912.6995715721695 645.7194134521483 L890.1218902541985 671.5495023145664 L877.1854009175325 701.333220969985" fill="none" stroke="#0b3a4a" stroke-width="4.699999999999999" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M947.9448425358185 645.6684994996473 L965.7310905701439 619.899212409062 L982.002959104098 603.4736625733198" fill="none" stroke="#0b3a4a" stroke-width="4.699999999999999" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M921.1068697842428 727.9004637700601 L907.7545833998428 770.7432011573497 L885.8418515767631 815.0594506580287" fill="none" stroke="#0b3a4a" stroke-width="4.699999999999999" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M938.6072094881848 729.749867921169 L954.2101510849363 768.8292845242979 L967.8849998754752 815.8529071114644" fill="none" stroke="#0b3a4a" stroke-width="4.699999999999999" stroke-linecap="round" stroke-linejoin="round" /></g>
+<ellipse cx="300" cy="280" rx="109" ry="34" fill="#fff" stroke="#0b3a4a" stroke-width="4"/><path d="M280 308 L266 338 L306 312" fill="#fff" stroke="#0b3a4a" stroke-width="4" stroke-linejoin="round"/>
+<text x="300" y="290" font-family="Arial" font-size="24" font-weight="700" text-anchor="middle" fill="#0b3a4a">Escondida</text>
+</g>
+</svg>

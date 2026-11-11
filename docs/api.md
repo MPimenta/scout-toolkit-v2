@@ -119,17 +119,20 @@ GET /api/activities?search=game&group_size=medium&effort_level=low&duration_min=
 ```
 
 **Query Parameters:**
-- `search` (string) - Text search in name, description, materials
+- `search` (string) - Text search in name, description, materials and instructions (ignoring case)
 - `group_size` (string[]) - Filter by group size: small, medium, large
 - `effort_level` (string[]) - Filter by effort: low, medium, high
 - `location` (string) - Filter by location: inside, outside
 - `age_group` (string[]) - Filter by age group
-- `activity_type` (string[]) - Filter by activity type
+- `format` (string[]) - Format IDs (what kind of activity). Several values match any of them.
+- `focus` (string[]) - Focus IDs. An activity matches when the focus is its main or its secondary focus.
+- `ids` (string[]) - Exactly these approved activities (at most 100), ignoring `page` and `limit`. The program page reads its activities this way.
 - `sdgs` (string[]) - Filter by SDG IDs
-- `educational_goals` (string[]) - Filter by educational goal IDs
-- `duration_min` (number) - Minimum duration in minutes
-- `duration_max` (number) - Maximum duration in minutes
-- `duration_operator` (string) - Duration comparison: >, <, =, >=, <=
+- `educational_goals` (string[]) - Specific objective IDs
+- `educational_areas` (string[]) - Educational area IDs (any objective in the area)
+- `general_objectives` (string[]) - General objective IDs (any objective under them). The three objective filters combine with OR.
+- `duration_min` (number) - Minimum duration in minutes (inclusive)
+- `duration_max` (number) - Maximum duration in minutes (inclusive). Either bound may be omitted; `duration_operator` is accepted and ignored.
 - `page` (number) - Page number (default: 1)
 - `limit` (number) - Items per page (default: 20)
 - `view` (string) - View type: tiles, table (default: tiles)
@@ -159,13 +162,8 @@ GET /api/activities?search=game&group_size=medium&effort_level=low&duration_min=
       "effort_level": "low",
       "location": "outside",
       "age_group": "scouts",
-      "activity_type": {
-        "id": "type_1",
-        "name": {
-          "pt": "Jogo",
-          "en": "Game"
-        }
-      },
+      "format": { "id": "fmt_1", "code": "jogo", "name": "Jogo" },
+      "focus": { "id": "foc_1", "code": "cooperacao", "name": "Cooperação" },
       "image_url": "https://...",
       "educational_goals": [
         {
@@ -218,13 +216,14 @@ GET /api/activities?search=game&group_size=medium&effort_level=low&duration_min=
       "effort_levels": ["low", "medium", "high"],
       "locations": ["inside", "outside"],
       "age_groups": ["cub_scouts", "scouts", "adventurers", "rovers", "leaders"],
-      "activity_types": [...],
       "sdgs": [...],
       "educational_goals": [...]
     }
   }
 }
 ```
+
+**Each activity** also carries `format`, `focus` and `secondary_focus` (`{ id, code, name }` or `null`) and, when the sheet gave a range, `duration_min_minutes` / `duration_max_minutes` next to `approximate_duration_minutes`. `filters.available` lists the `formats` and `focuses` ids of the current page.
 
 #### Get Activity
 ```http
@@ -253,13 +252,8 @@ GET /api/activities/{id}
     "effort_level": "low",
     "location": "outside",
     "age_group": "scouts",
-    "activity_type": {
-      "id": "type_1",
-      "name": {
-        "pt": "Jogo",
-        "en": "Game"
-      }
-    },
+    "format": { "id": "fmt_1", "code": "jogo", "name": "Jogo" },
+    "focus": { "id": "foc_1", "code": "cooperacao", "name": "Cooperação" },
     "image_url": "https://...",
     "educational_goals": [...],
     "sdgs": [...],
@@ -377,12 +371,8 @@ GET /api/programs/{id}
           "group_size": "medium",
           "effort_level": "low",
           "location": "outside",
-          "activity_type": {
-            "name": {
-              "pt": "Jogo",
-              "en": "Game"
-            }
-          }
+          "format": { "name": "Jogo" },
+          "focus": { "name": "Cooperação" }
         }
       },
       {
@@ -628,6 +618,106 @@ GET /api/programs/{id}/export/pdf
 
 **Response:** PDF file download
 
+### eAEP (Orgo) events
+
+Create an eAEP event from a program. The owner only; the write token never reaches the browser.
+The Orgo API findings behind these endpoints are in [orgo-api.md](./orgo-api.md). Errors use the
+shared shape with Portuguese messages.
+
+#### Options for the dialog
+```http
+GET /api/programs/{id}/orgo/options?q=<search>
+```
+
+Rights are read from Orgo on every call. `q` filters the member list by name or card number.
+
+**Response:**
+```json
+{
+  "data": {
+    "pending": false,
+    "stub": false,
+    "units": [{ "iri": "/api/v1/units/3200", "name": "Grupo 312 Coimbra" }],
+    "groupName": "Grupo 312 Coimbra",
+    "canPublish": true,
+    "participants": {
+      "groupName": "Grupo 312 Coimbra",
+      "total": 75,
+      "divisions": [{ "id": "3254", "name": "Tribo de Exploradores", "userType": "Explorador", "count": 12 }],
+      "members": [{ "id": "1001", "name": "Ana Exemplo", "cardId": "10001", "divisionId": "3254" }]
+    },
+    "attachment": { "allowed": false, "fileName": "programa_Nome_2026-11-11.pdf", "reason": "private" },
+    "descriptionSummary": { "blocks": 3, "challenges": 2 }
+  }
+}
+```
+
+`participants` is `null` when the leader's scope cannot be determined. Member names go only to this
+owner's browser and are never stored or logged. `attachment.allowed` is false for a private program.
+
+#### Create the event
+```http
+POST /api/programs/{id}/orgo
+```
+
+**Body:**
+```json
+{
+  "dateTimeEnd": "2026-07-12T16:00:00",
+  "location": "Quinta",
+  "unit": "/api/v1/units/3200",
+  "publish": true,
+  "participants": ["1001", "1002"],
+  "attachment": false
+}
+```
+
+Runs as steps: create the event, publish, invite, attach the PDF. Invitations need `publish: true`
+(Orgo refuses invitations to a draft) and only ids offered by the options endpoint are accepted
+(at most 500). `attachment` is refused for a private program. Failed steps are reported and do not
+remove the event.
+
+**Response (201):**
+```json
+{
+  "orgo_event_uuid": "5tkcgp03qa8s89n04vej8rn445",
+  "orgo_event_url": "https://eaep.escoteiros.pt/event/5tkcgp03qa8s89n04vej8rn445",
+  "orgo_event_attendance_url": "https://eaep.escoteiros.pt/events/attend/5tkcgp03qa8s89n04vej8rn445",
+  "published": true,
+  "steps": {
+    "publish": { "status": "done", "at": "2026-11-11T10:00:00.000Z" },
+    "invitations": { "status": "failed", "at": "2026-11-11T10:00:01.000Z", "requested": 2, "added": 1, "failed": 1 }
+  }
+}
+```
+
+Errors: `400` (invalid body, unit not offered, participant not offered, attachment on a private program,
+participants without publish), `401`, `404`, `409` (the program already has an event, or one is being
+created), `502` (Orgo refused the event), `503` (integration not configured).
+
+#### Repeat one step
+```http
+POST /api/programs/{id}/orgo/retry
+```
+
+**Body:** `{ "step": "publish" | "invitations" | "attachment", "participants": ["1001"] }`
+
+Repeats only that step on the existing event. Never creates an event. A step that already succeeded
+is not repeated. For `invitations`, send the whole selection again: a member Orgo already has counts
+as added, so nobody is invited twice.
+
+**Response:** `{ "steps": { ... } }`. Errors: `400`, `401`, `403`, `404`, `409`, `503`.
+
+#### Invited count
+```http
+GET /api/programs/{id}/orgo/attendance
+```
+
+**Response:** `{ "data": { "invited": 15, "attending": 12 } }` (each `null` when Orgo cannot say).
+`attending` counts members checked in on the attendance page and members who answered yes themselves
+(Orgo does not tell them apart), so the page calls them "confirmados". A count only: names and
+who was present stay in eAEP.
+
 ### Admin Endpoints
 
 #### List All Users (Admin Only)
@@ -694,7 +784,8 @@ POST /api/admin/activities
   "effort_level": "low",
   "location": "outside",
   "age_group": "scouts",
-  "activity_type_id": "type_1",
+  "format_id": "fmt_1",
+  "focus_id": "foc_1",
   "educational_goal_ids": ["goal_1", "goal_2"],
   "sdg_ids": ["sdg_1", "sdg_2"]
 }
@@ -712,29 +803,43 @@ DELETE /api/admin/activities/{id}
 
 ### Taxonomies
 
-#### List Activity Types
+#### List Activity Formats and Focuses
 ```http
-GET /api/taxonomies/activity-types
+GET /api/taxonomies/activity-formats
+GET /api/taxonomies/activity-focuses
 ```
+
+Public. The 8 formats and 10 focuses of the reference sheet, plus any added by an admin, in sheet order. `activity_count` is the number of approved activities that use the value (for a focus, as main or secondary focus).
 
 **Response:**
 ```json
 {
-  "activity_types": [
+  "activity_formats": [
     {
-      "id": "type_1",
-      "name": {
-        "pt": "Jogo",
-        "en": "Game"
-      },
-      "description": {
-        "pt": "Atividades lúdicas...",
-        "en": "Playful activities..."
-      }
+      "id": "…",
+      "code": "jogo",
+      "name": "Jogo",
+      "description": "Atividade lúdica com regras, em geral com movimento.",
+      "position": 1,
+      "is_managed": true,
+      "activity_count": 582
     }
   ]
 }
 ```
+(`activity_focuses` has the same shape.) Admin writes go through `/api/admin/taxonomies/activity-formats` and `/api/admin/taxonomies/activity-focuses`: values from the sheet (`is_managed`) answer `409` on rename and delete; an admin can add values of their own (`{ "name", "description"?, "position"? }`, the code is derived from the name), rename them and delete them when no activity uses them (`409` otherwise).
+
+#### Breaking changes: the activity type is gone (format-focus-everywhere)
+- `activity_types` is no longer returned by the activity or program endpoints, and `filters.available` no longer lists it. Read `format`, `focus` and `secondary_focus` instead (`GET /api/programs/[id]` returns them for each activity entry).
+- The `activity_type` filter is ignored, `activity_type_ids` on writes is ignored, and `/api/taxonomies/activity-types` answers `404`.
+- Edit suggestions: `activity_types` is no longer a suggestable field (`400`). `format_id`, `focus_id` and `secondary_focus_id` are: the value is the id of an existing format or focus, and the resulting main focus must differ from the secondary focus.
+- The Excel export replaces the "Tipo de Atividade" column with "Formato", "Foco" and "Foco secundário" on the schedule and the activity details sheets; the PDF shows `Formato · Foco · Foco secundário` under the activity name.
+
+#### Writing an activity
+`POST /api/activities`, `POST /api/admin/activities` and their `PATCH` need `format_id` and `focus_id` (valid ids; `400` with a Portuguese message otherwise). `secondary_focus_id` is optional and must differ from `focus_id`. `duration_min_minutes` / `duration_max_minutes` are optional whole minutes with the minimum not above the maximum. The former `activity_type_ids` field no longer exists and is ignored. `physical_risk_level` and `psychological_risk_level` accept `low`, `low_medium`, `medium`, `medium_high` and `high`. The sheet id (`external_id`, `ATV-0001`) is returned on reads but never accepted from a request body.
+
+#### Activity types (removed)
+`GET /api/taxonomies/activity-types` and the `activity-types` admin taxonomy no longer exist: both answer `404`. What kind of activity it is, and what it works on, are the format and the focus (see above).
 
 #### List Educational Areas
 ```http
@@ -788,6 +893,15 @@ GET /api/taxonomies/sdgs
 - `422` - Validation Error
 - `500` - Internal Server Error
 
+## Usage tracking (flag `usage-tracking`)
+
+All answer 404 when the flag is off. No endpoint returns recorded events; only administrators read them, server-side.
+
+- `POST /api/usage/events` - record a `search` (`text`, `filters`, `result_count`) or `activity_view` (`activity_id`) event. Answers `204`; bots, Global Privacy Control, Do Not Track and the opt-out cookie are skipped silently. `400` for invalid events (Portuguese message), `429` above 60 events per minute per visitor. `program_add` is recorded by the server when `POST /api/programs/{id}/entries` creates an activity entry, never accepted here.
+- `POST /api/usage/opt-out` / `DELETE /api/usage/opt-out` - turn recording off (removes the visitor cookie) or back on for this browser.
+- `GET /api/admin/usage/summary?period=7d|30d|90d|13m&division=<age group>` - admin only (401/403 otherwise): totals, daily evolution, top activities viewed and added to programs with conversion, top searches, searches without results, searches per division and most active users by name. Powers `/admin/utilizacao`.
+- `GET /api/usage/purge` - deletes events older than 13 months; needs `Authorization: Bearer $CRON_SECRET`; run daily by the `usage-purge` GitHub workflow.
+
 ## Rate Limiting
 
 - **Authenticated requests:** 1000 requests per hour
@@ -810,25 +924,29 @@ GET /api/taxonomies/sdgs
 
 ### Image Upload
 ```http
-POST /api/upload/image
+POST /api/uploads/activity-image
 ```
 
-**Request:** Multipart form data with image file
+Signed-in users only. **Request:** multipart form data with one `file` field.
 
-**Response:**
+**Response (201):**
 ```json
-{
-  "success": true,
-  "url": "https://uploadthing.com/f/abc123.jpg",
-  "filename": "activity-image.jpg",
-  "size": 1024000
-}
+{ "url": "/media/activity-images/0b9f3e6e-7c1a-4f0e-9a52-1f2d3c4b5a69.png" }
 ```
+
+Errors: 401 (guest), 400 (not a JPEG/PNG/WebP by content, or several files), 413 (over 5MB), 429 (rate limit), 503 (storage not configured). The returned address is stored as the activity's `image_url`.
+
+### Reading an image
+```http
+GET /media/activity-images/{name}
+```
+
+Public. Streams the stored image with its content type, `Cache-Control: public, max-age=31536000, immutable` and `X-Content-Type-Options: nosniff`. Names that do not match the generated pattern answer 404.
 
 ### Supported Formats
 - **Images:** JPEG, PNG, WebP
 - **Max size:** 5MB
-- **Max dimensions:** 2048x2048px
+
 
 ## Webhooks (Future)
 

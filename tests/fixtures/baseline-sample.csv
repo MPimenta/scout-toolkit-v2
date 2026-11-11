@@ -1,0 +1,9 @@
+atividade_id,Nome,Descrição,Materiais,Intruções?,Mins,Grupo,Esforço,Local,Tipo,Divisão,ODS,Fonte,Formato,Foco,Foco secundário,duracao_min,duracao_max,Publicada
+EX-0,Jogo da bandeira (exemplo),Linha de exemplo que deve ser ignorada,Bandeiras,-,30,Médio (7-15),Baixo,Exterior,Jogo,Escoteiros,4,Fictícia,Jogo,Cooperação,,,,FALSE
+TEST-1,Caça ao Tesouro de Teste,Pistas escondidas pelo terreno.,Papel e lápis,1. Esconder pistas,15-30,"Médio (7-15), Grande (16+)",Médio,"Interior, Exterior",Jogo,"Lobitos, Exploradores",4; 13,Fictícia,Aventura/Percurso,Resolução de problemas,Cooperação,15,30,TRUE
+TEST-2,Nós e Amarras de Teste,Aprender nós básicos.,-,-,1h,Pequeno (2-6),Baixo,Interior,Técnica,Exploradores,-,Fictícia,Técnica/Oficina,Competências técnicas,,,,FALSE
+TEST-3,Canção em Roda de Teste,Cantar em roda.,-,-,20/30 min,Grande (16+),Baixo,Exterior,Expressão,Lobitos,5,Fictícia,Expressão criativa,Criatividade,Comunicação,,,FALSE
+TEST-4,Sem Grupo de Teste,Falta o tamanho do grupo.,-,-,20,,Baixo,Exterior,Jogo,Lobitos,-,Fictícia,Jogo,Cooperação,,,,FALSE
+TEST-5,Formato Desconhecido de Teste,Formato que não existe.,-,-,20,Pequeno (2-6),Baixo,Exterior,Culinária,Lobitos,-,Fictícia,Culinária,Cooperação,,,,FALSE
+,,,,,,,,,,,,,,,,,,
+,caça ao tesouro de teste,Repetida sem id da folha e com outro nome em minúsculas.,-,-,20,Médio (7-15),Baixo,Exterior,Jogo,Lobitos,-,Fictícia,Jogo,Cooperação,,,,FALSE
