@@ -6,6 +6,10 @@ import { signInE2E, signOutE2E } from '../helpers/session';
  * sign in -> browse and search -> rate and comment -> build a program -> push it to Orgo (stubbed).
  */
 test('the MVP flows work with every flag off', async ({ page }) => {
+  // Five journeys in one test on a cold dev server, which compiles each route on first use
+  // (the Orgo options, create and attendance routes included). It takes about 33 s cold.
+  test.setTimeout(60_000);
+
   // 1. Sign in (the e2e session stands in for the Orgo OAuth redirect)
   const login = await signInE2E(page.request, { name: 'Chefe MVP' });
   expect(login.ok()).toBeTruthy();

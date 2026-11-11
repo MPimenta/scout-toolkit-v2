@@ -48,6 +48,7 @@ export interface ProgramDetail {
   is_public: boolean;
   orgo_event_uuid?: string | null;
   orgo_event_url?: string | null;
+  orgo_event_attendance_url?: string | null;
   orgo_write_configured?: boolean;
   created_at: string;
   updated_at: string;

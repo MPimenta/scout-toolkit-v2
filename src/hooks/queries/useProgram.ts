@@ -55,6 +55,7 @@ export interface Program {
   is_public: boolean;
   orgo_event_uuid?: string | null;
   orgo_event_url?: string | null;
+  orgo_event_attendance_url?: string | null;
   orgo_write_configured?: boolean;
   created_at: string;
   updated_at: string;
@@ -86,6 +87,7 @@ export function toProgramDetail(
     is_public: Boolean(program.is_public),
     orgo_event_uuid: program.orgo_event_uuid ?? null,
     orgo_event_url: program.orgo_event_url ?? null,
+    orgo_event_attendance_url: program.orgo_event_attendance_url ?? null,
     orgo_write_configured: Boolean(program.orgo_write_configured),
     created_at: program.created_at ?? '',
     updated_at: program.updated_at ?? '',

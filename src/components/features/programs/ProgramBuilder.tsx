@@ -33,6 +33,7 @@ import { PDFExportButton } from './PDFExportButton';
 import { EditProgramModal } from './EditProgramModal';
 import { DeleteProgramModal } from './DeleteProgramModal';
 import { CreateOrgoEventDialog } from './CreateOrgoEventDialog';
+import { OrgoAttendanceNote } from './OrgoAttendanceNote';
 import { useLocale } from '@/components/locale/LocaleProvider';
 import { useProgramMutations } from '@/hooks/useProgramMutations';
 import { useActivitiesByIds } from '@/hooks/queries/useActivities';
@@ -59,6 +60,7 @@ interface ProgramBuilderProps {
     is_public: boolean;
     orgo_event_uuid?: string | null;
     orgo_event_url?: string | null;
+    orgo_event_attendance_url?: string | null;
     orgo_event_pending?: boolean;
     orgo_write_configured?: boolean;
     user?: { name?: string; id?: string } | null;
@@ -468,21 +470,37 @@ export function ProgramBuilder({
             <p className="text-muted-foreground">
               Criado por {program.user?.name || 'Utilizador desconhecido'}
             </p>
+            {canEdit && program.orgo_event_url && !program.orgo_event_pending && (
+              <OrgoAttendanceNote programId={program.id} />
+            )}
           </div>
           {canEdit && (
             <div className="flex flex-wrap items-center gap-2">
               {program.orgo_event_pending ? (
                 <Button disabled>{t('programs.creatingOrgo')}</Button>
               ) : program.orgo_event_url ? (
-                <Button asChild>
-                  <a
-                    href={program.orgo_event_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {t('programs.viewOrgo')}
-                  </a>
-                </Button>
+                <>
+                  <Button asChild>
+                    <a
+                      href={program.orgo_event_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {t('programs.viewOrgo')}
+                    </a>
+                  </Button>
+                  {program.orgo_event_attendance_url && (
+                    <Button asChild variant="outline">
+                      <a
+                        href={program.orgo_event_attendance_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {t('programs.orgoAttendance')}
+                      </a>
+                    </Button>
+                  )}
+                </>
               ) : (
                 <Button
                   onClick={() => setShowOrgoEvent(true)}

@@ -75,6 +75,17 @@ export default function PrivacyPage() {
           </CardContent>
         </Card>
 
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('privacy.orgoTitle')}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p>{t('privacy.orgoIntro')}</p>
+            <p>{t('privacy.orgoMembers')}</p>
+            <p>{t('privacy.orgoFile')}</p>
+          </CardContent>
+        </Card>
+
         {tracking && (
           <Card>
             <CardHeader>

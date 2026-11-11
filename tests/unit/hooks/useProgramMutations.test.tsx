@@ -90,6 +90,7 @@ describe('useProgramMutations', () => {
         user: { id: '', name: '' },
         orgo_event_uuid: null,
         orgo_event_url: null,
+        orgo_event_attendance_url: null,
         orgo_write_configured: false,
         summary: {
           total_duration_minutes: 0,

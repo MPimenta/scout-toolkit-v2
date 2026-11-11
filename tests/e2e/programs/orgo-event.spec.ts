@@ -53,10 +53,52 @@ test.describe('Create Orgo event dialog', () => {
 
       await expect(page.getByRole('heading', { name: 'Evento criado no eAEP' })).toBeVisible();
       const link = page.getByRole('link', { name: 'Abrir evento no eAEP' });
-      await expect(link).toHaveAttribute('href', new RegExp(`/events/e2e-${programId}$`));
+      // The event page in eAEP is /event/<uuid>; the attendance page is /events/attend/<uuid>.
+      await expect(link).toHaveAttribute('href', new RegExp(`/event/e2e-${programId}$`));
+      await expect(page.getByRole('link', { name: 'Presenças no eAEP' }).first()).toHaveAttribute(
+        'href',
+        new RegExp(`/events/attend/e2e-${programId}$`)
+      );
 
       await page.getByRole('button', { name: 'Fechar' }).first().click();
       await expect(page.getByRole('link', { name: 'Ver evento no eAEP' })).toBeVisible();
+      await expect(page.getByRole('link', { name: 'Presenças no eAEP' })).toBeVisible();
+    } finally {
+      await page.request.delete(`/api/programs/${programId}`).catch(() => undefined);
+      await signOutE2E(page.request);
+    }
+  });
+
+  test('publishing first lets the owner invite members, and nobody is invited by default', async ({ page }) => {
+    expect((await signInE2E(page.request, { name: 'Chefe Convites' })).ok()).toBeTruthy();
+    const created = await page.request.post('/api/programs', {
+      data: { name: `E2E Orgo convites ${Date.now()}`, date: '2026-07-12', start_time: '09:00', is_public: false },
+    });
+    const programId = ((await created.json()) as { program: { id: string } }).program.id;
+
+    try {
+      await page.goto(`/programs/${programId}`);
+      await page.getByRole('button', { name: 'Criar evento no eAEP' }).click();
+      await page.getByLabel('Unidade Orgo').click();
+      await page.getByRole('option').first().click();
+
+      // Participants need a published event: the tab says so until publishing is on.
+      await page.getByRole('tab', { name: /Participantes/ }).click();
+      await expect(page.getByText(/Só é possível convidar participantes num evento publicado/)).toBeVisible();
+
+      await page.getByRole('tab', { name: 'Evento' }).click();
+      await page.getByRole('switch', { name: 'Publicar agora' }).click();
+      await expect(page.getByText(/são notificados/)).toBeVisible();
+
+      await page.getByRole('tab', { name: /Participantes/ }).click();
+      await expect(page.getByText(/A convidar: 0 de/)).toBeVisible();
+      await page.getByLabel('Convidar Ana Exemplo').check();
+      await expect(page.getByText(/A convidar: 1 de/)).toBeVisible();
+
+      await page.getByRole('button', { name: 'Criar no eAEP' }).click();
+      await expect(page.getByRole('heading', { name: 'Evento criado no eAEP' })).toBeVisible();
+      await expect(page.getByText('Convites: 1 de 1 adicionados')).toBeVisible();
+      await expect(page.getByText(/Ana Exemplo/)).toHaveCount(0);
     } finally {
       await page.request.delete(`/api/programs/${programId}`).catch(() => undefined);
       await signOutE2E(page.request);
