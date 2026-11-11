@@ -42,6 +42,15 @@ This document outlines the technical architecture, stack choices, and key design
 - **Playwright Chromium** - Server-side HTML to PDF, with Chrome/Edge fallback if the bundled browser is missing
 - **Local/server runtime** - PDF generation runs in the Next.js Node process, not in an edge runtime (Playwright needs a full browser)
 
+### eAEP (Orgo) events
+A program can be handed to eAEP as an event. The API findings are in [orgo-api.md](./orgo-api.md); the code is in `src/lib/orgo/`.
+- **One admin token, rights decided here.** The write token acts as one Orgo admin, so Orgo never limits what a leader may do through the app. `scope.ts` finds the signed-in leader's Orgo user id (the login's `sub`, kept by the auth adapter), reads their permissions through the token on every request, and resolves their own local group; `leader-context.ts` builds the units and the member list from it. Unknown or missing permissions mean no access.
+- **Steps, not one call** (`steps.ts`). Create the event, publish, invite (Orgo only accepts invitations to a published event), attach the PDF. Each step is recorded as counts in `programs.orgo_steps` and can be repeated on its own through `/orgo/retry` without creating a second event or inviting anyone twice.
+- **Description** (`description.ts`, `description-data.ts`) is HTML limited to the tags Orgo renders, with every stored value escaped. The program is a list, not a table.
+- **Attachment** goes up in three Orgo calls (`attachFileToOrgoEvent`), to storage where anyone with the link can open the file, so it is offered for public programs only. The PDF comes from the same renderer as the download (`src/lib/export/pdf.ts`).
+- **Links** are rebuilt from the event uuid (`orgoEventUrl`, `orgoAttendanceUrl`), never stored as text.
+- **No participant data is kept.** Member names and card numbers go to the owner's browser for the dialog and are not stored or logged; the app keeps counts only.
+
 ### Development Tools
 - **ESLint + Prettier** - Code linting and formatting
 - **Vitest** - Unit and integration testing with PostgreSQL

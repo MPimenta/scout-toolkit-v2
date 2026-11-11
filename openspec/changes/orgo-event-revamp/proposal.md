@@ -2,30 +2,35 @@
 
 Today the "criar no Orgo" button opens a small dialog that creates a **draft event with a one-line description** ("Programa criado por … Atividades: …"). The leader still has to rebuild the program in eAEP, invite the participants and, later, work out which *desafios* the youth could be signed for. The program the leader built in the Kit de Atividades — times, activities, the educational objectives and the behaviours to observe — never reaches the place where attendance and progress are actually recorded. This change makes the button hand over the whole plan.
 
+The Orgo API was explored against the AEP tenant (see `docs/orgo-api.md`). What it offers shapes this change: participants are **invitations that need a published event**, the description is **HTML**, a PDF is attached by a **three-step upload to a public bucket**, and members belong to the **local group**, not to a unit.
+
 ## What Changes
 
-- **A real event popup** opened from the program page. It is prefilled from the program and offers the details Orgo accepts for events, limited to what the signed-in leader's Orgo role allows (units where they can create events, publishing only if their role allows it, extra event options only where Orgo exposes them). It still never asks for timezone, ticketing or price.
-- **Participants.** Depending on the leader's role in the chosen unit, the popup lists the unit's members the leader may see in Orgo and lets them invite all, a selection, or nobody. Participants are sent to Orgo and are **not stored** in the Kit de Atividades.
-- **A complete description.** The event description carries a table with the program (start, end, duration, activity or block title), and, at the end, a section listing the *desafios* the leader could sign if the behaviours are observed during the program: for each *desafio* its code and short title, the divisions, the activities of the program that contribute, and the observable behaviours of the linked objectives. *Desafios* that are mandatory for integration are marked.
-- **A PDF of the program as an attachment**, when Orgo accepts attachments on events. When it does not, the PDF stays available in the app and the description says so.
-- **The event belongs to the leader's scope.** It is created in the chosen unit (agrupamento, divisão or other level), so the leaders of that scope see it in eAEP and can take attendance there. Where Orgo exposes attendance to the API, the program page shows the presence count.
-- **Retry without duplicates.** Creation runs as steps (event, participants, attachment, publish). A failed step is reported and can be retried without creating a second event.
-- **Discovery first.** The Orgo API surface for participants, attachments, description format, event options and attendance is not documented in this repository. The first task is a discovery against a non-production Orgo; the specs then get updated to what Orgo really offers before any code is written (see design).
+- **A real event popup** opened from the program page. It is prefilled from the program and offers the details Orgo accepts for events, limited to what the signed-in leader's Orgo role allows (units where they can create events, publishing only if their role allows it). It still never asks for timezone, ticketing or price.
+- **Participants as invitations.** After the event is created and **published**, the leader can invite members of their own local group. Invitations are sent to Orgo and are **not stored** in the Kit de Atividades. A leader whose role cannot publish cannot invite from the app; the dialog says so.
+- **A scoped picker.** A leader sees their own local group's members, filtered by divisão, and can select a whole group or a whole divisão in one action. Members can be searched by name or by card number (*número associativo*). Leaders with parent-group or national permissions also see only their own local group for now; the views for the groups below a parent group, and one level higher, are shelved for a later change.
+- **A complete description, in HTML.** The event description carries the program as a list (one line per block: start, end, duration, title) and, at the end, a section listing the *desafios* the leader could sign if the behaviours are observed: for each *desafio* its code and short title, the divisions, the contributing blocks and the observable behaviours of the linked objectives. *Desafios* mandatory for integration are marked. Orgo renders paragraphs, lists, headings, bold, italic, underline, line breaks and links, and drops tables.
+- **A PDF of the program as an attachment, for public programs only.** Orgo stores event files in a public-read bucket, so a private program never gets an attachment. A private program's PDF stays available in the app, and the dialog says why.
+- **A warning before publishing.** Publishing a future event notifies the members of its unit. The dialog says so before the leader confirms, because invitations need the publish.
+- **The event belongs to the leader's scope.** It is created in the chosen unit (the group-level unit or one of its divisões), so the leaders of that scope see it in eAEP. The program page shows the presence count from the event's counts, never names.
+- **A working link.** The event link the app stores and shows today points to a page that does not exist. It becomes `/event/<uuid>`, with the attendance page at `/events/attend/<uuid>`.
+- **Retry without duplicates.** Creation runs as steps (event, publish, invitations, attachment). A failed step is reported and can be retried without creating a second event. A repeated invitation (Orgo answers that the member is already attending) counts as added.
 
 ## Capabilities
 
 ### New Capabilities
 - `orgo-event-participants`: choosing and inviting participants from the leader's scope.
-- `orgo-event-description`: the generated description (program table, *desafios* to sign with behaviours) and the PDF attachment.
+- `orgo-event-description`: the generated HTML description (program list, *desafios* to sign with behaviours) and the PDF attachment.
 
 ### Modified Capabilities
-- `orgo-events`: the dialog asks for more (role-limited options, participants), the create request runs in steps and can be retried, the event is created in the leader's scope, and attendance is read back where Orgo allows.
+- `orgo-events`: the dialog asks for more (role-limited options, publish warning, participants), the create request runs in steps in a fixed order and can be retried, the event is created in the leader's scope, the event link is corrected, and attendance is read back as counts.
 
 ## Impact
 
-- Code: `src/lib/orgo/` (client for participants, attachments and events options; description builder; capability probe), `src/app/api/programs/[id]/orgo/route.ts` (options endpoint and step-wise create), `CreateOrgoEventDialog.tsx` (sections, participant picker), the PDF export reused from `program-export`, and messages in `pt.json` and `en.json`.
-- Data: nothing new about participants is stored. The program keeps the Orgo event uuid and URL it has today; an optional record of which steps succeeded may be added (a small column or JSON on `programs`, decided in design).
-- Privacy: participants include minors. The server sends only identifiers Orgo gave it, nothing is logged or kept, and the existing privacy notice needs a sentence about the data sent to Orgo (for approval).
-- Depends on: `reference-sheet-alignment` (short titles, integration marker, behaviours per objective), the existing `orgo-events`, `program-export` and `program-builder` specs, and Orgo API access with a write token that may need broader scopes.
-- Tests: unit (description builder, escaping, step state), integration against the Orgo stub, e2e with the existing `e2e.` stub path; a manual check against a non-production Orgo before any production use.
-- Out of scope: syncing later program edits to an existing event (confirm-and-replace stays out), ticketing and payments, editing the event after creation, importing attendance back into the app's own data.
+- Code: `src/lib/orgo/` (client for members, invitations, file upload and event counts; description builder; the corrected event URL), `src/app/api/programs/[id]/orgo/route.ts` (options endpoint and step-wise create), `CreateOrgoEventDialog.tsx` (sections, picker, publish warning), the PDF export reused from `program-export`, and messages in `pt.json` and `en.json`.
+- Data: nothing about participants is stored. The program keeps the Orgo event uuid and URL; the URL already stored with the wrong path needs correcting. A small record of which steps succeeded is added to `programs`.
+- Orgo access: the write token acts as **one admin user** (all scopes). Every event is owned by that user. Orgo therefore never limits what a leader may do through the app: the server must read the signed-in leader's own scope and enforce it.
+- Privacy: members include minors. The server sends only identifiers Orgo gave it, nothing is logged or kept, and the privacy notice needs a sentence about the data sent to Orgo and about the public file link (for approval).
+- Depends on: `reference-sheet-alignment` (archived: short titles, integration marker, behaviours per objective), the existing `orgo-events`, `program-export` and `program-builder` specs.
+- Tests: unit (description builder, escaping, step state, scope), integration against the Orgo stub, e2e with the existing `e2e.` stub path. The Orgo API was exercised on the AEP tenant limited to the test group (local center 3200); a check with a non-admin leader remains (task 1.5).
+- Out of scope: syncing later program edits to an existing event, ticketing and payments, editing the event after creation, importing attendance back into the app's own data, sending the "invites" email to the whole unit (`send-invites`).

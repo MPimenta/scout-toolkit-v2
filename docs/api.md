@@ -618,6 +618,106 @@ GET /api/programs/{id}/export/pdf
 
 **Response:** PDF file download
 
+### eAEP (Orgo) events
+
+Create an eAEP event from a program. The owner only; the write token never reaches the browser.
+The Orgo API findings behind these endpoints are in [orgo-api.md](./orgo-api.md). Errors use the
+shared shape with Portuguese messages.
+
+#### Options for the dialog
+```http
+GET /api/programs/{id}/orgo/options?q=<search>
+```
+
+Rights are read from Orgo on every call. `q` filters the member list by name or card number.
+
+**Response:**
+```json
+{
+  "data": {
+    "pending": false,
+    "stub": false,
+    "units": [{ "iri": "/api/v1/units/3200", "name": "Grupo 312 Coimbra" }],
+    "groupName": "Grupo 312 Coimbra",
+    "canPublish": true,
+    "participants": {
+      "groupName": "Grupo 312 Coimbra",
+      "total": 75,
+      "divisions": [{ "id": "3254", "name": "Tribo de Exploradores", "userType": "Explorador", "count": 12 }],
+      "members": [{ "id": "1001", "name": "Ana Exemplo", "cardId": "10001", "divisionId": "3254" }]
+    },
+    "attachment": { "allowed": false, "fileName": "programa_Nome_2026-11-11.pdf", "reason": "private" },
+    "descriptionSummary": { "blocks": 3, "challenges": 2 }
+  }
+}
+```
+
+`participants` is `null` when the leader's scope cannot be determined. Member names go only to this
+owner's browser and are never stored or logged. `attachment.allowed` is false for a private program.
+
+#### Create the event
+```http
+POST /api/programs/{id}/orgo
+```
+
+**Body:**
+```json
+{
+  "dateTimeEnd": "2026-07-12T16:00:00",
+  "location": "Quinta",
+  "unit": "/api/v1/units/3200",
+  "publish": true,
+  "participants": ["1001", "1002"],
+  "attachment": false
+}
+```
+
+Runs as steps: create the event, publish, invite, attach the PDF. Invitations need `publish: true`
+(Orgo refuses invitations to a draft) and only ids offered by the options endpoint are accepted
+(at most 500). `attachment` is refused for a private program. Failed steps are reported and do not
+remove the event.
+
+**Response (201):**
+```json
+{
+  "orgo_event_uuid": "5tkcgp03qa8s89n04vej8rn445",
+  "orgo_event_url": "https://eaep.escoteiros.pt/event/5tkcgp03qa8s89n04vej8rn445",
+  "orgo_event_attendance_url": "https://eaep.escoteiros.pt/events/attend/5tkcgp03qa8s89n04vej8rn445",
+  "published": true,
+  "steps": {
+    "publish": { "status": "done", "at": "2026-11-11T10:00:00.000Z" },
+    "invitations": { "status": "failed", "at": "2026-11-11T10:00:01.000Z", "requested": 2, "added": 1, "failed": 1 }
+  }
+}
+```
+
+Errors: `400` (invalid body, unit not offered, participant not offered, attachment on a private program,
+participants without publish), `401`, `404`, `409` (the program already has an event, or one is being
+created), `502` (Orgo refused the event), `503` (integration not configured).
+
+#### Repeat one step
+```http
+POST /api/programs/{id}/orgo/retry
+```
+
+**Body:** `{ "step": "publish" | "invitations" | "attachment", "participants": ["1001"] }`
+
+Repeats only that step on the existing event. Never creates an event. A step that already succeeded
+is not repeated. For `invitations`, send the whole selection again: a member Orgo already has counts
+as added, so nobody is invited twice.
+
+**Response:** `{ "steps": { ... } }`. Errors: `400`, `401`, `403`, `404`, `409`, `503`.
+
+#### Invited count
+```http
+GET /api/programs/{id}/orgo/attendance
+```
+
+**Response:** `{ "data": { "invited": 15, "attending": 12 } }` (each `null` when Orgo cannot say).
+`attending` counts members checked in on the attendance page and members who answered yes themselves
+(Orgo does not tell them apart), so the page calls them "confirmados". A count only: names and
+who was present stay in eAEP.
+
 ### Admin Endpoints
 
 #### List All Users (Admin Only)

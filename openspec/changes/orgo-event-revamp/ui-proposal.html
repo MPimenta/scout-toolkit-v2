@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proposta de interface: criar evento no Orgo</title>
+<style>
+/* Tokens copied from src/app/globals.css (light theme). This file is a review aid, not app code. Names and numbers are fictional. */
+:root{
+  --bg:0 0% 100%; --fg:200 56.3% 18.8%; --primary:217 76% 34%; --primary-fg:0 0% 100%;
+  --secondary:218.8 58.6% 94.3%; --muted:168 21.7% 95.5%; --muted-fg:203.6 17.1% 37.8%;
+  --accent:180 100% 32%; --near-black:222.9 84% 4.9%; --border:186 16.7% 88.2%;
+  --blue-dark:218 77.1% 25.7%; --teal-dark:181.4 100% 25.1%; --teal-tint:180 47.1% 93.3%; --destructive:0 72% 45%;
+  --d-cub:49.2 100% 50%; --d-cub-fg:200 56.3% 18.8%; --d-scouts:147.7 100% 25.9%; --d-adv:221.5 98.1% 20.8%; --d-rov:355.9 85.5% 56.9%;
+  --d-lead-border:203.6 17.1% 37.8%;
+  --radius:4px; --gutter:clamp(1rem,4vw,2rem);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;line-height:1.5;color:hsl(var(--fg));background:hsl(var(--muted))}
+h1,h2,h3{line-height:1.2;margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+.note{background:hsl(var(--teal-tint));border-left:6px solid hsl(var(--accent));padding:.75rem var(--gutter);font-size:.875rem}
+.wrap{max-width:1100px;margin:0 auto;padding:1rem var(--gutter) 3rem}
+.scen{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:1rem 0}
+.scen b{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:hsl(var(--muted-fg))}
+.chip{border:1px solid hsl(var(--border));background:#fff;border-radius:var(--radius);padding:.4rem .8rem;cursor:pointer;min-height:40px;font-size:.875rem}
+.chip[aria-pressed=true]{background:hsl(var(--primary));color:#fff;border-color:hsl(var(--primary))}
+.page{background:#fff;border:1px solid hsl(var(--border));border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:center}
+.btn{display:inline-block;border:0;border-radius:var(--radius);padding:.7em 1.3em;font-weight:700;background:hsl(var(--primary));color:#fff;cursor:pointer;min-height:44px}
+.btn.out{background:#fff;color:hsl(var(--primary));border:1px solid hsl(var(--primary))}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.backdrop{background:hsl(var(--near-black)/.55);border-radius:var(--radius);padding:1.25rem;display:flex;justify-content:center}
+.dlg{background:#fff;border-radius:var(--radius);width:100%;max-width:820px;display:flex;flex-direction:column;max-height:none}
+.dlg-h{padding:1rem 1.25rem;border-bottom:1px solid hsl(var(--border));display:flex;justify-content:space-between;gap:1rem}
+.dlg-h h2{font-size:1.25rem}
+.dlg-h p{margin:.25rem 0 0;font-size:.875rem;color:hsl(var(--muted-fg))}
+.close{background:none;border:0;font-size:1.5rem;cursor:pointer;min-width:44px;min-height:44px}
+.tabs{display:flex;gap:.25rem;padding:0 1.25rem;border-bottom:1px solid hsl(var(--border));overflow-x:auto}
+.tab{background:none;border:0;border-bottom:3px solid transparent;padding:.8rem .75rem;cursor:pointer;font-weight:700;white-space:nowrap;min-height:44px;color:hsl(var(--muted-fg))}
+.tab[aria-selected=true]{color:hsl(var(--primary));border-bottom-color:hsl(var(--accent))}
+.tab .badge{margin-left:.35rem;background:hsl(var(--secondary));color:hsl(var(--primary));border-radius:var(--radius);padding:0 .4rem;font-size:.75rem}
+.dlg-b{padding:1.25rem}
+.dlg-f{padding:.9rem 1.25rem;border-top:1px solid hsl(var(--border));display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:center;background:hsl(var(--muted))}
+.grid{display:grid;gap:1rem;grid-template-columns:1fr}
+@media(min-width:720px){.grid.two{grid-template-columns:1fr 1fr}}
+label.f{display:block;font-weight:700;font-size:.875rem}
+.f input[type=text],.f input[type=search],.f input[type=number],.f input[type=datetime-local],.f select{display:block;width:100%;margin-top:.25rem;border:1px solid hsl(var(--border));border-radius:var(--radius);padding:.55rem .7rem;min-height:44px;background:#fff;font-weight:400}
+.hint{font-size:.8125rem;color:hsl(var(--muted-fg));margin:.25rem 0 0;font-weight:400}
+.callout{border-left:6px solid hsl(var(--accent));background:hsl(var(--teal-tint));padding:.7rem .9rem;border-radius:var(--radius);font-size:.9rem;margin-top:1rem}
+.callout.warn{border-left-color:hsl(var(--d-cub));background:#fff8d6}
+.callout.err{border-left-color:hsl(var(--destructive));background:#fdecec}
+.switch{display:flex;gap:.6rem;align-items:flex-start}
+.switch input{width:22px;height:22px;margin-top:.15rem}
+.pill{display:inline-flex;align-items:center;border:1px solid transparent;border-radius:var(--radius);padding:.05rem .5rem;font-size:.75rem;font-weight:700;white-space:nowrap}
+.p-cub{background:hsl(var(--d-cub));color:hsl(var(--d-cub-fg))}
+.p-sc{background:hsl(var(--d-scouts));color:#fff}
+.p-adv{background:hsl(var(--d-adv));color:#fff}
+.p-rov{background:hsl(var(--d-rov));color:hsl(var(--near-black))}
+.p-lead{background:#fff;color:hsl(var(--fg));border-color:hsl(var(--d-lead-border))}
+/* participants */
+.tools{display:flex;flex-wrap:wrap;gap:.75rem;align-items:flex-end;margin-bottom:.75rem}
+.tools .f{flex:1 1 260px}
+.count{font-weight:700}
+.count span{background:hsl(var(--secondary));color:hsl(var(--primary));border-radius:var(--radius);padding:.15rem .6rem}
+.tree{border:1px solid hsl(var(--border));border-radius:var(--radius);max-height:420px;overflow:auto}
+.node{border-bottom:1px solid hsl(var(--border))}
+.node:last-child{border-bottom:0}
+.row{display:flex;align-items:center;gap:.6rem;padding:.35rem .75rem;min-height:44px}
+.row input[type=checkbox]{width:20px;height:20px;flex:none}
+.row .name{flex:1}
+.row .num{font-size:.8125rem;color:hsl(var(--muted-fg));font-variant-numeric:tabular-nums}
+.row .n{font-size:.8125rem;color:hsl(var(--muted-fg))}
+.tog{background:none;border:0;cursor:pointer;width:32px;min-height:44px;font-size:.9rem;color:hsl(var(--muted-fg))}
+.l1>.row{background:hsl(var(--secondary));font-weight:700}
+.l2>.row{padding-left:2rem;background:hsl(var(--muted))}
+.l3>.row{padding-left:3.25rem;font-size:.9rem;font-style:italic;color:hsl(var(--muted-fg))}
+.mem .row{padding-left:3.5rem}
+.l3~.mem .row,.mem.deep .row{padding-left:4.75rem}
+.empty{padding:1rem;color:hsl(var(--muted-fg))}
+.future{border:1px dashed hsl(var(--d-lead-border));border-radius:var(--radius);padding:.4rem .7rem;font-size:.8125rem;display:inline-flex;gap:.5rem;align-items:center}
+/* description + attachment */
+.preview{border:1px solid hsl(var(--border));border-radius:var(--radius);padding:1rem;background:#fff;font-size:.9375rem}
+.preview h3{font-size:1.0625rem;margin:.75rem 0 .25rem}
+.preview ul{margin:.25rem 0;padding-left:1.25rem}
+.file{display:flex;gap:.75rem;align-items:center;border:1px solid hsl(var(--border));border-radius:var(--radius);padding:.7rem .9rem}
+.file .ic{font-size:1.4rem}
+/* result */
+.steps{list-style:none;margin:0;padding:0}
+.steps li{display:flex;gap:.75rem;align-items:center;border-bottom:1px solid hsl(var(--border));padding:.7rem 0}
+.st{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:.9rem}
+.ok{background:hsl(var(--d-scouts));color:#fff}.bad{background:hsl(var(--destructive));color:#fff}.skip{background:hsl(var(--border));color:hsl(var(--muted-fg))}
+.steps .t{flex:1}.steps .t small{display:block;color:hsl(var(--muted-fg))}
+:focus-visible{outline:3px solid hsl(var(--accent));outline-offset:2px}
+.legend{font-size:.8125rem;color:hsl(var(--muted-fg));margin-top:1rem}
+</style>
+</head>
+<body>
+<div class="note"><b>Proposta de interface (para revisão, não é código da aplicação).</b> Popup aberto a partir da página do programa. Todos os nomes e números são fictícios. Muda de cenário abaixo para ver cada caso do plano.</div>
+<div class="wrap">
+  <div class="scen" role="group" aria-label="Cenário">
+    <b>Cenário</b>
+    <button class="chip" data-s="local" aria-pressed="true">Dirigente de grupo</button>
+    <button class="chip" data-s="parent" aria-pressed="false">Dirigente de agrupamento (adiado)</button>
+    <button class="chip" data-s="nopublish" aria-pressed="false">Sem direito a publicar</button>
+    <button class="chip" data-s="private" aria-pressed="false">Programa privado</button>
+    <button class="chip" data-s="result" aria-pressed="false">Resultado com falhas</button>
+  </div>
+  <div class="page"><div><h1 style="font-size:1.25rem">Acampamento de Verão</h1><span style="font-size:.875rem;color:hsl(var(--muted-fg))">Programa · 3 blocos · 15 jun 2027</span></div><button class="btn" type="button">Criar no Orgo</button></div>
+  <div class="backdrop"><div class="dlg" id="dlg" role="dialog" aria-modal="true" aria-labelledby="dtitle"></div></div>
+  <p class="legend" id="legend"></p>
+</div>
+
+<script>
+const DIV = [
+  {k:'alc', name:'Alcateia',            pill:'p-cub',  who:'Lobitos',      pats:['Bando Ruivo']},
+  {k:'exp', name:'Tribo de Exploradores',pill:'p-adv', who:'Exploradores', pats:['Patrulha Javali']},
+  {k:'esc', name:'Tribo de Escoteiros', pill:'p-sc',   who:'Escoteiros',   pats:['Patrulha Rouxinol','Patrulha Urubu']},
+  {k:'cla', name:'Clã',                 pill:'p-rov',  who:'Caminheiros',  pats:['Equipa Kaladin Stormblessed']},
+  {k:'che', name:'Chefia',              pill:'p-lead', who:'Dirigentes',   pats:[]}
+];
+const FIRST=['Ana','Rui','Inês','Tomás','Marta','Pedro','Sofia','Hugo','Lara','Diogo','Beatriz','Nuno','Carla','Rita','Vasco','Eva','João','Clara','Duarte','Mafalda','Bruno','Leonor','Rafael','Joana'];
+const LAST=['Exemplo','Teste','Modelo','Amostra'];
+function mk(gid, counts){ let i=0,c=10000+(gid.length*137); const out=[]; DIV.forEach((d,di)=>{ for(let n=0;n<counts[di];n++){ i++; c+=7+i; out.push({id:gid+'-'+d.k+n, g:gid, d:d.k, name:FIRST[(i*5+di)%FIRST.length]+' '+LAST[i%LAST.length]+' '+String.fromCharCode(65+(i%26)), card:String(c), pat:d.pats.length? d.pats[n%(d.pats.length+1)]||null : null}); } }); return out; }
+const G1={id:'g312', name:'Grupo 312 Coimbra', members:mk('g312',[6,5,6,3,4])};
+const G2={id:'g045', name:'Grupo 45 Exemplo',  members:mk('g045',[4,3,5,2,3])};
+const G3={id:'g218', name:'Grupo 218 Modelo',  members:mk('g218',[5,4,4,3,2])};
+const state={s:'local', tab:'ev', sel:new Set(), open:new Set(['g312']), q:'', secf:'', pat:false, pub:true, att:true};
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const groups=()=>state.s==='parent'?[G1,G2,G3]:[G1];
+const canPub=()=>state.s!=='nopublish';
+const isPublicProg=()=>state.s!=='private';
+const divOf=k=>DIV.find(d=>d.k===k);
+function matches(m){ const q=state.q.trim().toLowerCase(); if(state.secf && m.d!==state.secf) return false; if(!q) return true; return m.name.toLowerCase().includes(q)||m.card.includes(q); }
+function tri(ids){ const n=ids.filter(i=>state.sel.has(i)).length; return n===0?0:(n===ids.length?2:1); }
+function cb(ids,label){ const t=tri(ids); return `<input type="checkbox" data-ids="${ids.join(',')}" ${t===2?'checked':''} data-ind="${t===1?1:0}" aria-label="${esc(label)}">`; }
+function tree(){
+  let html='', any=false; const filtering=state.q.trim()||state.secf;
+  groups().forEach(g=>{
+    const ms=g.members.filter(matches); if(!ms.length) return; any=true;
+    const open=filtering||state.open.has(g.id); const allIds=ms.map(m=>m.id);
+    html+=`<div class="node l1"><div class="row"><button class="tog" data-open="${g.id}" aria-expanded="${open}" aria-label="Expandir ${esc(g.name)}">${open?'▾':'▸'}</button>${cb(allIds,'Selecionar todo o grupo '+g.name)}<span class="name">${esc(g.name)}</span><span class="n">${allIds.filter(i=>state.sel.has(i)).length} de ${allIds.length}</span></div>`;
+    if(open) DIV.forEach(d=>{
+      const dm=ms.filter(m=>m.d===d.k); if(!dm.length) return; const key=g.id+':'+d.k; const dopen=filtering||!state.open.has('x'+key); const dids=dm.map(m=>m.id);
+      html+=`<div class="node l2"><div class="row"><button class="tog" data-open="x${key}" aria-expanded="${dopen}" aria-label="Expandir ${esc(d.name)}">${dopen?'▾':'▸'}</button>${cb(dids,'Selecionar toda a '+d.name)}<span class="pill ${d.pill}">${esc(d.who)}</span><span class="name">${esc(d.name)}</span><span class="n">${dids.filter(i=>state.sel.has(i)).length} de ${dids.length}</span></div>`;
+      if(dopen){
+        if(state.pat && d.pats.length){
+          const buckets=[...d.pats,null];
+          buckets.forEach(p=>{ const pm=dm.filter(m=>m.pat===p); if(!pm.length) return; const pids=pm.map(m=>m.id);
+            html+=`<div class="node l3"><div class="row">${cb(pids,'Selecionar '+(p||'sem patrulha'))}<span class="name">${esc(p||'Sem patrulha atribuída')}</span><span class="n">${pids.filter(i=>state.sel.has(i)).length} de ${pids.length}</span></div><div class="mem deep">${pm.map(memRow).join('')}</div></div>`; });
+        } else html+=`<div class="mem">${dm.map(memRow).join('')}</div>`;
+      }
+      html+='</div>';
+    });
+    html+='</div>';
+  });
+  return any?html:'<div class="empty">Nenhum membro corresponde à pesquisa.</div>';
+}
+function memRow(m){ return `<div class="row"><input type="checkbox" data-ids="${m.id}" ${state.sel.has(m.id)?'checked':''} aria-label="Convidar ${esc(m.name)}"><span class="name">${esc(m.name)}</span><span class="num">Nº ${m.card}</span></div>`; }
+
+function tabEvento(){
+  return `<div class="grid two">
+    <label class="f">Nome do evento<input type="text" value="Acampamento de Verão" readonly><span class="hint">Preenchido a partir do programa.</span></label>
+    <label class="f">Unidade<select id="unit"><option>Grupo 312 Coimbra</option><option>Alcateia</option><option>Tribo de Exploradores</option><option>Tribo de Escoteiros</option><option>Clã</option><option>Chefia</option></select>
+      <span class="hint">Quem vê este evento: os dirigentes desta unidade, no eAEP.</span></label>
+    <label class="f">Início<input type="datetime-local" value="2027-06-15T10:00"></label>
+    <label class="f">Fim<input type="datetime-local" value="2027-06-15T17:00"></label>
+    <label class="f">Local<input type="text" value="Parque Verde, Coimbra"></label>
+    <label class="f">Lotação máxima (opcional)<input type="number" min="1" placeholder="Sem limite"></label>
+  </div>
+  ${canPub()?`<div class="callout warn" style="margin-top:1rem"><label class="switch"><input type="checkbox" id="pub" ${state.pub?'checked':''}><span><b>Publicar agora</b><span class="hint">${state.pub?'Os membros de «Grupo 312 Coimbra» serão notificados quando o evento for publicado. Só se pode convidar participantes depois de publicar.':'O evento fica em rascunho. Sem o publicar não é possível convidar participantes a partir daqui.'}</span></span></label></div>`
+   :`<div class="callout"><b>Publicação não disponível.</b> O teu papel nesta unidade não permite publicar. O evento é criado como rascunho e publica-se no eAEP.</div>`}
+  <p class="hint">Fuso horário, bilhetes e preço não são pedidos: o evento é gratuito e sem bilhetes.</p>`;
+}
+function tabPart(){
+  if(!canPub()) return `<div class="callout err"><b>Participantes não disponíveis.</b> Só é possível convidar participantes num evento publicado, e o teu papel não permite publicar nesta unidade. Adiciona os participantes no eAEP depois de o evento ser publicado.</div>`;
+  if(!state.pub) return `<div class="callout warn"><b>Participantes precisam de evento publicado.</b> Liga «Publicar agora» no separador Evento para poderes convidar. Ao publicar, os membros da unidade são notificados.</div>`;
+  const total=groups().reduce((a,g)=>a+g.members.length,0);
+  return `<div class="tools">
+    <label class="f">Pesquisar por nome ou nº associativo<input type="search" id="q" value="${esc(state.q)}" placeholder="ex.: Rita ou 10231"></label>
+    <label class="f" style="flex:0 1 220px">Divisão<select id="secf"><option value="">Todas</option>${DIV.map(d=>`<option value="${d.k}" ${state.secf===d.k?'selected':''}>${esc(d.name)}</option>`).join('')}</select></label>
+    <div class="count">A convidar: <span>${state.sel.size}</span> <small style="font-weight:400;color:hsl(var(--muted-fg))">de ${total}</small></div>
+  </div>
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.6rem"><button class="btn out" type="button" id="all" style="min-height:40px;padding:.4em .9em">Convidar todos os listados</button><button class="btn out" type="button" id="none" style="min-height:40px;padding:.4em .9em">Limpar seleção</button>
+    <label class="future"><input type="checkbox" id="pat" ${state.pat?'checked':''}> Pré-visualizar com patrulhas</label></div>
+  <div class="tree" id="tree">${tree()}</div>
+  <div class="callout"><b>Só vês os membros do teu âmbito.</b> ${state.s==='parent'?'Como dirigente de agrupamento, vês os grupos abaixo do teu e, em cada um, as divisões. Podes selecionar um grupo inteiro de uma vez.':'Vês os membros do teu grupo, por divisão.'} Ninguém é convidado por omissão. Os nomes não ficam guardados no Kit de Atividades.</div>
+  ${state.pat?`<div class="callout warn"><b>Patrulhas (variante futura).</b> O Orgo indica as patrulhas de cada divisão, mas ainda não indica a que patrulha cada membro pertence. Hoje os membros aparecem na divisão; com esta informação passariam a aparecer por patrulha, como aqui, e os sem patrulha ficam num grupo à parte.</div>`:''}`;
+}
+function tabDesc(){
+  return `<h3 style="font-size:1rem">Descrição do evento (pré-visualização)</h3>
+  <div class="preview" style="margin-top:.5rem"><p><b>Programa «Acampamento de Verão»</b>, criado no Kit de Atividades.</p>
+    <h3>Programa</h3><ul><li>10:00–10:30 (30 min) · Jogo de apresentação</li><li>10:30–12:00 (90 min) · Atividade principal</li><li>12:00–13:00 (60 min) · Almoço</li></ul>
+    <h3>Desafios que podem ser assinados</h3>
+    <p>Um desafio só pode ser assinado se os comportamentos forem observados durante o programa.</p>
+    <p><b>CC-A</b> · Título curto <i>(obrigatório para a integração, Lobitos)</i><br>Blocos: Atividade principal<br>Comportamentos a observar:</p><ul><li>Participa nas decisões do grupo</li><li>Respeita as regras do jogo</li></ul></div>
+  <p class="hint">Em HTML simples (listas, negrito, títulos). O Orgo não mostra tabelas.</p>
+  <h3 style="font-size:1rem;margin-top:1.25rem">Anexo</h3>
+  ${isPublicProg()?`<div class="file" style="margin-top:.5rem"><span class="ic">📄</span><div style="flex:1"><b>acampamento-de-verao.pdf</b><div class="hint">PDF do programa · 184 KB</div></div><label class="switch" style="align-items:center"><input type="checkbox" id="att" ${state.att?'checked':''}><span>Anexar</span></label></div>
+    <div class="callout warn">Os ficheiros anexados no Orgo ficam acessíveis a quem tiver a ligação. Como o programa é público, o PDF pode ser anexado.</div>`
+  :`<div class="callout"><b>Sem anexo.</b> Este programa é privado e o Orgo guarda os ficheiros dos eventos com acesso por ligação, por isso o PDF não é anexado. Podes descarregá-lo na página do programa.</div>`}`;
+}
+function resultView(){
+  return `<div class="dlg-h"><div><h2 id="dtitle">Evento criado com avisos</h2><p>Acampamento de Verão · Grupo 312 Coimbra</p></div><button class="close" aria-label="Fechar">×</button></div>
+  <div class="dlg-b"><ul class="steps">
+    <li><span class="st ok">✓</span><span class="t"><b>Evento criado</b><small><a href="#" onclick="return false">Abrir no eAEP</a> · <a href="#" onclick="return false">Página de presenças</a></small></span></li>
+    <li><span class="st ok">✓</span><span class="t"><b>Publicado</b><small>Os membros de «Grupo 312 Coimbra» foram notificados.</small></span></li>
+    <li><span class="st bad">!</span><span class="t"><b>Convites: 13 de 15 adicionados</b><small>2 não foram aceites pelo Orgo.</small></span><button class="btn out" type="button" style="min-height:40px;padding:.4em .9em">Tentar os 2 restantes</button></li>
+    <li><span class="st bad">!</span><span class="t"><b>Anexo não adicionado</b><small>O envio do PDF falhou. O evento existe sem anexo.</small></span><button class="btn out" type="button" style="min-height:40px;padding:.4em .9em">Tentar de novo</button></li>
+  </ul>
+  <div class="callout">Tentar de novo repete só o passo que falhou: o evento não é criado outra vez e quem já foi convidado não é convidado de novo.</div></div>
+  <div class="dlg-f"><span class="hint">Presenças: 0 presentes de 13 convidados · confirma no eAEP</span><button class="btn" type="button">Fechar</button></div>`;
+}
+function render(){
+  const d=$('#dlg');
+  if(state.s==='result'){ d.innerHTML=resultView(); legend(); return; }
+  const tabs=[['ev','Evento'],['pa','Participantes'],['de','Descrição e anexo']];
+  const body=state.tab==='ev'?tabEvento():state.tab==='pa'?tabPart():tabDesc();
+  const badge=(canPub()&&state.pub&&state.sel.size)?`<span class="badge">${state.sel.size}</span>`:'';
+  d.innerHTML=`<div class="dlg-h"><div><h2 id="dtitle">Criar evento no Orgo</h2><p>Os dados vêm do programa. Podes ajustá-los antes de criar.</p></div><button class="close" aria-label="Fechar">×</button></div>
+  <div class="tabs" role="tablist">${tabs.map(([k,l])=>`<button class="tab" role="tab" data-tab="${k}" aria-selected="${state.tab===k}">${l}${k==='pa'?badge:''}</button>`).join('')}</div>
+  <div class="dlg-b" role="tabpanel">${body}</div>
+  <div class="dlg-f"><span class="hint">${canPub()&&state.pub?`Será publicado${state.sel.size?` e ${state.sel.size} membros convidados`:''}.`:'Será criado como rascunho.'}</span><span style="display:flex;gap:.5rem"><button class="btn out" type="button">Cancelar</button><button class="btn" type="button">Criar evento</button></span></div>`;
+  d.querySelectorAll('input[data-ind="1"]').forEach(i=>i.indeterminate=true);
+  legend();
+}
+function legend(){ $('#legend').textContent={local:'Dirigente de grupo: vê os membros do seu grupo, por divisão, e pode pesquisar por nome ou nº associativo.',parent:'Dirigente de agrupamento: vê os grupos abaixo do seu, cada um com as suas divisões, e pode selecionar um grupo inteiro de uma vez. Um dirigente nacional veria mais um nível acima.',nopublish:'O Orgo só aceita convites num evento publicado. Sem direito a publicar, o separador explica e o evento fica em rascunho.',private:'Programa privado: o PDF não é anexado, porque o Orgo guarda os ficheiros com acesso por ligação.',result:'Cada passo é guardado e pode ser repetido sozinho, sem criar um segundo evento nem convidar duas vezes.'}[state.s]; }
+document.addEventListener('click',e=>{
+  const sc=e.target.closest('[data-s]'); if(sc){ state.s=sc.dataset.s; state.tab=state.s==='nopublish'?'pa':'ev'; if(state.s==='parent') state.open=new Set(['g312','g045','g218']); else state.open=new Set(['g312']); state.sel=new Set(); state.q=''; state.secf=''; state.pub=true; document.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',String(c===sc))); if(state.s==='nopublish'||state.s==='private'||state.s==='local'||state.s==='parent') {} ; if(state.s==='private') state.tab='de'; render(); return; }
+  const t=e.target.closest('[data-tab]'); if(t){ state.tab=t.dataset.tab; render(); return; }
+  const o=e.target.closest('[data-open]'); if(o){ const k=o.dataset.open; state.open.has(k)?state.open.delete(k):state.open.add(k); render(); return; }
+  if(e.target.id==='all'){ groups().forEach(g=>g.members.filter(matches).forEach(m=>state.sel.add(m.id))); render(); return; }
+  if(e.target.id==='none'){ state.sel.clear(); render(); return; }
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset&&t.dataset.ids){ const ids=t.dataset.ids.split(','); const on=t.checked||(t.indeterminate&&false); ids.forEach(i=>on?state.sel.add(i):state.sel.delete(i)); render(); return; }
+  if(t.id==='pub'){ state.pub=t.checked; render(); return; }
+  if(t.id==='att'){ state.att=t.checked; return; }
+  if(t.id==='pat'){ state.pat=t.checked; render(); return; }
+  if(t.id==='secf'){ state.secf=t.value; render(); return; }
+});
+document.addEventListener('input',e=>{ if(e.target.id==='q'){ state.q=e.target.value; const pos=e.target.selectionStart; $('#tree').innerHTML=tree(); document.querySelectorAll('input[data-ind="1"]').forEach(i=>i.indeterminate=true); } });
+render();
+</script>
+</body>
+</html>

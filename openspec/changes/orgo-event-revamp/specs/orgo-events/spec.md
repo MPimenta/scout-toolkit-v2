@@ -2,7 +2,7 @@
 
 ### Requirement: Dialog asks for end datetime and unit, not timezone or tickets
 
-The dialog SHALL open as a popup from the program page and SHALL prefill mapped values from the program. Mapped values SHALL include program name, public flag (`is_public` → `isPublic`), and start datetime from `date` + `start_time` when both exist. The dialog SHALL ask for end date/time, location and Orgo unit, and SHALL offer the optional details that Orgo accepts for events and that the signed-in user's Orgo role allows (at least max capacity and whether to publish immediately). An option the user's role does not allow SHALL NOT be shown. The dialog SHALL also offer the participants and attachment sections defined in the `orgo-event-participants` and `orgo-event-description` capabilities. The dialog SHALL NOT ask for timezone, ticketing, or price.
+The dialog SHALL open as a popup from the program page and SHALL prefill mapped values from the program. Mapped values SHALL include program name, public flag (`is_public` → `isPublic`), and start datetime from `date` + `start_time` when both exist. The dialog SHALL ask for end date/time, location and Orgo unit, and SHALL offer the optional details that Orgo accepts for events and that the signed-in user's Orgo role allows (at least max capacity and whether to publish immediately). An option the user's role does not allow SHALL NOT be shown. The dialog SHALL also offer the participants and attachment sections defined in the `orgo-event-participants` and `orgo-event-description` capabilities. The dialog SHALL NOT ask for timezone, ticketing, or price. When the owner chooses to publish, the dialog SHALL state, before the owner confirms, that publishing notifies the members of the chosen unit.
 
 #### Scenario: Program with date and start time
 
@@ -23,6 +23,7 @@ The dialog SHALL open as a popup from the program page and SHALL prefill mapped 
 - **GIVEN** the owner's role in the chosen unit does not allow publishing events
 - **WHEN** they open the dialog
 - **THEN** the publish option is not shown and the event will be created as a draft
+- **AND** the participants section explains that participants must be added in eAEP once the event is published there
 
 #### Scenario: Options follow the chosen unit
 
@@ -30,15 +31,22 @@ The dialog SHALL open as a popup from the program page and SHALL prefill mapped 
 - **WHEN** they change the unit
 - **THEN** the publish option appears or disappears to match the unit
 
+#### Scenario: Publish warning
+
+- **GIVEN** the owner switches on publishing
+- **WHEN** the dialog shows the publish option
+- **THEN** it says that the members of the chosen unit will be notified
+- **AND** the owner confirms before the event is created
+
 ### Requirement: Server creates a draft Orgo event with a write token
 
-The create request SHALL run on the server and SHALL send `Api-Token: $ORGO_API_TOKEN` to `POST {ORGO_ISSUER}/api/v1/events`. The browser SHALL NOT receive the token. The server SHALL validate the request body (end after start, unit present, capacity a positive whole number when given, publish a boolean) and SHALL reject invalid input with 400 and a Portuguese message before contacting Orgo. The event SHALL start as `DRAFT` unless the owner chose to publish and the server confirmed from Orgo that the owner's role allows it. Ticketing SHALL always be off (`hasEventTicketing` false). The server SHALL NOT create an Orgo product or send a price. The app SHALL store the Orgo event uuid (and public URL when known) on the program as soon as Orgo confirms the create, before any later step. After the create, the server SHALL run the remaining steps in this order: participants, attachment, publish. A failed step SHALL NOT remove the event or the earlier steps, SHALL be reported to the owner in Portuguese with the step name, and SHALL be retryable without creating a second event.
+The create request SHALL run on the server and SHALL send `Api-Token: $ORGO_API_TOKEN` to `POST {ORGO_ISSUER}/api/v1/events`. The browser SHALL NOT receive the token. The server SHALL validate the request body (end after start, unit present, capacity a positive whole number when given, publish a boolean) and SHALL reject invalid input with 400 and a Portuguese message before contacting Orgo. The event SHALL start as `DRAFT` and SHALL be published only if the owner chose to publish and the server confirmed from Orgo that the owner's role allows it. Ticketing SHALL always be off (`hasEventTicketing` false). The server SHALL NOT create an Orgo product or send a price. The app SHALL store the Orgo event uuid and its link (`{ORGO_ISSUER}/event/<uuid>`) on the program as soon as Orgo confirms the create, before any later step. After the create, the server SHALL run the remaining steps in this order: publish, invitations, attachment. Invitations SHALL run only after the event is published, because Orgo refuses invitations to a draft. A failed step SHALL NOT remove the event or the earlier steps, SHALL be reported to the owner in Portuguese with the step name, and SHALL be retryable without creating a second event.
 
 #### Scenario: Successful create
 
 - **GIVEN** the owner submits a valid dialog
 - **WHEN** Orgo accepts the event
-- **THEN** the program stores the Orgo uuid
+- **THEN** the program stores the Orgo uuid and a link of the form `/event/<uuid>`
 - **AND** the dialog shows a Portuguese success message with a link to the Orgo event
 - **AND** the page shows a link to the Orgo event instead of a second create
 - **AND** the Orgo payload has ticketing disabled
@@ -66,39 +74,46 @@ The create request SHALL run on the server and SHALL send `Api-Token: $ORGO_API_
 - **WHEN** Orgo creates the event but rejects the publish step
 - **THEN** the program stores the Orgo uuid and link
 - **AND** the owner is told the event was created as a draft and must be published in eAEP
+- **AND** no invitation is attempted
 - **AND** retrying does not create a second event
 
-#### Scenario: Participants fail after create
+#### Scenario: Invitations fail after publish
 
-- **GIVEN** the owner selected participants
-- **WHEN** Orgo creates the event but rejects adding the participants
+- **GIVEN** the owner selected participants and the event is published
+- **WHEN** Orgo rejects some or all invitations
 - **THEN** the program keeps the uuid and link
-- **AND** the owner is told the participants were not added and can retry that step
+- **AND** the owner is told how many were added and can retry the rest
 - **AND** retrying does not create a second event
 
 #### Scenario: Publish not allowed
 
 - **WHEN** a request asks to publish and Orgo says the owner's role does not allow it
 - **THEN** the event is created as a draft and the owner is told so
+- **AND** no participants are invited
+
+#### Scenario: Correct link
+
+- **WHEN** the program page shows the link to the Orgo event
+- **THEN** it opens the event page in eAEP, not a page that does not exist
 
 ## ADDED Requirements
 
 ### Requirement: The event belongs to the owner's scope
-The event SHALL be created in the unit the owner chose, and the dialog SHALL say which leaders will see it ("quem vê este evento"), based on the unit's level (for example agrupamento or divisão), so that leaders of that scope find the event in eAEP and can take attendance there. The app SHALL NOT create events outside the units offered to the owner.
+The event SHALL be created in the unit the owner chose, and the dialog SHALL say which leaders will see it ("quem vê este evento"), based on the unit chosen (the group-level unit or a divisão), so that leaders of that scope find the event in eAEP. The app SHALL NOT create events outside the units offered to the owner. The app SHALL NOT claim that those leaders can edit the event: the event is owned by the account the write token belongs to.
 
 #### Scenario: Scope explained
 - **WHEN** the owner selects a divisão unit
-- **THEN** the dialog says the event will be visible to the leaders of that divisão in eAEP
+- **THEN** the dialog says the event will be visible to the leaders of that unit in eAEP
 
 ### Requirement: Attendance is checked in eAEP
-The program page SHALL link to the Orgo event for attendance. Where Orgo exposes attendance to the API, the program page SHALL also show the number of participants present and invited for events the owner created; where it does not, the page SHALL say that attendance is checked in eAEP. Attendance SHALL NOT be copied into the app's data.
+The program page SHALL link to the Orgo event's attendance page (`/events/attend/<uuid>`). It SHALL also show the number of participants invited and, when Orgo reports it, the number who answered "attending" (checked in on the attendance page, or said yes themselves: Orgo uses one answer for both, so the page calls them "confirmados", not "presentes") for events the owner created, using the event's counts only. Attendance SHALL NOT be copied into the app's data and the page SHALL NOT show names.
 
-#### Scenario: Attendance available
-- **GIVEN** Orgo returns attendance for the event
+#### Scenario: Counts available
+- **GIVEN** Orgo returns counts for the event
 - **WHEN** the owner opens the program
-- **THEN** it shows "12 presentes de 15 convidados" and no names
+- **THEN** it shows the counts (for example "12 confirmados de 15 convidados") and no names
 
-#### Scenario: Attendance not available
-- **GIVEN** Orgo does not expose attendance through the API
+#### Scenario: Counts not available
+- **GIVEN** Orgo does not return counts for the event
 - **WHEN** the owner opens the program
 - **THEN** it shows the link and the sentence that attendance is checked in eAEP
